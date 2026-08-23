@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI Variable', 'Segoe UI', 'Inter', system-ui, sans-serif;
+}
+
+* {
+  border-color: theme('colors.gray.200');
+}
+
+body {
+  @apply bg-[#FAFAFB] text-ink;
+  /* ÖNEMLİ: Google Fonts üzerinden Inter yüklemek build sırasında ağ
+     bağlantısı gerektirir (bazı ortamlarda başarısız olabilir) — bunun
+     yerine işletim sisteminin kendi yüksek kaliteli fontlarına
+     (macOS: SF Pro, Windows: Segoe UI Variable) güveniyoruz. Premium
+     his esasen tipografi disiplininden (boyut/boşluk/ağırlık) geliyor. */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.011em;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #d8dbe0;
+  border-radius: 999px;
+  border: 2px solid #FAFAFB;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #b8bcc4;
+}

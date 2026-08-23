@@ -1,0 +1,2188 @@
+
+===== package.json =====
+
+{
+  "name": "bayi-teknik-destek-backend",
+  "version": "0.1.0",
+  "description": "Yangin & Kamera Bayi Teknik Destek - Backend (NestJS + Prisma + pgvector)",
+  "private": true,
+  "scripts": {
+    "build": "nest build",
+    "start": "nest start",
+    "start:dev": "nest start --watch",
+    "start:prod": "node dist/main",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:migrate:deploy": "prisma migrate deploy",
+    "prisma:seed": "ts-node prisma/seed.ts",
+    "prisma:studio": "prisma studio",
+    "test": "jest",
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "lint": "eslint \"src/**/*.ts\" --fix"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.637.0",
+    "@aws-sdk/s3-request-presigner": "^3.637.0",
+    "@nestjs/common": "^10.4.0",
+    "@nestjs/config": "^3.2.3",
+    "@nestjs/core": "^10.4.0",
+    "@nestjs/jwt": "^10.2.0",
+    "@nestjs/passport": "^10.0.3",
+    "@nestjs/platform-express": "^10.4.0",
+    "@nestjs/platform-socket.io": "^10.4.0",
+    "@nestjs/schedule": "^6.1.3",
+    "@nestjs/serve-static": "^4.0.2",
+    "@nestjs/throttler": "^6.2.1",
+    "@nestjs/websockets": "^10.4.0",
+    "@prisma/client": "^5.19.1",
+    "bcrypt": "^5.1.1",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "firebase-admin": "^12.3.1",
+    "google-auth-library": "^9.14.1",
+    "mammoth": "^1.8.0",
+    "multer": "^1.4.5-lts.1",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1",
+    "pdf-parse": "^1.1.1",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.1",
+    "socket.io": "^4.7.5",
+    "tesseract.js": "^5.1.1",
+    "uuid": "^9.0.1",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^10.4.5",
+    "@nestjs/schematics": "^10.1.4",
+    "@nestjs/testing": "^10.4.0",
+    "@types/bcrypt": "^5.0.2",
+    "@types/express": "^4.17.21",
+    "@types/jest": "^29.5.12",
+    "@types/multer": "^1.4.11",
+    "@types/node": "^20.14.15",
+    "@types/uuid": "^9.0.8",
+    "jest": "^29.7.0",
+    "prisma": "^5.19.1",
+    "ts-jest": "^29.2.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.4"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  }
+}
+
+===== src\ai\ai.service.ts =====
+
+import { Inject, Injectable } from '@nestjs/common';
+import { RagSearchService, RetrievedChunk } from '../rag/rag-search.service';
+import { KnowledgeBaseService } from '../knowledge-base/knowledge-base.service';
+import { TechnicalMemoryService } from './technical-memory.service';
+import { AIProvider, AIMessage, AI_PROVIDER } from './providers/ai-provider.interface';
+
+export interface TechnicalAnswer {
+  answerMarkdown: string;
+  confidence: 'HIGH' | 'LOW';
+  citations: Array<{
+    chunkId: string;
+    documentId: string;
+    documentTitle: string;
+    brand: string;
+    model: string;
+    version: string;
+    page: number;
+  }>;
+  fromMemory: boolean;
+  memoryId?: string;
+}
+
+const CRITICAL_TOPICS_HINT = [
+  'terminal numaras�',
+  'ba�lant� �ekli',
+  'DIP switch',
+  'kablo tipi',
+  'loop kapasitesi',
+  'cihaz limiti',
+  'panel ayar�',
+  'programlama',
+  'r�le ba�lant�s�',
+  'enerji hesab�',
+  'siren ba�lant�s�',
+];
+
+const SYSTEM_PROMPT = `
+Sen bir yang�n alarm ve g�venlik kamera sistemleri TEKN�K DESTEK asistan�s�n.
+
+Bu uygulama genel ama�l� bir sohbet botu de�ildir. Teknik cevaplar�n� �NCEL�KLE ve SADECE a�a��da verilen �retici dok�manlar�ndan do�rula.
+
+�OK �NEML� KURALLAR:
+
+1. DOK�MANLARDAK� B�LG�LER EN �NCEL�KL� KAYNAKTIR.
+2. Sana verilen DOK�MAN BA�LAMI d���nda teknik bir bilgiyi kesin bilgi gibi sunma.
+3. Dok�manda cevap bulunmuyorsa bunu a��k�a s�yle:
+"Y�klenmi� teknik dok�manlarda bu bilgi do�rulanamad�."
+4. Dok�manda bilgi yoksa kendi genel bilginden terminal numaras�, DIP switch, kablolama, diren� de�eri, kapasite, cihaz limiti, programlama veya ba�lant� �ekli UYDURMA.
+5. Dok�manda birden fazla kaynak varsa bunlar� kar��la�t�r ve �eli�ki varsa �eli�kiyi belirt.
+6. Marka/model bilgisi verilmi�se �ncelikle o marka ve model ile ilgili dok�manlar� kullan.
+7. Cevapta dok�manlarda olmayan teknik de�erler �retme.
+8. Genel bilgini kullanmak zorunda kal�rsan bunu a��k�a:
+"Bu bilgi �retici dok�man�ndan do�rulanmam��t�r."
+�eklinde belirt.
+9. Kullan�c� sadece selamla�ma veya teknik olmayan bir soru sorarsa normal k�sa cevap verebilirsin.
+10. Teknik sorularda cevaplar�n� verilen dok�man ba�lam�na dayand�r.
+
+�zellikle �u konularda dok�man kayna�� yoksa kesin cevap verme:
+- terminal numaras�
+- ba�lant� �ekli
+- DIP switch ayarlar�
+- kablo tipi
+- loop kapasitesi
+- cihaz limiti
+- panel ayar�
+- programlama
+- r�le ba�lant�s�
+- enerji hesab�
+- siren ba�lant�s�
+
+CEVAP FORMATI:
+
+### ��z�m
+K�sa ve do�rudan ��z�m.
+
+### Kontrol Etmeniz Gerekenler
+1. ...
+2. ...
+
+Cevab�n SONUNA mutlaka �u sat�rlardan birini ekle:
+
+CONFIDENCE: HIGH
+
+veya
+
+CONFIDENCE: LOW
+
+HIGH yaln�zca verilen dok�manlardan do�rudan do�rulanabilen cevaplarda kullan�lmal�d�r.
+Dok�man deste�i yetersizse LOW kullan.
+
+"Kaynak" b�l�m� olu�turma. Kaynaklar sistem taraf�ndan otomatik eklenecektir.
+`;
+
+@Injectable()
+export class AiService {
+  constructor(
+    private ragSearch: RagSearchService,
+    private knowledgeBase: KnowledgeBaseService,
+    private technicalMemory: TechnicalMemoryService,
+    @Inject(AI_PROVIDER) private provider: AIProvider,
+  ) {}
+
+  async answerTechnicalQuestion(
+    question: string,
+    opts: {
+      brand?: string;
+      model?: string;
+      imageBase64?: string;
+      imageMediaType?: string;
+    } = {},
+  ): Promise<TechnicalAnswer> {
+    if (!opts.imageBase64) {
+      const memoryMatch = await this.technicalMemory.findMatch(question, {
+        productName: opts.brand,
+        productModel: opts.model,
+      });
+
+      if (memoryMatch.tier === 'VERIFIED' && memoryMatch.entry) {
+        this.technicalMemory.incrementUsage(memoryMatch.entry.id).catch(() => {});
+
+        return {
+          answerMarkdown: memoryMatch.entry.answerMarkdown,
+          confidence: 'HIGH',
+          citations: (memoryMatch.entry.citations as any) || [],
+          fromMemory: true,
+          memoryId: memoryMatch.entry.id,
+        };
+      }
+    }
+
+    const [retrieved, knowledgeMatches] = await Promise.all([
+      this.ragSearch.search(question, {
+        brand: opts.brand,
+        model: opts.model,
+        limit: 6,
+      }),
+      this.knowledgeBase.searchRelevant(question, 3).catch(() => []),
+    ]);
+
+    const relevantChunks = retrieved.filter((c) => c.similarity >= 0.72);
+
+    const context = this.buildContextBlock(relevantChunks, knowledgeMatches);
+
+    const hasDocumentEvidence = relevantChunks.length > 0;
+
+    const documentInstruction = hasDocumentEvidence
+      ? `A�a��daki DOK�MAN BA�LAMI kullan�c� sorusunun cevab�n� olu�turmak i�in ana kaynakt�r.
+
+DOK�MAN BA�LAMI:
+
+${context}
+
+KULLANICI SORUSU:
+${question}
+
+Cevab�n� �ncelikle DOK�MAN BA�LAMI i�indeki bilgilerden olu�tur.`
+      : `KULLANICI SORUSU:
+${question}
+
+DOK�MAN BA�LAMI:
+�lgili teknik dok�man bulunamad�.
+
+Bu teknik soruya dok�man deste�i olmadan kesin teknik de�er veya ba�lant� bilgisi verme. Kullan�c�ya y�klenmi� teknik dok�manlarda bilginin do�rulanamad���n� s�yle.`;
+
+    const userText = documentInstruction;
+
+    let userContent: AIMessage['content'] = userText;
+
+    if (opts.imageBase64) {
+      userContent = [
+        {
+          type: 'text',
+          text: userText,
+        },
+        {
+          type: 'image',
+          mediaType: opts.imageMediaType || 'image/jpeg',
+          data: opts.imageBase64,
+        },
+      ];
+    }
+
+    const messages: AIMessage[] = [
+      {
+        role: 'system',
+        content: SYSTEM_PROMPT,
+      },
+      {
+        role: 'user',
+        content: userContent,
+      },
+    ];
+
+    const result = await this.provider.complete(messages, {
+      maxTokens: 700,
+      temperature: 0.1,
+    });
+
+    const { text, confidence } = this.extractConfidence(result.text);
+
+    const usedCitations = relevantChunks
+      .slice(0, 4)
+      .map((c) => ({
+        chunkId: c.chunkId,
+        documentId: c.documentId,
+        documentTitle: c.documentTitle,
+        brand: c.brand,
+        model: c.model,
+        version: c.version,
+        page: c.page,
+      }));
+
+    const finalConfidence: 'HIGH' | 'LOW' =
+      usedCitations.length === 0 ? 'LOW' : confidence;
+
+    if (
+      !opts.imageBase64 &&
+      finalConfidence === 'HIGH' &&
+      usedCitations.length > 0
+    ) {
+      this.technicalMemory
+        .save({
+          question,
+          answerMarkdown: text,
+          citations: usedCitations,
+          productName: opts.brand,
+          productModel: opts.model,
+        })
+        .catch(() => {});
+    }
+
+    return {
+      answerMarkdown: text,
+      confidence: finalConfidence,
+      citations: usedCitations,
+      fromMemory: false,
+    };
+  }
+
+  private buildContextBlock(
+    chunks: RetrievedChunk[],
+    knowledgeMatches: {
+      problem: string;
+      solution: string;
+      productName: string | null;
+    }[] = [],
+  ): string {
+    const docPart =
+      chunks.length === 0
+        ? '(�lgili dok�man bulunamad�.)'
+        : chunks
+            .map(
+              (c, i) => `[DOK�MAN ${i + 1}]
+Marka: ${c.brand}
+Model: ${c.model}
+Dok�man: ${c.documentTitle}
+Versiyon: ${c.version}
+Sayfa: ${c.page}
+Benzerlik: ${c.similarity}
+
+${c.content}`,
+            )
+            .join('\n\n---\n\n');
+
+    if (knowledgeMatches.length === 0) {
+      return docPart;
+    }
+
+    const knowledgePart = knowledgeMatches
+      .map(
+        (k, i) => `[SAHA TECR�BES� ${i + 1}]
+�r�n: ${k.productName || 'Belirtilmemi�'}
+Sorun: ${k.problem}
+��z�m: ${k.solution}`,
+      )
+      .join('\n\n---\n\n');
+
+    return `${docPart}
+
+=== M�HEND�S SAHA TECR�BELER� ===
+
+${knowledgePart}`;
+  }
+
+  private extractConfidence(
+    text: string,
+  ): { text: string; confidence: 'HIGH' | 'LOW' } {
+    const match = text.match(/CONFIDENCE:\s*(HIGH|LOW)/i);
+
+    const confidence =
+      (match?.[1]?.toUpperCase() as 'HIGH' | 'LOW') || 'LOW';
+
+    const cleaned = text
+      .replace(/CONFIDENCE:\s*(HIGH|LOW)/i, '')
+      .trim();
+
+    return {
+      text: cleaned,
+      confidence,
+    };
+  }
+}
+
+===== src\ai\ai.controller.ts =====
+
+import { Controller, Post, Get, Patch, Body, Param, Query, UseGuards, Req, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard, Roles } from '../auth/guards/jwt-auth.guard';
+import { AiService } from './ai.service';
+import { TechnicalMemoryService } from './technical-memory.service';
+import { AskAiDto } from './dto/ask-ai.dto';
+import { ConversationsService } from '../chat/conversations.service';
+import { MessagesService } from '../chat/messages.service';
+import { ChatGateway } from '../chat/gateway/chat.gateway';
+
+@UseGuards(JwtAuthGuard)
+@Controller('ai')
+export class AiController {
+  constructor(
+    private aiService: AiService,
+    private technicalMemory: TechnicalMemoryService,
+    private conversations: ConversationsService,
+    private messages: MessagesService,
+    private gateway: ChatGateway,
+  ) {}
+
+  @Post('ask')
+  async ask(@Req() req: any, @Body() dto: AskAiDto) {
+    const conversationId =
+      dto.conversationId ?? (await this.conversations.createAiConversation(req.user.sub)).id;
+
+    await this.messages.sendUserMessage({
+      conversationId,
+      senderId: req.user.sub,
+      content: dto.question,
+    });
+
+    const answer = await this.aiService.answerTechnicalQuestion(dto.question, {
+      brand: dto.brand,
+      model: dto.model,
+    });
+
+    const aiMessage = await this.messages.saveAiAnswer(conversationId, answer);
+    this.gateway.emitNewMessage(conversationId, aiMessage);
+
+    // fromMemory/memoryId kalıcı olarak saklanmıyor (Message modeline
+    // dokunmadık) — sadece bu anlık yanıtta mobile "Bu soru daha önce
+    // yanıtlandı" göstergesini tetiklemek için ekleniyor.
+    return { conversationId, message: aiMessage, fromMemory: answer.fromMemory, memoryId: answer.memoryId };
+  }
+
+  @Post('ask-with-image')
+  @UseInterceptors(FileInterceptor('image'))
+  async askWithImage(
+    @Req() req: any,
+    @Body() dto: AskAiDto,
+    @UploadedFile() image: Express.Multer.File,
+  ) {
+    const conversationId =
+      dto.conversationId ?? (await this.conversations.createAiConversation(req.user.sub)).id;
+
+    await this.messages.sendUserMessage({
+      conversationId,
+      senderId: req.user.sub,
+      content: dto.question || 'Fotoğraf gönderildi.',
+    });
+
+    const answer = await this.aiService.answerTechnicalQuestion(dto.question, {
+      brand: dto.brand,
+      model: dto.model,
+      imageBase64: image.buffer.toString('base64'),
+      imageMediaType: image.mimetype,
+    });
+
+    const aiMessage = await this.messages.saveAiAnswer(conversationId, answer);
+    this.gateway.emitNewMessage(conversationId, aiMessage);
+
+    return { conversationId, message: aiMessage, fromMemory: answer.fromMemory, memoryId: answer.memoryId };
+  }
+
+  // ============================================================
+  // Admin panel — "AI Teknik Hafıza" yönetimi
+  // ============================================================
+
+  @Roles('ADMIN', 'ENGINEER')
+  @UseGuards(RolesGuard)
+  @Get('technical-memory')
+  listMemory(@Query('productName') productName?: string, @Query('needsReverification') needsReverification?: string) {
+    return this.technicalMemory.list({
+      productName,
+      needsReverification: needsReverification === undefined ? undefined : needsReverification === 'true',
+    });
+  }
+
+  @Roles('ADMIN', 'ENGINEER')
+  @UseGuards(RolesGuard)
+  @Patch('technical-memory/:id/verify')
+  verifyMemory(@Req() req: any, @Param('id') id: string) {
+    return this.technicalMemory.verify(id, req.user.sub);
+  }
+
+  @Roles('ADMIN', 'ENGINEER')
+  @UseGuards(RolesGuard)
+  @Patch('technical-memory/:id')
+  updateMemory(@Param('id') id: string, @Body() body: { answerMarkdown: string }) {
+    return this.technicalMemory.updateAnswer(id, body.answerMarkdown);
+  }
+
+  @Roles('ADMIN', 'ENGINEER')
+  @UseGuards(RolesGuard)
+  @Patch('technical-memory/:id/active')
+  setMemoryActive(@Param('id') id: string, @Body() body: { isActive: boolean }) {
+    return this.technicalMemory.setActive(id, body.isActive);
+  }
+}
+
+===== src\ai\providers\ollama.provider.ts =====
+
+import { Injectable } from '@nestjs/common';
+import { AIProvider, AIMessage, AICompletionResult } from './ai-provider.interface';
+
+/**
+ * Kendi bilgisayarınızda (GPU'lu makine) çalışan, ücretsiz açık kaynak bir
+ * model sağlayıcısı — Anthropic API'ye alternatif. Ollama kurulumu
+ * gerektirir.
+ *
+ * OLLAMA_BASE_URL: Ollama sunucunuzun adresi (örn. http://192.168.1.50:11434
+ * — backend başka bir makinede çalışıyorsa, ya da aynı makinedeyse
+ * http://localhost:11434).
+ * OLLAMA_MODEL: Kullanılacak model adı. Dokümanlar İngilizce olduğu için
+ * varsayılan "llama3.2-vision:11b" yapıldı (Meta'nın Llama ailesi — İngilizce
+ * teknik metinlerde en yaygın kabul gören, en iyi desteklenen açık kaynak
+ * model; "vision" sürümü, fotoğrafla soru sorma özelliğinin çalışmaya devam
+ * etmesi için seçildi). Kurulumdan önce Ollama'nın model kütüphanesinden
+ * (ollama.com/library) tam etiket adını doğrulayın — bu alan hızlı değişiyor.
+ */
+@Injectable()
+export class OllamaProvider implements AIProvider {
+  private readonly baseUrl = process.env.OLLAMA_BASE_URL || 'http://localhost:11434';
+  private readonly model = process.env.OLLAMA_MODEL || 'llama3.2-vision:11b';
+
+  async complete(
+    messages: AIMessage[],
+    opts: { maxTokens?: number; temperature?: number } = {},
+  ): Promise<AICompletionResult> {
+    const ollamaMessages = messages.map((m) => {
+      if (typeof m.content === 'string') {
+        return { role: m.role, content: m.content };
+      }
+      const textParts = m.content.filter((b) => b.type === 'text').map((b) => (b as any).text);
+      const images = m.content.filter((b) => b.type === 'image').map((b) => (b as any).data);
+      return {
+        role: m.role,
+        content: textParts.join('\n'),
+        ...(images.length > 0 && { images }),
+      };
+    });
+
+    const res = await fetch(`${this.baseUrl}/api/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: this.model,
+        messages: ollamaMessages,
+        stream: false,
+        options: {
+          temperature: opts.temperature ?? 0.2,
+          num_predict: opts.maxTokens ?? 1500,
+        },
+      }),
+    });
+
+    if (!res.ok) {
+      throw new Error(
+        `Ollama sunucusuna ulaşılamadı (${this.baseUrl}): ${res.status} ${await res.text()}. ` +
+          `Ollama'nın çalıştığından ve OLLAMA_BASE_URL'in doğru olduğundan emin olun.`,
+      );
+    }
+
+    const data: any = await res.json();
+    return { text: data.message?.content ?? '', raw: data };
+  }
+}
+
+===== src\ai\providers\ai-provider.interface.ts =====
+
+export interface AIMessage {
+  role: 'system' | 'user' | 'assistant';
+  content: string | AIContentBlock[];
+}
+
+export type AIContentBlock =
+  | { type: 'text'; text: string }
+  | { type: 'image'; mediaType: string; data: string /* base64 */ };
+
+export interface AICompletionResult {
+  text: string;
+  raw?: unknown;
+}
+
+/**
+ * Tüm LLM sağlayıcılarının uyması gereken arayüz.
+ * Bu sayede Anthropic / OpenAI / Gemini kolayca değiştirilebilir
+ * (bkz. ai.module.ts -> AI_PROVIDER env değişkeni).
+ */
+export interface AIProvider {
+  complete(messages: AIMessage[], opts?: { maxTokens?: number; temperature?: number }): Promise<AICompletionResult>;
+}
+
+export const AI_PROVIDER = 'AI_PROVIDER';
+
+===== src\rag\embedding.service.ts =====
+
+import { Injectable, Logger } from '@nestjs/common';
+
+/**
+ * Embedding sağlayıcısı soyutlaması.
+ *
+ * Not: Anthropic şu anda birinci taraf bir embedding modeli sunmuyor,
+ * bu yüzden embedding için Voyage AI, OpenAI, ya da (kullanıcı isteğiyle
+ * eklendi) kendi Ollama sunucunuzdaki ÜCRETSİZ bir açık kaynak model
+ * kullanılabilir. Aşağıdaki servis EMBEDDING_PROVIDER env değişkenine
+ * göre değiştirilebilir. Vektör boyutunu (dimension) prisma schema'daki
+ * vector(1024) ile eşleştirmeyi unutmayın — "ollama" sağlayıcısı için
+ * varsayılan model olan "bge-m3" de tam olarak 1024 boyut ürettiği için
+ * herhangi bir şema/migration değişikliği GEREKMİYOR.
+ */
+@Injectable()
+export class EmbeddingService {
+  private readonly logger = new Logger(EmbeddingService.name);
+  private readonly apiKey = process.env.EMBEDDING_API_KEY;
+  private readonly provider = process.env.EMBEDDING_PROVIDER || 'voyage';
+  private readonly model = process.env.EMBEDDING_MODEL || (this.provider === 'ollama' ? 'bge-m3' : 'voyage-3');
+  private readonly ollamaBaseUrl = process.env.OLLAMA_BASE_URL || 'http://localhost:11434';
+
+  async embed(text: string): Promise<number[]> {
+    return this.embedBatch([text]).then((r) => r[0]);
+  }
+
+  async embedBatch(texts: string[]): Promise<number[][]> {
+    if (this.provider === 'ollama') {
+      return this.callWithRetry(() => this.callOllama(texts));
+    }
+
+    if (!this.apiKey) {
+      throw new Error(
+        'EMBEDDING_API_KEY tanımlı değil. .env dosyanıza embedding sağlayıcı anahtarını ekleyin.',
+      );
+    }
+
+    if (this.provider === 'voyage') {
+      return this.callWithRetry(() => this.callVoyage(texts));
+    }
+
+    if (this.provider === 'openai') {
+      return this.callWithRetry(() => this.callOpenAi(texts));
+    }
+
+    throw new Error(`Bilinmeyen embedding sağlayıcı: ${this.provider}`);
+  }
+
+  /**
+   * Voyage AI'nin ücretsiz kotası (ödeme yöntemi eklenmemiş hesaplarda)
+   * dakikada sadece 3 istekle sınırlı — çoklu doküman yüklemesinde bu
+   * sınıra çok kolay takılıyoruz. 429 (rate limit) hatası aldığımızda
+   * sessizce vazgeçmek yerine artan bekleme süreleriyle (5sn, 15sn, 30sn,
+   * 60sn) yeniden deniyoruz; kalıcı hatalarda (401, 400 vb.) hemen durup
+   * hatayı yukarı fırlatıyoruz.
+   */
+  private async callWithRetry<T>(fn: () => Promise<T>, attempt = 1): Promise<T> {
+    const maxAttempts = 5;
+    const delays = [5000, 15000, 30000, 60000];
+    try {
+      return await fn();
+    } catch (err: any) {
+      const isRateLimit = err?.status === 429 || String(err?.message ?? '').includes('429');
+      if (isRateLimit && attempt < maxAttempts) {
+        const delay = delays[attempt - 1] ?? 60000;
+        this.logger.warn(
+          `Embedding API hız sınırına takıldı, ${delay / 1000}sn beklenip tekrar denenecek (deneme ${attempt}/${maxAttempts}).`,
+        );
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        return this.callWithRetry(fn, attempt + 1);
+      }
+      throw err;
+    }
+  }
+
+  private async callOllama(texts: string[]): Promise<number[][]> {
+    const res = await fetch(`${this.ollamaBaseUrl}/api/embed`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: this.model, input: texts }),
+    });
+    if (!res.ok) {
+      const error: any = new Error(
+        `Ollama embedding sunucusuna ulaşılamadı (${this.ollamaBaseUrl}): ${res.status} ${await res.text()}. ` +
+          `"ollama pull ${this.model}" komutuyla modeli indirdiğinizden emin olun.`,
+      );
+      error.status = res.status;
+      throw error;
+    }
+    const data: any = await res.json();
+    return data.embeddings;
+  }
+
+  private async callVoyage(texts: string[]): Promise<number[][]> {
+    const res = await fetch('https://api.voyageai.com/v1/embeddings', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${this.apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ input: texts, model: this.model }),
+    });
+    if (!res.ok) {
+      const error: any = new Error(`Embedding API hatası: ${res.status} ${await res.text()}`);
+      error.status = res.status;
+      throw error;
+    }
+    const data: any = await res.json();
+    return data.data.map((d: any) => d.embedding);
+  }
+
+  private async callOpenAi(texts: string[]): Promise<number[][]> {
+    const res = await fetch('https://api.openai.com/v1/embeddings', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${this.apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ input: texts, model: this.model }),
+    });
+    if (!res.ok) {
+      const error: any = new Error(`Embedding API hatası: ${res.status} ${await res.text()}`);
+      error.status = res.status;
+      throw error;
+    }
+    const data: any = await res.json();
+    return data.data.map((d: any) => d.embedding);
+  }
+}
+
+===== src\rag\rag-ingestion.service.ts =====
+
+import { Injectable, Logger } from '@nestjs/common';
+import { PrismaService } from '../common/prisma/prisma.service';
+import { TextExtractionService } from './text-extraction.service';
+import { EmbeddingService } from './embedding.service';
+import { StorageService } from '../common/storage/storage.service';
+
+const CHUNK_SIZE = 800; // karakter
+const CHUNK_OVERLAP = 150;
+
+@Injectable()
+export class RagIngestionService {
+  private readonly logger = new Logger(RagIngestionService.name);
+
+  constructor(
+    private prisma: PrismaService,
+    private extraction: TextExtractionService,
+    private embedding: EmbeddingService,
+    private storage: StorageService,
+  ) {}
+
+  /**
+   * Doküman versiyonunu işler: extract -> chunk -> embed -> pgvector'a yaz.
+   * Döndürdüğü değer sayfa sayısıdır (document_versions.pageCount için).
+   */
+  async processDocumentVersion(
+    versionId: string,
+    buffer: Buffer,
+    mimeType: string,
+  ): Promise<number> {
+    const pages = await this.extraction.extract(buffer, mimeType);
+
+    type PendingChunk = { page: number; chunkIndex: number; content: string };
+    const pendingChunks: PendingChunk[] = [];
+
+    for (const page of pages) {
+      const chunks = this.splitIntoChunks(page.text);
+      chunks.forEach((content, idx) => {
+        if (content.trim().length > 0) {
+          pendingChunks.push({ page: page.page, chunkIndex: idx, content });
+        }
+      });
+    }
+
+    if (pendingChunks.length === 0) {
+      this.logger.warn(`Versiyon ${versionId} için çıkarılabilir metin bulunamadı.`);
+      return pages.length;
+    }
+
+    // Batch halinde embed et (API maliyeti/rate-limit için)
+    const BATCH = 32;
+    for (let i = 0; i < pendingChunks.length; i += BATCH) {
+      const batch = pendingChunks.slice(i, i + BATCH);
+      const vectors = await this.embedding.embedBatch(batch.map((c) => c.content));
+
+      for (let j = 0; j < batch.length; j++) {
+        const chunk = batch[j];
+        const vector = vectors[j];
+        const id = crypto.randomUUID();
+        // pgvector kolonuna Prisma'nın native desteği olmadığı için raw SQL kullanılıyor.
+        await this.prisma.$executeRawUnsafe(
+          `INSERT INTO document_chunks (id, "documentVersionId", page, "chunkIndex", content, embedding, "createdAt")
+           VALUES ($1, $2, $3, $4, $5, $6::vector, now())`,
+          id,
+          versionId,
+          chunk.page,
+          chunk.chunkIndex,
+          chunk.content,
+          `[${vector.join(',')}]`,
+        );
+      }
+    }
+
+    this.logger.log(`Versiyon ${versionId}: ${pendingChunks.length} chunk işlendi.`);
+    return pages.length;
+  }
+
+  private splitIntoChunks(text: string): string[] {
+    const clean = text.replace(/\s+/g, ' ').trim();
+    if (!clean) return [];
+
+    const chunks: string[] = [];
+    let start = 0;
+    while (start < clean.length) {
+      const end = Math.min(start + CHUNK_SIZE, clean.length);
+      chunks.push(clean.slice(start, end));
+      if (end === clean.length) break;
+      start = end - CHUNK_OVERLAP;
+    }
+    return chunks;
+  }
+
+  /**
+   * Embedding sağlayıcısı değiştirildiğinde (örn. Voyage AI'dan Ollama'ya
+   * geçildiğinde) çağrılır — TÜM doküman versiyonlarının vektörlerini
+   * SIFIRDAN yeniden oluşturur. Farklı embedding modelleri birbirinden
+   * TAMAMEN FARKLI bir "vektör uzayında" çalışır; eski sağlayıcıyla
+   * oluşturulmuş vektörler yeni sağlayıcının sorgularıyla anlamlı şekilde
+   * karşılaştırılamaz. Bu yüzden sağlayıcı değişince yeniden işleme ŞART.
+   */
+  async reprocessAll(onProgress?: (done: number, total: number, title: string) => void) {
+    const versions = await this.prisma.documentVersion.findMany({
+      include: { document: { select: { title: true, fileType: true } } },
+    });
+
+    let done = 0;
+    for (const version of versions) {
+      try {
+        // Eski chunk'ları (ve dolayısıyla eski embedding'leri) temizle.
+        await this.prisma.documentChunk.deleteMany({ where: { documentVersionId: version.id } });
+        const buffer = await this.storage.download(version.fileUrl);
+        await this.processDocumentVersion(version.id, buffer, version.document.fileType);
+      } catch (e) {
+        this.logger.error(`Versiyon ${version.id} (${version.document.title}) yeniden işlenemedi: ${e}`);
+      }
+      done++;
+      onProgress?.(done, versions.length, version.document.title);
+    }
+
+    return { total: versions.length, processed: done };
+  }
+}
+
+===== src\rag\rag-search.service.ts =====
+
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../common/prisma/prisma.service';
+import { EmbeddingService } from './embedding.service';
+
+export interface RetrievedChunk {
+  chunkId: string;
+  documentId: string;
+  documentTitle: string;
+  brand: string;
+  model: string;
+  version: string;
+  page: number;
+  content: string;
+  similarity: number; // 0-1, yüksek = daha alakalı
+}
+
+@Injectable()
+export class RagSearchService {
+  constructor(private prisma: PrismaService, private embedding: EmbeddingService) {}
+
+  /**
+   * Kullanıcı sorgusunu embed edip, pgvector cosine distance ile en alakalı
+   * chunk'ları getirir. Sadece güncel (isCurrent=true) doküman versiyonları
+   * aranır. brand/model verilmişse metadata ile daraltılır.
+   */
+  async search(
+    query: string,
+    opts: { brand?: string; model?: string; limit?: number } = {},
+  ): Promise<RetrievedChunk[]> {
+    const limit = opts.limit ?? 6;
+    const [queryVector] = await this.embedding.embedBatch([query]);
+    const vectorLiteral = `[${queryVector.join(',')}]`;
+
+    const brandFilter = opts.brand ? `AND d.brand ILIKE $2` : '';
+    const modelFilter = opts.model ? `AND d.model ILIKE $${opts.brand ? 3 : 2}` : '';
+    const params: any[] = [vectorLiteral];
+    if (opts.brand) params.push(`%${opts.brand}%`);
+    if (opts.model) params.push(`%${opts.model}%`);
+    params.push(limit);
+
+    const rows: any[] = await this.prisma.$queryRawUnsafe(
+      `
+      SELECT
+        c.id as "chunkId",
+        d.id as "documentId",
+        d.title as "documentTitle",
+        d.brand as brand,
+        d.model as model,
+        dv.version as version,
+        c.page as page,
+        c.content as content,
+        1 - (c.embedding <=> $1::vector) as similarity
+      FROM document_chunks c
+      JOIN document_versions dv ON dv.id = c."documentVersionId"
+      JOIN documents d ON d.id = dv."documentId"
+      WHERE dv."isCurrent" = true
+        AND d.status = 'READY'
+        ${brandFilter}
+        ${modelFilter}
+      ORDER BY c.embedding <=> $1::vector ASC
+      LIMIT $${params.length}
+      `,
+      ...params,
+    );
+
+    return rows.map((r) => ({ ...r, similarity: Number(r.similarity) }));
+  }
+}
+
+===== src\rag\rag-search.controller.ts =====
+
+import { Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard, Roles } from '../auth/guards/jwt-auth.guard';
+import { RagSearchService } from './rag-search.service';
+import { RagIngestionService } from './rag-ingestion.service';
+
+/**
+ * Bu endpoint Claude'a (Anthropic) HİÇ istek göndermez — sadece embedding
+ * araması (Voyage AI) yaparak dokümanlardaki en alakalı ham metin
+ * parçalarını döner. Test/debug amaçlıdır: gerçek uygulamada kullanıcıya
+ * gösterilen cevap /ai/ask endpoint'inden (Claude ile yazılmış, Türkçe,
+ * kaynaklı) gelir.
+ */
+@UseGuards(JwtAuthGuard)
+@Controller('rag')
+export class RagSearchController {
+  constructor(
+    private ragSearch: RagSearchService,
+    private ragIngestion: RagIngestionService,
+  ) {}
+
+  @Get('raw-search')
+  async rawSearch(@Query('q') q: string, @Query('brand') brand?: string, @Query('model') model?: string) {
+    const results = await this.ragSearch.search(q || '', { brand, model, limit: 5 });
+    return {
+      query: q,
+      note: 'Bu ham arama sonucudur, Claude tarafından yazılmamıştır (/ai/ask kullanmaz).',
+      matches: results,
+    };
+  }
+
+  /**
+   * Embedding sağlayıcısı değiştirildiğinde (örn. Voyage AI'dan Ollama'ya
+   * geçiş) TÜM dokümanların yeniden işlenmesi (re-embed) için kullanılır.
+   * Doküman/soru sayısına göre BİRKAÇ DAKİKA sürebilir — istek beklerken
+   * arka planda tamamlanır, cevap dönene kadar bağlantı açık kalır.
+   */
+  @Roles('ADMIN')
+  @UseGuards(RolesGuard)
+  @Post('reprocess-all')
+  async reprocessAll() {
+    return this.ragIngestion.reprocessAll((done, total, title) => {
+      console.log(`[Yeniden İşleme] ${done}/${total}: ${title}`);
+    });
+  }
+}
+
+===== src\rag\text-extraction.service.ts =====
+
+import { Injectable, Logger } from '@nestjs/common';
+
+export interface ExtractedPage {
+  page: number;
+  text: string;
+}
+
+@Injectable()
+export class TextExtractionService {
+  private readonly logger = new Logger(TextExtractionService.name);
+
+  async extract(buffer: Buffer, mimeType: string): Promise<ExtractedPage[]> {
+    if (mimeType === 'application/pdf') {
+      return this.extractPdf(buffer);
+    }
+    if (
+      mimeType ===
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ) {
+      return this.extractDocx(buffer);
+    }
+    if (
+      mimeType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+      mimeType === 'application/vnd.ms-excel'
+    ) {
+      return this.extractXlsx(buffer);
+    }
+    if (mimeType === 'text/plain') {
+      return [{ page: 1, text: buffer.toString('utf-8') }];
+    }
+    if (mimeType.startsWith('image/')) {
+      return this.extractImageOcr(buffer);
+    }
+    throw new Error(`Desteklenmeyen dosya tipi: ${mimeType}`);
+  }
+
+  private async extractPdf(buffer: Buffer): Promise<ExtractedPage[]> {
+    // pdf-parse tüm metni tek seferde döner; sayfa ayrımı için \f (form feed)
+    // veya pdf.js render-per-page kullanılabilir. Burada pdf-parse'ın
+    // pagerender callback'i ile sayfa bazlı ayrıştırma yapılıyor.
+    const pdfParse = require('pdf-parse');
+    const pages: ExtractedPage[] = [];
+    let currentPage = 0;
+
+    await pdfParse(buffer, {
+      pagerender: (pageData: any) => {
+        currentPage += 1;
+        const renderOptions = { normalizeWhitespace: true, disableCombineTextItems: false };
+        return pageData.getTextContent(renderOptions).then((textContent: any) => {
+          const text = textContent.items.map((item: any) => item.str).join(' ');
+          pages.push({ page: currentPage, text });
+          return text;
+        });
+      },
+    });
+
+    // Metin çok azsa (taranmış/scanned PDF), OCR'a düş.
+    const totalChars = pages.reduce((sum, p) => sum + p.text.trim().length, 0);
+    if (totalChars < 20) {
+      this.logger.warn('PDF metni çok az bulundu, OCR gerekebilir (scanned PDF).');
+      // Not: Prodüksiyonda burada her sayfa görsele render edilip (pdf-to-img)
+      // tesseract.js ile OCR yapılmalı. Basitlik için burada uyarı bırakılıyor.
+    }
+
+    return pages.length ? pages : [{ page: 1, text: '' }];
+  }
+
+  private async extractDocx(buffer: Buffer): Promise<ExtractedPage[]> {
+    const mammoth = require('mammoth');
+    const result = await mammoth.extractRawText({ buffer });
+    // DOCX'te gerçek "sayfa" kavramı yok; kaynak gösterimi için tek blok olarak
+    // page=1 kabul edip chunking sırasında böleceğiz.
+    return [{ page: 1, text: result.value }];
+  }
+
+  private async extractXlsx(buffer: Buffer): Promise<ExtractedPage[]> {
+    const XLSX = require('xlsx');
+    const workbook = XLSX.read(buffer, { type: 'buffer' });
+    return workbook.SheetNames.map((name: string, idx: number) => {
+      const sheet = workbook.Sheets[name];
+      const csv = XLSX.utils.sheet_to_csv(sheet);
+      return { page: idx + 1, text: `Sayfa: ${name}\n${csv}` };
+    });
+  }
+
+  private async extractImageOcr(buffer: Buffer): Promise<ExtractedPage[]> {
+    const { createWorker } = require('tesseract.js');
+    const worker = await createWorker(['eng', 'tur']);
+    const {
+      data: { text },
+    } = await worker.recognize(buffer);
+    await worker.terminate();
+    return [{ page: 1, text }];
+  }
+}
+
+===== src\app.module.ts =====
+
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { ScheduleModule } from '@nestjs/schedule';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
+import { DocumentsModule } from './documents/documents.module';
+import { RagModule } from './rag/rag.module';
+import { AiModule } from './ai/ai.module';
+import { ChatModule } from './chat/chat.module';
+import { GroupsModule } from './groups/groups.module';
+import { CommunityModule } from './community/community.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { AnnouncementsModule } from './announcements/announcements.module';
+import { SearchModule } from './search/search.module';
+import { CalculatorsModule } from './calculators/calculators.module';
+import { AppointmentsModule } from './appointments/appointments.module';
+import { DealerVisitsModule } from './dealer-visits/dealer-visits.module';
+import { FavoritesModule } from './favorites/favorites.module';
+import { StatsModule } from './stats/stats.module';
+import { CommissioningModule } from './commissioning/commissioning.module';
+import { DocumentNotesModule } from './document-notes/document-notes.module';
+import { MaintenanceModule } from './maintenance/maintenance.module';
+import { CertificationsModule } from './certifications/certifications.module';
+import { AuditLogModule } from './audit-log/audit-log.module';
+import { BomModule } from './bom/bom.module';
+import { TrainingModule } from './training/training.module';
+import { WalletModule } from './wallet/wallet.module';
+import { SupportTicketsModule } from './support-tickets/support-tickets.module';
+import { DashboardModule } from './dashboard/dashboard.module';
+import { KnowledgeBaseModule } from './knowledge-base/knowledge-base.module';
+import { QuotesModule } from './quotes/quotes.module';
+import { PrismaModule } from './common/prisma/prisma.module';
+
+@Module({
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    ThrottlerModule.forRoot([{ ttl: 60000, limit: 100 }]),
+    ScheduleModule.forRoot(),
+    PrismaModule,
+    AuthModule,
+    UsersModule,
+    DocumentsModule,
+    RagModule,
+    AiModule,
+    ChatModule,
+    GroupsModule,
+    CommunityModule,
+    NotificationsModule,
+    AnnouncementsModule,
+    SearchModule,
+    CalculatorsModule,
+    AppointmentsModule,
+    DealerVisitsModule,
+    FavoritesModule,
+    StatsModule,
+    CommissioningModule,
+    DocumentNotesModule,
+    MaintenanceModule,
+    CertificationsModule,
+    AuditLogModule,
+    BomModule,
+    TrainingModule,
+    WalletModule,
+    SupportTicketsModule,
+    DashboardModule,
+    KnowledgeBaseModule,
+    QuotesModule,
+  ],
+})
+export class AppModule {}
+
+===== prisma\schema.prisma =====
+
+// Bayi Teknik Destek - Prisma Schema
+// Postgres + pgvector extension required.
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [vector]
+}
+
+// ---------- ENUMS ----------
+
+enum UserRole {
+  DEALER
+  ADMIN
+  SALES // Satış danışmanı — bayiler kendisine doğrudan soru sorabilir
+  ENGINEER // Mühendis — teknik destek kayıtlarına atanabilen, saha operasyonu yürüten rol
+}
+
+enum UserStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+  DELETED
+}
+
+enum DocumentStatus {
+  PROCESSING
+  READY
+  ERROR
+}
+
+enum ConversationType {
+  AI
+  DIRECT
+  GROUP
+}
+
+enum MessageSender {
+  USER
+  AI
+}
+
+enum ConfidenceLevel {
+  HIGH // dokümandan doğrulanmış
+  LOW  // genel bilgi / doğrulanmamış
+}
+
+enum MessageFeedback {
+  UP
+  DOWN
+}
+
+// ---------- USERS ----------
+
+model User {
+  id            String     @id @default(uuid())
+  firstName     String
+  lastName      String
+  company       String
+  phone         String
+  email         String     @unique
+  passwordHash  String
+  avatarUrl     String?
+  role          UserRole   @default(DEALER)
+  status        UserStatus @default(PENDING)
+  language      String     @default("tr")
+  darkMode      Boolean    @default(false)
+  notificationsEnabled Boolean @default(true)
+  // Bildirim tercihleri: hangi türde bildirimin push olarak gönderileceği
+  // (örn. {"new_message": true, "announcement": false, ...}). Boş/eksikse
+  // tüm türler varsayılan olarak açık kabul edilir.
+  notificationPreferences Json @default("{}")
+  // Sessiz saatler (Do Not Disturb): bu aralıkta push gönderilmez, ama
+  // uygulama içi bildirim kaydı yine oluşturulur.
+  quietHoursEnabled Boolean @default(false)
+  quietHoursStart   String? // "HH:mm" formatında, örn. "22:00"
+  quietHoursEnd     String? // "HH:mm" formatında, örn. "07:00"
+  fcmTokens     String[]   @default([])
+  chatBannedUntil DateTime? // Doluysa, bu tarihe kadar kullanıcı mesaj gönderemez (admin tarafından süreli konuşma yasağı)
+  // Çoklu kullanıcılı bayi hesabı: bu dolu ise bu kullanıcı, başka bir
+  // "ana" hesabın (firma sahibinin) alt kullanıcısıdır — firma adını ve
+  // bazı yetkileri ana hesaptan devralır. Boşsa bu, bağımsız/ana bir hesaptır.
+  parentUserId  String?
+  // Profil uzmanlık etiketleri — örn. ["Yangın Alarm", "Honeywell"].
+  // Bayiler listesinde ve aramada kimin hangi konuda deneyimli olduğunu
+  // göstermek için.
+  specialtyTags String[] @default([])
+  lastLoginAt   DateTime? // Pasif bayi tespiti için — her başarılı girişte güncellenir
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  parentUser   User?  @relation("TeamMembers", fields: [parentUserId], references: [id], onDelete: SetNull)
+  teamMembers  User[] @relation("TeamMembers")
+
+  conversations       ConversationParticipant[]
+  messages             Message[]
+  favorites             Favorite[]
+  messageReactions      MessageReaction[]
+  documentNotes         DocumentNote[]
+  maintenanceRecords    MaintenanceRecord[]
+  certifications        Certification[]
+  bomLists              BomList[]
+  walletDocuments       WalletDocument[]
+  ticketsCreated        SupportTicket[]  @relation("TicketDealer")
+  ticketsAssigned       SupportTicket[]  @relation("TicketEngineer")
+  sparePartRequests     SparePartRequest[]
+  knowledgeEntries      KnowledgeEntry[]
+  quoteRequests         QuoteRequest[]
+  auditLogs             AuditLog[]
+  visitsAsSalesperson   DealerVisit[]      @relation("SalespersonVisits")
+  visitsAsDealer        DealerVisit[]      @relation("DealerVisitsReceived")
+  verifiedAnswers       TechnicalAnswerMemory[]
+  communityPosts        CommunityPost[]
+  communityComments     CommunityComment[]
+  notifications         Notification[]
+  groupMemberships      GroupMember[]
+  blockedByMe            Block[] @relation("BlockedBy")
+  blockedMe               Block[] @relation("BlockedUser")
+  appointments            Appointment[]
+  announcementAcknowledgements AnnouncementAcknowledgement[]
+  commissioningReports    CommissioningReport[]
+
+  @@map("users")
+}
+
+model Block {
+  id          String   @id @default(uuid())
+  blockerId   String
+  blockedId   String
+  createdAt   DateTime @default(now())
+
+  blocker User @relation("BlockedBy", fields: [blockerId], references: [id])
+  blocked User @relation("BlockedUser", fields: [blockedId], references: [id])
+
+  @@unique([blockerId, blockedId])
+  @@map("blocks")
+}
+
+// ---------- DOCUMENTS ----------
+
+model Document {
+  id          String         @id @default(uuid())
+  brand       String
+  model       String
+  title       String
+  status      DocumentStatus @default(PROCESSING)
+  fileUrl     String
+  fileType    String
+  errorMessage String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  versions DocumentVersion[]
+
+  @@index([brand, model])
+  @@map("documents")
+}
+
+model DocumentVersion {
+  id          String   @id @default(uuid())
+  documentId  String
+  version     String
+  isCurrent   Boolean  @default(true)
+  fileUrl     String
+  pageCount   Int?
+  createdAt   DateTime @default(now())
+
+  document Document        @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  chunks   DocumentChunk[]
+
+  @@map("document_versions")
+}
+
+// One row per extracted chunk of text, with its own vector embedding (pgvector).
+model DocumentChunk {
+  id                String   @id @default(uuid())
+  documentVersionId String
+  page              Int
+  chunkIndex        Int
+  content           String
+  // pgvector kolonu - manual/002_fix_vector_dimension.sql ile 1024 boyuta ayarlanır.
+  // 1024 = Voyage AI "voyage-3" modelinin çıktı boyutu. Farklı bir embedding
+  // modeli kullanırsanız (örn. OpenAI text-embedding-3-small = 1536 boyut) bu
+  // sayıyı ve manual SQL dosyasını buna göre güncelleyin.
+  embedding         Unsupported("vector(1024)")?
+  createdAt         DateTime @default(now())
+
+  documentVersion DocumentVersion @relation(fields: [documentVersionId], references: [id], onDelete: Cascade)
+  citations       MessageCitation[]
+
+  @@index([documentVersionId, page])
+  @@map("document_chunks")
+}
+
+// ---------- CONVERSATIONS / CHAT ----------
+
+model Conversation {
+  id        String           @id @default(uuid())
+  type      ConversationType
+  title     String? // e.g. group name; null for AI/direct
+  groupId   String?          @unique
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  group        Group?                     @relation(fields: [groupId], references: [id])
+  participants ConversationParticipant[]
+  messages     Message[]
+
+  @@map("conversations")
+}
+
+model ConversationParticipant {
+  id             String   @id @default(uuid())
+  conversationId String
+  userId         String
+  lastReadAt     DateTime?
+  // WhatsApp tarzı "sohbeti sil": geçmişi yok etmeden, sadece bu
+  // kullanıcının Mesajlar listesinden gizler. Karşı taraf yeniden mesaj
+  // gönderirse (ya da ben tekrar mesajlaşmaya başlarsam) otomatik olarak
+  // tekrar görünür hale gelir.
+  hiddenAt       DateTime?
+  // Kullanıcı isteği: "mesajlara arşivleme ekle" — sohbet silinmez,
+  // ana listeden çıkıp Arşiv bölümüne taşınır. Karşı taraf yeni mesaj
+  // gönderirse otomatik olarak ana listeye geri döner (hiddenAt ile
+  // aynı mantık).
+  archivedAt     DateTime?
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([conversationId, userId])
+  @@map("conversation_participants")
+}
+
+model Message {
+  id             String        @id @default(uuid())
+  conversationId String
+  senderId       String? // null when senderType = AI
+  senderType     MessageSender @default(USER)
+  content        String
+  attachmentUrl  String?
+  attachmentType String? // image | pdf | audio | file
+  replyToId      String?
+  confidence     ConfidenceLevel?
+  feedback       MessageFeedback? // bayinin AI cevabına verdiği 👍/👎
+  createdAt      DateTime      @default(now())
+  editedAt       DateTime? // Mesaj düzenlendiyse dolu — mobilde "(düzenlendi)" göstermek için
+
+  conversation Conversation      @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User?             @relation(fields: [senderId], references: [id])
+  replyTo      Message?          @relation("Reply", fields: [replyToId], references: [id])
+  replies      Message[]         @relation("Reply")
+  citations    MessageCitation[]
+  reactions    MessageReaction[]
+  favorites    Favorite[]
+  hiddenFor    MessageHiddenFor[]
+
+  @@index([conversationId, createdAt])
+  @@map("messages")
+}
+
+// Bir kullanıcının, kendi göndermediği (karşı tarafın gönderdiği) bir
+// mesajı "benim için sil" yaparak kendi görünümünden gizlemesi —
+// mesaj karşı tarafta silinmez, sadece bu kullanıcıya gösterilmez.
+model MessageHiddenFor {
+  id        String   @id @default(uuid())
+  messageId String
+  userId    String
+  createdAt DateTime @default(now())
+
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@unique([messageId, userId])
+  @@map("message_hidden_for")
+}
+
+// Links an AI message to the exact document chunks it cited (source display + click-through).
+model MessageCitation {
+  id              String @id @default(uuid())
+  messageId       String
+  documentChunkId String
+  page            Int
+
+  message       Message       @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  documentChunk DocumentChunk @relation(fields: [documentChunkId], references: [id])
+
+  @@map("message_citations")
+}
+
+// ---------- GROUPS ----------
+
+model Group {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+
+  conversation Conversation?
+  members      GroupMember[]
+
+  @@map("groups")
+}
+
+model GroupMember {
+  id       String   @id @default(uuid())
+  groupId  String
+  userId   String
+  joinedAt DateTime @default(now())
+
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId])
+  @@map("group_members")
+}
+
+// ---------- COMMUNITY ("Bayilere Sor") ----------
+
+model CommunityPost {
+  id        String   @id @default(uuid())
+  authorId  String
+  title     String
+  body      String
+  tag       String? // e.g. product/brand tag
+  createdAt DateTime @default(now())
+
+  author   User               @relation(fields: [authorId], references: [id])
+  comments CommunityComment[]
+
+  @@map("community_posts")
+}
+
+model CommunityComment {
+  id        String   @id @default(uuid())
+  postId    String
+  authorId  String
+  body      String
+  isAI      Boolean  @default(false) // AI-assisted answer, still labeled "Bayi deneyimi" context
+  createdAt DateTime @default(now())
+
+  post   CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author User          @relation(fields: [authorId], references: [id])
+
+  @@map("community_comments")
+}
+
+// ---------- MISC ----------
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String // new_message | group_message | reply | announcement | account_approved | new_document
+  title     String
+  body      String
+  data      Json?
+  readAt    DateTime?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+model Favorite {
+  id         String   @id @default(uuid())
+  userId     String
+  messageId  String?
+  documentId String?
+  pinned     Boolean  @default(false) // Ana Sayfa'da sabitlenmiş favoriler bölümünde göstermek için
+  createdAt  DateTime @default(now())
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  message Message? @relation(fields: [messageId], references: [id])
+
+  @@map("favorites")
+}
+
+model MessageReaction {
+  id        String   @id @default(uuid())
+  messageId String
+  userId    String
+  emoji     String
+  createdAt DateTime @default(now())
+
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([messageId, userId]) // bir kullanıcı bir mesaja tek tepki bırakabilir (değiştirebilir)
+  @@map("message_reactions")
+}
+
+model DocumentNote {
+  id         String   @id @default(uuid())
+  documentId String
+  userId     String
+  content    String
+  createdAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("document_notes")
+}
+
+model MaintenanceRecord {
+  id                  String    @id @default(uuid())
+  createdByUserId     String
+  siteName            String // Bina/tesis adı (serbest metin)
+  systemDescription   String? // Kurulu sistemin kısa açıklaması
+  notes               String
+  signatureUrl        String? // Müşteri imzası (R2'de saklanan görsel anahtarı)
+  performedAt         DateTime  @default(now())
+  createdAt           DateTime  @default(now())
+
+  createdBy User @relation(fields: [createdByUserId], references: [id], onDelete: Cascade)
+
+  @@map("maintenance_records")
+}
+
+enum TrainingContentType {
+  VIDEO
+  DOCUMENT
+}
+
+enum WalletDocumentCategory {
+  ISG
+  CERTIFICATE
+  TRAINING
+  AUTHORIZATION
+  OTHER
+}
+
+model WalletDocument {
+  id        String                 @id @default(uuid())
+  userId    String
+  name      String
+  category  WalletDocumentCategory @default(OTHER)
+  fileUrl   String // R2 depolama anahtarı
+  createdAt DateTime               @default(now())
+  updatedAt DateTime               @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, category])
+  @@map("wallet_documents")
+}
+
+model TrainingContent {
+  id          String              @id @default(uuid())
+  title       String
+  description String?
+  type        TrainingContentType
+  category    String? // Örn. "Yangın Alarm", "Kamera Sistemleri" — düzenli listelemek için
+  // Yüklenen bir dosyaysa R2 depolama anahtarı, harici bir video/kaynaksa
+  // tam https URL'i — hangisi olduğu 'http' ile başlayıp başlamamasına göre ayırt edilir.
+  fileUrl     String
+  createdAt   DateTime            @default(now())
+
+  @@map("training_contents")
+}
+
+model BomList {
+  id          String   @id @default(uuid())
+  userId      String
+  title       String
+  description String?
+  // Proje adresi — il/ilçe olarak ayrı tutuluyor (kullanıcı isteği).
+  province    String?
+  district    String?
+  // [{ name: string, quantity: string, unit: string }]
+  items       Json
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("bom_lists")
+}
+
+model Certification {
+  id            String    @id @default(uuid())
+  userId        String
+  brand         String // Örn. "Honeywell", "Hanwha"
+  title         String // Örn. "Yetkili Servis Sertifikası"
+  issuedAt      DateTime?
+  expiresAt     DateTime?
+  documentUrl   String? // Sertifikanın fotoğrafı/taraması (R2'de saklanan anahtar)
+  // Süre yaklaşınca (30 gün kala) bir kez bildirim gönderildiğinde işaretlenir
+  // — aynı uyarının her gün tekrar tekrar gönderilmesini önler.
+  expiryNotifiedAt DateTime?
+  createdAt     DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("certifications")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  adminId    String
+  action     String // örn. "dealer_approved", "document_deleted", "announcement_created"
+  targetType String? // örn. "user", "document", "announcement"
+  targetId   String?
+  detail     String?
+  createdAt  DateTime @default(now())
+
+  admin User @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@map("audit_logs")
+}
+
+model Announcement {
+  id         String   @id @default(uuid())
+  title      String
+  body       String
+  isCritical Boolean  @default(false) // true ise bayi uygulamayı açtığında zorunlu onay ekranı gösterilir
+  createdAt  DateTime @default(now())
+
+  acknowledgements AnnouncementAcknowledgement[]
+
+  @@map("announcements")
+}
+
+model AnnouncementAcknowledgement {
+  id             String   @id @default(uuid())
+  announcementId String
+  userId         String
+  acknowledgedAt DateTime @default(now())
+  // Kullanıcı bu duyuruyu kendi listesinden kaldırdıysa (sildiyse) true —
+  // duyurunun kendisi silinmez, sadece bu kullanıcının görünümünden çıkar.
+  dismissed      Boolean  @default(false)
+  // Kullanıcı isteği: en güncel duyuru kartta belirgin (öne çıkan)
+  // gösterilsin, tıklayınca belirginlik gitsin — bu alan "ne zaman
+  // okundu" bilgisini tutuyor, null ise henüz okunmamış demektir.
+  readAt         DateTime?
+
+  announcement Announcement @relation(fields: [announcementId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([announcementId, userId])
+  @@map("announcement_acknowledgements")
+}
+
+enum AppointmentStatus {
+  PENDING   // bayi talep etti, admin henüz cevap vermedi
+  CONFIRMED // admin onayladı
+  CANCELLED // admin veya bayi iptal etti
+  COMPLETED // randevu gerçekleşti
+}
+
+enum AppointmentType {
+  ON_SITE // sahada ziyaret
+  REMOTE  // telefon/görüntülü destek
+}
+
+model Appointment {
+  id             String            @id @default(uuid())
+  dealerId       String
+  type           AppointmentType   @default(REMOTE)
+  subject        String
+  description    String?
+  province       String?
+  district       String?
+  preferredStart DateTime
+  preferredEnd   DateTime?
+  status         AppointmentStatus @default(PENDING)
+  adminNote      String? // admin'in onay/red/reschedule notu
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  dealer User @relation(fields: [dealerId], references: [id], onDelete: Cascade)
+
+  @@index([dealerId, status])
+  @@map("appointments")
+}
+
+model CommissioningReport {
+  id                String   @id @default(uuid())
+  dealerId          String
+  siteName          String
+  panelBrand        String
+  panelModel        String
+  items             Json     // [{ label: string, checked: boolean }]
+  notes             String?
+  // Müşteri bilgileri — PDF'te eksiksiz görünmesi için (isim + imza).
+  customerName      String?
+  signatureUrl       String? // Müşteri imzası (R2'de saklanan görsel anahtarı)
+  completedAt       DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  dealer User @relation(fields: [dealerId], references: [id], onDelete: Cascade)
+
+  @@index([dealerId, createdAt])
+  @@map("commissioning_reports")
+}
+
+// ============================================================
+// TEKNİK DESTEK MODÜLÜ (Faz 1) — tamamen yeni, mevcut hiçbir
+// modele/tabloya dokunmadan eklenmiştir.
+// ============================================================
+
+enum TicketPriority {
+  LOW
+  NORMAL
+  HIGH
+  EMERGENCY
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+  ESCALATED
+}
+
+model SupportTicket {
+  id                 String         @id @default(uuid())
+  dealerId           String
+  assignedEngineerId String?
+  productName        String?
+  productModel       String?
+  serialNumber       String?
+  location           String?
+  description        String
+  priority           TicketPriority @default(NORMAL)
+  status             TicketStatus   @default(OPEN)
+  // Acil moddan/kayıt sırasında eklenen fotoğraf-video (R2 anahtarları, JSON dizi).
+  attachmentUrls     Json?
+  isEmergency        Boolean        @default(false)
+  // --- SLA & Eskalasyon (Faz 2) ---
+  slaResponseMinutes   Int?
+  slaResolutionMinutes Int?
+  firstRespondedAt     DateTime?
+  escalationLevel      Int          @default(0)
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+
+  dealer           User  @relation("TicketDealer", fields: [dealerId], references: [id], onDelete: Cascade)
+  assignedEngineer User? @relation("TicketEngineer", fields: [assignedEngineerId], references: [id], onDelete: SetNull)
+  escalations      TicketEscalation[]
+  photos           TicketPhoto[]
+  measurements     TicketMeasurement[]
+  sparePartRequests SparePartRequest[]
+  costs             TicketCost[]
+
+  @@index([dealerId, createdAt])
+  @@index([status, priority])
+  @@map("support_tickets")
+}
+
+/// Her eskalasyonun kalıcı geçmişi (kullanıcı isteği: "her eskalasyon
+/// kayıt geçmişinde tutulmalı").
+model TicketEscalation {
+  id        String   @id @default(uuid())
+  ticketId  String
+  level     Int
+  reason    String
+  createdAt DateTime @default(now())
+
+  ticket SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@map("ticket_escalations")
+}
+
+/// Öncelik bazında SLA süreleri — admin panelden ayarlanabilir
+/// (kullanıcı isteği: "eskalasyon seviyeleri admin tarafından
+/// ayarlanabilsin"). Tanımlı değilse mantıklı varsayılanlar kullanılır.
+model SlaSetting {
+  id                String         @id @default(uuid())
+  priority          TicketPriority @unique
+  responseMinutes   Int
+  resolutionMinutes Int
+
+  @@map("sla_settings")
+}
+
+// ============================================================
+// FAZ 3: Önce/Sonra Fotoğraf + Teknik Ölçüm Sistemi
+// ============================================================
+
+enum TicketPhotoType {
+  BEFORE
+  AFTER
+}
+
+model TicketPhoto {
+  id        String          @id @default(uuid())
+  ticketId  String
+  type      TicketPhotoType
+  url       String
+  createdAt DateTime        @default(now())
+
+  ticket SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+  @@map("ticket_photos")
+}
+
+/// Admin tarafından tanımlanan ölçüm türleri (kullanıcı isteği: "ölçüm
+/// türleri admin tarafından tanımlanabilsin").
+model MeasurementType {
+  id        String   @id @default(uuid())
+  name      String
+  unit      String
+  minValue  Float?
+  maxValue  Float?
+  createdAt DateTime @default(now())
+
+  measurements TicketMeasurement[]
+
+  @@map("measurement_types")
+}
+
+model TicketMeasurement {
+  id                String   @id @default(uuid())
+  ticketId          String
+  measurementTypeId String
+  // Ölçümün hangi ürün/seri numarasına ait olduğu — geçmişi ürün/seri
+  // bazında görebilmek için ticket'tan bağımsız da sorgulanabilsin diye
+  // burada da (denormalize) tutuluyor.
+  serialNumber      String?
+  value             Float
+  isOutOfRange      Boolean  @default(false)
+  createdAt         DateTime @default(now())
+
+  ticket          SupportTicket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  measurementType MeasurementType @relation(fields: [measurementTypeId], references: [id])
+
+  @@index([ticketId])
+  @@index([serialNumber])
+  @@map("ticket_measurements")
+}
+
+// ============================================================
+// FAZ 4: Yedek Parça Talebi + Maliyet Analizi
+// ============================================================
+
+enum SparePartStatus {
+  REQUESTED
+  APPROVED
+  ORDERED
+  DELIVERED
+  REJECTED
+}
+
+/// Kullanıcı isteği: "ürün, model, seri numarası, parça kodu, miktar ve
+/// arıza kaydı otomatik aktarılsın, kullanıcı aynı bilgileri tekrar
+/// girmek zorunda kalmasın" — ürün/model/seri no burada tekrar
+/// TUTULMUYOR, ilişkili SupportTicket'tan okunuyor.
+model SparePartRequest {
+  id            String          @id @default(uuid())
+  ticketId      String
+  partCode      String?
+  partName      String
+  quantity      Int             @default(1)
+  status        SparePartStatus @default(REQUESTED)
+  requestedById String
+  createdAt     DateTime        @default(now())
+
+  ticket      SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  requestedBy User          @relation(fields: [requestedById], references: [id])
+
+  @@index([ticketId])
+  @@map("spare_part_requests")
+}
+
+enum TicketCostCategory {
+  ENGINEER_TIME
+  SITE_VISIT
+  TRAVEL
+  ACCOMMODATION
+  SPARE_PART
+  LABOR
+}
+
+model TicketCost {
+  id          String             @id @default(uuid())
+  ticketId    String
+  category    TicketCostCategory
+  description String?
+  amount      Float
+  createdAt   DateTime           @default(now())
+
+  ticket SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+  @@map("ticket_costs")
+}
+
+// ============================================================
+// FAZ 5: Kişiselleştirilmiş Bildirim + Akıllı Eğitim Önerisi
+// ============================================================
+
+/// Aynı bayiye aynı ürün için tekrar tekrar eğitim önerisi gitmesini
+/// önlemek için — bir öneri gönderildiğinde burada işaretlenir.
+model TrainingSuggestionLog {
+  id          String   @id @default(uuid())
+  dealerId    String
+  productName String
+  suggestedAt DateTime @default(now())
+
+  @@unique([dealerId, productName])
+  @@map("training_suggestion_logs")
+}
+
+// ============================================================
+// FAZ 8: Teknik Bilgi Hafızası — mühendislerin saha tecrübesi girişi,
+// AI'ın gelecekte benzer sorularda kullanabilmesi için embed edilir.
+// ============================================================
+
+model KnowledgeEntry {
+  id           String   @id @default(uuid())
+  engineerId   String
+  problem      String
+  solution     String
+  productName  String?
+  productModel String?
+  errorCode    String?
+  partUsed     String?
+  photoUrl     String?
+  description  String?
+  embedding    Unsupported("vector(1024)")?
+  createdAt    DateTime @default(now())
+
+  engineer User @relation(fields: [engineerId], references: [id], onDelete: Cascade)
+
+  @@index([productName])
+  @@map("knowledge_entries")
+}
+
+// ============================================================
+// TEKLİF AL MODÜLÜ — yeni, mevcut hiçbir modele dokunmadan eklenmiştir.
+// ============================================================
+
+/// Admin tarafından yönetilen fiyat/malzeme kataloğu — teklif
+/// hesaplamalarının kaynağı.
+model PriceListItem {
+  id        String   @id @default(uuid())
+  name      String
+  category  String?
+  brand     String?
+  code      String?
+  unit      String
+  unitPrice Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("price_list_items")
+}
+
+/// Admin'in yüklediği referans fiyat listesi PDF'i — tek satırlık
+/// (singleton), her yüklemede üzerine yazılır.
+model PriceListDocument {
+  id        Int      @id @default(1)
+  fileUrl   String?
+  updatedAt DateTime @updatedAt
+
+  @@map("price_list_document")
+}
+
+enum QuoteStatus {
+  DRAFT
+  SENT
+  ACCEPTED
+  REJECTED
+}
+
+model QuoteRequest {
+  id            String      @id @default(uuid())
+  dealerId      String
+  customerName  String?
+  customerPhone String?
+  title         String
+  province      String?
+  district      String?
+  // [{ name, unit, quantity, unitPrice, subtotal }]
+  items         Json
+  totalAmount   Float
+  status        QuoteStatus @default(DRAFT)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  dealer User @relation(fields: [dealerId], references: [id], onDelete: Cascade)
+
+  @@index([dealerId, createdAt])
+  @@map("quote_requests")
+}
+
+// ============================================================
+// BAYİ ZİYARETLERİ — Satış ekibinin saha ziyaret takip modülü
+// ============================================================
+
+enum VisitType {
+  DEALER_VISIT // Bayi ziyareti
+  PROJECT_MEETING // Proje görüşmesi
+  PRODUCT_INTRO // Ürün tanıtımı
+  TECHNICAL_MEETING // Teknik görüşme
+  QUOTE_MEETING // Teklif görüşmesi
+  TRAINING // Eğitim
+  COLLECTION // Tahsilat / ticari görüşme
+  OTHER
+}
+
+enum VisitTopic {
+  NEW_PROJECT
+  EXISTING_PROJECT
+  PRODUCT_REQUEST
+  PRICE_QUOTE
+  TECHNICAL_SUPPORT
+  NEW_PRODUCT_INTRO
+  TRAINING
+  BUSINESS_DEVELOPMENT
+  GENERAL
+  OTHER
+}
+
+enum VisitOutcome {
+  POSITIVE // Olumlu
+  QUOTE_PENDING // Teklif bekliyor
+  PROJECT_CREATED // Proje oluştu
+  ORDER_PENDING // Sipariş bekleniyor
+  FOLLOW_UP_NEEDED // Takip gerekli
+  NEGATIVE // Olumsuz
+  NOT_HAPPENED // Görüşme gerçekleşmedi
+  OTHER
+}
+
+enum ProjectType {
+  HOTEL
+  HOSPITAL
+  MALL
+  FACTORY
+  SCHOOL
+  RESIDENTIAL
+  GOVERNMENT
+  OFFICE
+  OTHER
+}
+
+model DealerVisit {
+  id            String    @id @default(uuid())
+  salespersonId String
+  dealerId      String?
+  dealerNameFreeText String? // bayi henüz sistemde kayıtlı değilse serbest metin
+  city          String?
+  visitDate     DateTime
+  visitType     VisitType
+
+  // Görüşme bilgileri
+  contactName  String?
+  contactTitle String?
+  contactPhone String?
+  contactEmail String?
+  topic        VisitTopic?
+
+  outcome VisitOutcome
+  notes   String // Görüşme notları — zorunlu
+
+  // Proje / Fırsat bilgisi (opsiyonel)
+  hasProject          Boolean     @default(false)
+  projectName          String?
+  projectType          ProjectType?
+  estimatedAmount      Float?
+  estimatedOrderDate   DateTime?
+  relatedProducts      String?
+  competitorBrand      String?
+  winProbability       Int? // 25/50/75/90/100
+  projectDescription   String?
+
+  // Takip / Aksiyon
+  needsFollowUp    Boolean   @default(false)
+  followUpDate     DateTime?
+  followUpAction   String?
+  followUpOwner    String?
+  followUpNote     String?
+  followUpDone     Boolean   @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  salesperson User               @relation("SalespersonVisits", fields: [salespersonId], references: [id], onDelete: Cascade)
+  dealer      User?              @relation("DealerVisitsReceived", fields: [dealerId], references: [id], onDelete: SetNull)
+  attachments DealerVisitFile[]
+
+  @@index([salespersonId, visitDate])
+  @@index([dealerId, visitDate])
+  @@index([needsFollowUp, followUpDate])
+  @@map("dealer_visits")
+}
+
+model DealerVisitFile {
+  id        String   @id @default(uuid())
+  visitId   String
+  fileName  String
+  fileKey   String // R2 depolama anahtarı
+  mimeType  String
+  createdAt DateTime @default(now())
+
+  visit DealerVisit @relation(fields: [visitId], references: [id], onDelete: Cascade)
+
+  @@map("dealer_visit_files")
+}
+
+// ============================================================
+// AI TEKNİK SORU HAFIZASI — semantik cevap önbellekleme katmanı
+// ============================================================
+
+model TechnicalAnswerMemory {
+  id             String   @id @default(uuid())
+  question       String // orijinal soru metni
+  answerMarkdown String
+  embedding      Unsupported("vector(1024)")?
+
+  // Ürün/model kontrolü — kullanıcı isteği: "Cevap başka bir cihaz/model
+  // için oluşturulduysa doğrudan kullanılmamalı."
+  productName   String?
+  productModel  String?
+  productSeries String?
+
+  // Bu cevabı oluştururken kullanılan kaynaklar (RAG chunk'ları) —
+  // "Kaynakları Gör" butonu için.
+  citations Json?
+
+  // Güvenlik ve doğruluk
+  verifiedByEngineerId String?
+  lastVerifiedAt        DateTime?
+  // Bir doküman güncellendiğinde ilgili kayıtlar bu bayrakla işaretlenir
+  // — kullanıcı isteği: "eski cevaplar otomatik olarak 'yeniden
+  // doğrulama gerekli' durumuna alınmalı."
+  needsReverification Boolean @default(false)
+  isActive            Boolean @default(true)
+  usageCount          Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  verifiedByEngineer User? @relation(fields: [verifiedByEngineerId], references: [id], onDelete: SetNull)
+
+  @@index([productName, productModel])
+  @@index([isActive])
+  @@map("technical_answer_memory")
+}

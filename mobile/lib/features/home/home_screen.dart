@@ -1,0 +1,764 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:dio/dio.dart';
+import 'dart:async';
+import 'dart:io';
+import '../../app/top_nav_bar.dart';
+import 'home_slideshow.dart';
+import 'package:image_picker/image_picker.dart';
+import '../../core/api/api_client.dart';
+import '../../core/api/socket_service.dart';
+import '../../core/notifications/notification_sound_service.dart';
+import '../../core/events/notification_badge_bus.dart';
+import '../../core/auth/current_user.dart';
+import '../../core/theme/app_theme.dart';
+import '../../core/widgets/app_components.dart';
+import '../../core/storage/stat_badge_tracker.dart';
+import '../announcements/critical_announcement_gate.dart';
+import 'voice_quick_question_sheet.dart';
+import 'quick_actions_data.dart';
+import 'reorder_quick_actions_screen.dart';
+import '../../core/events/home_scroll_to_top_bus.dart';
+
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final _questionController = TextEditingController();
+  final Dio _dio = ApiClient().dio;
+  final _badgeTracker = StatBadgeTracker();
+  String? _firstName;
+  Map<String, dynamic>? _stats;
+  Map<String, bool> _hasNewBadge = {};
+  List<dynamic> _pinnedDocuments = [];
+  List<QuickActionDef> _quickActionsOrder = kAllQuickActions;
+  Map<String, int> _categoryBadges = {};
+  final ScrollController _scrollController = ScrollController();
+
+  void _scrollToTop() {
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(0, duration: const Duration(milliseconds: 350), curve: Curves.easeOut);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfile();
+    _loadStats();
+    _loadPinnedDocuments();
+    _loadQuickActionsOrder();
+    // Randevu/eğitim içeriği/sertifika gibi bildirimler her ekrandan
+    // (RootShell) dinlendiği için, buradan gelen sinyalle kart
+    // rozetlerini tazeliyoruz — Ana Sayfa şu an görünür olmasa bile.
+    NotificationBadgeBus.trigger.addListener(_loadCategoryBadges);
+    // Sağ üstteki bildirim zili de anlık güncellensin diye — önceden
+    // sadece ekran ilk açıldığında bir kez yükleniyordu, bildirim
+    // geldiğinde kartlar tazeleniyordu ama zil eski sayıyı göstermeye
+    // devam ediyordu.
+    NotificationBadgeBus.trigger.addListener(_loadUnreadNotifications);
+    _loadUnreadNotifications();
+    // Ana Sayfa açıldığında henüz onaylanmamış kritik duyuru varsa
+    // kapatılamayan bir uyarı göster.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) CriticalAnnouncementGate.checkAndShow(context);
+    });
+    _loadCategoryBadges();
+    // Alt menüdeki rozet mesaj geldiğinde anlık güncelleniyordu ama bu
+    // karttaki rozet sadece ekran ilk açıldığında bir kere yükleniyordu —
+    // Ana Sayfa'dayken mesaj gelirse kart hiç haberdar olmuyordu. Artık
+    // burada da aynı soket sinyalini dinliyoruz.
+    SocketService().connect();
+    _messageSub = SocketService().onMessage.listen(_onSocketMessage);
+    HomeScrollToTopBus.trigger.addListener(_scrollToTop);
+  }
+
+  StreamSubscription<Map<String, dynamic>>? _messageSub;
+
+  void _onSocketMessage(Map<String, dynamic> message) {
+    final senderId = message['senderId'];
+    final senderType = message['senderType'];
+    if (senderType != 'USER') return;
+    if (senderId == null || senderId == CurrentUser().id) return;
+    if (!mounted) return;
+    // ÖNEMLİ: Önceden burada yerel "+1" ekleniyordu — bu, sayının yanlış
+    // artmasına yol açabiliyordu ("1 mesaj geldi ama kartta 2 yazıyor"
+    // hatası). Artık her zaman sunucudaki gerçek sayıyı yeniden çekiyoruz.
+    _loadCategoryBadges();
+    NotificationSoundService().play();
+  }
+
+  @override
+  void dispose() {
+    _messageSub?.cancel();
+    _questionController.dispose();
+    _scrollController.dispose();
+    NotificationBadgeBus.trigger.removeListener(_loadCategoryBadges);
+    NotificationBadgeBus.trigger.removeListener(_loadUnreadNotifications);
+    HomeScrollToTopBus.trigger.removeListener(_scrollToTop);
+    super.dispose();
+  }
+
+  /// "Mesajlar", "Bayilere Sor", "Gruplar" kartlarının üzerinde gösterilen
+  /// rozet sayıları — her biri kendi bildirim türüne göre ayrı hesaplanıyor.
+  Future<void> _loadCategoryBadges() async {
+    try {
+      final res = await _dio.get('/notifications/unread-counts-by-category');
+      if (mounted) {
+        setState(() => _categoryBadges = {
+              'messages': res.data['messages'] ?? 0,
+              'community': res.data['community'] ?? 0,
+              'groups': res.data['groups'] ?? 0,
+              'appointments': res.data['appointments'] ?? 0,
+              'training': res.data['training'] ?? 0,
+              'specialty': res.data['certification'] ?? 0,
+              'announcements': res.data['announcements'] ?? 0,
+              'sales_consultant': res.data['salesConsultant'] ?? 0,
+              'support_tickets': res.data['supportTickets'] ?? 0,
+            });
+      }
+    } catch (_) {
+      // Rozetler ikincil bir bilgi, sessizce yut.
+    }
+  }
+
+  Future<void> _loadPinnedDocuments() async {
+    try {
+      final res = await _dio.get('/favorites/pinned');
+      if (mounted) setState(() => _pinnedDocuments = res.data);
+    } catch (_) {
+      // Sabitlenmiş dokümanlar ikincil bir bilgi, sessizce yut.
+    }
+  }
+
+  Future<void> _loadQuickActionsOrder() async {
+    final order = await QuickActionsOrder.getOrdered();
+    if (mounted) setState(() => _quickActionsOrder = order);
+  }
+
+  /// Favoriler'in özel bir davranışı var (rozet işaretleme + dönüşte
+  /// istatistikleri yenileme) — diğer tüm işlemler için basitçe rotaya gider.
+  Future<void> _handleQuickActionTap(QuickActionDef action) async {
+    if (action.id == 'favorites') {
+      await _markStatSeen('favoritesCount');
+      await context.push('/favorites');
+      _loadStats();
+      _loadPinnedDocuments();
+      return;
+    }
+    await context.push(action.route);
+    // Mesajlar/Bayilere Sor/Gruplar'dan dönünce rozetleri tazele — kart
+    // üzerindeki sayı, kullanıcı o alanı ziyaret ettikten sonra doğru
+    // yansımalı.
+    if (action.id == 'messages' ||
+        action.id == 'community' ||
+        action.id == 'groups' ||
+        action.id == 'appointments' ||
+        action.id == 'training' ||
+        action.id == 'specialty' ||
+        action.id == 'announcements' ||
+        action.id == 'sales_consultant') {
+      _loadCategoryBadges();
+    }
+  }
+
+  Future<void> _loadProfile() async {
+    try {
+      final res = await _dio.get('/users/me');
+      if (mounted) setState(() => _firstName = res.data['firstName']);
+    } catch (_) {
+      // Profil alınamazsa genel karşılama metniyle devam et.
+    }
+  }
+
+  Future<void> _loadStats() async {
+    try {
+      final res = await _dio.get('/stats/me');
+      if (!mounted) return;
+      final data = res.data as Map<String, dynamic>;
+      // Her istatistik için, sunucudan gelen sayı daha önce görülenden
+      // büyükse "yeni" rozetini yak.
+      final badges = <String, bool>{};
+      for (final key in ['questionsThisMonth', 'favoritesCount', 'totalAiConversations']) {
+        final value = (data[key] ?? 0) as int;
+        badges[key] = await _badgeTracker.hasNewValue(key, value);
+      }
+      setState(() {
+        _stats = data;
+        _hasNewBadge = badges;
+      });
+    } catch (_) {
+      // İstatistik ikincil bir bilgi, sessizce yut.
+    }
+  }
+
+  /// Kullanıcı bir istatistik kartına girip baktığında, o kartın rozetini
+  /// "görüldü" olarak işaretler — bir dahaki Ana Sayfa açılışında tekrar
+  /// çıkmasın diye.
+  Future<void> _markStatSeen(String key) async {
+    if (_stats == null) return;
+    final value = (_stats![key] ?? 0) as int;
+    await _badgeTracker.markSeen(key, value);
+    if (mounted) setState(() => _hasNewBadge[key] = false);
+  }
+
+  int _unreadNotifications = 0;
+
+  Future<void> _loadUnreadNotifications() async {
+    try {
+      final res = await _dio.get('/notifications/unread-count');
+      if (mounted) setState(() => _unreadNotifications = res.data['count'] ?? 0);
+    } catch (_) {
+      // İkincil bir bilgi, sessizce yut.
+    }
+  }
+
+  File? _homePendingImage;
+
+  Future<void> _pickHomeImage() async {
+    final source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_camera_outlined),
+              title: const Text('Kamera ile çek'),
+              onTap: () => Navigator.pop(context, ImageSource.camera),
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library_outlined),
+              title: const Text('Galeriden Seç'),
+              onTap: () => Navigator.pop(context, ImageSource.gallery),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (source == null) return;
+    final picked = await ImagePicker().pickImage(source: source, imageQuality: 85);
+    if (picked != null) setState(() => _homePendingImage = File(picked.path));
+  }
+
+  /// Önceden bu, yazılan soruyu HİÇ kullanmadan sadece AI sekmesine
+  /// yönlendiriyordu — soru kayboluyordu. Artık soru (ve varsa fotoğraf)
+  /// doğrudan gönderiliyor, AI cevabıyla birlikte açılan sohbete gidiliyor.
+  void _askAi() {
+    final question = _questionController.text.trim();
+    final image = _homePendingImage;
+    if (question.isEmpty && image == null) return;
+    _questionController.clear();
+    setState(() => _homePendingImage = null);
+    context.push('/ai-send', extra: {'question': question, 'image': image});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Kullanıcı isteği: "üst menü ana menünün bir parçası gibi hareket
+    // etmeli" — RootShell'in paylaştığı veriyi (seçili sekme, rozet
+    // sayıları, dokunma işleyicileri) buradan okuyup, üst menüyü
+    // CustomScrollView'ın İLK sliver'ı olarak gömüyoruz. Bu, menünün
+    // Ana Sayfa'nın kaydırma fiziğinin GERÇEK bir parçası olmasını
+    // sağlıyor (SliverAppBar floating+snap) — parmakla birebir hareket.
+    final navData = RootNavData.current!;
+    return Scaffold(
+      // Kullanıcı isteği: "Ana background çok hafif kırık beyaz/off-white
+      // olabilir." AppColors.background artık bu hafif tonu taşıyor.
+      backgroundColor: AppColors.background,
+      body: CustomScrollView(
+        controller: _scrollController,
+        slivers: [
+          TopNavSliverAppBar(
+            selectedDestination: navData.selectedDestination,
+            unreadMessages: navData.unreadMessages,
+            unreadNotifications: navData.unreadNotifications,
+            onTap: navData.onTap,
+            onNotificationsTap: navData.onNotificationsTap,
+          ),
+          SliverSafeArea(
+            top: false,
+            sliver: SliverPadding(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              sliver: SliverList(
+                delegate: SliverChildListDelegate([
+            // Kullanıcı isteği: "uygulama açılırken ekranda slayt
+            // dönsün" — admin panelden yönetilen, otomatik dönen
+            // tanıtım slaytları, Ana Sayfa'nın en üstünde.
+            const HomeSlideshow(),
+            const SizedBox(height: AppSpacing.md),
+            // AI'a Sor — kullanıcı isteği: "hiçbir yerde gölge olmayacak,
+            // arka fon bembeyaz." Eski gradyanlı/gölgeli lacivert kart
+            // tamamen kaldırıldı, düz turuncu (marka rengi), gölgesiz,
+            // sade bir kart ile değiştirildi.
+            InkWell(
+              onTap: () => context.push('/ai-quick'),
+              borderRadius: BorderRadius.circular(AppRadius.xl),
+              child: Container(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(AppRadius.xl),
+                  // Kullanıcı isteği: "Kontrollü radius, çok hafif
+                  // elevation... Premium ve kurumsal görünmeli." — aşırı
+                  // efekt yok, sadece çok ince bir gölge ile bannerın
+                  // sayfadan hafifçe ayrılması sağlandı.
+                  boxShadow: [
+                    BoxShadow(color: AppColors.primary.withOpacity(0.20), blurRadius: 16, offset: const Offset(0, 6)),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(color: Colors.white.withOpacity(0.18), borderRadius: BorderRadius.circular(AppRadius.sm)),
+                      child: const Icon(Icons.auto_awesome, color: Colors.white, size: 24),
+                    ),
+                    const SizedBox(width: AppSpacing.sm + 2),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'AI Teknik Asistan',
+                            style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: -0.3),
+                          ),
+                          SizedBox(height: 3),
+                          Text(
+                            'Saniyeler içinde teknik cevap alın',
+                            style: TextStyle(fontSize: 12.5, color: Colors.white70, fontWeight: FontWeight.w500),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(Icons.arrow_forward_ios, size: 14, color: Colors.white.withOpacity(0.85)),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            // İstatistikler — kullanıcı isteği üzerine (dashboard tarzı)
+            // en üste, göze ilk çarpan yere taşındı.
+            const Text('BU AY', style: AppText.eyebrow),
+            const SizedBox(height: AppSpacing.xs),
+            _stats == null
+                ? const AppLoadingState(lines: 1)
+                : Row(
+                    children: [
+                      Expanded(
+                        child: _StatCard(
+                          icon: Icons.smart_toy_outlined,
+                          value: '${_stats!['questionsThisMonth'] ?? 0}',
+                          label: 'AI Sorusu',
+                          showBadge: _hasNewBadge['questionsThisMonth'] == true,
+                          onTap: () async {
+                            await _markStatSeen('questionsThisMonth');
+                            if (mounted) context.push('/ai-quick');
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.sm),
+                      Expanded(
+                        child: _StatCard(
+                          icon: Icons.bookmark_border,
+                          value: '${_stats!['favoritesCount'] ?? 0}',
+                          label: 'Favori',
+                          showBadge: _hasNewBadge['favoritesCount'] == true,
+                          onTap: () async {
+                            await _markStatSeen('favoritesCount');
+                            await context.push('/favorites');
+                            _loadStats();
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.sm),
+                      Expanded(
+                        child: _StatCard(
+                          icon: Icons.forum_outlined,
+                          value: '${_stats!['totalAiConversations'] ?? 0}',
+                          label: 'Toplam Sohbet',
+                          showBadge: _hasNewBadge['totalAiConversations'] == true,
+                          onTap: () async {
+                            await _markStatSeen('totalAiConversations');
+                            if (mounted) context.push('/ai-quick');
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+            const SizedBox(height: AppSpacing.lg),
+            // Hızlı İşlemler — kullanıcı isteği üzerine başlık yazısı
+            // kaldırıldı, "Düzenle" yazısı yerine sadece ikon konuldu,
+            // ve AI butonunun hemen altına (yukarı) taşındı.
+            // Kullanıcı isteği: "Filtre ikonu havada duruyorsa, ilgili
+            // section başlığı ya da hızlı işlemler alanıyla görsel
+            // olarak hizala." — küçük bir bağlam etiketi eklenip ikonla
+            // aynı satıra alındı, artık tek başına havada değil.
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('HIZLI İŞLEMLER', style: AppText.eyebrow),
+                IconButton(
+                  onPressed: () async {
+                    await context.push('/reorder-quick-actions');
+                    _loadQuickActionsOrder();
+                  },
+                  icon: const Icon(Icons.tune, size: 18, color: AppColors.textSecondary),
+                  tooltip: 'Sıralamayı Düzenle',
+                  padding: EdgeInsets.zero,
+                  // ÖNEMLİ DÜZELTME: "BU AY ile HIZLI İŞLEMLER arasında
+                  // hâlâ fazla boşluk var" sorununun asıl kaynağı buradaydı
+                  // — IconButton, görsel boyutu küçük olsa bile (28x28),
+                  // Flutter'ın varsayılan Material dokunma hedefi kuralı
+                  // (MaterialTapTargetSize.padded) yüzünden etrafına
+                  // GÖRÜNMEZ, en az 48px'lik bir alan ekliyordu. Bu görünmez
+                  // alan, satırın toplam yüksekliğini büyütüp ızgarayı
+                  // aşağı itiyordu. shrinkWrap ile bu görünmez alan kaldırıldı.
+                  style: IconButton.styleFrom(tapTargetSize: MaterialTapTargetSize.shrinkWrap, visualDensity: VisualDensity.compact),
+                  constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+                ),
+              ],
+            ),
+            const SizedBox(height: 2),
+            GridView.count(
+              crossAxisCount: 3,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              mainAxisSpacing: AppSpacing.xs,
+              crossAxisSpacing: AppSpacing.xs,
+              childAspectRatio: 1.22,
+              children: _quickActionsOrder
+                  // "Bayi Ziyaretleri" sadece SALES (satış danışmanı)
+                  // rolündeki hesaplara gösterilir — bayilerin bu
+                  // özellikle bir ilgisi yok.
+                  .where((action) => action.id != 'dealer_visits' || CurrentUser().role == 'SALES' || CurrentUser().role == 'ADMIN')
+                  .map((action) => _QuickAction(
+                        icon: action.icon,
+                        label: action.label,
+                        badgeCount: _categoryBadges[action.id] ?? 0,
+                        onTap: () {
+                          if (_categoryBadges.containsKey(action.id) && (_categoryBadges[action.id] ?? 0) > 0) {
+                            setState(() => _categoryBadges[action.id] = 0);
+                          }
+                          _handleQuickActionTap(action);
+                        },
+                      ))
+                  .toList(),
+            ),
+            const SizedBox(height: AppSpacing.xs),
+            if (_pinnedDocuments.isNotEmpty) ...[
+              const Text('Sabitlenmiş Dokümanlar', style: AppText.sectionTitle),
+              const SizedBox(height: AppSpacing.sm),
+              SizedBox(
+                height: 88,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: _pinnedDocuments.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.sm),
+                  itemBuilder: (context, index) {
+                    final doc = _pinnedDocuments[index]['document'];
+                    if (doc == null) return const SizedBox.shrink();
+                    return InkWell(
+                      onTap: () => context.push('/documents/${doc['id']}'),
+                      borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+                      child: Container(
+                        width: 150,
+                        padding: const EdgeInsets.all(AppSpacing.sm),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+                          boxShadow: AppShadows.subtle,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(Icons.push_pin, size: 14, color: AppColors.brand),
+                                const SizedBox(width: 4),
+                                Expanded(
+                                  child: Text(
+                                    '${doc['brand']}',
+                                    style: TextStyle(fontSize: 10.5, color: Colors.grey.shade500, fontWeight: FontWeight.w600),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              doc['title'] ?? '',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.navy),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: AppSpacing.xs),
+            ],
+            // "Bugün Benim İçin" özeti.
+            const _TodayForMeSection(),
+                ]),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StatCard extends StatelessWidget {
+  final IconData icon;
+  final String value;
+  final String label;
+  final VoidCallback? onTap;
+  final bool showBadge;
+
+  const _StatCard({required this.icon, required this.value, required this.label, this.onTap, this.showBadge = false});
+
+  @override
+  Widget build(BuildContext context) {
+    // Kullanıcı isteği: "BU AY bölümünü profesyonel dashboard componenti
+    // gibi tasarla... Sayılar daha güçlü ve görünür olmalı. Label'lar
+    // daha küçük ve muted olmalı. İkonlar sayılarla yarışmamalı." Kart
+    // artık kenarlıksız + çok hafif gölgeli, ikon küçük/soluk, rakam
+    // güçlü/kalın, etiket küçük/muted.
+    return Material(
+      color: AppColors.surfaceSecondary,
+      borderRadius: BorderRadius.circular(AppRadius.md),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        onTap: onTap,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppRadius.md),
+            boxShadow: AppShadows.subtle,
+          ),
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs, horizontal: AppSpacing.xxs),
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Column(
+                children: [
+                  Icon(icon, color: AppColors.textMuted, size: 13),
+                  const SizedBox(height: 4),
+                  Text(value, style: AppText.statValue.copyWith(fontSize: 17, fontWeight: FontWeight.w800)),
+                  const SizedBox(height: 1),
+                  Text(label, style: AppText.statLabel.copyWith(fontSize: 9.5), textAlign: TextAlign.center),
+                ],
+              ),
+              if (showBadge)
+                Positioned(
+                  top: -2,
+                  right: 8,
+                  child: Container(
+                    width: 9,
+                    height: 9,
+                    decoration: const BoxDecoration(color: AppColors.brand, shape: BoxShape.circle),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _QuickAction extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  final int badgeCount;
+
+  const _QuickAction({required this.icon, required this.label, required this.onTap, this.badgeCount = 0});
+
+  @override
+  Widget build(BuildContext context) {
+    // Kullanıcı isteği: "Bütün kartları aynı: border + turuncu daire +
+    // ikon şeklinde yapma. Görsel ağırlıkları kontrollü şekilde
+    // çeşitlendir." — ikon simgesinin karakter koduna göre (deterministik,
+    // her açılışta aynı kalır) iki farklı stil arasında geçiş yapılıyor:
+    // biri dolgulu yumuşak daire, diğeri daha minimal (düz ikon + küçük
+    // alt vurgu çizgisi) — ikon dili (stroke/boyut) aynı kalıyor, sadece
+    // konteyner ağırlığı değişiyor.
+    final isSoftVariant = icon.codePoint.isEven;
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(AppRadius.lg),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        onTap: onTap,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppRadius.lg),
+            boxShadow: AppShadows.subtle,
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  if (isSoftVariant)
+                    Container(
+                      width: 34,
+                      height: 38,
+                      decoration: const BoxDecoration(
+                        color: AppColors.primarySoft,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(icon, color: AppColors.primary, size: 17),
+                    )
+                  else
+                    SizedBox(
+                      width: 34,
+                      height: 38,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(icon, color: AppColors.textPrimary, size: 19),
+                          const SizedBox(height: 4),
+                          Container(width: 11, height: 2.5, decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(2))),
+                        ],
+                      ),
+                    ),
+                  // Kart üzerindeki rozet — o kartla ilgili okunmamış bir
+                  // bildirim varsa (yeni mesaj, yorum vb.) burada anlık
+                  // olarak gösterilir.
+                  if (badgeCount > 0)
+                    Positioned(
+                      top: -4,
+                      right: -4,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                        constraints: const BoxConstraints(minWidth: 18),
+                        decoration: BoxDecoration(
+                          color: AppColors.brand,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.white, width: 1.5),
+                        ),
+                        child: Text(
+                          badgeCount > 99 ? '99+' : '$badgeCount',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 5),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 11.5, color: AppColors.navy, height: 1.15, letterSpacing: -0.1),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// "Bugün Benim İçin" özeti (#17) — bugünkü randevular, açık teknik
+/// destek kayıtları, SLA riski, okunmamış bildirim sayısı. Mevcut Ana
+/// Sayfa kartlarına dokunulmadan, üstüne eklenen bağımsız bir bölüm.
+class _TodayForMeSection extends StatefulWidget {
+  const _TodayForMeSection();
+
+  @override
+  State<_TodayForMeSection> createState() => _TodayForMeSectionState();
+}
+
+class _TodayForMeSectionState extends State<_TodayForMeSection> {
+  final Dio _dio = ApiClient().dio;
+  Map<String, dynamic>? _summary;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    try {
+      final res = await _dio.get('/dashboard/for-me');
+      if (mounted) setState(() => _summary = res.data);
+    } catch (_) {
+      // Sessizce yoksay — bu özet ek bir bilgi katmanı, başarısız olursa
+      // Ana Sayfa'nın geri kalanını etkilememeli.
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_summary == null) return const SizedBox.shrink();
+    final appointments = (_summary!['todaysAppointments'] as List?) ?? [];
+    final openTickets = _summary!['openTicketsCount'] ?? 0;
+    final slaRisk = _summary!['slaRiskTicketsCount'] ?? 0;
+
+    if (appointments.isEmpty && openTickets == 0 && slaRisk == 0) return const SizedBox.shrink();
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: AppSpacing.md),
+      padding: const EdgeInsets.all(AppSpacing.sm),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: AppShadows.subtle,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.today_outlined, size: 16, color: AppColors.brand),
+              const SizedBox(width: 6),
+              const Text('Bugün Benim İçin', style: AppText.eyebrow),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              if (appointments.isNotEmpty) _summaryChip(Icons.event_outlined, '${appointments.length} bugünkü randevu', AppColors.navy),
+              if (openTickets > 0) _summaryChip(Icons.build_outlined, '$openTickets açık teknik destek', AppColors.brand),
+              if (slaRisk > 0) _summaryChip(Icons.warning_amber_rounded, '$slaRisk kayıtta SLA riski', Colors.red),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _summaryChip(IconData icon, String label, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(color: color.withOpacity(0.08), borderRadius: BorderRadius.circular(20)),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 13, color: color),
+          const SizedBox(width: 5),
+          Text(label, style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: color)),
+        ],
+      ),
+    );
+  }
+}

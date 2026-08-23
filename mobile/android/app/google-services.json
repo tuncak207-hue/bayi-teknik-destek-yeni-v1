@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "677096560319",
+    "project_id": "entpa-351f4",
+    "storage_bucket": "entpa-351f4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:677096560319:android:a4fd2d7b6cd3c80a50d80a",
+        "android_client_info": {
+          "package_name": "com.bayiteknikdestek.bayi_teknik_destek"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "677096560319-0030d2ernd87luetkepeh19prs884fdi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.bayiteknikdestek.bayi_teknik_destek",
+            "certificate_hash": "ee1a3a0d9e7d511710bd6143b2393a54be38af88"
+          }
+        },
+        {
+          "client_id": "677096560319-612fv939c3apr5sfs67pl28onlk57486.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDpxSpDk1ZAaRUHde5CZXfP9Fi3auVYwJI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "677096560319-612fv939c3apr5sfs67pl28onlk57486.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

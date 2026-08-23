@@ -1,0 +1,9 @@
+Bu klasöre şirketinizin gerçek logosunu şu isimle ekleyin:
+
+  entpa_logo.png
+
+Öneri: şeffaf arka planlı (transparent background) PNG, en az 512x512 piksel.
+
+Logo eklenene kadar açılış ekranında (splash screen) yer tutucu bir ikon
+(alev simgesi) gösterilecektir — kod bunu otomatik algılar, ekstra bir
+değişiklik yapmanız gerekmez, sadece dosyayı bu klasöre koymanız yeterli.

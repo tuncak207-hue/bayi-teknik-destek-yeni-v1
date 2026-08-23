@@ -1,0 +1,156 @@
+import { Controller, Post, Get, Patch, Body, Param, Query, UseGuards, Req, UseInterceptors, UploadedFile, ForbiddenException } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard, Roles } from '../auth/guards/jwt-auth.guard';
+import { AiService } from './ai.service';
+import { TechnicalMemoryService } from './technical-memory.service';
+import { AskAiDto } from './dto/ask-ai.dto';
+import { ConversationsService } from '../chat/conversations.service';
+import { MessagesService } from '../chat/messages.service';
+import { ChatGateway } from '../chat/gateway/chat.gateway';
+import { PrismaService } from '../common/prisma/prisma.service';
+
+@UseGuards(JwtAuthGuard)
+@Controller('ai')
+export class AiController {
+  constructor(
+    private aiService: AiService,
+    private technicalMemory: TechnicalMemoryService,
+    private conversations: ConversationsService,
+    private messages: MessagesService,
+    private gateway: ChatGateway,
+    private prisma: PrismaService,
+  ) {}
+
+  /**
+   * Kullanıcı isteği: "yeni sohbet dediğimde ayrı bir kart açmalı" —
+   * mevcut sohbeti aramadan, her zaman TAMAMEN YENİ, ayrı bir AI
+   * konuşması oluşturur. Eski konuşma değişmeden, kendi kaydında kalır.
+   */
+  @Post('conversations/new')
+  async createNewConversation(@Req() req: any) {
+    return this.conversations.createNewAiConversation(req.user.sub);
+  }
+
+  @Post('ask')
+  async ask(@Req() req: any, @Body() dto: AskAiDto) {
+    const conversationId =
+      dto.conversationId ?? (await this.conversations.createAiConversation(req.user.sub)).id;
+
+    // Kullanıcı isteği: takip sorusu tespiti için, YENİ soruyu kaydetmeden
+    // ÖNCE mevcut son soru-cevap çiftini çekiyoruz.
+    const { previousQuestion, previousAnswer } = await this.getPreviousExchange(conversationId);
+
+    await this.messages.sendUserMessage({
+      conversationId,
+      senderId: req.user.sub,
+      content: dto.question,
+    });
+
+    const answer = await this.aiService.answerTechnicalQuestion(dto.question, {
+      brand: dto.brand,
+      model: dto.model,
+      previousQuestion,
+      previousAnswer,
+    });
+
+    const aiMessage = await this.messages.saveAiAnswer(conversationId, answer);
+    this.gateway.emitNewMessage(conversationId, aiMessage);
+
+    // Kullanıcı isteği: "doğrulama sürekli kalmalı" — memoryId artık
+    // Message modelinde kalıcı olarak saklanıyor (technicalMemoryId).
+    // Mobil tarafın ChatMessage.fromJson'ı hep aynı şekilde okuyabilsin
+    // diye memoryId'yi mesaj nesnesinin İÇİNE de ekliyoruz (yeni
+    // oluşturulan bir cevap olduğu için henüz doğrulanmamış).
+    const responseMessage = { ...aiMessage, memoryId: answer.memoryId, memoryIsVerified: false };
+
+    return { conversationId, message: responseMessage, fromMemory: answer.fromMemory, memoryId: answer.memoryId };
+  }
+
+  /** Bu konuşmadaki en son kullanıcı sorusu + AI cevabını bulur (varsa). */
+  private async getPreviousExchange(
+    conversationId: string,
+  ): Promise<{ previousQuestion?: string; previousAnswer?: string }> {
+    const lastTwo = await this.prisma.message.findMany({
+      where: { conversationId },
+      orderBy: { createdAt: 'desc' },
+      take: 2,
+    });
+    const lastAi = lastTwo.find((m) => m.senderType === 'AI');
+    const lastUser = lastTwo.find((m) => m.senderType === 'USER');
+    if (!lastAi || !lastUser) return {};
+    return { previousQuestion: lastUser.content, previousAnswer: lastAi.content };
+  }
+
+  @Post('ask-with-image')
+  @UseInterceptors(FileInterceptor('image'))
+  async askWithImage(
+    @Req() req: any,
+    @Body() dto: AskAiDto,
+    @UploadedFile() image: Express.Multer.File,
+  ) {
+    const conversationId =
+      dto.conversationId ?? (await this.conversations.createAiConversation(req.user.sub)).id;
+
+    const { previousQuestion, previousAnswer } = await this.getPreviousExchange(conversationId);
+
+    await this.messages.sendUserMessage({
+      conversationId,
+      senderId: req.user.sub,
+      content: dto.question || 'Fotoğraf gönderildi.',
+    });
+
+    const answer = await this.aiService.answerTechnicalQuestion(dto.question, {
+      brand: dto.brand,
+      model: dto.model,
+      imageBase64: image.buffer.toString('base64'),
+      imageMediaType: image.mimetype,
+      previousQuestion,
+      previousAnswer,
+    });
+
+    const aiMessage = await this.messages.saveAiAnswer(conversationId, answer);
+    this.gateway.emitNewMessage(conversationId, aiMessage);
+
+    const responseMessage = { ...aiMessage, memoryId: answer.memoryId, memoryIsVerified: false };
+
+    return { conversationId, message: responseMessage, fromMemory: answer.fromMemory, memoryId: answer.memoryId };
+  }
+
+  // ============================================================
+  // Admin panel — "AI Teknik Hafıza" yönetimi
+  // ============================================================
+
+  @Roles('ADMIN', 'ENGINEER')
+  @UseGuards(RolesGuard)
+  @Get('technical-memory')
+  listMemory(@Query('productName') productName?: string, @Query('needsReverification') needsReverification?: string) {
+    return this.technicalMemory.list({
+      productName,
+      needsReverification: needsReverification === undefined ? undefined : needsReverification === 'true',
+    });
+  }
+
+  // Kullanıcı isteği: "herkes (bütün bayiler) doğrulayabilsin" — bu
+  // endpoint artık ADMIN/ENGINEER ile sınırlı değil, giriş yapmış her
+  // kullanıcı (JwtAuthGuard zaten sınıf seviyesinde uygulanıyor) bir
+  // AI cevabını "doğru" olarak işaretleyebilir.
+  @Patch('technical-memory/:id/verify')
+  verifyMemory(@Req() req: any, @Param('id') id: string) {
+    return this.technicalMemory.verify(id, req.user.sub);
+  }
+
+  @Roles('ADMIN', 'ENGINEER')
+  @UseGuards(RolesGuard)
+  @Patch('technical-memory/:id')
+  updateMemory(@Param('id') id: string, @Body() body: { answerMarkdown: string }) {
+    return this.technicalMemory.updateAnswer(id, body.answerMarkdown);
+  }
+
+  @Roles('ADMIN', 'ENGINEER')
+  @UseGuards(RolesGuard)
+  @Patch('technical-memory/:id/active')
+  setMemoryActive(@Param('id') id: string, @Body() body: { isActive: boolean }) {
+    return this.technicalMemory.setActive(id, body.isActive);
+  }
+}

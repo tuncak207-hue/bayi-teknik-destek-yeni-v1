@@ -1,0 +1,13 @@
+Bu klasöre telifsiz (royalty-free) bir yangın alarm/siren sesi ekleyin,
+dosya adı şu olmalı:
+
+  fire_alarm.mp3
+
+Öneri kaynaklar (kendiniz indirip lisans şartlarını kontrol edin):
+- https://pixabay.com/sound-effects/search/fire-alarm/
+- https://freesound.org/search/?q=fire+alarm
+
+Ses dosyası 5 saniyeden uzunsa sorun değil, açılış ekranı 5 saniye sonra
+otomatik olarak giriş ekranına geçecek ve ses o an kesilecektir.
+
+Ses dosyası eklenene kadar açılış ekranı sessiz çalışır, hata vermez.

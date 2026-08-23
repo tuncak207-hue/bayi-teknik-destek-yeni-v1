@@ -1,0 +1,55 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: bayi-teknik-destek-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: bayi_teknik_destek
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  minio:
+    image: minio/minio
+    container_name: bayi-teknik-destek-storage
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - miniodata:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # MinIO ayağa kalktıktan sonra bir kereliğine çalışıp "bayi-teknik-destek"
+  # bucket'ını (dosyaların saklanacağı klasörü) otomatik oluşturur, sonra kapanır.
+  # Bu servis olmadan doküman yüklerken "bucket does not exist" hatası alırsınız.
+  createbuckets:
+    image: minio/mc
+    container_name: bayi-teknik-destek-bucket-init
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 minioadmin minioadmin;
+      mc mb -p local/bayi-teknik-destek;
+      mc anonymous set download local/bayi-teknik-destek;
+      exit 0;
+      "
+
+volumes:
+  pgdata:
+  miniodata:
