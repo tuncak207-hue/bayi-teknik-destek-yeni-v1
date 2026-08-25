@@ -48,21 +48,6 @@ export default function DashboardPage() {
     <div>
       <p className="text-[13px] text-gray-400 mb-4">Uygulamanın tüm modüllerine dair anlık özet — 30 saniyede bir otomatik yenilenir.</p>
 
-      {/* Büyük, renkli "hero" istatistik kartları. */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
-        <HeroStat label="Aktif Bayi" value={s?.dealers?.active} icon={<IconUsers width={18} height={18} />} color="blue" href="/dealers" />
-        <HeroStat label="Bugün AI Soruları" value={s?.messaging?.aiQuestionsToday} icon={<IconChat width={18} height={18} />} color="violet" href="/chats" />
-        <HeroStat
-          label="Onay Bekleyen Randevu"
-          value={s?.appointments?.pending}
-          icon={<IconCalendar width={18} height={18} />}
-          color="amber"
-          href="/appointments"
-          highlight={!!s?.appointments?.pending}
-        />
-        <HeroStat label="Toplam Doküman" value={s?.documents?.total} icon={<IconDocument width={18} height={18} />} color="emerald" href="/documents" />
-      </div>
-
       {priorities?.priorities?.length > 0 && (
         <Card className="p-4 mb-4">
           <h3 className="text-[13px] font-semibold text-gray-900 mb-2.5">Bugün Ne Yapmalıyım?</h3>
@@ -257,7 +242,6 @@ function ActivityIcon({ type }: { type: string }) {
       return <span className="w-1 h-1 rounded-full bg-gray-400 inline-block" />;
   }
 }
-
 function EmptyRow({ text }: { text: string }) {
   return <p className="text-[13px] text-gray-400 py-4">{text}</p>;
 }
@@ -364,56 +348,3 @@ const accentClasses: Record<string, string> = {
   red: 'text-red-600',
   gray: 'text-gray-500',
 };
-
-function StatCard({
-  label,
-  value,
-  accent = 'navy',
-  urgent = false,
-}: {
-  label: string;
-  value: number | undefined;
-  accent?: keyof typeof accentClasses;
-  urgent?: boolean;
-}) {
-  return (
-    <div className={`relative bg-white rounded-lg p-3 border ${urgent ? 'border-red-200/70 bg-red-50/30' : 'border-gray-100'}`}>
-      {urgent && <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full bg-red-500" />}
-      <p className="text-[11.5px] text-gray-500 leading-[1.2] line-clamp-2 min-h-[28px]">{label}</p>
-      <p className={`text-[19px] font-semibold mt-1.5 tabular-nums ${accentClasses[accent]}`}>{value ?? '—'}</p>
-    </div>
-  );
-}
-
-/** Büyük, renkli hero istatistik kartı — kullanıcı isteği: "göz kamaştırıcı" olsun. */
-function HeroStat({
-  label,
-  value,
-  icon,
-  color,
-  href,
-  highlight = false,
-}: {
-  label: string;
-  value: number | undefined;
-  icon: React.ReactNode;
-  color: IconColor;
-  href: string;
-  highlight?: boolean;
-}) {
-  return (
-    <Link
-      href={href}
-      className={`relative bg-white rounded-2xl border p-4 flex items-center gap-3 hover:shadow-md hover:-translate-y-0.5 transition-all ${
-        highlight ? 'border-amber-200 bg-gradient-to-br from-amber-50/60 to-white' : 'border-gray-200/70'
-      }`}
-    >
-      <IconBadge icon={icon} color={color} size="lg" />
-      <div className="min-w-0">
-        <p className="text-[12px] text-gray-500 font-medium leading-[1.2] line-clamp-2 min-h-[29px]">{label}</p>
-        <p className="text-[26px] font-bold text-gray-900 tabular-nums leading-tight mt-0.5">{value ?? '—'}</p>
-      </div>
-      {highlight && <span className="absolute top-3 right-3 w-2 h-2 rounded-full bg-amber-500 animate-pulse" />}
-    </Link>
-  );
-}
