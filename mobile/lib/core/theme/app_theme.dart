@@ -192,6 +192,8 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       fontFamily: _platformFontFamily,
+      visualDensity: VisualDensity.standard,
+      materialTapTargetSize: MaterialTapTargetSize.padded,
       scaffoldBackgroundColor: AppColors.surface,
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.brand,
@@ -304,6 +306,20 @@ class AppTheme {
       // Kullanıcı isteği: "tüm o küçük onay pencereleri için değiştir" —
       // AlertDialog/showDialog kullanan HER yer (silme onayları, çıkış
       // onayı, randevu/rapor sil vb.) bu merkezi ayarı otomatik alır.
+      bottomSheetTheme: const BottomSheetThemeData(
+        showDragHandle: true,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(28))),
+        clipBehavior: Clip.antiAlias,
+      ),
+      searchBarTheme: SearchBarThemeData(
+        elevation: WidgetStateProperty.all(0),
+        shape: WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
+        padding: WidgetStateProperty.all(const EdgeInsets.symmetric(horizontal: 16)),
+      ),
+      datePickerTheme: DatePickerThemeData(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+        headerHeadlineStyle: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
+      ),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
         elevation: 2,
@@ -344,6 +360,27 @@ class AppTheme {
       // Kullanıcı isteği: "tüm hepsinde güncelle" — PopupMenuButton
       // kullanan HER yer (PDF Görüntüle/Paylaş menüleri, Teknik Destek
       // durum menüleri vb.) bu merkezi ayarı otomatik alır.
+      scrollbarTheme: ScrollbarThemeData(
+        radius: const Radius.circular(10),
+        thickness: WidgetStateProperty.all(5),
+        thumbColor: WidgetStateProperty.all(AppColors.primary.withValues(alpha: 0.35)),
+      ),
+      segmentedButtonTheme: SegmentedButtonThemeData(
+        style: ButtonStyle(
+          minimumSize: WidgetStateProperty.all(const Size(0, 44)),
+          padding: WidgetStateProperty.all(const EdgeInsets.symmetric(horizontal: 16, vertical: 10)),
+          shape: WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+        ),
+      ),
+      switchTheme: SwitchThemeData(
+        thumbIcon: WidgetStateProperty.resolveWith((states) => states.contains(WidgetState.selected) ? const Icon(Icons.check, size: 16) : null),
+      ),
+      progressIndicatorTheme: const ProgressIndicatorThemeData(strokeWidth: 3),
+      tooltipTheme: TooltipThemeData(
+        decoration: BoxDecoration(color: AppColors.ink, borderRadius: BorderRadius.circular(8)),
+        textStyle: const TextStyle(color: Colors.white, fontSize: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      ),
       popupMenuTheme: PopupMenuThemeData(
         color: Colors.white,
         surfaceTintColor: Colors.white,
@@ -432,6 +469,8 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       fontFamily: _platformFontFamily,
+      visualDensity: VisualDensity.standard,
+      materialTapTargetSize: MaterialTapTargetSize.padded,
       brightness: Brightness.dark,
       scaffoldBackgroundColor: darkSurface,
       colorScheme: ColorScheme.fromSeed(
@@ -487,6 +526,20 @@ class AppTheme {
         ),
       ),
       dividerTheme: DividerThemeData(color: Colors.white.withValues(alpha: 0.08), thickness: 1),
+      bottomSheetTheme: const BottomSheetThemeData(
+        showDragHandle: true,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(28))),
+        clipBehavior: Clip.antiAlias,
+      ),
+      searchBarTheme: SearchBarThemeData(
+        elevation: WidgetStateProperty.all(0),
+        shape: WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
+        padding: WidgetStateProperty.all(const EdgeInsets.symmetric(horizontal: 16)),
+      ),
+      datePickerTheme: DatePickerThemeData(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+        headerHeadlineStyle: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
+      ),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
         elevation: 2,
@@ -524,6 +577,27 @@ class AppTheme {
           color: Colors.white.withValues(alpha: 0.75),
           height: 1.4,
         ),
+      ),
+      scrollbarTheme: ScrollbarThemeData(
+        radius: const Radius.circular(10),
+        thickness: WidgetStateProperty.all(5),
+        thumbColor: WidgetStateProperty.all(const Color(0xFFFF8A55).withValues(alpha: 0.45)),
+      ),
+      segmentedButtonTheme: SegmentedButtonThemeData(
+        style: ButtonStyle(
+          minimumSize: WidgetStateProperty.all(const Size(0, 44)),
+          padding: WidgetStateProperty.all(const EdgeInsets.symmetric(horizontal: 16, vertical: 10)),
+          shape: WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+        ),
+      ),
+      switchTheme: SwitchThemeData(
+        thumbIcon: WidgetStateProperty.resolveWith((states) => states.contains(WidgetState.selected) ? const Icon(Icons.check, size: 16) : null),
+      ),
+      progressIndicatorTheme: const ProgressIndicatorThemeData(strokeWidth: 3),
+      tooltipTheme: TooltipThemeData(
+        decoration: BoxDecoration(color: Colors.black87, borderRadius: BorderRadius.circular(8)),
+        textStyle: const TextStyle(color: Colors.white, fontSize: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       ),
       popupMenuTheme: PopupMenuThemeData(
         color: darkCard,
