@@ -42,22 +42,52 @@ export class ChatGateway implements OnGatewayConnection {
     }
   }
 
+  private async assertParticipant(socket: Socket, conversationId: unknown): Promise<string> {
+    if (typeof conversationId !== 'string' || !conversationId.trim()) {
+      throw new Error('Geçersiz konuşma kimliği.');
+    }
+    const userId = socket.data.userId as string | undefined;
+    if (!userId) throw new Error('Yetkisiz socket bağlantısı.');
+
+    const participant = await this.prisma.conversationParticipant.findUnique({
+      where: { conversationId_userId: { conversationId, userId } },
+      select: { conversationId: true },
+    });
+    if (!participant) throw new Error('Bu sohbete erişiminiz yok.');
+    return conversationId;
+  }
+
   @SubscribeMessage('join')
-  onJoin(@MessageBody() conversationId: string, @ConnectedSocket() socket: Socket) {
-    socket.join(conversationId);
+  async onJoin(@MessageBody() conversationId: string, @ConnectedSocket() socket: Socket) {
+    try {
+      await this.assertParticipant(socket, conversationId);
+      socket.join(conversationId);
+    } catch {
+      this.logger.warn(`Yetkisiz socket oda katılımı reddedildi: ${socket.data.userId ?? 'unknown'}`);
+    }
   }
 
   @SubscribeMessage('leave')
-  onLeave(@MessageBody() conversationId: string, @ConnectedSocket() socket: Socket) {
-    socket.leave(conversationId);
+  async onLeave(@MessageBody() conversationId: string, @ConnectedSocket() socket: Socket) {
+    try {
+      await this.assertParticipant(socket, conversationId);
+      socket.leave(conversationId);
+    } catch {
+      // Kullanıcı zaten odada değilse sessizce yok sayılır.
+    }
   }
 
   @SubscribeMessage('typing')
-  onTyping(
+  async onTyping(
     @MessageBody() data: { conversationId: string },
     @ConnectedSocket() socket: Socket,
   ) {
-    socket.to(data.conversationId).emit('typing', { userId: socket.data.userId });
+    try {
+      const conversationId = await this.assertParticipant(socket, data?.conversationId);
+      socket.to(conversationId).emit('typing', { userId: socket.data.userId });
+    } catch {
+      this.logger.warn(`Yetkisiz typing olayı reddedildi: ${socket.data.userId ?? 'unknown'}`);
+    }
   }
 
   /** Diğer servisler (MessagesService, AiService) yeni mesajları buradan yayınlar. */

@@ -3,6 +3,7 @@ import { PrismaService } from '../common/prisma/prisma.service';
 import { ConversationsService } from './conversations.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { TechnicalAnswer } from '../ai/ai.service';
+import { StorageService } from '../common/storage/storage.service';
 
 @Injectable()
 export class MessagesService {
@@ -10,6 +11,7 @@ export class MessagesService {
     private prisma: PrismaService,
     private conversations: ConversationsService,
     private notifications: NotificationsService,
+    private storage: StorageService,
   ) {}
 
   async sendUserMessage(params: {
@@ -322,6 +324,19 @@ export class MessagesService {
       update: {},
     });
     return { success: true };
+  }
+
+  async getAttachmentSignedUrl(userId: string, key: string) {
+    if (!key?.trim()) throw new ForbiddenException('Geçersiz ek dosya anahtarı.');
+    const message = await this.prisma.message.findFirst({
+      where: {
+        attachmentUrl: key,
+        conversation: { participants: { some: { userId } } },
+      },
+      select: { attachmentUrl: true },
+    });
+    if (!message?.attachmentUrl) throw new ForbiddenException('Bu eke erişim izniniz yok.');
+    return this.storage.getSignedUrl(message.attachmentUrl);
   }
 
   // ---- Admin moderasyon metodları ----

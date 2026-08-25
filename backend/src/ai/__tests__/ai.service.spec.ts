@@ -1,7 +1,9 @@
 import { Test } from '@nestjs/testing';
 import { AiService } from '../ai.service';
 import { RagSearchService } from '../../rag/rag-search.service';
-import { AnthropicProvider } from '../providers/anthropic.provider';
+import { KnowledgeBaseService } from '../../knowledge-base/knowledge-base.service';
+import { TechnicalMemoryService } from '../technical-memory.service';
+import { AI_PROVIDER } from '../providers/ai-provider.interface';
 
 describe('AiService — uydurmama ve kaynak gösterme kuralları', () => {
   let service: AiService;
@@ -16,7 +18,12 @@ describe('AiService — uydurmama ve kaynak gösterme kuralları', () => {
       providers: [
         AiService,
         { provide: RagSearchService, useValue: ragSearch },
-        { provide: AnthropicProvider, useValue: provider },
+        { provide: KnowledgeBaseService, useValue: { searchRelevant: jest.fn().mockResolvedValue([]) } },
+        { provide: TechnicalMemoryService, useValue: {
+          findMatch: jest.fn().mockResolvedValue({ tier: 'NEW' }),
+          incrementUsage: jest.fn(),
+        } },
+        { provide: AI_PROVIDER, useValue: provider },
       ],
     }).compile();
 

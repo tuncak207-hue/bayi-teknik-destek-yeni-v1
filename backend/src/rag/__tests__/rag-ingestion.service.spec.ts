@@ -3,6 +3,8 @@ import { RagIngestionService } from '../rag-ingestion.service';
 import { TextExtractionService } from '../text-extraction.service';
 import { EmbeddingService } from '../embedding.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
+import { StorageService } from '../../common/storage/storage.service';
+import { AI_PROVIDER } from '../../ai/providers/ai-provider.interface';
 
 describe('RagIngestionService — chunking ve embedding akışı', () => {
   let service: RagIngestionService;
@@ -21,6 +23,8 @@ describe('RagIngestionService — chunking ve embedding akışı', () => {
         { provide: TextExtractionService, useValue: extraction },
         { provide: EmbeddingService, useValue: embedding },
         { provide: PrismaService, useValue: prisma },
+        { provide: StorageService, useValue: {} },
+        { provide: AI_PROVIDER, useValue: { complete: jest.fn() } },
       ],
     }).compile();
 
