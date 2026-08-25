@@ -146,16 +146,16 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFFFFFF),
+      backgroundColor: AppColors.background,
       floatingActionButton: StandardFab(label: 'Randevu Al', onPressed: _openCreateSheet),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: SafeArea(
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.sm, AppSpacing.md, AppSpacing.md, AppSpacing.sm),
+              padding: const EdgeInsets.fromLTRB(AppSpacing.xs, AppSpacing.md, AppSpacing.lg, AppSpacing.sm),
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   IconButton(
                     icon: const Icon(Icons.arrow_back, color: AppColors.navy),
@@ -163,12 +163,19 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
                   ),
                   const Text(
                     'Randevularım',
-                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: AppColors.navy, letterSpacing: -0.7, height: 1.1),
+                    style: AppText.screenTitle,
                   ),
-                  const SizedBox(width: 8),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 4),
-                    child: Text('${_appointments.length}', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.grey.shade400)),
+                  const SizedBox(width: AppSpacing.xs),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppColors.primarySoft,
+                      borderRadius: BorderRadius.circular(AppRadius.pill),
+                    ),
+                    child: Text(
+                      '${_appointments.length}',
+                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.primary),
+                    ),
                   ),
                 ],
               ),
@@ -181,11 +188,17 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
                         onRefresh: _load,
                         child: ListView(
                           children: [
-                            const SizedBox(height: 60),
-                            AppEmptyState(
-                              icon: Icons.calendar_month_outlined,
-                              title: 'Henüz bir randevunuz yok',
-                              description: 'Sağ alttaki butondan teknik destek randevusu oluşturabilirsiniz.',
+                            const SizedBox(height: 72),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                              child: StandardCard(
+                                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
+                                child: const AppEmptyState(
+                                  icon: Icons.calendar_month_outlined,
+                                  title: 'Henüz bir randevunuz yok',
+                                  description: 'Teknik destek almak için ilk randevunuzu oluşturun.',
+                                ),
+                              ),
                             ),
                           ],
                         ),
@@ -229,16 +242,10 @@ class _AppointmentCard extends StatelessWidget {
     final start = DateTime.tryParse(appointment['preferredStart'] ?? '');
     final isCancelled = status == 'CANCELLED';
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.divider),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 3))],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+      child: StandardCard(
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -486,9 +493,11 @@ class _CreateAppointmentSheetState extends State<_CreateAppointmentSheet> {
         bottom: 20,
       ),
       child: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+        child: StandardCard(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             SegmentedButton<String>(
               segments: const [

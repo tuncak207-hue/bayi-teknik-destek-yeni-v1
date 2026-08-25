@@ -387,7 +387,7 @@ class _HomeScreenState extends State<HomeScreen> {
               physics: const NeverScrollableScrollPhysics(),
               mainAxisSpacing: AppSpacing.sm,
               crossAxisSpacing: AppSpacing.sm,
-              childAspectRatio: 0.92,
+              childAspectRatio: 0.88,
               padding: EdgeInsets.zero,
               children: _quickActionsOrder
                   // "Bayi Ziyaretleri" sadece SALES (satış danışmanı)
@@ -504,18 +504,22 @@ class _StatCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(AppRadius.md),
             boxShadow: AppShadows.subtle,
           ),
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
           child: Stack(
             clipBehavior: Clip.none,
             children: [
-              Column(
-                children: [
-                  Icon(icon, color: AppColors.textMuted, size: 13),
+              SizedBox(
+                height: 78,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(icon, color: AppColors.textMuted, size: 14),
                   const SizedBox(height: 4),
                   Text(value, style: AppText.statValue.copyWith(fontSize: 20, fontWeight: FontWeight.w800)),
                   const SizedBox(height: 1),
-                  Text(label, style: AppText.statLabel.copyWith(fontSize: 11.5), textAlign: TextAlign.center, maxLines: 2, overflow: TextOverflow.ellipsis),
-                ],
+                    Text(label, style: AppText.statLabel.copyWith(fontSize: 11.5), textAlign: TextAlign.center, maxLines: 2, overflow: TextOverflow.ellipsis),
+                  ],
+                ),
               ),
               if (showBadge)
                 Positioned(
@@ -569,7 +573,7 @@ class _QuickAction extends StatelessWidget {
               ),
             ],
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
           child: Stack(
             clipBehavior: Clip.none,
             children: [
