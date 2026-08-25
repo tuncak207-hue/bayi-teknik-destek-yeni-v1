@@ -513,13 +513,19 @@ class _StatCard extends StatelessWidget {
           child: Stack(
             clipBehavior: Clip.none,
             children: [
-              ReferenceCardContent(
-                icon: icon,
-                title: value,
-                description: label,
-                iconColor: AppColors.textMuted,
-                iconBackground: AppColors.primarySoft,
-                compact: true,
+              Positioned.fill(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.center,
+                  child: ReferenceCardContent(
+                    icon: icon,
+                    title: value,
+                    description: label,
+                    iconColor: AppColors.textMuted,
+                    iconBackground: AppColors.primarySoft,
+                    compact: true,
+                  ),
+                ),
               ),
               if (showBadge)
                 Positioned(
@@ -577,12 +583,18 @@ class _QuickAction extends StatelessWidget {
           child: Stack(
             clipBehavior: Clip.none,
             children: [
-              ReferenceCardContent(
-                icon: icon,
-                title: label,
-                iconColor: AppColors.primary,
-                iconBackground: AppColors.primarySoft,
-                compact: true,
+              Positioned.fill(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.center,
+                  child: ReferenceCardContent(
+                    icon: icon,
+                    title: label,
+                    iconColor: AppColors.primary,
+                    iconBackground: AppColors.primarySoft,
+                    compact: true,
+                  ),
+                ),
               ),
               if (badgeCount > 0)
                 Positioned(
