@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'dart:async';
+
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:dio/dio.dart';
 import '../api/api_client.dart';
@@ -18,6 +20,10 @@ class PushNotificationService {
 
   final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
   bool _initialized = false;
+  bool _listenersRegistered = false;
+  StreamSubscription<String>? _tokenRefreshSubscription;
+  StreamSubscription<RemoteMessage>? _messageSubscription;
+  StreamSubscription<RemoteMessage>? _openedAppSubscription;
 
   Future<void> initAndRegister() async {
     try {
@@ -31,8 +37,18 @@ class PushNotificationService {
 
       if (!_initialized) {
         const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
-        const initSettings = InitializationSettings(android: androidInit);
+        const darwinInit = DarwinInitializationSettings(
+          requestAlertPermission: false,
+          requestBadgePermission: false,
+          requestSoundPermission: false,
+        );
+        const initSettings = InitializationSettings(android: androidInit, iOS: darwinInit);
         await _localNotifications.initialize(initSettings);
+        if (Platform.isAndroid) {
+          await _localNotifications
+              .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+              ?.requestNotificationsPermission();
+        }
         _initialized = true;
       }
 
@@ -41,11 +57,14 @@ class PushNotificationService {
         await _sendTokenToBackend(token);
       }
 
+      if (_listenersRegistered) return;
+      _listenersRegistered = true;
+
       // Token yenilenirse (ör. uygulama yeniden yüklenirse) tekrar backend'e gönder.
-      messaging.onTokenRefresh.listen(_sendTokenToBackend);
+      _tokenRefreshSubscription = messaging.onTokenRefresh.listen(_sendTokenToBackend);
 
       // Uygulama ön plandayken gelen bildirimleri kullanıcıya göster.
-      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      _messageSubscription = FirebaseMessaging.onMessage.listen((RemoteMessage message) {
         // Ses her zaman çalsın — "en önemli kural: her bildirimde ses"
         NotificationSoundService().play();
 
@@ -66,7 +85,7 @@ class PushNotificationService {
       // Uygulama arka plandayken bildirime dokunulup öne getirildiğinde,
       // ilgili ekrana yönlendir (derin bağlantı — bildirim listesindeki
       // tıklama davranışıyla aynı mantık).
-      FirebaseMessaging.onMessageOpenedApp.listen(_handleNotificationTap);
+      _openedAppSubscription = FirebaseMessaging.onMessageOpenedApp.listen(_handleNotificationTap);
 
       // Uygulama tamamen kapalıyken bildirime dokunularak açıldıysa da
       // aynı şekilde yönlendir.
