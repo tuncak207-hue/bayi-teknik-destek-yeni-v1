@@ -462,7 +462,7 @@ class _HomeScreenState extends State<HomeScreen> {
               physics: const NeverScrollableScrollPhysics(),
               mainAxisSpacing: AppSpacing.sm,
               crossAxisSpacing: AppSpacing.sm,
-              childAspectRatio: 1.06,
+              childAspectRatio: 0.92,
               padding: EdgeInsets.zero,
               children: _quickActionsOrder
                   // "Bayi Ziyaretleri" sadece SALES (satış danışmanı)
@@ -589,7 +589,7 @@ class _StatCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(value, style: AppText.statValue.copyWith(fontSize: 20, fontWeight: FontWeight.w800)),
                   const SizedBox(height: 1),
-                  Text(label, style: AppText.statLabel.copyWith(fontSize: 10.5), textAlign: TextAlign.center),
+                  Text(label, style: AppText.statLabel.copyWith(fontSize: 11.5), textAlign: TextAlign.center, maxLines: 2, overflow: TextOverflow.ellipsis),
                 ],
               ),
               if (showBadge)
@@ -712,8 +712,8 @@ class _QuickAction extends StatelessWidget {
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 9,
-                        fontWeight: FontWeight.w800,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),

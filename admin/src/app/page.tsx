@@ -348,7 +348,7 @@ function StatTile({
     <div className={`relative bg-white rounded-xl p-3 border flex items-center gap-2.5 ${urgent ? 'border-amber-200 bg-amber-50/30' : 'border-gray-100'}`}>
       <IconBadge icon={<span className="w-1.5 h-1.5 rounded-full bg-white/90 block" />} color={color} size="sm" />
       <div className="min-w-0">
-        <p className="text-[10.5px] text-gray-400 leading-tight truncate">{label}</p>
+        <p className="text-[11px] text-gray-500 leading-[1.2] line-clamp-2 min-h-[26px]">{label}</p>
         <p className="text-[17px] font-bold text-gray-900 tabular-nums leading-tight mt-0.5">{value ?? '—'}</p>
       </div>
       {urgent && <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-amber-500" />}
@@ -379,7 +379,7 @@ function StatCard({
   return (
     <div className={`relative bg-white rounded-lg p-3 border ${urgent ? 'border-red-200/70 bg-red-50/30' : 'border-gray-100'}`}>
       {urgent && <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full bg-red-500" />}
-      <p className="text-[11px] text-gray-400 leading-tight">{label}</p>
+      <p className="text-[11.5px] text-gray-500 leading-[1.2] line-clamp-2 min-h-[28px]">{label}</p>
       <p className={`text-[19px] font-semibold mt-1.5 tabular-nums ${accentClasses[accent]}`}>{value ?? '—'}</p>
     </div>
   );
@@ -410,7 +410,7 @@ function HeroStat({
     >
       <IconBadge icon={icon} color={color} size="lg" />
       <div className="min-w-0">
-        <p className="text-[11.5px] text-gray-400 font-medium truncate">{label}</p>
+        <p className="text-[12px] text-gray-500 font-medium leading-[1.2] line-clamp-2 min-h-[29px]">{label}</p>
         <p className="text-[26px] font-bold text-gray-900 tabular-nums leading-tight mt-0.5">{value ?? '—'}</p>
       </div>
       {highlight && <span className="absolute top-3 right-3 w-2 h-2 rounded-full bg-amber-500 animate-pulse" />}
