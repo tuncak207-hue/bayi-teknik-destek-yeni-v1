@@ -38,6 +38,7 @@ void main() {
         ),
       ),
     );
+    await tester.pump();
 
     expect(find.bySemanticsLabel('Gönder'), findsOneWidget);
     expect(find.bySemanticsLabel('Yükleniyor'), findsOneWidget);
