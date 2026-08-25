@@ -381,31 +381,35 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 0),
             Transform.translate(
               offset: const Offset(0, 4),
-              child: GridView.count(
-              crossAxisCount: 3,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              mainAxisSpacing: AppSpacing.sm,
-              crossAxisSpacing: AppSpacing.sm,
-              childAspectRatio: 0.72,
-              padding: EdgeInsets.zero,
-              children: _quickActionsOrder
-                  // "Bayi Ziyaretleri" sadece SALES (satış danışmanı)
-                  // rolündeki hesaplara gösterilir — bayilerin bu
-                  // özellikle bir ilgisi yok.
-                  .where((action) => action.id != 'dealer_visits' || CurrentUser().role == 'SALES' || CurrentUser().role == 'ADMIN')
-                  .map((action) => _QuickAction(
-                        icon: action.icon,
-                        label: action.label,
-                        badgeCount: _categoryBadges[action.id] ?? 0,
-                        onTap: () {
-                          if (_categoryBadges.containsKey(action.id) && (_categoryBadges[action.id] ?? 0) > 0) {
-                            setState(() => _categoryBadges[action.id] = 0);
-                          }
-                          _handleQuickActionTap(action);
-                        },
-                      ))
-                  .toList(),
+              child: GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                padding: EdgeInsets.zero,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  mainAxisExtent: 150,
+                  mainAxisSpacing: AppSpacing.sm,
+                  crossAxisSpacing: AppSpacing.sm,
+                ),
+                itemCount: _quickActionsOrder
+                    .where((action) => action.id != 'dealer_visits' || CurrentUser().role == 'SALES' || CurrentUser().role == 'ADMIN')
+                    .length,
+                itemBuilder: (context, index) {
+                  final action = _quickActionsOrder
+                      .where((action) => action.id != 'dealer_visits' || CurrentUser().role == 'SALES' || CurrentUser().role == 'ADMIN')
+                      .elementAt(index);
+                  return _QuickAction(
+                    icon: action.icon,
+                    label: action.label,
+                    badgeCount: _categoryBadges[action.id] ?? 0,
+                    onTap: () {
+                      if (_categoryBadges.containsKey(action.id) && (_categoryBadges[action.id] ?? 0) > 0) {
+                        setState(() => _categoryBadges[action.id] = 0);
+                      }
+                      _handleQuickActionTap(action);
+                    },
+                  );
+                },
               ),
             ),
             const SizedBox(height: AppSpacing.xs),
