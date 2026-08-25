@@ -167,6 +167,50 @@ class _RootShellState extends State<RootShell> {
     // KENDİ CustomScrollView'ının ilk sliver'ı olarak gömüyor — bu
     // sayede menü, o ekranın kaydırma fiziğinin GERÇEK bir parçası
     // oluyor (SliverAppBar floating+snap), taklit bir dinleyici değil.
-    return widget.navigationShell;
+    final scheme = Theme.of(context).colorScheme;
+    return Scaffold(
+      body: widget.navigationShell,
+      extendBody: false,
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: selectedDestination,
+        onDestinationSelected: handleTap,
+        backgroundColor: scheme.surface,
+        destinations: [
+          const NavigationDestination(
+            icon: Icon(Icons.home_outlined),
+            selectedIcon: Icon(Icons.home_rounded),
+            label: 'Ana Sayfa',
+          ),
+          const NavigationDestination(
+            icon: Icon(Icons.auto_awesome_outlined),
+            selectedIcon: Icon(Icons.auto_awesome),
+            label: 'AI Asistan',
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.call_outlined),
+            selectedIcon: const Icon(Icons.call),
+            label: 'Destek',
+          ),
+          NavigationDestination(
+            icon: Badge(
+              isLabelVisible: _unreadMessages > 0,
+              label: Text(_unreadMessages > 9 ? '9+' : '$_unreadMessages'),
+              child: const Icon(Icons.forum_outlined),
+            ),
+            selectedIcon: Badge(
+              isLabelVisible: _unreadMessages > 0,
+              label: Text(_unreadMessages > 9 ? '9+' : '$_unreadMessages'),
+              child: const Icon(Icons.forum_rounded),
+            ),
+            label: 'Mesajlar',
+          ),
+          const NavigationDestination(
+            icon: Icon(Icons.person_outline),
+            selectedIcon: Icon(Icons.person_rounded),
+            label: 'Profil',
+          ),
+        ],
+      ),
+    );
   }
 }
