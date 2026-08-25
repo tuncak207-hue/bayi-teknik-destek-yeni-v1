@@ -41,7 +41,8 @@ void main() {
     await tester.pump();
 
     expect(find.bySemanticsLabel('Gönder'), findsOneWidget);
-    expect(find.bySemanticsLabel('Yükleniyor'), findsOneWidget);
+    final loadingSemantics = tester.getSemantics(find.byType(AppLoadingState));
+    expect(loadingSemantics.label, 'Yükleniyor');
     expect(find.bySemanticsLabel('Kayıt yok. Henüz veri bulunmuyor.'), findsOneWidget);
     semanticsHandle.dispose();
   });

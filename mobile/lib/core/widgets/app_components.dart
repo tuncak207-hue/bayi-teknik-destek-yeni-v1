@@ -432,8 +432,9 @@ class AppLoadingState extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     return Semantics(
       container: true,
+      explicitChildNodes: true,
       liveRegion: true,
-      label: 'YÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€Â¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¼kleniyor',
+      label: '\u0059\u00FCkleniyor',
       child: Shimmer.fromColors(
         baseColor: scheme.surfaceContainerHighest,
       highlightColor: scheme.surfaceContainer,
