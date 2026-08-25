@@ -16,14 +16,19 @@ Future<void> main() async {
   // standart yaklaşım.
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
-  // google-services.json (Android) / GoogleService-Info.plist (iOS) projeye
-  // eklenmemişse bu çağrı hata fırlatır; push olmadan da uygulamanın açılmaya
-  // devam etmesi için yakalayıp yutuyoruz (bkz. README "Firebase Kurulumu").
+  final isRelease = bool.fromEnvironment('dart.vm.product');
   try {
     await Firebase.initializeApp();
-  } catch (e) {
-    // ignore: avoid_print
-    print('[firebase] Başlatılamadı (google-services.json eksik olabilir): $e');
+  } catch (error, stackTrace) {
+    if (isRelease) {
+      // Release’te Firebase olmadan devam etmek push/auth özelliklerini sessizce
+      // bozacağı için yapılandırma hatasını build/runtime health-check olarak açığa çıkar.
+      Error.throwWithStackTrace(
+        StateError('Firebase release yapılandırması başlatılamadı. Android için google-services.json, iOS için GoogleService-Info.plist ve APNs ayarlarını kontrol edin.'),
+        stackTrace,
+      );
+    }
+    debugPrint('[firebase] Debug yapılandırması başlatılamadı: $error');
   }
 
   // Kullanıcının daha önce seçtiği yazı boyutu ve parmak izi kilidi

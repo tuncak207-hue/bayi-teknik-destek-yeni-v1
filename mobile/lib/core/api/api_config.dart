@@ -18,6 +18,25 @@ class ApiConfig {
     defaultValue: _isRelease ? '' : _debugSocketUrl,
   );
 
-  static bool get isConfigured =>
-      baseUrl.startsWith('https://') && socketUrl.startsWith('https://');
+  static String? get releaseValidationError {
+    if (!_isRelease) return null;
+    final apiError = _validateHttpsEndpoint(baseUrl, 'API_BASE_URL');
+    if (apiError != null) return apiError;
+    return _validateHttpsEndpoint(socketUrl, 'SOCKET_URL');
+  }
+
+  static bool get isConfigured => releaseValidationError == null;
+
+  static String? _validateHttpsEndpoint(String value, String name) {
+    if (value.trim().isEmpty) return '$name tanımlı değil.';
+    final uri = Uri.tryParse(value);
+    if (uri == null || uri.scheme != 'https' || uri.host.isEmpty) {
+      return '$name HTTPS ve geçerli bir host kullanmalıdır.';
+    }
+    final host = uri.host.toLowerCase();
+    if (host == 'localhost' || host == '127.0.0.1' || host == '10.0.2.2' || host == '0.0.0.0') {
+      return '$name production’da yerel/emulator host’u kullanamaz.';
+    }
+    return null;
+  }
 }

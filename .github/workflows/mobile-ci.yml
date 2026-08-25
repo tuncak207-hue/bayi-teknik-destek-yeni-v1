@@ -10,6 +10,7 @@ on:
     paths:
       - 'mobile/**'
       - '.github/workflows/mobile-ci.yml'
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -41,3 +42,20 @@ jobs:
 
       - name: Verify Android debug build
         run: flutter build apk --debug
+
+      - name: Validate production release contract
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        env:
+          API_BASE_URL: ${{ secrets.MOBILE_API_BASE_URL }}
+          SOCKET_URL: ${{ secrets.MOBILE_SOCKET_URL }}
+        run: |
+          set -euo pipefail
+          test -n "$API_BASE_URL" || { echo "MOBILE_API_BASE_URL secret is required"; exit 1; }
+          test -n "$SOCKET_URL" || { echo "MOBILE_SOCKET_URL secret is required"; exit 1; }
+          case "$API_BASE_URL" in https://*) ;; *) echo "API endpoint must use HTTPS"; exit 1 ;; esac
+          case "$SOCKET_URL" in https://*) ;; *) echo "Socket endpoint must use HTTPS"; exit 1 ;; esac
+          test -f android/app/google-services.json || { echo "google-services.json is required for release"; exit 1; }
+          test -f android/key.properties || { echo "key.properties is required for release signing"; exit 1; }
+          flutter build apk --release \
+            --dart-define=API_BASE_URL="$API_BASE_URL" \
+            --dart-define=SOCKET_URL="$SOCKET_URL"
