@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/widgets/design_system.dart';
 
 /// "Bu Yıl" özet ekranı — kullanıcının yıllık kullanım özetini gösterir.
 class YearInReviewScreen extends StatefulWidget {
@@ -30,10 +31,10 @@ class _YearInReviewScreenState extends State<YearInReviewScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.navy,
-      appBar: AppBar(
+      appBar: AppPageHeader(
+        title: '${_data?['year'] ?? ''} Özeti',
         backgroundColor: AppColors.navy,
         foregroundColor: Colors.white,
-        title: Text('${_data?['year'] ?? ''} Özeti'),
       ),
       body: _data == null
           ? const Center(child: CircularProgressIndicator(color: Colors.white))

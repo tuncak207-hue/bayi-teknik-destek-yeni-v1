@@ -10,12 +10,16 @@ class AppPageHeader extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final List<Widget>? actions;
   final VoidCallback? onBack;
+  final Color? backgroundColor;
+  final Color? foregroundColor;
 
   const AppPageHeader({
     super.key,
     required this.title,
     this.actions,
     this.onBack,
+    this.backgroundColor,
+    this.foregroundColor,
   });
 
   @override
@@ -23,8 +27,13 @@ class AppPageHeader extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final foreground = foregroundColor ?? scheme.onSurface;
     return AppBar(
-      title: Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.navy)),
+      backgroundColor: backgroundColor ?? scheme.surface,
+      foregroundColor: foreground,
+      surfaceTintColor: backgroundColor ?? scheme.surface,
+      title: Text(title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: foreground)),
       centerTitle: true,
       automaticallyImplyLeading: false,
       leading: IconButton(
@@ -100,7 +109,7 @@ class StandardCard extends StatelessWidget {
     final card = Container(
       padding: padding,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
         border: border,
         boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 12, offset: const Offset(0, 3))],

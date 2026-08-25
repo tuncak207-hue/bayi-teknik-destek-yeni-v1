@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/design_system.dart';
 import 'package:dio/dio.dart';
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/widgets/empty_state.dart';
+import '../../core/widgets/app_components.dart';
 
 /// Çoklu kullanıcılı bayi hesabı: firma sahibi, aynı firma adı altında
 /// ek teknisyen hesapları oluşturup yönetebilir — her teknisyen kendi
@@ -76,7 +77,7 @@ class _TeamScreenState extends State<TeamScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppBar(title: const Text('Ekip Üyelerim')),
+      appBar: const AppPageHeader(title: 'Ekip Üyelerim'),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _openAddSheet,
         icon: const Icon(Icons.person_add_outlined),
@@ -85,7 +86,7 @@ class _TeamScreenState extends State<TeamScreen> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _members.isEmpty
-              ? EmptyState(
+              ? AppEmptyState(
                   icon: Icons.groups_outlined,
                   title: 'Henüz ekip üyeniz yok',
                   description: 'Firmanızdaki teknisyenler için ayrı hesaplar oluşturup uygulamayı birlikte kullanabilirsiniz.',

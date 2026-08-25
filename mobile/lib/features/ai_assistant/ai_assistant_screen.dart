@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/design_system.dart';
 import 'package:go_router/go_router.dart';
 import 'package:dio/dio.dart';
 import 'data/ai_repository.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/widgets/empty_state.dart';
+import '../../core/widgets/app_components.dart';
 
 /// Kullanıcı isteği: "AI Teknik Asistan kendi sayfası olacak, sohbet
 /// ayrı." Önceden bu ekran, mevcut bir sohbet varsa otomatik olarak
@@ -100,7 +101,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppBar(title: const Text('AI Teknik Asistan')),
+      appBar: const AppPageHeader(title: 'AI Teknik Asistan'),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : ListView(
@@ -156,7 +157,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
                 ] else
                   const Padding(
                     padding: EdgeInsets.only(top: 40),
-                    child: EmptyState(
+                    child: AppEmptyState(
                       icon: Icons.smart_toy_outlined,
                       title: 'Henüz bir sorunuz yok',
                       description: 'Yukarıdaki kutuya teknik sorunuzu yazarak başlayın.',

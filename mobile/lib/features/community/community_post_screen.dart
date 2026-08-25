@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/design_system.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:dio/dio.dart';
 import '../../core/api/api_client.dart';
@@ -89,7 +90,7 @@ class _CommunityPostScreenState extends State<CommunityPostScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppBar(title: const Text('Bayilere Sor')),
+      appBar: const AppPageHeader(title: 'Bayilere Sor'),
       body: Column(
         children: [
           Expanded(

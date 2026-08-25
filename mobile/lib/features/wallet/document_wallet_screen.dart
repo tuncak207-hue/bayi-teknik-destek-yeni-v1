@@ -7,7 +7,8 @@ import 'package:share_plus/share_plus.dart';
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/design_system.dart';
-import '../../core/widgets/empty_state.dart';
+import '../../core/widgets/design_system.dart';
+import '../../core/widgets/app_components.dart';
 
 const Map<String, String> _kCategoryLabels = {
   'ISG': 'İSG Evrakları',
@@ -213,6 +214,7 @@ class _DocumentWalletScreenState extends State<DocumentWalletScreen> {
   Widget build(BuildContext context) {
     final grouped = _grouped;
     return Scaffold(
+      appBar: const AppPageHeader(title: 'Belge Kasası'),
       backgroundColor: const Color(0xFFFFFFFF),
       floatingActionButton: StandardFab(label: 'Belge Ekle', onPressed: _addDocument),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -238,7 +240,7 @@ class _DocumentWalletScreenState extends State<DocumentWalletScreen> {
               child: _loading
                 ? const Center(child: CircularProgressIndicator())
                 : _documents.isEmpty
-                    ? EmptyState(
+                    ? AppEmptyState(
                         icon: Icons.folder_open_outlined,
                         title: 'Henüz bir belgeniz yok',
                         description: 'İSG evrakları, sertifikalar, yetki belgeleriniz gibi evraklarınızı burada saklayabilirsiniz.',

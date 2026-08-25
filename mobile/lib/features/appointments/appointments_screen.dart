@@ -4,7 +4,7 @@ import 'dart:io' show Platform;
 import 'package:dio/dio.dart';
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/widgets/empty_state.dart';
+import '../../core/widgets/app_components.dart';
 import '../../core/widgets/section_header.dart';
 import '../../core/widgets/design_system.dart';
 import '../../core/events/notification_badge_bus.dart';
@@ -182,7 +182,7 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
                         child: ListView(
                           children: [
                             const SizedBox(height: 60),
-                            EmptyState(
+                            AppEmptyState(
                               icon: Icons.calendar_month_outlined,
                               title: 'Henüz bir randevunuz yok',
                               description: 'Sağ alttaki butondan teknik destek randevusu oluşturabilirsiniz.',
@@ -457,17 +457,22 @@ class _CreateAppointmentSheetState extends State<_CreateAppointmentSheet> {
     if (Platform.isIOS) {
       return CupertinoPageScaffold(
         backgroundColor: Colors.white,
-        navigationBar: const CupertinoNavigationBar(
+        navigationBar: CupertinoNavigationBar(
           backgroundColor: Colors.white,
           border: null,
-          middle: Text('Yeni Randevu Talebi', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+          leading: CupertinoButton(
+            padding: EdgeInsets.zero,
+            onPressed: () => Navigator.pop(context),
+            child: const Text('İptal', style: TextStyle(color: CupertinoColors.systemGrey, fontSize: 16)),
+          ),
+          middle: const Text('Yeni Randevu Talebi', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
         ),
         child: SafeArea(child: _buildForm()),
       );
     }
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(title: const Text('Yeni Randevu Talebi'), backgroundColor: Colors.white, elevation: 0, foregroundColor: AppColors.navy),
+      appBar: const AppPageHeader(title: 'Yeni Randevu Talebi'),
       body: SafeArea(child: _buildForm()),
     );
   }

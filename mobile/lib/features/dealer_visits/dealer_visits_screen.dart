@@ -5,7 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/widgets/empty_state.dart';
+import '../../core/widgets/app_components.dart';
 import '../../core/widgets/design_system.dart';
 
 class DealerVisitsScreen extends StatefulWidget {
@@ -103,7 +103,7 @@ class _DealerVisitsScreenState extends State<DealerVisitsScreen> {
         child: _loading
           ? const Center(child: CircularProgressIndicator())
           : _visits.isEmpty
-              ? const EmptyState(icon: Icons.location_on_outlined, title: 'Henüz ziyaret kaydınız yok', description: 'Sağ alttaki butondan ilk ziyaret raporunuzu oluşturun.')
+              ? const AppEmptyState(icon: Icons.location_on_outlined, title: 'Henüz ziyaret kaydınız yok', description: 'Sağ alttaki butondan ilk ziyaret raporunuzu oluşturun.')
               : RefreshIndicator(
                   onRefresh: _load,
                   child: ListView.builder(
@@ -330,7 +330,7 @@ class _CreateVisitScreenState extends State<_CreateVisitScreen> {
     }
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppBar(title: const Text('Yeni Ziyaret')),
+      appBar: const AppPageHeader(title: 'Yeni Ziyaret'),
       body: SafeArea(child: _buildForm()),
     );
   }
@@ -558,7 +558,7 @@ class _VisitDetailScreenState extends State<_VisitDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppBar(title: const Text('Ziyaret Detayı')),
+      appBar: const AppPageHeader(title: 'Ziyaret Detayı'),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _visit == null

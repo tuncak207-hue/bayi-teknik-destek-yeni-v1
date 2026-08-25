@@ -4,7 +4,8 @@ import 'package:dio/dio.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/widgets/empty_state.dart';
+import '../../core/widgets/design_system.dart';
+import '../../core/widgets/app_components.dart';
 
 /// Bayilerin satış danışmanlarına doğrudan (özel) mesaj gönderebildiği
 /// ekran. Kullanıcı isteği: "call center gibi olsun ama satışçı olduğu
@@ -58,6 +59,7 @@ class _SalesConsultantsScreenState extends State<SalesConsultantsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: const AppPageHeader(title: 'Satış Danışmanları'),
       backgroundColor: const Color(0xFFFFFFFF),
       body: SafeArea(
         child: Column(
@@ -73,7 +75,7 @@ class _SalesConsultantsScreenState extends State<SalesConsultantsScreen> {
             child: _loading
                 ? const Center(child: CircularProgressIndicator())
                 : _consultants.isEmpty
-                    ? EmptyState(
+                    ? AppEmptyState(
                         icon: Icons.support_agent_outlined,
                         title: 'Henüz satış danışmanı eklenmedi',
                         description: 'Admin, satış danışmanı hesabı ekleyince burada görünecek.',

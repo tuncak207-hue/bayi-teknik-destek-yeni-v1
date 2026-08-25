@@ -7,7 +7,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart';
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/widgets/empty_state.dart';
+import '../../core/widgets/app_components.dart';
 import '../../core/widgets/design_system.dart';
 import '../../core/widgets/premium_form_widgets.dart';
 import '../../core/widgets/province_district_picker.dart';
@@ -109,7 +109,7 @@ class _BomListScreenState extends State<BomListScreen> {
             child: _loading
                 ? const Center(child: CircularProgressIndicator())
                 : _lists.isEmpty
-                    ? EmptyState(
+                    ? AppEmptyState(
                         icon: Icons.inventory_2_outlined,
                         title: 'Henüz bir malzeme listeniz yok',
                         description: 'Sağ alttaki butondan yeni bir liste oluşturabilirsiniz.',

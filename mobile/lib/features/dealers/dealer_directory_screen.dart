@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/design_system.dart';
 import 'package:go_router/go_router.dart';
 import 'package:dio/dio.dart';
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/widgets/empty_state.dart';
+import '../../core/widgets/app_components.dart';
 import '../../core/events/dealers_refresh_bus.dart';
 
 /// Bayi Rehberi — tüm onaylanmış bayilerin listelendiği, birine dokununca
@@ -77,7 +78,7 @@ class _DealerDirectoryScreenState extends State<DealerDirectoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F6F8),
-      appBar: AppBar(title: const Text('Bayi Rehberi')),
+      appBar: const AppPageHeader(title: 'Bayi Rehberi'),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _dealers.isEmpty
@@ -86,7 +87,7 @@ class _DealerDirectoryScreenState extends State<DealerDirectoryScreen> {
                   child: ListView(
                     children: [
                       const SizedBox(height: 60),
-                      EmptyState(
+                      AppEmptyState(
                         icon: Icons.groups_outlined,
                         title: 'Henüz başka bir bayi yok',
                         description: 'Onaylanmış diğer bayiler burada listelenecek.',

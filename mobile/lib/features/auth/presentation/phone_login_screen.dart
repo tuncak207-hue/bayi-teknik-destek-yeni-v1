@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/design_system.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -112,7 +113,7 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Telefon ile Giriş')),
+      appBar: const AppPageHeader(title: 'Telefon ile Giriş'),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(

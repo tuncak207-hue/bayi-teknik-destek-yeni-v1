@@ -5,7 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/widgets/empty_state.dart';
+import '../../core/widgets/app_components.dart';
 import '../../core/widgets/design_system.dart';
 import '../../core/events/notification_badge_bus.dart';
 
@@ -160,7 +160,7 @@ class _SupportTicketsScreenState extends State<SupportTicketsScreen> {
                   if (_tickets.isEmpty)
                     const Padding(
                       padding: EdgeInsets.only(top: 40),
-                      child: EmptyState(icon: Icons.build_circle_outlined, title: 'Henüz bir teknik destek kaydınız yok'),
+                      child: AppEmptyState(icon: Icons.build_circle_outlined, title: 'Henüz bir teknik destek kaydınız yok'),
                     )
                   else
                     ..._tickets.map((t) {
@@ -312,6 +312,11 @@ class _CreateTicketScreenState extends State<_CreateTicketScreen> {
         navigationBar: CupertinoNavigationBar(
           backgroundColor: const Color(0xFFFFFFFF),
           border: null,
+          leading: CupertinoButton(
+            padding: EdgeInsets.zero,
+            onPressed: () => Navigator.pop(context),
+            child: const Text('İptal', style: TextStyle(color: CupertinoColors.systemGrey, fontSize: 16)),
+          ),
           middle: Text(widget.isEmergency ? 'Acil Teknik Destek' : 'Yeni Teknik Destek Kaydı', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
         ),
         child: SafeArea(child: _buildForm()),
@@ -319,7 +324,7 @@ class _CreateTicketScreenState extends State<_CreateTicketScreen> {
     }
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppBar(title: Text(widget.isEmergency ? 'Acil Teknik Destek' : 'Yeni Teknik Destek Kaydı')),
+      appBar: AppPageHeader(title: widget.isEmergency ? 'Acil Teknik Destek' : 'Yeni Teknik Destek Kaydı'),
       body: SafeArea(child: _buildForm()),
     );
   }
@@ -446,7 +451,7 @@ class _TicketDetailScreenState extends State<_TicketDetailScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppBar(title: const Text('Kayıt Detayı')),
+      appBar: const AppPageHeader(title: 'Kayıt Detayı'),
       body: RefreshIndicator(
         onRefresh: _load,
         child: ListView(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/widgets/design_system.dart';
 import 'quick_actions_data.dart';
 
 class ReorderQuickActionsScreen extends StatefulWidget {
@@ -40,7 +41,7 @@ class _ReorderQuickActionsScreenState extends State<ReorderQuickActionsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppBar(title: const Text('Hızlı İşlemleri Düzenle')),
+      appBar: const AppPageHeader(title: 'Hızlı İşlemleri Düzenle'),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : Column(

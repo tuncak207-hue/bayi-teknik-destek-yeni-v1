@@ -6,7 +6,7 @@ import 'package:dio/dio.dart';
 import '../../core/api/api_client.dart';
 import '../../core/auth/current_user.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/widgets/empty_state.dart';
+import '../../core/widgets/app_components.dart';
 import '../../core/widgets/design_system.dart';
 import '../../core/widgets/premium_form_widgets.dart';
 import '../../core/widgets/signature_pad.dart';
@@ -103,7 +103,7 @@ class _MaintenanceScreenState extends State<MaintenanceScreen> {
               child: _loading
                 ? const Center(child: CircularProgressIndicator())
                 : _records.isEmpty
-                    ? EmptyState(
+                    ? AppEmptyState(
                         icon: Icons.build_outlined,
                         title: 'Henüz bir bakım kaydınız yok',
                         description: 'Sahada tamamladığınız bakımları burada dijital olarak kaydedebilirsiniz.',
@@ -375,7 +375,7 @@ class _CreateMaintenanceScreenState extends State<_CreateMaintenanceScreen> {
     }
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppBar(title: const Text('Yeni Bakım Kaydı')),
+      appBar: const AppPageHeader(title: 'Yeni Bakım Kaydı'),
       // ÖNEMLİ DÜZELTME: Android'de SafeArea eksikti, alttaki sabit
       // "Kaydet" butonu sistem gezinme çubuğunun arkasında kalıyordu.
       body: SafeArea(child: _buildForm()),

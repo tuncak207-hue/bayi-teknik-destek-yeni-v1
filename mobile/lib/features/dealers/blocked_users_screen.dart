@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/widgets/empty_state.dart';
+import '../../core/widgets/design_system.dart';
+import '../../core/widgets/app_components.dart';
 import '../../core/widgets/section_header.dart';
 import '../../core/events/dealers_refresh_bus.dart';
 
@@ -45,6 +46,7 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: const AppPageHeader(title: 'Engellenen Bayiler'),
       backgroundColor: const Color(0xFFFFFFFF),
       body: SafeArea(
         child: Column(
@@ -60,7 +62,7 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
             child: _loading
                 ? const Center(child: CircularProgressIndicator())
                 : _blocked.isEmpty
-                    ? const EmptyState(icon: Icons.block, title: 'Engellediğiniz bir bayi yok')
+                    ? const AppEmptyState(icon: Icons.block, title: 'Engellediğiniz bir bayi yok')
                     : ListView.separated(
                         padding: const EdgeInsets.all(AppSpacing.md),
                         itemCount: _blocked.length,

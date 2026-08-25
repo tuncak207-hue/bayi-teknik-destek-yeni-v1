@@ -3,7 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:dio/dio.dart';
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/widgets/empty_state.dart';
+import '../../core/widgets/design_system.dart';
+import '../../core/widgets/app_components.dart';
 
 class GroupsScreen extends StatefulWidget {
   const GroupsScreen({super.key});
@@ -106,6 +107,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: const AppPageHeader(title: 'Gruplar'),
       backgroundColor: const Color(0xFFFFFFFF),
       body: SafeArea(
         child: Column(
@@ -129,7 +131,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
               child: _loading
                 ? const Center(child: CircularProgressIndicator())
                 : _groups.isEmpty
-                    ? EmptyState(icon: Icons.groups_2_outlined, title: 'Henüz oluşturulmuş bir grup yok')
+                    ? AppEmptyState(icon: Icons.groups_2_outlined, title: 'Henüz oluşturulmuş bir grup yok')
                     : RefreshIndicator(
                         onRefresh: _load,
                         child: CustomScrollView(

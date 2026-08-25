@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:open_filex/open_filex.dart';
 import '../../core/storage/offline_documents_store.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/widgets/empty_state.dart';
+import '../../core/widgets/design_system.dart';
+import '../../core/widgets/app_components.dart';
 
 class OfflineDocumentsScreen extends StatefulWidget {
   const OfflineDocumentsScreen({super.key});
@@ -58,12 +59,13 @@ class _OfflineDocumentsScreenState extends State<OfflineDocumentsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: const AppPageHeader(title: 'Çevrimdışı Belgeler'),
       backgroundColor: const Color(0xFFFFFFFF),
       body: SafeArea(
         child: _loading
           ? const Center(child: CircularProgressIndicator())
           : _documents.isEmpty
-              ? EmptyState(
+              ? AppEmptyState(
                   icon: Icons.download_outlined,
                   title: 'Henüz indirilmiş bir doküman yok',
                   description: 'Bir dokümanı açıp "Çevrimdışı İndir" ile buraya ekleyebilirsiniz.',

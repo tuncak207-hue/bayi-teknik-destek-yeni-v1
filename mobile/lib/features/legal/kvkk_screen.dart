@@ -1,109 +1,97 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/design_system.dart';
 
-/// KVKK Aydınlatma Metni (Kişisel Verilerin Korunması Kanunu — 6698 sayılı Kanun)
-///
-/// ÖNEMLİ: Bu metin ŞABLON/TASLAK niteliğindedir. Gerçek yayın öncesi:
-/// 1. Köşeli parantez [ ] içindeki tüm alanlar gerçek bilgilerle doldurulmalı,
-/// 2. Uygulamanın gerçekte topladığı/işlediği veriler ile metin birebir
-///    eşleştirilmeli (örn. Firebase/FCM, Supabase, R2 gibi üçüncü taraf
-///    veri işleyicileri varsa bunlar açıkça belirtilmeli),
-/// 3. Bir hukuk danışmanı tarafından incelenip onaylanmalıdır.
-/// Bu metin hukuki tavsiye niteliği taşımaz.
+/// ENTPA Bayi Teknik Destek uygulaması için çalışma taslağıdır.
+/// Yayın öncesinde ENTPA'nın hukuk danışmanı tarafından uygulamanın gerçek
+/// veri akışları, saklama süreleri ve hizmet sağlayıcılarıyla karşılaştırılarak
+/// onaylanmalıdır.
 class KvkkScreen extends StatelessWidget {
   const KvkkScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('KVKK Aydınlatma Metni')),
+      appBar: const AppPageHeader(title: 'KVKK Aydınlatma Metni'),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: const [
+          _Heading('Kişisel Verilerin Korunması ve İşlenmesine İlişkin Aydınlatma Metni'),
+          _Body(
+            'Bu aydınlatma metni, 6698 sayılı Kişisel Verilerin Korunması Kanunu’nun '
+            '10. maddesi kapsamında, Bayi Teknik Destek mobil uygulamasının kullanıcılarını '
+            'kişisel verilerin işlenmesi hakkında bilgilendirmek amacıyla hazırlanmıştır.',
+          ),
+          SizedBox(height: 20),
           _Heading('1. Veri Sorumlusu'),
           _Body(
-            '6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") uyarınca, '
-            'kişisel verileriniz veri sorumlusu sıfatıyla [ŞİRKET TİCARET UNVANI] '
-            '("Şirket") tarafından aşağıda açıklanan kapsamda işlenmektedir.\n\n'
-            'Adres: [ŞİRKET ADRESİ]\n'
-            'E-posta: [kvkk@sirket.com]\n'
-            'Mersis No: [MERSİS NUMARASI]',
+            'Kişisel verileriniz, veri sorumlusu sıfatıyla ENTPA Elektronik Cihazlar '
+            'Tic. Paz. ve Turizm A.Ş. tarafından işlenmektedir.\n\n'
+            'Adres: Y. Dudullu OSB, 1. Cadde No:23, 34775 Ümraniye – İstanbul / TR\n'
+            'E-posta: info@entpa.com.tr',
           ),
           SizedBox(height: 20),
           _Heading('2. İşlenen Kişisel Veriler'),
           _Body(
-            'Bayi Teknik Destek uygulamasını kullanımınız sırasında aşağıdaki '
-            'kişisel verileriniz işlenebilir:\n\n'
-            '• Kimlik Bilgileri: Ad, soyad\n'
-            '• İletişim Bilgileri: E-posta adresi, telefon numarası\n'
-            '• Mesleki Bilgiler: Firma adı\n'
-            '• Kullanıcı İşlem Bilgileri: Uygulama içi mesajlaşma içerikleri, '
-            'sorulan teknik sorular, yüklenen fotoğraflar\n'
-            '• Teknik Veriler: Cihaz push bildirim kimliği (FCM token), IP adresi, '
-            'oturum/erişim kayıtları\n'
-            '• Görsel Kayıtlar: Profil fotoğrafı, teknik sorun fotoğrafları (varsa)',
+            'Uygulamayı kullanmanız sırasında, kullanım amacına ve uygulamadaki işlemlerinize '
+            'bağlı olarak aşağıdaki veri kategorileri işlenebilir:\n\n'
+            '• Kimlik bilgileri: ad ve soyad.\n'
+            '• İletişim bilgileri: e-posta adresi ve telefon numarası.\n'
+            '• Mesleki bilgiler: bayi/firma bilgisi, görev ve uzmanlık bilgileri.\n'
+            '• Kullanıcı işlem bilgileri: teknik sorular, destek kayıtları, randevu ve ziyaret bilgileri.\n'
+            '• Görsel ve içerik bilgileri: yüklediğiniz fotoğraflar, belgeler ve mesaj içerikleri.\n'
+            '• İşlem güvenliği bilgileri: IP adresi, oturum kayıtları, cihaz ve erişim bilgileri.\n'
+            '• Bildirim bilgileri: push bildirimlerinin iletilmesi için gerekli cihaz bildirim belirteci.',
           ),
           SizedBox(height: 20),
-          _Heading('3. Kişisel Verilerin İşlenme Amaçları'),
+          _Heading('3. Kişisel Verilerin İşlenme Amaçları ve Hukuki Sebepleri'),
           _Body(
-            'Kişisel verileriniz;\n\n'
-            '• Bayi hesabının oluşturulması ve doğrulanması,\n'
-            '• Yapay zeka destekli teknik destek hizmetinin sunulması,\n'
-            '• Bayiler arası iletişimin (mesajlaşma) sağlanması,\n'
-            '• Push bildirimlerinin gönderilmesi,\n'
-            '• Hizmet kalitesinin izlenmesi ve geliştirilmesi,\n'
-            '• Yasal yükümlülüklerin yerine getirilmesi\n\n'
-            'amaçlarıyla işlenmektedir.',
+            'Kişisel verileriniz; kullanıcı hesabının oluşturulması ve yönetilmesi, teknik destek '
+            'hizmetlerinin sunulması, yapay zeka destekli teknik yanıtların oluşturulması, bayi '
+            'iletişiminin ve mesajlaşma hizmetinin sağlanması, randevu ve ziyaret süreçlerinin '
+            'yürütülmesi, bildirimlerin gönderilmesi, uygulama güvenliğinin sağlanması, taleplerin '
+            've şikayetlerin cevaplanması ile yasal yükümlülüklerin yerine getirilmesi amaçlarıyla '
+            'işlenebilir. İşleme faaliyetleri, somut faaliyete göre KVKK’nın 5. maddesinde belirtilen '
+            'kanunlarda açıkça öngörülme, sözleşmenin kurulması veya ifası, veri sorumlusunun hukuki '
+            'yükümlülüğü, meşru menfaati ve gerekli hâllerde açık rıza hukuki sebeplerine dayanır.',
           ),
           SizedBox(height: 20),
           _Heading('4. Kişisel Verilerin Aktarılması'),
           _Body(
-            'Kişisel verileriniz, yukarıda belirtilen amaçların gerçekleştirilmesi '
-            'ile sınırlı olarak aşağıdaki taraflara aktarılabilir:\n\n'
-            '• Bulut altyapı ve veri depolama hizmeti sağlayıcılarına '
-            '(örn. veritabanı ve dosya depolama hizmeti sağlayıcıları),\n'
-            '• Push bildirim altyapı sağlayıcısına (Firebase Cloud Messaging — Google),\n'
-            '• Yapay zeka destekli yanıt üretimi için kullanılan yapay zeka '
-            'servis sağlayıcısına (yalnızca sorduğunuz teknik soru içeriği ile sınırlı olarak),\n'
-            '• Yetkili kamu kurum ve kuruluşlarına (yasal zorunluluk hâlinde).\n\n'
-            'Bu aktarımlar KVKK\'nın 8. ve 9. maddelerinde belirtilen şartlara '
-            'uygun şekilde gerçekleştirilir.',
+            'Kişisel verileriniz, yalnızca ilgili hizmetin yürütülmesi için gerekli olduğu ölçüde; '
+            'yetkili ENTPA çalışanlarına, bilgi teknolojileri ve barındırma hizmeti sağlayıcılarına, '
+            'bildirim ve iletişim altyapısı sağlayıcılarına, yapay zeka hizmet sağlayıcılarına '
+            '(teknik soru ve gerekli ek içerik ile sınırlı olarak), hukuken yetkili kamu kurumlarına '
+            've profesyonel danışmanlara aktarılabilir. Yurt içi ve yurt dışı aktarımlar, KVKK’nın '
+            '8. ve 9. maddelerinde öngörülen şartlara uygun olarak gerçekleştirilir.',
           ),
           SizedBox(height: 20),
-          _Heading('5. Kişisel Veri Toplamanın Yöntemi ve Hukuki Sebebi'),
+          _Heading('5. Kişisel Verilerin Toplanma Yöntemi ve Saklama Süresi'),
           _Body(
-            'Kişisel verileriniz, mobil uygulama üzerinden elektronik ortamda, '
-            'kayıt formu doldurmanız, uygulamayı kullanmanız ve mesajlaşmanız '
-            'yoluyla toplanmakta olup; KVKK\'nın 5. maddesinde belirtilen '
-            '"sözleşmenin kurulması veya ifasıyla doğrudan doğruya ilgili olması", '
-            '"veri sorumlusunun meşru menfaati" ve açık rızanızın bulunduğu hâllerde '
-            '"açık rıza" hukuki sebeplerine dayanılarak işlenmektedir.',
+            'Verileriniz; uygulamadaki kayıt ve profil formları, destek kayıtları, mesajlaşma, '
+            'randevu/ziyaret işlemleri, belge ve fotoğraf yüklemeleri, cihaz bildirim altyapısı ve '
+            'uygulama kullanım kayıtları üzerinden elektronik ortamda toplanır. Veriler, ilgili '
+            'işleme amacının gerektirdiği süre boyunca ve her hâlde ilgili mevzuattaki zamanaşımı '
+            've saklama süreleri kadar muhafaza edilir; süre sonunda silinir, yok edilir veya anonim hâle getirilir.',
           ),
           SizedBox(height: 20),
-          _Heading('6. KVKK Kapsamındaki Haklarınız'),
+          _Heading('6. İlgili Kişinin Hakları'),
           _Body(
-            'KVKK\'nın 11. maddesi uyarınca aşağıdaki haklara sahipsiniz:\n\n'
-            '• Kişisel verilerinizin işlenip işlenmediğini öğrenme,\n'
-            '• İşlenmişse buna ilişkin bilgi talep etme,\n'
-            '• İşlenme amacını ve amacına uygun kullanılıp kullanılmadığını öğrenme,\n'
-            '• Yurt içinde/dışında aktarıldığı üçüncü kişileri bilme,\n'
-            '• Eksik veya yanlış işlenmişse düzeltilmesini isteme,\n'
-            '• KVKK\'nın 7. maddesindeki şartlar çerçevesinde silinmesini/yok '
-            'edilmesini isteme,\n'
-            '• Yapılan işlemlerin, verilerin aktarıldığı üçüncü kişilere '
-            'bildirilmesini isteme,\n'
-            '• Otomatik sistemlerle analiz edilmesi suretiyle aleyhinize bir '
-            'sonucun ortaya çıkmasına itiraz etme,\n'
-            '• Kanuna aykırı işlenmesi sebebiyle zarara uğramanız hâlinde '
-            'zararın giderilmesini talep etme.',
+            'KVKK’nın 11. maddesi uyarınca; kişisel verilerinizin işlenip işlenmediğini öğrenme, '
+            'işlenmişse bilgi talep etme, işlenme amacını ve amaca uygun kullanılıp kullanılmadığını '
+            'öğrenme, aktarılan üçüncü kişileri bilme, eksik veya yanlış işlenmiş verilerin düzeltilmesini '
+            'isteme, kanuni şartlar çerçevesinde silinmesini veya yok edilmesini isteme, yapılan işlemlerin '
+            'aktarılmış üçüncü kişilere bildirilmesini isteme, münhasıran otomatik sistemlerle analiz '
+            'sonucuna itiraz etme ve kanuna aykırı işleme nedeniyle zararın giderilmesini talep etme haklarına sahipsiniz.',
           ),
           SizedBox(height: 20),
           _Heading('7. Başvuru Yöntemi'),
           _Body(
-            'Yukarıdaki haklarınızı kullanmak için taleplerinizi '
-            '[kvkk@sirket.com] adresine e-posta yoluyla veya [ŞİRKET ADRESİ] '
-            'adresine yazılı olarak iletebilirsiniz.',
+            'KVKK kapsamındaki taleplerinizi, kimliğinizi doğrulamaya yarayan bilgilerle birlikte '
+            'info@entpa.com.tr adresine e-posta yoluyla veya veri sorumlusunun yukarıda belirtilen '
+            'adresine yazılı olarak iletebilirsiniz. Başvurular, KVKK ve ilgili ikincil mevzuatta '
+            'öngörülen usul ve süreler çerçevesinde sonuçlandırılır.',
           ),
-          SizedBox(height: 32),
+          SizedBox(height: 24),
           _NoticeBox(),
         ],
       ),
@@ -147,9 +135,8 @@ class _NoticeBox extends StatelessWidget {
         border: Border.all(color: Colors.amber.shade200),
       ),
       child: const Text(
-        'Bu metin taslak niteliğindedir, hukuki tavsiye değildir. Yayın öncesi '
-        'köşeli parantez içindeki bilgiler doldurulmalı ve bir hukuk danışmanı '
-        'tarafından incelenmelidir.',
+        'Bu metin uygulama veri akışları esas alınarak hazırlanmış çalışma taslağıdır. '
+        'Yayın öncesinde ENTPA hukuk danışmanı tarafından incelenip onaylanmalıdır.',
         style: TextStyle(fontSize: 12, color: Colors.black54),
       ),
     );

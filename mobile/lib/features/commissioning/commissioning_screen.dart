@@ -6,7 +6,7 @@ import 'package:dio/dio.dart';
 import '../../core/api/api_client.dart';
 import '../../core/auth/current_user.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/widgets/empty_state.dart';
+import '../../core/widgets/app_components.dart';
 import '../../core/widgets/premium_form_widgets.dart';
 import '../../core/widgets/signature_pad.dart';
 import '../../core/widgets/design_system.dart';
@@ -95,7 +95,7 @@ class _CommissioningListScreenState extends State<CommissioningListScreen> {
               child: _loading
                 ? const Center(child: CircularProgressIndicator())
                 : _reports.isEmpty
-                    ? EmptyState(
+                    ? AppEmptyState(
                         icon: Icons.checklist_outlined,
                         title: 'Henüz bir devreye alma raporu yok',
                         description: 'Sağ alttaki butondan yeni bir rapor oluşturabilirsiniz.',

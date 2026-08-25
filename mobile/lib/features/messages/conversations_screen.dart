@@ -7,7 +7,7 @@ import '../../core/api/socket_service.dart';
 import '../../core/notifications/notification_sound_service.dart';
 import '../../core/auth/current_user.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/widgets/empty_state.dart';
+import '../../core/widgets/app_components.dart';
 import '../../core/widgets/design_system.dart';
 class ConversationsScreen extends StatefulWidget {
   const ConversationsScreen({super.key});
@@ -262,7 +262,7 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                           child: ListView(
                             children: [
                               const SizedBox(height: 60),
-                              EmptyState(
+                              AppEmptyState(
                                 icon: _showArchived ? Icons.archive_outlined : Icons.chat_bubble_outline,
                                 title: _showArchived ? 'Arşivlenmiş sohbet yok' : 'Henüz mesajınız yok',
                                 description: _showArchived

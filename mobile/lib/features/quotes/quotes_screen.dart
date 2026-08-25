@@ -7,7 +7,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart';
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/widgets/empty_state.dart';
+import '../../core/widgets/app_components.dart';
 import '../../core/widgets/design_system.dart';
 import '../../core/pdf/document_pdf_exporter.dart';
 import '../../core/widgets/province_district_picker.dart';
@@ -136,7 +136,7 @@ class _QuotesScreenState extends State<QuotesScreen> {
               child: _loading
                 ? const Center(child: CircularProgressIndicator())
                 : _quotes.isEmpty
-                    ? EmptyState(
+                    ? AppEmptyState(
                         icon: Icons.request_quote_outlined,
                         title: 'Henüz bir teklifiniz yok',
                         description: 'Sağ alttaki butondan müşteriniz için yangın sistemi teklifi oluşturabilirsiniz.',
@@ -392,7 +392,7 @@ class _QuoteBuilderScreenState extends State<_QuoteBuilderScreen> {
     }
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppBar(title: Text(_isEditing ? 'Teklifi Düzenle' : 'Yeni Teklif')),
+      appBar: AppPageHeader(title: _isEditing ? 'Teklifi Düzenle' : 'Yeni Teklif'),
       // ÖNEMLİ DÜZELTME: "Toplam kısmı sayfanın altında kalıyor,
       // görünmüyor" — Android tarafında SafeArea hiç yoktu (sadece iOS
       // tarafında vardı), edge-to-edge modu açıkken içerik sistem

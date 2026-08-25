@@ -3,7 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:dio/dio.dart';
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/widgets/empty_state.dart';
+import '../../core/widgets/design_system.dart';
+import '../../core/widgets/app_components.dart';
 import '../../core/widgets/section_header.dart';
 
 class FavoritesScreen extends StatefulWidget {
@@ -56,6 +57,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: const AppPageHeader(title: 'Favoriler'),
       backgroundColor: const Color(0xFFFFFFFF),
       body: SafeArea(
         child: Column(
@@ -79,7 +81,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
               child: _loading
                 ? const Center(child: CircularProgressIndicator())
                 : _favorites.isEmpty
-                    ? EmptyState(
+                    ? AppEmptyState(
                         icon: Icons.bookmark_border,
                         title: 'Henüz favori eklemediniz',
                         description: 'AI cevaplarında bulunan kaydet simgesine dokunarak buraya ekleyebilirsiniz.',

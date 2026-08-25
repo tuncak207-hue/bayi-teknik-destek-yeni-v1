@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/widgets/empty_state.dart';
+import '../../core/widgets/app_components.dart';
 import '../../core/events/notification_badge_bus.dart';
 
 class AnnouncementsScreen extends StatefulWidget {
@@ -80,7 +80,7 @@ class _AnnouncementsScreenState extends State<AnnouncementsScreen> {
                         child: ListView(
                           children: [
                             const SizedBox(height: 60),
-                            const EmptyState(icon: Icons.campaign_outlined, title: 'Henüz bir duyuru yok'),
+                            const AppEmptyState(icon: Icons.campaign_outlined, title: 'Henüz bir duyuru yok'),
                           ],
                         ),
                       )

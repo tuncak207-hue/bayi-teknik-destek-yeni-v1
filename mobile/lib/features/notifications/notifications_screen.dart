@@ -3,7 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:dio/dio.dart';
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/widgets/empty_state.dart';
+import '../../core/widgets/design_system.dart';
+import '../../core/widgets/app_components.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -168,6 +169,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: const AppPageHeader(title: 'Bildirimler'),
       backgroundColor: const Color(0xFFFFFFFF),
       body: SafeArea(
         child: Column(
@@ -209,7 +211,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         child: ListView(
                           children: [
                             const SizedBox(height: 60),
-                            const EmptyState(icon: Icons.notifications_none, title: 'Henüz bir bildiriminiz yok'),
+                            const AppEmptyState(icon: Icons.notifications_none, title: 'Henüz bir bildiriminiz yok'),
                     ],
                   ),
                 )

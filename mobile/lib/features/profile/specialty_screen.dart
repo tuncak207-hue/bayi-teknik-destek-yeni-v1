@@ -8,6 +8,7 @@ import '../../core/api/api_client.dart';
 import '../../core/auth/current_user.dart';
 import '../../core/events/notification_badge_bus.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/widgets/design_system.dart';
 import '../../core/pdf/document_pdf_exporter.dart';
 
 const _kAvailableTags = ['Yangın Alarm', 'Kamera', 'Honeywell', 'Hanwha', 'Teknik Destek', 'Erişim Kontrol', 'Yangın Söndürme'];
@@ -134,6 +135,7 @@ class _SpecialtyScreenState extends State<SpecialtyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: const AppPageHeader(title: 'Uzmanlık ve Sertifikalar'),
       backgroundColor: const Color(0xFFFFFFFF),
       // ÖNEMLİ DÜZELTME: "sayfanın altında kalıyor" — SafeArea hiç yoktu.
       body: SafeArea(

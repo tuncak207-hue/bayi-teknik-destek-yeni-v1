@@ -6,7 +6,7 @@ import 'package:dio/dio.dart';
 import '../../core/api/api_client.dart';
 import '../../core/auth/current_user.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/widgets/empty_state.dart';
+import '../../core/widgets/app_components.dart';
 import '../../core/widgets/design_system.dart';
 import '../../core/events/notification_badge_bus.dart';
 
@@ -128,7 +128,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
             child: _loading
                 ? const Center(child: CircularProgressIndicator())
                 : _posts.isEmpty
-                    ? EmptyState(
+                    ? AppEmptyState(
                         icon: Icons.forum_outlined,
                         title: 'Henüz bir paylaşım yok',
                         description: 'Sağ alttaki butondan diğer bayilere soru sorabilirsiniz.',

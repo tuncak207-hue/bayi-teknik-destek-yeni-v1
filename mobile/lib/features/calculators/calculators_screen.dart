@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/widgets/design_system.dart';
 import '../../core/widgets/premium_form_widgets.dart';
 import 'calculator_pdf_exporter.dart';
 
@@ -36,6 +37,7 @@ class _CalculatorsScreenState extends State<CalculatorsScreen> with SingleTicker
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: const AppPageHeader(title: 'Hesaplayıcılar'),
       backgroundColor: const Color(0xFFFFFFFF),
       body: SafeArea(
         child: Column(

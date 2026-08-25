@@ -37,8 +37,8 @@ class TopNavSliverAppBar extends StatelessWidget {
       floating: false,
       snap: false,
       pinned: false,
-      backgroundColor: Colors.white,
-      surfaceTintColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      surfaceTintColor: Theme.of(context).colorScheme.surface,
       elevation: 0,
       // ÖNEMLİ DÜZELTME: "Status Bar'a fazla yakın" — SliverAppBar, Status
       // Bar yüksekliğini zaten otomatik hesaba katıyor (çift SafeArea/
@@ -152,7 +152,7 @@ class StaticTopNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
+      color: Theme.of(context).colorScheme.surface,
       child: SafeArea(
         bottom: false,
         child: TopNavSliverAppBar(

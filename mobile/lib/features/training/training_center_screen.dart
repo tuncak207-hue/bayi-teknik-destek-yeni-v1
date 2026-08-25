@@ -5,7 +5,7 @@ import 'package:open_filex/open_filex.dart';
 import 'package:video_player/video_player.dart';
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/widgets/empty_state.dart';
+import '../../core/widgets/app_components.dart';
 import '../../core/events/notification_badge_bus.dart';
 
 /// Eğitim Merkezi — bayilerin video ve doküman (PDF) eğitim içeriklerini
@@ -128,7 +128,7 @@ class _TrainingCenterScreenState extends State<TrainingCenterScreen> {
               child: _loading
                 ? const Center(child: CircularProgressIndicator())
                 : _contents.isEmpty
-                    ? EmptyState(
+                    ? AppEmptyState(
                         icon: Icons.school_outlined,
                         title: 'Henüz eğitim içeriği eklenmedi',
                         description: 'Admin yeni video veya doküman ekleyince burada görünecek.',

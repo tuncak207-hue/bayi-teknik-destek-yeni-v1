@@ -1,51 +1,42 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/design_system.dart';
 
-/// NOT: Buradaki içerik ŞABLON metindir. Yayına çıkmadan önce köşeli
-/// parantez [ ] içindeki tüm alanlar gerçek şirket bilgileriyle
-/// doldurulmalıdır.
 class AboutUsScreen extends StatelessWidget {
   const AboutUsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Hakkımızda')),
+      appBar: const AppPageHeader(title: 'Hakkımızda'),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
           const _SectionTitle('Bayi Teknik Destek'),
           const SizedBox(height: 8),
           const Text(
-            '[ŞİRKET UNVANI] tarafından geliştirilen Bayi Teknik Destek uygulaması, '
-            'yangın alarm ve güvenlik kamera sistemleri bayilerine, yapay zeka '
-            'destekli teknik doküman arama ve bayiler arası iletişim hizmeti sunar.',
+            'ENTPA Elektronik Cihazlar Tic. Paz. ve Turizm A.Ş. tarafından '
+            'geliştirilen Bayi Teknik Destek uygulaması; güvenlik sektöründe '
+            'faaliyet gösteren bayilere, yapay zeka destekli teknik doküman '
+            'arama ve bayiler arası iletişim hizmeti sunar.',
           ),
           const SizedBox(height: 24),
           const _SectionTitle('Şirket Bilgileri'),
           const SizedBox(height: 8),
-          const _InfoRow(label: 'Ticaret Unvanı', value: '[ŞİRKET TİCARET UNVANI]'),
-          const _InfoRow(label: 'Adres', value: '[ŞİRKET ADRESİ]'),
-          const _InfoRow(label: 'Mersis No', value: '[MERSİS NUMARASI]'),
-          const _InfoRow(label: 'Vergi Dairesi / No', value: '[VERGİ DAİRESİ] / [VERGİ NUMARASI]'),
-          const _InfoRow(label: 'E-posta', value: '[iletisim@sirket.com]'),
-          const _InfoRow(label: 'Telefon', value: '[+90 XXX XXX XX XX]'),
+          const _InfoRow(label: 'Ticaret Unvanı', value: 'ENTPA Elektronik Cihazlar Tic. Paz. ve Turizm A.Ş.'),
+          const _InfoRow(label: 'Adres', value: 'Y. Dudullu OSB, 1. Cadde No:23, 34775 Ümraniye – İstanbul / TR'),
+          const _InfoRow(label: 'E-posta', value: 'info@entpa.com.tr'),
           const SizedBox(height: 24),
           const _SectionTitle('Sürüm Bilgisi'),
           const SizedBox(height: 8),
           const Text('Uygulama Sürümü: 0.1.0'),
           const SizedBox(height: 32),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.amber.shade50,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.amber.shade200),
-            ),
-            child: const Text(
-              'Bu ekrandaki bilgiler geliştirme aşamasında yer tutucu (placeholder) '
-              'olarak eklenmiştir. Yayın öncesi gerçek şirket bilgileriyle güncellenmelidir.',
-              style: TextStyle(fontSize: 12, color: Colors.black54),
-            ),
+          const Text(
+            'ENTPA, 1980 yılından bu yana üstün Türk mühendisliği ve 35 yıllık bilgi '
+            'birikimini özgün tasarımlarıyla buluşturan ENTES’in ortakları tarafından '
+            '2003 yılında kurulmuştur. Uluslararası ithalatçı ve dağıtıcı kimliğiyle '
+            'öne çıkan ENTPA, 2012 yılının ikinci yarısından itibaren güvenlik '
+            'sektöründe faaliyet göstermektedir.',
+            style: TextStyle(fontSize: 13, height: 1.5, color: Colors.black54),
           ),
         ],
       ),
