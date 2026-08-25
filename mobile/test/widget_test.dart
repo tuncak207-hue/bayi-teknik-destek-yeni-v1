@@ -1,19 +1,18 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:bayi_teknik_destek/app/app.dart';
+import 'package:bayi_teknik_destek/core/widgets/design_system.dart';
 
 void main() {
-  testWidgets('Bayi Teknik Destek uygulama kabuğu oluşturuluyor', (WidgetTester tester) async {
+  testWidgets('Ortak mobil sayfa başlığı oluşturuluyor', (WidgetTester tester) async {
     await tester.pumpWidget(
-      const ProviderScope(
-        child: BayiTeknikDestekApp(),
+      const MaterialApp(
+        home: Scaffold(
+          appBar: AppPageHeader(title: 'Test ekranı'),
+        ),
       ),
     );
 
-    await tester.pump();
-
-    expect(find.byType(MaterialApp), findsOneWidget);
+    expect(find.text('Test ekranı'), findsOneWidget);
+    expect(find.byTooltip('Geri'), findsOneWidget);
   });
 }
