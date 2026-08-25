@@ -418,6 +418,8 @@ class ReferenceCardContent extends StatelessWidget {
         Text(
           title,
           textAlign: TextAlign.center,
+          maxLines: compact ? 2 : null,
+          overflow: compact ? TextOverflow.ellipsis : null,
           style: titleStyle?.copyWith(
                 fontWeight: FontWeight.w700,
                 color: scheme.onSurface,
@@ -428,7 +430,7 @@ class ReferenceCardContent extends StatelessWidget {
           Text(
             description!,
             textAlign: TextAlign.center,
-            maxLines: 3,
+            maxLines: compact ? 1 : 3,
             overflow: TextOverflow.ellipsis,
             style: descriptionStyle?.copyWith(
                   color: scheme.onSurfaceVariant,

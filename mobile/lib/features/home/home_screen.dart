@@ -387,7 +387,7 @@ class _HomeScreenState extends State<HomeScreen> {
               physics: const NeverScrollableScrollPhysics(),
               mainAxisSpacing: AppSpacing.sm,
               crossAxisSpacing: AppSpacing.sm,
-              childAspectRatio: 0.88,
+              childAspectRatio: 0.72,
               padding: EdgeInsets.zero,
               children: _quickActionsOrder
                   // "Bayi Ziyaretleri" sadece SALES (satış danışmanı)
