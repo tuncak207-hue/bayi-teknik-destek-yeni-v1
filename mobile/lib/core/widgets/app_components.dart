@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import '../theme/app_theme.dart';
 
-/// KullanÃ„Â±cÃ„Â± isteÃ„Å¸i: "UI tarafÃ„Â±nda tekrar eden yapÃ„Â±larÃ„Â± reusable
-/// component haline getir." Bu dosya, uygulamanÃ„Â±n tÃƒÂ¼m ekranlarÃ„Â±nda
-/// AYNI gÃƒÂ¶rsel dili kullanacak temel bileÃ…Å¸enleri iÃƒÂ§erir. Bir ekrandaki
-/// buton, baÃ…Å¸ka bir ekranda FARKLI gÃƒÂ¶rÃƒÂ¼nmemeli Ã¢â‚¬â€ bu dosya bunu garanti
+/// KullanÃƒâ€Ã‚Â±cÃƒâ€Ã‚Â± isteÃƒâ€Ã…Â¸i: "UI tarafÃƒâ€Ã‚Â±nda tekrar eden yapÃƒâ€Ã‚Â±larÃƒâ€Ã‚Â± reusable
+/// component haline getir." Bu dosya, uygulamanÃƒâ€Ã‚Â±n tÃƒÆ’Ã‚Â¼m ekranlarÃƒâ€Ã‚Â±nda
+/// AYNI gÃƒÆ’Ã‚Â¶rsel dili kullanacak temel bileÃƒâ€¦Ã…Â¸enleri iÃƒÆ’Ã‚Â§erir. Bir ekrandaki
+/// buton, baÃƒâ€¦Ã…Â¸ka bir ekranda FARKLI gÃƒÆ’Ã‚Â¶rÃƒÆ’Ã‚Â¼nmemeli ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â bu dosya bunu garanti
 /// eder.
 
 // ============================================================
-// APP BUTTON Ã¢â‚¬â€ Primary / Secondary / Tertiary / Destructive
+// APP BUTTON ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Primary / Secondary / Tertiary / Destructive
 // ============================================================
 
 enum AppButtonVariant { primary, secondary, tertiary, destructive }
@@ -141,7 +141,7 @@ class AppButton extends StatelessWidget {
       button: true,
       enabled: onPressed != null && !loading,
       excludeSemantics: true,
-      label: loading ? '$label, yÃƒÂ¼kleniyor' : label,
+      label: loading ? '$label, yÃƒÆ’Ã‚Â¼kleniyor' : label,
       child: button,
     );
     return fullWidth ? SizedBox(width: double.infinity, child: accessibleButton) : accessibleButton;
@@ -149,7 +149,7 @@ class AppButton extends StatelessWidget {
 }
 
 // ============================================================
-// APP TEXT FIELD Ã¢â‚¬â€ Focus / Error / Disabled / Filled durumlarÃ„Â±
+// APP TEXT FIELD ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Focus / Error / Disabled / Filled durumlarÃƒâ€Ã‚Â±
 // ============================================================
 
 class AppTextField extends StatefulWidget {
@@ -262,7 +262,7 @@ class _AppTextFieldState extends State<AppTextField> {
 }
 
 // ============================================================
-// APP CARD Ã¢â‚¬â€ ince kenarlÃ„Â±k, ÃƒÂ§ok hafif gÃƒÂ¶lge, tutarlÃ„Â± padding
+// APP CARD ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â ince kenarlÃƒâ€Ã‚Â±k, ÃƒÆ’Ã‚Â§ok hafif gÃƒÆ’Ã‚Â¶lge, tutarlÃƒâ€Ã‚Â± padding
 // ============================================================
 
 class AppCard extends StatelessWidget {
@@ -282,11 +282,11 @@ class AppCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    // KullanÃ„Â±cÃ„Â± isteÃ„Å¸i: "KartlarÃ„Â±n etrafÃ„Â±ndaki ince gri border'lar fazla
-    // belirgin... Gereksiz border'larÃ„Â± kaldÃ„Â±r. Ãƒâ€¡ok hafif shadow/elevation
-    // kullan." KenarlÃ„Â±k kaldÃ„Â±rÃ„Â±ldÃ„Â±, ÃƒÂ§ok hafif gÃƒÂ¶lge geri getirildi Ã¢â‚¬â€
-    // kartlar artÃ„Â±k ÃƒÂ§izgiyle ÃƒÂ§evrelenmiÃ…Å¸ kutular gibi deÃ„Å¸il, arka
-    // plandan hafifÃƒÂ§e "yÃƒÂ¼kselerek" ayrÃ„Â±Ã…Å¸Ã„Â±yor.
+    // KullanÃƒâ€Ã‚Â±cÃƒâ€Ã‚Â± isteÃƒâ€Ã…Â¸i: "KartlarÃƒâ€Ã‚Â±n etrafÃƒâ€Ã‚Â±ndaki ince gri border'lar fazla
+    // belirgin... Gereksiz border'larÃƒâ€Ã‚Â± kaldÃƒâ€Ã‚Â±r. ÃƒÆ’Ã¢â‚¬Â¡ok hafif shadow/elevation
+    // kullan." KenarlÃƒâ€Ã‚Â±k kaldÃƒâ€Ã‚Â±rÃƒâ€Ã‚Â±ldÃƒâ€Ã‚Â±, ÃƒÆ’Ã‚Â§ok hafif gÃƒÆ’Ã‚Â¶lge geri getirildi ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â
+    // kartlar artÃƒâ€Ã‚Â±k ÃƒÆ’Ã‚Â§izgiyle ÃƒÆ’Ã‚Â§evrelenmiÃƒâ€¦Ã…Â¸ kutular gibi deÃƒâ€Ã…Â¸il, arka
+    // plandan hafifÃƒÆ’Ã‚Â§e "yÃƒÆ’Ã‚Â¼kselerek" ayrÃƒâ€Ã‚Â±Ãƒâ€¦Ã…Â¸Ãƒâ€Ã‚Â±yor.
     final content = Container(
       padding: padding ?? const EdgeInsets.all(AppSpacing.sm),
       decoration: BoxDecoration(
@@ -318,7 +318,7 @@ class AppCard extends StatelessWidget {
 }
 
 // ============================================================
-// APP BADGE Ã¢â‚¬â€ durum/etiket rozeti
+// APP BADGE ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â durum/etiket rozeti
 // ============================================================
 
 enum AppBadgeTone { neutral, success, warning, error, info, brand }
@@ -357,7 +357,7 @@ class AppBadge extends StatelessWidget {
 }
 
 // ============================================================
-// APP EMPTY STATE Ã¢â‚¬â€ icon + baÃ…Å¸lÃ„Â±k + aÃƒÂ§Ã„Â±klama + opsiyonel aksiyon
+// APP EMPTY STATE ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â icon + baÃƒâ€¦Ã…Â¸lÃƒâ€Ã‚Â±k + aÃƒÆ’Ã‚Â§Ãƒâ€Ã‚Â±klama + opsiyonel aksiyon
 // ============================================================
 
 class AppEmptyState extends StatelessWidget {
@@ -415,11 +415,12 @@ class AppEmptyState extends StatelessWidget {
         ],
       ),
     );
+    );
   }
 }
 
 // ============================================================
-// APP LOADING STATE Ã¢â‚¬â€ shimmer/skeleton, sadece dÃƒÂ¶nen ikon deÃ„Å¸il
+// APP LOADING STATE ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â shimmer/skeleton, sadece dÃƒÆ’Ã‚Â¶nen ikon deÃƒâ€Ã…Â¸il
 // ============================================================
 
 class AppLoadingState extends StatelessWidget {
@@ -431,7 +432,7 @@ class AppLoadingState extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     return Semantics(
       liveRegion: true,
-      label: 'YÃƒÂ¼kleniyor',
+      label: 'YÃƒÆ’Ã‚Â¼kleniyor',
       child: Shimmer.fromColors(
         baseColor: scheme.surfaceContainerHighest,
       highlightColor: scheme.surfaceContainer,
@@ -449,11 +450,12 @@ class AppLoadingState extends StatelessWidget {
         ),
       ),
     );
+    );
   }
 }
 
 // ============================================================
-// APP ERROR STATE Ã¢â‚¬â€ kullanÃ„Â±cÃ„Â± dostu mesaj + retry aksiyonu
+// APP ERROR STATE ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â kullanÃƒâ€Ã‚Â±cÃƒâ€Ã‚Â± dostu mesaj + retry aksiyonu
 // ============================================================
 
 class AppErrorState extends StatelessWidget {
@@ -468,7 +470,7 @@ class AppErrorState extends StatelessWidget {
     return Semantics(
       container: true,
       liveRegion: true,
-      label: message ?? 'Bir Ã…Å¸eyler ters gitti. Veriler yÃƒÂ¼klenemedi.',
+      label: message ?? 'Bir Ãƒâ€¦Ã…Â¸eyler ters gitti. Veriler yÃƒÆ’Ã‚Â¼klenemedi.',
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: AppSpacing.xl, horizontal: AppSpacing.lg),
         child: Column(
@@ -482,12 +484,12 @@ class AppErrorState extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.sm),
           Text(
-            'Bir Ã…Å¸eyler ters gitti',
+            'Bir Ãƒâ€¦Ã…Â¸eyler ters gitti',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: scheme.onSurface),
           ),
           const SizedBox(height: AppSpacing.xxs),
           Text(
-            message ?? 'Veriler yÃƒÂ¼klenemedi. Ã„Â°nternet baÃ„Å¸lantÃ„Â±nÃ„Â±zÃ„Â± kontrol edip tekrar deneyin.',
+            message ?? 'Veriler yÃƒÆ’Ã‚Â¼klenemedi. Ãƒâ€Ã‚Â°nternet baÃƒâ€Ã…Â¸lantÃƒâ€Ã‚Â±nÃƒâ€Ã‚Â±zÃƒâ€Ã‚Â± kontrol edip tekrar deneyin.',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 13.5, color: scheme.onSurfaceVariant, height: 1.4),
           ),
