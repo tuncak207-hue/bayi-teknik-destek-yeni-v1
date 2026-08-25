@@ -299,6 +299,7 @@ class AppCard extends StatelessWidget {
             offset: Offset(0, elevated ? 4 : 2),
           ),
         ],
+      ),
       child: child,
     );
 
