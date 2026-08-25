@@ -446,6 +446,7 @@ class AppLoadingState extends StatelessWidget {
               borderRadius: BorderRadius.circular(AppRadius.lg),
             ),
           ),
+        ],
         ),
       ),
     );
@@ -481,7 +482,7 @@ class AppErrorState extends StatelessWidget {
             child: Icon(Icons.wifi_off_rounded, size: 28, color: scheme.error),
           ),
           const SizedBox(height: AppSpacing.sm),
-          const Text(
+          Text(
             'Bir şeyler ters gitti',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: scheme.onSurface),
           ),
