@@ -130,33 +130,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const SizedBox(height: AppSpacing.lg),
                 const _SectionTitle('Yazı Boyutu'),
                 StandardCard(
-                  child: Padding(
-                    padding: const EdgeInsets.all(AppSpacing.sm),
-                    child: Column(
-                      children: [
-                        ValueListenableBuilder<double>(
-                          valueListenable: ThemeController().fontScale,
-                          builder: (context, scale, _) => Column(
-                            children: [
-                              Text('Örnek Metin', style: TextStyle(fontSize: 16 * scale)),
-                              Slider(
-                                value: scale,
-                                min: 0.85,
-                                max: 1.3,
-                                divisions: 3,
-                                label: scale <= 0.9
-                                    ? 'Küçük'
-                                    : scale <= 1.05
-                                        ? 'Normal'
-                                        : scale <= 1.2
-                                            ? 'Büyük'
-                                            : 'Çok Büyük',
-                                onChanged: (v) => ThemeController().setFontScale(v),
-                              ),
-                            ],
+                  child: ReferenceCardContent(
+                    icon: Icons.format_size,
+                    title: 'Yazı Boyutu',
+                    description: 'Uygulamadaki metinlerin görünümünü ayarlayın.',
+                    iconColor: Theme.of(context).colorScheme.primary,
+                    iconBackground: Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
+                    action: ValueListenableBuilder<double>(
+                      valueListenable: ThemeController().fontScale,
+                      builder: (context, scale, _) => Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text('Örnek Metin', textAlign: TextAlign.center, style: TextStyle(fontSize: 16 * scale)),
+                          Slider(
+                            value: scale,
+                            min: 0.85,
+                            max: 1.3,
+                            divisions: 3,
+                            label: scale <= 0.9
+                                ? 'Küçük'
+                                : scale <= 1.05
+                                    ? 'Normal'
+                                    : scale <= 1.2
+                                        ? 'Büyük'
+                                        : 'Çok Büyük',
+                            onChanged: (v) => ThemeController().setFontScale(v),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -164,48 +165,61 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const SizedBox(height: AppSpacing.lg),
                 const _SectionTitle('Sessiz Saatler'),
                 StandardCard(
-                  child: Column(
-                    children: [
-                      SwitchListTile(
-                        title: const Text('Sessiz Saatleri Etkinleştir'),
-                        subtitle: const Text('Belirlediğiniz saat aralığında bildirim gelmez'),
-                        value: _profile?['quietHoursEnabled'] == true,
-                        onChanged: (v) => _setQuietHours(enabled: v),
-                      ),
-                      if (_profile?['quietHoursEnabled'] == true) ...[
-                        const Divider(height: 1),
-                        ListTile(
-                          title: const Text('Başlangıç'),
-                          trailing: Text(
-                            _profile?['quietHoursStart'] ?? '22:00',
-                            style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.navy),
-                          ),
-                          onTap: () => _pickTime(true),
+                  child: ReferenceCardContent(
+                    icon: Icons.bedtime_outlined,
+                    title: 'Sessiz Saatleri Etkinleştir',
+                    description: 'Belirlediğiniz saat aralığında bildirim gelmez.',
+                    iconColor: Theme.of(context).colorScheme.primary,
+                    iconBackground: Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
+                    action: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Switch(
+                          value: _profile?['quietHoursEnabled'] == true,
+                          onChanged: (v) => _setQuietHours(enabled: v),
                         ),
-                        ListTile(
-                          title: const Text('Bitiş'),
-                          trailing: Text(
-                            _profile?['quietHoursEnd'] ?? '07:00',
-                            style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.navy),
+                        if (_profile?['quietHoursEnabled'] == true) ...[
+                          const SizedBox(height: AppSpacing.xs),
+                          Wrap(
+                            alignment: WrapAlignment.center,
+                            spacing: AppSpacing.sm,
+                            children: [
+                              OutlinedButton(
+                                onPressed: () => _pickTime(true),
+                                child: Text('Başlangıç: ${_profile?['quietHoursStart'] ?? '22:00'}'),
+                              ),
+                              OutlinedButton(
+                                onPressed: () => _pickTime(false),
+                                child: Text('Bitiş: ${_profile?['quietHoursEnd'] ?? '07:00'}'),
+                              ),
+                            ],
                           ),
-                          onTap: () => _pickTime(false),
-                        ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
                 ),
 
                 const SizedBox(height: AppSpacing.lg),
                 const _SectionTitle('Bildirim Tercihleri'),
                 StandardCard(
-                  child: Column(
-                    children: _kNotificationTypeLabels.entries
-                        .map((e) => SwitchListTile(
-                              title: Text(e.value),
-                              value: _prefFor(e.key),
-                              onChanged: (v) => _setPref(e.key, v),
-                            ))
-                        .toList(),
+                  child: ReferenceCardContent(
+                    icon: Icons.notifications_none_outlined,
+                    title: 'Bildirim Tercihleri',
+                    description: 'Hangi bildirimleri almak istediğinizi seçin.',
+                    iconColor: Theme.of(context).colorScheme.primary,
+                    iconBackground: Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
+                    action: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: _kNotificationTypeLabels.entries
+                          .map((e) => SwitchListTile(
+                                contentPadding: EdgeInsets.zero,
+                                title: Text(e.value, textAlign: TextAlign.center),
+                                value: _prefFor(e.key),
+                                onChanged: (v) => _setPref(e.key, v),
+                              ))
+                          .toList(),
+                    ),
                   ),
                 ),
               ],

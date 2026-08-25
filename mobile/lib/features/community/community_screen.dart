@@ -150,70 +150,43 @@ class _CommunityScreenState extends State<CommunityScreen> {
                             return StandardCard(
                               padding: const EdgeInsets.all(AppSpacing.sm),
                               onTap: () => context.push('/community/${p['id']}').then((_) => _load()),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    width: 42,
-                                    height: 42,
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        colors: [AppColors.primary.withValues(alpha: 0.14), AppColors.primary.withValues(alpha: 0.06)],
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                      ),
-                                      shape: BoxShape.circle,
+                              child: ReferenceCardContent(
+                                icon: Icons.forum_outlined,
+                                title: p['title'] ?? '',
+                                description: p['body'] ?? '',
+                                iconColor: AppColors.primary,
+                                iconBackground: AppColors.primary.withValues(alpha: 0.10),
+                                metadata: Wrap(
+                                  alignment: WrapAlignment.center,
+                                  spacing: 10,
+                                  runSpacing: 6,
+                                  children: [
+                                    Text(
+                                      '${author?['company'] ?? 'Bayi'} · $companyInitial',
+                                      style: const TextStyle(fontSize: 11.5, color: AppColors.textMuted, fontWeight: FontWeight.w600),
                                     ),
-                                    child: Center(
-                                      child: Text(companyInitial, style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w800, fontSize: 16)),
-                                    ),
-                                  ),
-                                  const SizedBox(width: AppSpacing.sm),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(p['title'] ?? '', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15.5, color: AppColors.textPrimary, letterSpacing: -0.2)),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          p['body'] ?? '',
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(fontSize: 13, color: AppColors.textSecondary, height: 1.4),
-                                        ),
-                                        const SizedBox(height: 10),
-                                        Row(
-                                          children: [
-                                            Text(
-                                              author != null ? '${author['company']}' : 'Bayi',
-                                              style: const TextStyle(fontSize: 11.5, color: AppColors.textMuted, fontWeight: FontWeight.w600),
-                                            ),
-                                            const SizedBox(width: 10),
-                                            CardFooterMeta(icon: Icons.chat_bubble_outline, label: '$commentCount'),
-                                            if (p['tag'] != null) ...[
-                                              const SizedBox(width: 10),
-                                              StatusBadge(label: p['tag'], tone: AppStatusTone.neutral),
-                                            ],
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  if (isMine) ...[
-                                    IconButton(
-                                      icon: const Icon(Icons.edit_outlined, size: 18, color: Colors.grey),
-                                      onPressed: () => _editPost(p),
-                                      padding: EdgeInsets.zero,
-                                      constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(Icons.delete_outline, size: 19, color: Colors.grey),
-                                      onPressed: () => _deletePost(p['id']),
-                                      padding: EdgeInsets.zero,
-                                      constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                                    ),
+                                    CardFooterMeta(icon: Icons.chat_bubble_outline, label: '$commentCount'),
+                                    if (p['tag'] != null) StatusBadge(label: p['tag'], tone: AppStatusTone.neutral),
                                   ],
-                                ],
+                                ),
+                                action: isMine
+                                    ? Wrap(
+                                        alignment: WrapAlignment.center,
+                                        spacing: 4,
+                                        children: [
+                                          IconButton(
+                                            tooltip: 'Düzenle',
+                                            icon: const Icon(Icons.edit_outlined, size: 18, color: Colors.grey),
+                                            onPressed: () => _editPost(p),
+                                          ),
+                                          IconButton(
+                                            tooltip: 'Sil',
+                                            icon: const Icon(Icons.delete_outline, size: 19, color: Colors.grey),
+                                            onPressed: () => _deletePost(p['id']),
+                                          ),
+                                        ],
+                                      )
+                                    : null,
                               ),
                             );
                           },

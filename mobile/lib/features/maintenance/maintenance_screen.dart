@@ -120,48 +120,38 @@ class _MaintenanceScreenState extends State<MaintenanceScreen> {
                       return StandardCard(
                         padding: const EdgeInsets.all(AppSpacing.sm),
                         onTap: () => _openDetail(r),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(color: AppColors.navy.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(12)),
-                              child: const Icon(Icons.build_outlined, color: AppColors.navy, size: 19),
-                            ),
-                            const SizedBox(width: AppSpacing.sm),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(r['siteName'] ?? '', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14.5)),
-                                  if ((r['systemDescription'] as String?)?.isNotEmpty == true) ...[
-                                    const SizedBox(height: 2),
-                                    Text(r['systemDescription'], style: TextStyle(fontSize: 12.5, color: Colors.grey.shade500)),
-                                  ],
-                                  const SizedBox(height: 8),
-                                  Row(
-                                    children: [
-                                      CardFooterMeta(icon: Icons.event_outlined, label: _formatDate(r['performedAt'])),
-                                      if (hasSignature) ...[
-                                        const SizedBox(width: 8),
-                                        const StatusBadge(label: 'İmzalı', tone: AppStatusTone.success, icon: Icons.draw_outlined),
-                                      ],
-                                    ],
-                                  ),
-                                ],
+                        child: ReferenceCardContent(
+                          icon: Icons.build_outlined,
+                          title: r['siteName'] ?? '',
+                          description: (r['systemDescription'] as String?)?.isNotEmpty == true ? r['systemDescription'] : null,
+                          iconColor: AppColors.navy,
+                          iconBackground: AppColors.navy.withValues(alpha: 0.08),
+                          metadata: Wrap(
+                            alignment: WrapAlignment.center,
+                            spacing: 8,
+                            runSpacing: 6,
+                            children: [
+                              CardFooterMeta(icon: Icons.event_outlined, label: _formatDate(r['performedAt'])),
+                              if (hasSignature)
+                                const StatusBadge(label: 'İmzalı', tone: AppStatusTone.success, icon: Icons.draw_outlined),
+                            ],
+                          ),
+                          action: Wrap(
+                            alignment: WrapAlignment.center,
+                            spacing: 4,
+                            children: [
+                              IconButton(
+                                tooltip: 'Düzenle',
+                                icon: const Icon(Icons.edit_outlined, size: 19, color: Colors.grey),
+                                onPressed: () => _openDetail(r),
                               ),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.edit_outlined, size: 19, color: Colors.grey),
-                              onPressed: () => _openDetail(r),
-                              tooltip: 'Düzenle',
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.delete_outline, size: 20, color: Colors.grey),
-                              onPressed: () => _delete(r['id']),
-                            ),
-                          ],
+                              IconButton(
+                                tooltip: 'Sil',
+                                icon: const Icon(Icons.delete_outline, size: 20, color: Colors.grey),
+                                onPressed: () => _delete(r['id']),
+                              ),
+                            ],
+                          ),
                         ),
                       );
                           },
