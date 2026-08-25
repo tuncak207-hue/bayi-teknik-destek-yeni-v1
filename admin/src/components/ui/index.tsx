@@ -49,7 +49,7 @@ const iconGradients: Record<IconColor, string> = {
 };
 
 export function IconBadge({ icon, color = 'navy', size = 'md' }: { icon: React.ReactNode; color?: IconColor; size?: 'sm' | 'md' | 'lg' }) {
-  const sizeClasses = { sm: 'w-8 h-8 rounded-lg', md: 'w-10 h-10 rounded-xl', lg: 'w-12 h-12 rounded-xl' };
+  const sizeClasses = { sm: 'w-8 h-8 rounded-lg', md: 'w-9 h-9 rounded-lg', lg: 'w-11 h-11 rounded-xl' };
   return (
     <div className={`bg-gradient-to-br ${iconGradients[color]} ${sizeClasses[size]} flex items-center justify-center text-white shadow-sm shrink-0`}>
       {icon}
@@ -59,7 +59,7 @@ export function IconBadge({ icon, color = 'navy', size = 'md' }: { icon: React.R
 
 export function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={`bg-white rounded-xl border border-gray-200/70 ${className}`}>
+    <div className={`bg-white rounded-lg border border-gray-200/80 shadow-[0_1px_2px_rgba(15,23,42,0.03)] ${className}`}>
       {children}
     </div>
   );
@@ -67,7 +67,7 @@ export function Card({ children, className = '' }: { children: React.ReactNode; 
 
 export function CardHeader({ title, subtitle, action }: { title: string; subtitle?: string; action?: React.ReactNode }) {
   return (
-    <div className="flex items-start justify-between px-5 py-4 border-b border-gray-100">
+    <div className="flex items-start justify-between px-4 py-3 border-b border-gray-100/80">
       <div>
         <h3 className="text-[13px] font-semibold text-gray-900">{title}</h3>
         {subtitle && <p className="text-[12px] text-gray-400 mt-0.5">{subtitle}</p>}
@@ -100,7 +100,7 @@ export function PillButton({
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`text-[13px] font-medium h-8 px-3.5 rounded-lg transition-colors disabled:opacity-50 ${variants[variant]}`}
+      className={`text-[12.5px] font-medium h-8 px-3 rounded-md transition-colors disabled:opacity-50 ${variants[variant]}`}
     >
       {children}
     </button>
