@@ -20,19 +20,19 @@ const String _platformFontFamily = 'Inter';
 /// otomatik olarak geniş bir görsel dönüşüm sağlıyor.
 class AppColors {
   // ---- Ana marka renkleri (turuncu + antrasit) ----
-  static const brand = Color(0xFFE8590C);
-  static const brandDark = Color(0xFFB8450A);
-  static const brandLight = Color(0xFFFDEDE3);
-  static const navy = Color(0xFF1C1D21);
-  static const navyLight = Color(0xFF3A3D45);
-  static const ink = Color(0xFF1C1D21);
+  static const brand = Color(0xFF5B5CE2);
+  static const brandDark = Color(0xFF4445B5);
+  static const brandLight = Color(0xFFEDEEFF);
+  static const navy = Color(0xFF15162A);
+  static const navyLight = Color(0xFF34365B);
+  static const ink = Color(0xFF15162A);
   // Kullanıcı isteği: "Ana background çok hafif kırık beyaz/off-white
   // olabilir. Kartlar beyaz kalabilir." Ekranın tamamen düz beyaz
   // görünmesi azaltıldı — çok hafif, göze zor görünecek kadar ince bir
   // fark bırakıldı (surface hierarchy).
-  static const surface = Color(0xFFFAFAF9);
+  static const surface = Color(0xFFF7F8FC);
   static const success = Color(0xFF1B8A5A);
-  static const warning = Color(0xFFB8450A);
+  static const warning = Color(0xFFD97706);
   static const danger = Color(0xFFD92D20);
   static const divider = Color(0xFFEBEBED);
 
@@ -40,11 +40,11 @@ class AppColors {
   static const primary = brand;
   // Kullanıcı isteği: "AppColors.primarySoft" — turuncunun çok açık,
   // arka plan/soft-container amaçlı tonu.
-  static const primarySoft = Color(0xFFFDEDE3);
+  static const primarySoft = Color(0xFFEDEEFF);
   static const primaryContainer = primarySoft;
   static const onPrimary = Colors.white;
   static const secondary = navy;
-  static const secondaryContainer = Color(0xFFEDEDEF);
+  static const secondaryContainer = Color(0xFFE9EAF7);
   static const onSecondary = Colors.white;
 
   static const background = surface;
@@ -52,24 +52,24 @@ class AppColors {
   // Kullanıcı isteği: "AppColors.surfaceSecondary" — kartlardan bir
   // ton daha soluk, hafif sıcak bir ikincil yüzey (örn. istatistik
   // kartlarının arka planı, soft icon container'lar için).
-  static const surfaceSecondary = Color(0xFFF6F3F1);
-  static const surfaceVariant = Color(0xFFF7F7F8);
+  static const surfaceSecondary = Color(0xFFF0F1F8);
+  static const surfaceVariant = Color(0xFFF1F2F8);
   static const outline = Color(0xFFEBEBED);
   static const outlineStrong = Color(0xFFD8D8DC);
   // Kullanıcı isteği: "AppColors.border" — kartlarda artık kenarlık
   // yerine gölge kullanılıyor, ama gerektiğinde (örn. input alanları)
   // kullanılacak çok hafif bir kenarlık tonu.
-  static const border = Color(0xFFEEEEEC);
+  static const border = Color(0xFFE4E6F2);
 
   static const textPrimary = Color(0xFF1C1D21);
-  static const textSecondary = Color(0xFF5C5E66);
+  static const textSecondary = Color(0xFF5C6078);
   static const textMuted = Color(0xFF9A9CA5);
   static const textOnDark = Colors.white;
 
   static const successColor = Color(0xFF1B8A5A);
   static const successContainer = Color(0xFFE5F6ED);
-  static const warningColor = Color(0xFFB8450A);
-  static const warningContainer = Color(0xFFFDEDE3);
+  static const warningColor = Color(0xFFD97706);
+  static const warningContainer = Color(0xFFFFF4E5);
   static const errorColor = Color(0xFFD92D20);
   static const errorContainer = Color(0xFFFCE8E6);
   static const infoColor = Color(0xFF0E63B0);
@@ -466,7 +466,7 @@ class AppTheme {
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.brand,
         brightness: Brightness.dark,
-        primary: const Color(0xFFFF8A55), // açık temadaki turuncu marka ailesinin koyu tema karşılığı
+        primary: const Color(0xFF8586FF), // premium indigo dark-theme contrast
         secondary: AppColors.navyLight,
         surface: darkCard,
       ),
