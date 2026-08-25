@@ -505,7 +505,7 @@ class _StatCard extends StatelessWidget {
             border: Border.all(color: AppColors.outline.withValues(alpha: 0.72)),
             boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.035), blurRadius: 10, offset: const Offset(0, 3))],
           ),
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.lg),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.sm),
           child: Stack(
             clipBehavior: Clip.none,
             children: [
@@ -515,6 +515,7 @@ class _StatCard extends StatelessWidget {
                 description: label,
                 iconColor: AppColors.textMuted,
                 iconBackground: AppColors.primarySoft,
+                compact: true,
               ),
               if (showBadge)
                 Positioned(
@@ -568,7 +569,7 @@ class _QuickAction extends StatelessWidget {
               ),
             ],
           ),
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.lg),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.sm),
           child: Stack(
             clipBehavior: Clip.none,
             children: [
@@ -577,6 +578,7 @@ class _QuickAction extends StatelessWidget {
                 title: label,
                 iconColor: AppColors.primary,
                 iconBackground: AppColors.primarySoft,
+                compact: true,
               ),
               if (badgeCount > 0)
                 Positioned(

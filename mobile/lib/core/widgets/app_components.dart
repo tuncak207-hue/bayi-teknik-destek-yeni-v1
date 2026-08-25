@@ -376,6 +376,7 @@ class ReferenceCardContent extends StatelessWidget {
   final Widget? action;
   final Color? iconColor;
   final Color? iconBackground;
+  final bool compact;
 
   const ReferenceCardContent({
     super.key,
@@ -386,6 +387,7 @@ class ReferenceCardContent extends StatelessWidget {
     this.action,
     this.iconColor,
     this.iconBackground,
+    this.compact = false,
   });
 
   @override
@@ -393,49 +395,53 @@ class ReferenceCardContent extends StatelessWidget {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final foreground = iconColor ?? scheme.onSurfaceVariant;
+    final iconSize = compact ? 44.0 : 64.0;
+    final iconGlyphSize = compact ? 21.0 : 28.0;
+    final titleStyle = compact ? theme.textTheme.titleSmall : theme.textTheme.titleMedium;
+    final descriptionStyle = compact ? theme.textTheme.bodySmall : theme.textTheme.bodyMedium;
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Center(
           child: Container(
-            width: 64,
-            height: 64,
+            width: iconSize,
+            height: iconSize,
             decoration: BoxDecoration(
               color: iconBackground ?? scheme.surfaceContainerHighest,
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, size: 28, color: foreground),
+            child: Icon(icon, size: iconGlyphSize, color: foreground),
           ),
         ),
-        const SizedBox(height: AppSpacing.md),
+        SizedBox(height: compact ? AppSpacing.xs : AppSpacing.md),
         Text(
           title,
           textAlign: TextAlign.center,
-          style: theme.textTheme.titleMedium?.copyWith(
+          style: titleStyle?.copyWith(
                 fontWeight: FontWeight.w700,
                 color: scheme.onSurface,
               ),
         ),
         if (description != null) ...[
-          const SizedBox(height: AppSpacing.xs),
+          SizedBox(height: compact ? 2 : AppSpacing.xs),
           Text(
             description!,
             textAlign: TextAlign.center,
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
-            style: theme.textTheme.bodyMedium?.copyWith(
+            style: descriptionStyle?.copyWith(
                   color: scheme.onSurfaceVariant,
-                  height: 1.4,
+                  height: compact ? 1.15 : 1.4,
                 ),
           ),
         ],
         if (metadata != null) ...[
-          const SizedBox(height: AppSpacing.sm),
+          SizedBox(height: compact ? 2 : AppSpacing.sm),
           Center(child: metadata!),
         ],
         if (action != null) ...[
-          const SizedBox(height: AppSpacing.lg),
+          SizedBox(height: compact ? AppSpacing.xs : AppSpacing.lg),
           Center(child: action!),
         ],
       ],
