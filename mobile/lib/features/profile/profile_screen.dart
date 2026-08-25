@@ -335,11 +335,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
     if (_profile == null) return const Scaffold(body: Center(child: CircularProgressIndicator()));
 
-    // ÖNEMLİ DÜZELTME: "mesajlara/profile basınca geri ok işareti çıksın,
-    // menü değil" — tam paylaşılan menü yerine, AI ekranındaki gibi
-    // sadece basit bir geri oku olan AppBar'a dönüldü.
+    // Profil sekmesi kök akış olduğu için geri oku göstermez; ikincil
+    // profil ekranları AppPageHeader üzerinden geri navigasyon sağlar.
+    final scheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: const Color(0xFFFFFFFF),
+      backgroundColor: scheme.surface,
       appBar: const AppPageHeader(title: 'Profil'),
       body: ListView(
             children: [
@@ -348,7 +348,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           // büyük tipografi, çok katmanlı gölgeli avatar.
           Container(
             width: double.infinity,
-            decoration: const BoxDecoration(color: Colors.white),
+            decoration: BoxDecoration(color: scheme.surface),
             child: Stack(
               clipBehavior: Clip.none,
               children: [
@@ -362,7 +362,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     height: 180,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      gradient: RadialGradient(colors: [AppColors.brand.withOpacity(0.10), Colors.transparent]),
+                      gradient: RadialGradient(colors: [AppColors.brand.withValues(alpha: 0.10), Colors.transparent]),
                     ),
                   ),
                 ),
@@ -374,7 +374,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     height: 160,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      gradient: RadialGradient(colors: [AppColors.navy.withOpacity(0.06), Colors.transparent]),
+                      gradient: RadialGradient(colors: [AppColors.navy.withValues(alpha: 0.06), Colors.transparent]),
                     ),
                   ),
                 ),
@@ -393,16 +393,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 colors: [AppColors.brand, AppColors.navy, AppColors.brand],
                               ),
                               boxShadow: [
-                                BoxShadow(color: AppColors.brand.withOpacity(0.25), blurRadius: 24, offset: const Offset(0, 8)),
-                                BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 10, offset: const Offset(0, 2)),
+                                BoxShadow(color: AppColors.brand.withValues(alpha: 0.25), blurRadius: 24, offset: const Offset(0, 8)),
+                                BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 10, offset: const Offset(0, 2)),
                               ],
                             ),
                             child: Container(
                               padding: const EdgeInsets.all(3),
-                              decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                              decoration: BoxDecoration(color: scheme.surface, shape: BoxShape.circle),
                               child: CircleAvatar(
                                 radius: 44,
-                                backgroundColor: const Color(0xFFF0F2F5),
+                                backgroundColor: scheme.surfaceContainerHighest,
                                 backgroundImage: _profile!['avatarUrl'] != null ? NetworkImage(_profile!['avatarUrl']) : null,
                                 child: _profile!['avatarUrl'] == null
                                     ? Text(
@@ -419,14 +419,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               bottom: 2,
                               child: Container(
                                 padding: const EdgeInsets.all(3),
-                                decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                                decoration: BoxDecoration(color: scheme.surface, shape: BoxShape.circle),
                                 child: Container(
                                   width: 22,
                                   height: 22,
                                   decoration: BoxDecoration(
                                     gradient: const LinearGradient(colors: [Color(0xFF22C55E), Color(0xFF16A34A)]),
                                     shape: BoxShape.circle,
-                                    boxShadow: [BoxShadow(color: const Color(0xFF16A34A).withOpacity(0.4), blurRadius: 8)],
+                                    boxShadow: [BoxShadow(color: const Color(0xFF16A34A).withValues(alpha: 0.4), blurRadius: 8)],
                                   ),
                                   child: const Icon(Icons.check, size: 14, color: Colors.white),
                                 ),
@@ -449,9 +449,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                         decoration: BoxDecoration(
-                          gradient: LinearGradient(colors: [AppColors.navy.withOpacity(0.06), AppColors.brand.withOpacity(0.06)]),
+                          gradient: LinearGradient(colors: [AppColors.navy.withValues(alpha: 0.06), AppColors.brand.withValues(alpha: 0.06)]),
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: AppColors.navy.withOpacity(0.08)),
+                          border: Border.all(color: AppColors.navy.withValues(alpha: 0.08)),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -549,7 +549,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               child: Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                                 decoration: BoxDecoration(
-                                  color: earned ? AppColors.navy.withOpacity(0.06) : Colors.grey.shade100,
+                                  color: earned ? AppColors.navy.withValues(alpha: 0.06) : Colors.grey.shade100,
                                   borderRadius: BorderRadius.circular(AppSpacing.radius),
                                   border: Border.all(color: AppColors.divider),
                                 ),
@@ -689,20 +689,20 @@ class _ProfileSection extends StatelessWidget {
           padding: const EdgeInsets.only(left: 6, bottom: 8),
           child: Text(
             title.toUpperCase(),
-            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.grey.shade400, letterSpacing: 0.8),
+            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Theme.of(context).colorScheme.onSurfaceVariant, letterSpacing: 0.8),
           ),
         ),
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surfaceContainer,
             borderRadius: BorderRadius.circular(18),
-            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 14, offset: const Offset(0, 3))],
+            boxShadow: [BoxShadow(color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.08), blurRadius: 14, offset: const Offset(0, 3))],
           ),
           child: Column(
             children: [
               for (int i = 0; i < children.length; i++) ...[
                 children[i],
-                if (i != children.length - 1) Divider(height: 1, indent: 64, color: Colors.grey.shade100),
+                if (i != children.length - 1) Divider(height: 1, indent: 64, color: Theme.of(context).colorScheme.outlineVariant),
               ],
             ],
           ),
@@ -726,18 +726,19 @@ class _ProfileTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tileColor = color ?? AppColors.navy;
+    final scheme = Theme.of(context).colorScheme;
+    final tileColor = color ?? scheme.primary;
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
       leading: Container(
         width: 38,
         height: 38,
-        decoration: BoxDecoration(color: tileColor.withOpacity(0.08), borderRadius: BorderRadius.circular(11)),
+        decoration: BoxDecoration(color: tileColor.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(11)),
         child: Icon(icon, size: 18, color: tileColor),
       ),
-      title: Text(title, style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w500, color: color ?? const Color(0xFF1C1C1E))),
-      subtitle: subtitle != null ? Text(subtitle!, style: TextStyle(fontSize: 12, color: Colors.grey.shade500)) : null,
-      trailing: trailing ?? (onTap != null ? Icon(Icons.chevron_right, size: 20, color: Colors.grey.shade300) : null),
+      title: Text(title, style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w500, color: color ?? scheme.onSurface)),
+      subtitle: subtitle != null ? Text(subtitle!, style: TextStyle(fontSize: 12, color: scheme.onSurfaceVariant)) : null,
+      trailing: trailing ?? (onTap != null ? Icon(Icons.chevron_right, size: 20, color: scheme.onSurfaceVariant.withValues(alpha: 0.5)) : null),
       onTap: onTap,
     );
   }
@@ -759,25 +760,25 @@ class _StatCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [accent.withOpacity(0.07), accent.withOpacity(0.02)],
+          colors: [accent.withValues(alpha: 0.07), accent.withValues(alpha: 0.02)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: accent.withOpacity(0.1)),
+        border: Border.all(color: accent.withValues(alpha: 0.1)),
       ),
       child: Column(
         children: [
           Container(
             width: 26,
             height: 26,
-            decoration: BoxDecoration(color: accent.withOpacity(0.12), shape: BoxShape.circle),
+            decoration: BoxDecoration(color: accent.withValues(alpha: 0.12), shape: BoxShape.circle),
             child: Icon(icon, size: 13, color: accent),
           ),
           const SizedBox(height: 6),
-          Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: AppColors.navy)),
+          Text(value, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: Theme.of(context).colorScheme.onSurface)),
           const SizedBox(height: 1),
-          Text(label, style: TextStyle(fontSize: 10, color: Colors.grey.shade500, fontWeight: FontWeight.w600), textAlign: TextAlign.center),
+          Text(label, style: TextStyle(fontSize: 10, color: Theme.of(context).colorScheme.onSurfaceVariant, fontWeight: FontWeight.w600), textAlign: TextAlign.center),
         ],
       ),
     );
@@ -799,10 +800,10 @@ class _ProfileSwitchTile extends StatelessWidget {
       secondary: Container(
         width: 38,
         height: 38,
-        decoration: BoxDecoration(color: AppColors.navy.withOpacity(0.08), borderRadius: BorderRadius.circular(11)),
-        child: Icon(icon, size: 18, color: AppColors.navy),
+        decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(11)),
+        child: Icon(icon, size: 18, color: Theme.of(context).colorScheme.primary),
       ),
-      title: Text(title, style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w500, color: Color(0xFF1C1C1E))),
+      title: Text(title, style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w500, color: Theme.of(context).colorScheme.onSurface)),
       value: value,
       onChanged: onChanged,
       activeColor: AppColors.brand,
@@ -835,19 +836,20 @@ class _PremiumDialogFieldState extends State<_PremiumDialogField> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Focus(
       onFocusChange: (hasFocus) => setState(() => _focused = hasFocus),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 150),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: scheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: _focused ? AppColors.brand : Colors.grey.shade200, width: _focused ? 1.3 : 1),
+          border: Border.all(color: _focused ? AppColors.brand : scheme.outlineVariant, width: _focused ? 1.3 : 1),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
         child: Row(
           children: [
-            Icon(widget.icon, size: 18, color: _focused ? AppColors.brand : Colors.grey.shade400),
+            Icon(widget.icon, size: 18, color: _focused ? AppColors.brand : scheme.onSurfaceVariant),
             const SizedBox(width: 10),
             Expanded(
               child: TextField(

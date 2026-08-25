@@ -244,9 +244,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(16),
                               boxShadow: [
-                                BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 2)),
+                                BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 2)),
                               ],
-                              border: isUnread ? Border.all(color: AppColors.brand.withOpacity(0.15)) : null,
+                              border: isUnread ? Border.all(color: AppColors.brand.withValues(alpha: 0.15)) : null,
                             ),
                             padding: const EdgeInsets.all(AppSpacing.sm),
                             child: Row(
@@ -257,7 +257,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                   height: 40,
                                   decoration: BoxDecoration(
                                     gradient: isUnread
-                                        ? LinearGradient(colors: [AppColors.brand.withOpacity(0.14), AppColors.navy.withOpacity(0.10)])
+                                        ? LinearGradient(colors: [AppColors.brand.withValues(alpha: 0.14), AppColors.navy.withValues(alpha: 0.10)])
                                         : null,
                                     color: isUnread ? null : const Color(0xFFF0F2F5),
                                     borderRadius: BorderRadius.circular(12),

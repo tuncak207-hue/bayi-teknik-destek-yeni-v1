@@ -166,7 +166,7 @@ class _SpecialtyScreenState extends State<SpecialtyScreen> {
                             label: Text(tag),
                             selected: _selectedTags.contains(tag),
                             onSelected: (_) => _toggleTag(tag),
-                            selectedColor: AppColors.navy.withOpacity(0.15),
+                            selectedColor: AppColors.navy.withValues(alpha: 0.15),
                             checkmarkColor: AppColors.navy,
                           ))
                       .toList(),

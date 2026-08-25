@@ -24,7 +24,7 @@ class PremiumFormSection extends StatelessWidget {
               Container(
                 width: 26,
                 height: 26,
-                decoration: BoxDecoration(color: AppColors.navy.withOpacity(0.07), borderRadius: BorderRadius.circular(8)),
+                decoration: BoxDecoration(color: AppColors.navy.withValues(alpha: 0.07), borderRadius: BorderRadius.circular(8)),
                 child: Icon(icon, size: 14, color: AppColors.navy),
               ),
               const SizedBox(width: 8),
@@ -88,7 +88,7 @@ class _PremiumFieldState extends State<PremiumField> {
             border: Border.all(color: _focused ? AppColors.brand : Colors.grey.shade100, width: _focused ? 1.3 : 1),
             boxShadow: [
               BoxShadow(
-                color: _focused ? AppColors.brand.withOpacity(0.08) : Colors.black.withOpacity(0.03),
+                color: _focused ? AppColors.brand.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.03),
                 blurRadius: _focused ? 12 : 8,
                 offset: const Offset(0, 2),
               ),

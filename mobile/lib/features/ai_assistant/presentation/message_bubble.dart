@@ -105,7 +105,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                 borderRadius: BorderRadius.circular(16),
                 border: isAi ? Border.all(color: Colors.grey.shade200) : null,
                 boxShadow: isAi
-                    ? [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 8, offset: const Offset(0, 2))]
+                    ? [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 8, offset: const Offset(0, 2))]
                     : null,
               ),
               child: Column(
@@ -121,7 +121,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                       Container(
                         margin: const EdgeInsets.only(bottom: 6),
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(color: Colors.green.withOpacity(0.08), borderRadius: BorderRadius.circular(20)),
+                        decoration: BoxDecoration(color: Colors.green.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(20)),
                         child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [

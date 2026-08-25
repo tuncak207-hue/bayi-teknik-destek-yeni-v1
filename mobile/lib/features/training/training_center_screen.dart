@@ -157,7 +157,7 @@ class _TrainingCenterScreenState extends State<TrainingCenterScreen> {
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(18),
-                                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 2))],
+                                boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 2))],
                               ),
                               child: Material(
                                 color: Colors.transparent,
@@ -174,8 +174,8 @@ class _TrainingCenterScreenState extends State<TrainingCenterScreen> {
                                           decoration: BoxDecoration(
                                             gradient: LinearGradient(
                                               colors: isVideo
-                                                  ? [AppColors.brand, AppColors.brand.withOpacity(0.7)]
-                                                  : [AppColors.navy, AppColors.navy.withOpacity(0.7)],
+                                                  ? [AppColors.brand, AppColors.brand.withValues(alpha: 0.7)]
+                                                  : [AppColors.navy, AppColors.navy.withValues(alpha: 0.7)],
                                               begin: Alignment.topLeft,
                                               end: Alignment.bottomRight,
                                             ),
@@ -201,7 +201,7 @@ class _TrainingCenterScreenState extends State<TrainingCenterScreen> {
                                               Container(
                                                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                                 decoration: BoxDecoration(
-                                                  color: (isVideo ? AppColors.brand : AppColors.navy).withOpacity(0.07),
+                                                  color: (isVideo ? AppColors.brand : AppColors.navy).withValues(alpha: 0.07),
                                                   borderRadius: BorderRadius.circular(20),
                                                 ),
                                                 child: Text(

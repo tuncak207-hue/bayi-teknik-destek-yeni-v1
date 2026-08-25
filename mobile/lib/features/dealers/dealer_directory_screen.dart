@@ -109,7 +109,7 @@ class _DealerDirectoryScreenState extends State<DealerDirectoryScreen> {
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(16),
-                          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 2))],
+                          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 2))],
                         ),
                         child: ListTile(
                           contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 6),
@@ -117,7 +117,7 @@ class _DealerDirectoryScreenState extends State<DealerDirectoryScreen> {
                               ? CircleAvatar(radius: 22, backgroundImage: NetworkImage(d['avatarUrl']))
                               : CircleAvatar(
                                   radius: 22,
-                                  backgroundColor: AppColors.navy.withOpacity(0.08),
+                                  backgroundColor: AppColors.navy.withValues(alpha: 0.08),
                                   child: Text(initial, style: const TextStyle(color: AppColors.navy, fontWeight: FontWeight.w700)),
                                 ),
                           title: Text(company, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14.5)),
@@ -129,7 +129,7 @@ class _DealerDirectoryScreenState extends State<DealerDirectoryScreen> {
                                 onPressed: () => _startChat(d['id']),
                                 icon: const Icon(Icons.chat_bubble_outline, size: 17),
                                 style: IconButton.styleFrom(
-                                  backgroundColor: AppColors.navy.withOpacity(0.08),
+                                  backgroundColor: AppColors.navy.withValues(alpha: 0.08),
                                   foregroundColor: AppColors.navy,
                                   padding: const EdgeInsets.all(8),
                                 ),

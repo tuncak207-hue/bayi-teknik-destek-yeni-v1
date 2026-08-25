@@ -113,7 +113,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(18),
                     border: Border.all(color: AppColors.divider),
-                    boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 3))],
+                    boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 3))],
                   ),
                   child: Row(
                     children: [
@@ -130,7 +130,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
                         icon: const Icon(Icons.camera_alt_outlined),
                         tooltip: 'Fotoğraf ile sor',
                         style: IconButton.styleFrom(
-                          backgroundColor: AppColors.navy.withOpacity(0.06),
+                          backgroundColor: AppColors.navy.withValues(alpha: 0.06),
                           foregroundColor: AppColors.navy,
                         ),
                       ),
@@ -179,7 +179,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: AppColors.divider),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 3))],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 3))],
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 6),
@@ -189,7 +189,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
                 child: Container(
                   width: 44,
                   height: 44,
-                  color: AppColors.navy.withOpacity(0.08),
+                  color: AppColors.navy.withValues(alpha: 0.08),
                   child: const Icon(Icons.image_outlined, color: AppColors.navy, size: 18),
                 ),
               )

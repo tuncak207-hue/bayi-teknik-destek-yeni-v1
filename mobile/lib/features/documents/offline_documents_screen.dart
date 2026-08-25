@@ -90,14 +90,14 @@ class _OfflineDocumentsScreenState extends State<OfflineDocumentsScreen> {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(18),
                         border: Border.all(color: AppColors.divider),
-                        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 3))],
+                        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 3))],
                       ),
                       child: ListTile(
                         leading: Container(
                           width: 42,
                           height: 42,
                           decoration: BoxDecoration(
-                            gradient: LinearGradient(colors: [AppColors.navy.withOpacity(0.10), AppColors.brand.withOpacity(0.10)]),
+                            gradient: LinearGradient(colors: [AppColors.navy.withValues(alpha: 0.10), AppColors.brand.withValues(alpha: 0.10)]),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: const Icon(Icons.picture_as_pdf_outlined, color: AppColors.navy, size: 20),

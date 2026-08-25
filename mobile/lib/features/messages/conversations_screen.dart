@@ -222,7 +222,7 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(color: AppColors.divider),
-                            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 3))],
+                            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 3))],
                           ),
                           child: ListTile(
                             leading: Container(
@@ -230,7 +230,7 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                               height: 44,
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
-                                  colors: [AppColors.navy.withOpacity(0.12), AppColors.brand.withOpacity(0.12)],
+                                  colors: [AppColors.navy.withValues(alpha: 0.12), AppColors.brand.withValues(alpha: 0.12)],
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
                                 ),
@@ -316,7 +316,7 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                                   borderRadius: BorderRadius.circular(20),
                                   border: Border.all(color: AppColors.divider),
                                   boxShadow: [
-                                    BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 3)),
+                                    BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 3)),
                                   ],
                                 ),
                                 child: ListTile(
@@ -329,7 +329,7 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                                         height: 48,
                                         decoration: BoxDecoration(
                                           gradient: LinearGradient(
-                                            colors: [AppColors.navy.withOpacity(0.12), AppColors.brand.withOpacity(0.12)],
+                                            colors: [AppColors.navy.withValues(alpha: 0.12), AppColors.brand.withValues(alpha: 0.12)],
                                             begin: Alignment.topLeft,
                                             end: Alignment.bottomRight,
                                           ),

@@ -127,8 +127,8 @@ class _VoiceQuickQuestionSheetState extends State<VoiceQuickQuestionSheet> {
               height: 84,
               decoration: BoxDecoration(
                 color: _state == _SheetState.listening
-                    ? AppColors.brand.withOpacity(0.12)
-                    : AppColors.navy.withOpacity(0.08),
+                    ? AppColors.brand.withValues(alpha: 0.12)
+                    : AppColors.navy.withValues(alpha: 0.08),
                 shape: BoxShape.circle,
               ),
               child: Icon(

@@ -130,7 +130,7 @@ class _HomeSlideshowState extends State<HomeSlideshow> {
                                 gradient: LinearGradient(
                                   begin: Alignment.topCenter,
                                   end: Alignment.bottomCenter,
-                                  colors: [Colors.transparent, Colors.black.withOpacity(0.55)],
+                                  colors: [Colors.transparent, Colors.black.withValues(alpha: 0.55)],
                                 ),
                               ),
                               child: Column(
@@ -149,7 +149,7 @@ class _HomeSlideshowState extends State<HomeSlideshow> {
                                       slide['subtitle'] ?? '',
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(color: Colors.white.withOpacity(0.85), fontSize: 11.5, fontWeight: FontWeight.w500),
+                                      style: TextStyle(color: Colors.white.withValues(alpha: 0.85), fontSize: 11.5, fontWeight: FontWeight.w500),
                                     ),
                                   ],
                                 ],

@@ -92,7 +92,7 @@ class _SearchScreenState extends State<SearchScreen> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(14),
-                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 8, offset: const Offset(0, 2))],
+                boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 8, offset: const Offset(0, 2))],
               ),
               child: TextField(
                 controller: _controller,
@@ -300,7 +300,7 @@ class _ResultCard extends StatelessWidget {
               Container(
                 width: 38,
                 height: 38,
-                decoration: BoxDecoration(color: (iconColor ?? AppColors.navy).withOpacity(0.08), borderRadius: BorderRadius.circular(11)),
+                decoration: BoxDecoration(color: (iconColor ?? AppColors.navy).withValues(alpha: 0.08), borderRadius: BorderRadius.circular(11)),
                 child: Icon(icon, color: iconColor ?? AppColors.navy, size: 18),
               ),
             const SizedBox(width: AppSpacing.sm),
@@ -356,7 +356,7 @@ class _EmptyHint extends StatelessWidget {
             Container(
               width: 72,
               height: 72,
-              decoration: BoxDecoration(color: AppColors.navy.withOpacity(0.05), shape: BoxShape.circle),
+              decoration: BoxDecoration(color: AppColors.navy.withValues(alpha: 0.05), shape: BoxShape.circle),
               child: Icon(Icons.search, size: 32, color: Colors.grey.shade400),
             ),
             const SizedBox(height: AppSpacing.md),

@@ -52,7 +52,7 @@ class SignaturePadState extends State<SignaturePad> {
       decoration: BoxDecoration(
         color: const Color(0xFFFAFAFB),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: hasSignature ? AppColors.brand.withOpacity(0.3) : Colors.grey.shade200),
+        border: Border.all(color: hasSignature ? AppColors.brand.withValues(alpha: 0.3) : Colors.grey.shade200),
       ),
       child: Stack(
         children: [
