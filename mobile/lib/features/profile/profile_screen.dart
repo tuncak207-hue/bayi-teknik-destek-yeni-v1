@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/theme_controller.dart';
+import '../../core/widgets/design_system.dart';
 import '../auth/data/auth_repository.dart';
 import '../dealers/blocked_users_screen.dart';
 import '../../core/events/notification_badge_bus.dart';
@@ -299,7 +300,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     if (_loadError != null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Profil')),
+        appBar: const AppPageHeader(title: 'Profil'),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(AppSpacing.xl),
@@ -339,12 +340,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     // sadece basit bir geri oku olan AppBar'a dönüldü.
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppBar(
-        title: const Text('Profil'),
-        leading: Navigator.of(context).canPop()
-            ? IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => Navigator.of(context).pop())
-            : IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.go('/home')),
-      ),
+      appBar: const AppPageHeader(title: 'Profil'),
       body: ListView(
             children: [
           // ---- Üst kimlik bandı: beyaz zemin ama çok katmanlı, göz alıcı bir

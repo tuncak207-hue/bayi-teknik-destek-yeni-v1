@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/theme_controller.dart';
+import '../../core/widgets/design_system.dart';
 import '../../core/auth/biometric_service.dart';
 
 const Map<String, String> _kNotificationTypeLabels = {
@@ -85,20 +86,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppBar(title: const Text('Ayarlar')),
+      backgroundColor: AppColors.surface,
+      appBar: const AppPageHeader(title: 'Ayarlar'),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : ListView(
               padding: const EdgeInsets.all(AppSpacing.md),
               children: [
-                const Padding(
-                  padding: EdgeInsets.only(bottom: AppSpacing.md, left: 2),
-                  child: Text(
-                    'Ayarlar',
-                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: AppColors.navy, letterSpacing: -0.7, height: 1.1),
-                  ),
-                ),
                 const _SectionTitle('Güvenlik'),
                 Card(
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18), side: BorderSide(color: AppColors.divider)),

@@ -1,7 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:go_router/go_router.dart';
 import 'dart:io' show Platform;
 import '../theme/app_theme.dart';
+
+/// Alt sayfalar için tek tip başlık ve geri navigasyonu. Ana sekmelerin üst
+/// navigasyonu bu bileşeni kullanmaz; yalnızca push edilen alt ekranlarda kullanılır.
+class AppPageHeader extends StatelessWidget implements PreferredSizeWidget {
+  final String title;
+  final List<Widget>? actions;
+  final VoidCallback? onBack;
+
+  const AppPageHeader({
+    super.key,
+    required this.title,
+    this.actions,
+    this.onBack,
+  });
+
+  @override
+  Size get preferredSize => const Size.fromHeight(76);
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      title: Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.navy)),
+      centerTitle: true,
+      automaticallyImplyLeading: false,
+      leading: IconButton(
+        tooltip: 'Geri',
+        icon: const Icon(Icons.arrow_back),
+        onPressed: onBack ?? () {
+          if (Navigator.of(context).canPop()) {
+            Navigator.of(context).pop();
+          } else {
+            context.go('/home');
+          }
+        },
+      ),
+      actions: actions,
+    );
+  }
+}
 
 enum AppStatusTone { success, inProgress, pending, danger, neutral }
 
