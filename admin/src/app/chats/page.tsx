@@ -36,7 +36,7 @@ export default function ChatsPage() {
         süreli mesajlaşma yasağı verin.
       </p>
 
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm shadow-gray-100/50 divide-y divide-gray-50 overflow-hidden">
+      <div className="bg-white rounded-lg border border-gray-100 shadow-[0_1px_2px_rgba(15,23,42,0.04)] shadow-gray-100/50 divide-y divide-gray-50 overflow-hidden">
         {conversations?.map((c: any) => (
           <div key={c.id}>
             <div className="flex items-center justify-between px-5 py-4 hover:bg-gray-50/60 transition-colors">

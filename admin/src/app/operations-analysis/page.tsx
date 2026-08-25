@@ -44,7 +44,7 @@ export default function OperationsAnalysisPage() {
       </p>
 
       {sevenDay && (
-        <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-8">
+        <div className="bg-white rounded-lg border border-gray-100 p-6 mb-8">
           <h3 className="text-sm font-bold text-gray-700 mb-1">📅 Önümüzdeki 7 Gün Tahmini</h3>
           <p className="text-[11px] text-amber-700 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2 mb-4">
             ⚠️ {sevenDay.disclaimer}
@@ -65,7 +65,7 @@ export default function OperationsAnalysisPage() {
       )}
 
       {competency?.length > 0 && (
-        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden mb-8">
+        <div className="bg-white rounded-lg border border-gray-100 overflow-hidden mb-8">
           <div className="p-4 border-b border-gray-100">
             <h3 className="text-sm font-bold text-gray-700">Teknik Yetkinlik Analizi</h3>
             <p className="text-[11px] text-gray-400 mt-1">Not: Sınav/quiz sistemi ve dokümantasyon kalitesi verisi bulunmadığından bu kriterler skora dahil edilemedi.</p>
@@ -96,7 +96,7 @@ export default function OperationsAnalysisPage() {
       )}
 
       {anomalies?.length > 0 && (
-        <div className="bg-white rounded-2xl border border-orange-200 p-6 mb-8">
+        <div className="bg-white rounded-lg border border-orange-200 p-6 mb-8">
           <h3 className="text-sm font-bold text-orange-700 mb-3">🔍 Tespit Edilen Anomaliler</h3>
           <div className="space-y-2">
             {anomalies.map((a: any, i: number) => (
@@ -109,7 +109,7 @@ export default function OperationsAnalysisPage() {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
-        <div className="bg-white rounded-2xl border border-gray-100 p-5">
+        <div className="bg-white rounded-lg border border-gray-100 p-5">
           <h3 className="text-sm font-bold text-gray-700 mb-4">Konum Bazlı Yoğunluk</h3>
           <p className="text-[11px] text-gray-400 mb-3">
             Not: Kayıtlardaki serbest metin konum bilgisine göre — coğrafi harita yerine yoğunluk çubuğu olarak gösteriliyor.
@@ -120,7 +120,7 @@ export default function OperationsAnalysisPage() {
           {(!heatMap?.byLocation || heatMap.byLocation.length === 0) && <p className="text-xs text-gray-400">Henüz konum bilgisi olan kayıt yok.</p>}
         </div>
 
-        <div className="bg-white rounded-2xl border border-gray-100 p-5">
+        <div className="bg-white rounded-lg border border-gray-100 p-5">
           <h3 className="text-sm font-bold text-gray-700 mb-4">Ürün Bazlı Problemler</h3>
           {heatMap?.byProduct?.slice(0, 8).map((p: any) => (
             <HeatBar key={p.label} label={p.label} count={p.count} max={maxProduct} />
@@ -128,7 +128,7 @@ export default function OperationsAnalysisPage() {
           {(!heatMap?.byProduct || heatMap.byProduct.length === 0) && <p className="text-xs text-gray-400">Henüz ürün bilgisi olan kayıt yok.</p>}
         </div>
 
-        <div className="bg-white rounded-2xl border border-gray-100 p-5">
+        <div className="bg-white rounded-lg border border-gray-100 p-5">
           <h3 className="text-sm font-bold text-gray-700 mb-4">Bayi Bazlı Destek Yoğunluğu</h3>
           {heatMap?.byDealer?.slice(0, 8).map((d: any) => (
             <HeatBar key={d.name} label={d.name} count={d.count} max={maxDealer} />
@@ -137,7 +137,7 @@ export default function OperationsAnalysisPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+      <div className="bg-white rounded-lg border border-gray-100 overflow-hidden">
         <div className="p-4 border-b border-gray-100">
           <h3 className="text-sm font-bold text-gray-700">Yedek Parça Talep Tahmini</h3>
           <p className="text-[11px] text-gray-400 mt-1">

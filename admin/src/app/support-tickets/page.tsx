@@ -114,7 +114,7 @@ export default function SupportTicketsPage() {
       </div>
 
       {showCostReport && (
-        <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-8">
+        <div className="bg-white rounded-lg border border-gray-100 p-6 mb-8">
           <h3 className="text-sm font-bold text-gray-700 mb-4">Maliyet Analizi Raporu</h3>
           <div className="flex flex-wrap gap-3 mb-5">
             {costReport && Object.entries(costReport.totalByCategory).map(([cat, amount]: [string, any]) => (
@@ -157,7 +157,7 @@ export default function SupportTicketsPage() {
       )}
 
       {showSpareParts && (
-        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden mb-8">
+        <div className="bg-white rounded-lg border border-gray-100 overflow-hidden mb-8">
           <table className="w-full text-sm">
             <thead className="bg-gray-50 text-gray-500 text-left">
               <tr>
@@ -191,7 +191,7 @@ export default function SupportTicketsPage() {
       )}
 
       {showMeasurementTypes && (
-        <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-8 max-w-2xl">
+        <div className="bg-white rounded-lg border border-gray-100 p-6 mb-8 max-w-2xl">
           <h3 className="text-sm font-bold text-gray-700 mb-4">Ölçüm Türleri (Teknik Ölçüm Sistemi)</h3>
           <form onSubmit={addMeasurementType} className="flex items-end gap-2 mb-4">
             <div className="flex-1">
@@ -230,7 +230,7 @@ export default function SupportTicketsPage() {
       )}
 
       {showSlaSettings && (
-        <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-8 max-w-2xl">
+        <div className="bg-white rounded-lg border border-gray-100 p-6 mb-8 max-w-2xl">
           <h3 className="text-sm font-bold text-gray-700 mb-4">Öncelik Bazında SLA Süreleri (dakika)</h3>
           <div className="space-y-3">
             {slaSettings?.map((s: any) => (
@@ -330,7 +330,7 @@ function EditTicketModal({
 
   return (
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="bg-white rounded-2xl p-6 w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+      <div className="bg-white rounded-lg p-6 w-full max-w-md" onClick={(e) => e.stopPropagation()}>
         <h3 className="text-sm font-bold text-navy mb-4">Teknik Destek Kaydını Düzenle</h3>
         <div className="space-y-3">
           <div>
@@ -373,7 +373,7 @@ function EditTicketModal({
 function TicketCard({ ticket, onStatusChange, onDelete, onEdit, emergency }: { ticket: any; onStatusChange: (id: string, status: string) => void; onDelete: (id: string) => void; onEdit: (ticket: any) => void; emergency?: boolean }) {
   const sla = ticket.slaStatus || {};
   return (
-    <div className={`bg-white rounded-xl border p-4 ${emergency ? 'border-red-300 shadow-sm shadow-red-100' : 'border-gray-200'}`}>
+    <div className={`bg-white rounded-xl border p-4 ${emergency ? 'border-red-300 shadow-[0_1px_2px_rgba(15,23,42,0.04)] shadow-red-100' : 'border-gray-200'}`}>
       <div className="flex items-start justify-between mb-2">
         <p className="font-semibold text-gray-800">{ticket.productName || 'Ürün belirtilmedi'}</p>
         <select

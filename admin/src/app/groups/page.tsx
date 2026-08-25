@@ -56,9 +56,9 @@ export default function GroupsPage() {
               setSelected(g);
               setEditing(false);
             }}
-            className="text-left bg-white rounded-2xl border border-gray-100 shadow-sm shadow-gray-100/50 p-5 hover:shadow-md hover:shadow-gray-200/60 hover:-translate-y-0.5 transition-all"
+            className="text-left bg-white rounded-lg border border-gray-100 shadow-[0_1px_2px_rgba(15,23,42,0.04)] shadow-gray-100/50 p-5 hover:shadow-md hover:shadow-gray-200/60 hover:-translate-y-0.5 transition-all"
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white mb-3 shadow-sm">👥</div>
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white mb-3 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">👥</div>
             <p className="text-sm font-bold text-navy truncate">{g.name}</p>
             <p className="text-xs text-gray-400 mt-1">{g._count?.members ?? 0} üye</p>
           </button>
@@ -68,14 +68,14 @@ export default function GroupsPage() {
 
       {selected && (
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4" onClick={() => setSelected(null)}>
-          <div className="bg-white rounded-2xl w-full max-w-sm overflow-hidden" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-lg w-full max-w-sm overflow-hidden" onClick={(e) => e.stopPropagation()}>
             <div className="h-1.5 bg-brand" />
             <div className="p-6">
               {editing ? (
                 <RenameForm currentName={selected.name} onCancel={() => setEditing(false)} onSave={saveRename} />
               ) : (
                 <>
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-lg mb-4 shadow-sm">👥</div>
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-lg mb-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">👥</div>
                   <h3 className="text-base font-bold text-navy">{selected.name}</h3>
                   <p className="text-sm text-gray-400 mt-1">{selected._count?.members ?? 0} üye</p>
                   <div className="flex flex-wrap gap-2 mt-6">

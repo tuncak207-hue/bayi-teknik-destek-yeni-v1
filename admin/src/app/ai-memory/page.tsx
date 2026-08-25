@@ -75,7 +75,7 @@ export default function AiMemoryPage() {
               <button
                 key={e.id}
                 onClick={() => setSelected(e)}
-                className={`w-full text-left bg-white rounded-xl border p-4 hover:shadow-sm transition-all flex items-center gap-3 ${
+                className={`w-full text-left bg-white rounded-xl border p-4 hover:shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-all flex items-center gap-3 ${
                   e.needsReverification ? 'border-amber-200' : 'border-gray-200/70'
                 } ${!e.isActive ? 'opacity-50' : ''}`}
               >
