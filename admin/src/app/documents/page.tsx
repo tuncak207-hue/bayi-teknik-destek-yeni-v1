@@ -199,10 +199,10 @@ export default function DocumentsPage() {
                 setSelected(d);
                 setEditing(false);
               }}
-              className="text-left bg-white rounded-2xl border border-gray-100 shadow-sm shadow-gray-100/50 p-5 hover:shadow-md hover:shadow-gray-200/60 hover:-translate-y-0.5 transition-all"
+              className="text-left bg-white rounded-lg border border-gray-100 shadow-[0_1px_2px_rgba(15,23,42,0.04)] shadow-gray-100/50 p-5 hover:shadow-md hover:shadow-gray-200/60 hover:-translate-y-0.5 transition-all"
             >
               <div className="flex items-start justify-between mb-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shrink-0 shadow-sm">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shrink-0 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
                   📄
                 </div>
                 <StatusBadge status={d.status} />
@@ -218,7 +218,7 @@ export default function DocumentsPage() {
 
       {selected && (
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4" onClick={() => setSelected(null)}>
-          <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-lg w-full max-w-md overflow-hidden" onClick={(e) => e.stopPropagation()}>
             <div className="h-1.5 bg-brand" />
             <div className="p-6">
               {editing ? (
@@ -226,7 +226,7 @@ export default function DocumentsPage() {
               ) : (
                 <>
                   <div className="flex items-start justify-between mb-4">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-lg shrink-0 shadow-sm">📄</div>
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-lg shrink-0 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">📄</div>
                     <StatusBadge status={selected.status} />
                   </div>
                   <h3 className="text-base font-bold text-navy">{selected.title}</h3>

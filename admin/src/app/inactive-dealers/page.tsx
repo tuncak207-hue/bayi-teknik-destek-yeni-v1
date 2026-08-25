@@ -15,7 +15,7 @@ export default function InactiveDealersPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {dealers?.map((d: any) => (
-          <div key={d.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm shadow-gray-100/50 p-5">
+          <div key={d.id} className="bg-white rounded-lg border border-gray-100 shadow-[0_1px_2px_rgba(15,23,42,0.04)] shadow-gray-100/50 p-5">
             <div className="flex items-start justify-between mb-3">
               <div className="w-10 h-10 rounded-xl bg-navy/[0.06] flex items-center justify-center text-navy font-bold text-sm shrink-0">
                 {d.company?.[0]?.toUpperCase() || '?'}

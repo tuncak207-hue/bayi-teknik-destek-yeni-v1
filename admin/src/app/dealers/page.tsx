@@ -77,10 +77,10 @@ export default function DealersPage() {
               setSelected(d);
               setEditing(false);
             }}
-            className="text-left bg-white rounded-2xl border border-gray-100 shadow-sm shadow-gray-100/50 p-5 hover:shadow-md hover:shadow-gray-200/60 hover:-translate-y-0.5 transition-all"
+            className="text-left bg-white rounded-lg border border-gray-100 shadow-[0_1px_2px_rgba(15,23,42,0.04)] shadow-gray-100/50 p-5 hover:shadow-md hover:shadow-gray-200/60 hover:-translate-y-0.5 transition-all"
           >
             <div className="flex items-start justify-between mb-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-sm">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
                 {d.company?.[0]?.toUpperCase() || '?'}
               </div>
               <Badge label={statusLabel[d.status] || d.status} tone={statusTone[d.status] || 'neutral'} />
@@ -98,7 +98,7 @@ export default function DealersPage() {
 
       {selected && (
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4" onClick={() => setSelected(null)}>
-          <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-lg w-full max-w-md overflow-hidden" onClick={(e) => e.stopPropagation()}>
             <div className="h-1.5 bg-brand" />
             <div className="p-6">
               {editing ? (
@@ -106,7 +106,7 @@ export default function DealersPage() {
               ) : (
                 <>
                   <div className="flex items-start justify-between mb-4">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold text-base shrink-0 shadow-sm">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold text-base shrink-0 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
                       {selected.company?.[0]?.toUpperCase() || '?'}
                     </div>
                     <Badge label={statusLabel[selected.status] || selected.status} tone={statusTone[selected.status] || 'neutral'} />

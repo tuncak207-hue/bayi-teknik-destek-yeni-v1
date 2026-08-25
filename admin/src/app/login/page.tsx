@@ -51,7 +51,7 @@ export default function LoginPage() {
           <p className="text-gray-400 text-xs mt-1">Bayi Teknik Destek Yönetim Paneli</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl overflow-hidden shadow-xl shadow-gray-200/60 border border-gray-100">
+        <form onSubmit={handleSubmit} className="bg-white rounded-lg overflow-hidden shadow-xl shadow-gray-200/60 border border-gray-100">
           <div className="h-[3px] bg-brand" />
           <div className="p-8">
             {error && (

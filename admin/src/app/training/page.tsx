@@ -82,14 +82,14 @@ export default function TrainingPage() {
         </p>
         <button
           onClick={() => setShowForm((v) => !v)}
-          className="bg-navy text-white text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-navy-light transition shadow-sm shrink-0 ml-4"
+          className="bg-navy text-white text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-navy-light transition shadow-[0_1px_2px_rgba(15,23,42,0.04)] shrink-0 ml-4"
         >
           {showForm ? 'Vazgeç' : '+ İçerik Ekle'}
         </button>
       </div>
 
       {showForm && (
-        <form onSubmit={submit} className="bg-white rounded-2xl border border-gray-100 shadow-sm shadow-gray-100/50 p-6 mb-8 max-w-xl">
+        <form onSubmit={submit} className="bg-white rounded-lg border border-gray-100 shadow-[0_1px_2px_rgba(15,23,42,0.04)] shadow-gray-100/50 p-6 mb-8 max-w-xl">
           {error && (
             <div className="mb-5 px-3.5 py-2.5 bg-red-50 border border-red-100 rounded-lg">
               <p className="text-[13px] text-red-600">{error}</p>
@@ -197,17 +197,17 @@ export default function TrainingPage() {
       )}
 
       {contents?.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
+        <div className="bg-white rounded-lg border border-gray-100 p-8 text-center">
           <p className="text-gray-400 text-sm">Henüz eğitim içeriği eklenmedi.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {contents?.map((c: any) => {
             const isVideo = c.type === 'VIDEO';
             return (
               <div
                 key={c.id}
-                className="group bg-white rounded-2xl border border-gray-100 shadow-sm shadow-gray-100/50 overflow-hidden hover:shadow-md hover:shadow-gray-200/60 transition-shadow"
+                className="group bg-white rounded-lg border border-gray-100 shadow-[0_1px_2px_rgba(15,23,42,0.04)] shadow-gray-100/50 overflow-hidden hover:shadow-md hover:shadow-gray-200/60 transition-shadow"
               >
                 {/* Kurs/kütüphane kartı gibi renkli, büyük bir "kapak" alanı
                     — önceki tasarımda sadece küçük bir ikon rozeti vardı,
@@ -220,7 +220,7 @@ export default function TrainingPage() {
                       : 'linear-gradient(135deg, #1D3A56 0%, #0B1B2B 100%)',
                   }}
                 >
-                  <div className="w-14 h-14 rounded-2xl bg-white/15 backdrop-blur-sm flex items-center justify-center group-hover:scale-105 transition-transform">
+                  <div className="w-14 h-14 rounded-lg bg-white/15 backdrop-blur-sm flex items-center justify-center group-hover:scale-105 transition-transform">
                     {isVideo ? (
                       <IconVideo width={26} height={26} className="text-white" />
                     ) : (
@@ -258,7 +258,7 @@ export default function TrainingPage() {
 
       {editingContent && (
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4" onClick={() => setEditingContent(null)}>
-          <div className="bg-white rounded-2xl w-full max-w-md p-6" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-lg w-full max-w-md p-6" onClick={(e) => e.stopPropagation()}>
             <EditContentForm content={editingContent} onCancel={() => setEditingContent(null)} onSave={saveEdit} />
           </div>
         </div>
@@ -342,7 +342,7 @@ function SegmentButton({
       type="button"
       onClick={onClick}
       className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[13px] font-semibold transition ${
-        active ? 'bg-white text-navy shadow-sm' : 'text-gray-400 hover:text-gray-600'
+        active ? 'bg-white text-navy shadow-[0_1px_2px_rgba(15,23,42,0.04)]' : 'text-gray-400 hover:text-gray-600'
       }`}
     >
       {icon}

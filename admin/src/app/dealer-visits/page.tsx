@@ -159,7 +159,7 @@ export default function DealerVisitsPage() {
             <button
               key={v.id}
               onClick={() => setSelected(v)}
-              className="w-full text-left bg-white rounded-xl border border-gray-200/70 p-4 hover:shadow-sm transition-all flex items-center gap-3"
+              className="w-full text-left bg-white rounded-xl border border-gray-200/70 p-4 hover:shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-all flex items-center gap-3"
             >
               <IconBadge icon={<IconMapPin width={16} height={16} />} color={v.needsFollowUp ? 'amber' : 'blue'} size="md" />
               <div className="flex-1 min-w-0 grid grid-cols-1 sm:grid-cols-4 gap-2 items-center">

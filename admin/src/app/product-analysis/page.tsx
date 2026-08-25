@@ -32,7 +32,7 @@ export default function ProductAnalysisPage() {
       <p className="text-sm text-gray-500 mb-6">Ürün sağlık skorları, versiyon karşılaştırması ve AR-GE'ye otomatik geri bildirim uyarıları.</p>
 
       {rndAlerts?.length > 0 && (
-        <div className="bg-white rounded-2xl border border-red-200 p-6 mb-8">
+        <div className="bg-white rounded-lg border border-red-200 p-6 mb-8">
           <h3 className="text-sm font-bold text-red-700 mb-3">🔬 AR-GE Geri Bildirim Uyarıları</h3>
           <p className="text-xs text-gray-400 mb-4">Son 30 günde 5+ kayıt ve 3+ farklı bayide görülen ürün/model kombinasyonları — ürün problemi olabilir.</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -48,7 +48,7 @@ export default function ProductAnalysisPage() {
         </div>
       )}
 
-      <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-8">
+      <div className="bg-white rounded-lg border border-gray-100 p-6 mb-8">
         <h3 className="text-sm font-bold text-gray-700 mb-3">Ürün Versiyon Analizi</h3>
         <form onSubmit={searchVersion} className="flex gap-2 mb-4">
           <input
@@ -80,7 +80,7 @@ export default function ProductAnalysisPage() {
         )}
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+      <div className="bg-white rounded-lg border border-gray-100 overflow-hidden">
         <div className="p-4 border-b border-gray-100">
           <h3 className="text-sm font-bold text-gray-700">Ürün Sağlık Skorları</h3>
         </div>

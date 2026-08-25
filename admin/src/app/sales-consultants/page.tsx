@@ -58,7 +58,7 @@ export default function SalesConsultantsPage() {
       </p>
 
       {showForm && (
-        <form onSubmit={submit} className="bg-white rounded-2xl border border-gray-100 shadow-sm shadow-gray-100/50 p-6 mb-6 max-w-lg">
+        <form onSubmit={submit} className="bg-white rounded-lg border border-gray-100 shadow-[0_1px_2px_rgba(15,23,42,0.04)] shadow-gray-100/50 p-6 mb-6 max-w-lg">
           {error && <p className="text-sm text-red-600 mb-4">{error}</p>}
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
@@ -96,9 +96,9 @@ export default function SalesConsultantsPage() {
               setSelected(c);
               setEditing(false);
             }}
-            className="text-left bg-white rounded-2xl border border-gray-100 shadow-sm shadow-gray-100/50 p-5 hover:shadow-md hover:shadow-gray-200/60 hover:-translate-y-0.5 transition-all"
+            className="text-left bg-white rounded-lg border border-gray-100 shadow-[0_1px_2px_rgba(15,23,42,0.04)] shadow-gray-100/50 p-5 hover:shadow-md hover:shadow-gray-200/60 hover:-translate-y-0.5 transition-all"
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm mb-3 shadow-sm">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm mb-3 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
               {c.firstName?.[0]?.toUpperCase()}{c.lastName?.[0]?.toUpperCase()}
             </div>
             <p className="text-sm font-bold text-navy truncate">{c.firstName} {c.lastName}</p>
@@ -111,14 +111,14 @@ export default function SalesConsultantsPage() {
 
       {selected && (
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4" onClick={() => setSelected(null)}>
-          <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-lg w-full max-w-md overflow-hidden" onClick={(e) => e.stopPropagation()}>
             <div className="h-1.5 bg-brand" />
             <div className="p-6">
               {editing ? (
                 <EditConsultantForm consultant={selected} onCancel={() => setEditing(false)} onSave={saveEdit} />
               ) : (
                 <>
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white font-bold text-base mb-4 shadow-sm">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white font-bold text-base mb-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
                     {selected.firstName?.[0]?.toUpperCase()}{selected.lastName?.[0]?.toUpperCase()}
                   </div>
                   <h3 className="text-base font-bold text-navy">{selected.firstName} {selected.lastName}</h3>
