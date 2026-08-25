@@ -262,13 +262,12 @@ class AppTheme {
         contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
       ),
       cardTheme: CardThemeData(
-        elevation: 3,
-        shadowColor: AppColors.navy.withOpacity(0.10),
+        elevation: 0,
+        shadowColor: Colors.transparent,
         color: Colors.white,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-          side: const BorderSide(color: AppColors.divider),
+          borderRadius: BorderRadius.circular(AppRadius.lg),
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
@@ -410,7 +409,7 @@ class AppTheme {
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.brand,
         brightness: Brightness.dark,
-        primary: const Color(0xFFE05A6E), // koyu temada daha açık, okunabilir bordo tonu
+        primary: const Color(0xFFFF8A55), // açık temadaki turuncu marka ailesinin koyu tema karşılığı
         secondary: AppColors.navyLight,
         surface: darkCard,
       ),
@@ -433,7 +432,7 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFE05A6E),
+          backgroundColor: const Color(0xFFFF8A55),
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSpacing.radius)),

@@ -81,25 +81,11 @@ class _SearchScreenState extends State<SearchScreen> {
     final hasSearched = _results != null;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFFFFFF),
+      backgroundColor: AppColors.surface,
       body: SafeArea(
         child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(AppSpacing.sm, AppSpacing.md, AppSpacing.md, 0),
-            child: Row(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.arrow_back, color: AppColors.navy),
-                  onPressed: () => context.pop(),
-                ),
-                Text(
-                  widget.documentsOnly ? 'Doküman Ara' : 'Arama',
-                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: AppColors.navy, letterSpacing: -0.7, height: 1.1),
-                ),
-              ],
-            ),
-          ),
+          AppPageHeader(title: widget.documentsOnly ? 'Doküman Ara' : 'Arama'),
           Padding(
             padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, AppSpacing.sm),
             child: Container(

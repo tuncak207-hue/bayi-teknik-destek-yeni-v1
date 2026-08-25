@@ -8,6 +8,7 @@ import '../../core/notifications/notification_sound_service.dart';
 import '../../core/auth/current_user.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/empty_state.dart';
+import '../../core/widgets/design_system.dart';
 class ConversationsScreen extends StatefulWidget {
   const ConversationsScreen({super.key});
 
@@ -164,37 +165,22 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
     // Gruplar'daki gibi büyük başlık gelecek" — Mesajlar da diğer 19
     // ana menü kartıyla aynı tutarlı desene geçirildi.
     return Scaffold(
-      backgroundColor: const Color(0xFFFFFFFF),
+      backgroundColor: AppColors.surface,
       body: SafeArea(
         child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(AppSpacing.sm, AppSpacing.md, AppSpacing.md, 0),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.arrow_back, color: AppColors.navy),
-                  onPressed: () {
-                    if (Navigator.canPop(context)) Navigator.pop(context);
-                  },
-                ),
-                Expanded(
-                  child: Text(
-                    _showArchived ? 'Arşivlenmiş Sohbetler' : 'Mesajlar',
-                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: AppColors.navy, letterSpacing: -0.7, height: 1.1),
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(_showArchived ? Icons.chat_bubble_outline : Icons.archive_outlined),
-                  tooltip: _showArchived ? 'Sohbetlere Dön' : 'Arşivi Görüntüle',
-                  onPressed: () {
-                    setState(() => _showArchived = !_showArchived);
-                    _load();
-                  },
-                ),
-              ],
-            ),
+          AppPageHeader(
+            title: _showArchived ? 'Arşivlenmiş Sohbetler' : 'Mesajlar',
+            actions: [
+              IconButton(
+                icon: Icon(_showArchived ? Icons.chat_bubble_outline : Icons.archive_outlined),
+                tooltip: _showArchived ? 'Sohbetlere Dön' : 'Arşivi Görüntüle',
+                onPressed: () {
+                  setState(() => _showArchived = !_showArchived);
+                  _load();
+                },
+              ),
+            ],
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.sm, AppSpacing.md, AppSpacing.xs),
