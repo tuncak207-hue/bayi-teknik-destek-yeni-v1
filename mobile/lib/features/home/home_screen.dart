@@ -387,7 +387,7 @@ class _HomeScreenState extends State<HomeScreen> {
               physics: const NeverScrollableScrollPhysics(),
               mainAxisSpacing: AppSpacing.sm,
               crossAxisSpacing: AppSpacing.sm,
-              childAspectRatio: 0.88,
+              childAspectRatio: 1.08,
               padding: EdgeInsets.zero,
               children: _quickActionsOrder
                   // "Bayi Ziyaretleri" sadece SALES (satış danışmanı)
@@ -581,7 +581,7 @@ class _QuickAction extends StatelessWidget {
               ),
             ],
           ),
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.lg),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.sm),
           child: Stack(
             clipBehavior: Clip.none,
             children: [
