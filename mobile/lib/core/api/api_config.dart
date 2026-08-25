@@ -2,8 +2,9 @@
 /// flutter run --dart-define=API_BASE_URL=https://api.example.com/api/v1
 class ApiConfig {
   static const _isRelease = bool.fromEnvironment('dart.vm.product');
-  static const _debugBaseUrl = 'http://localhost:3000/api/v1';
-  static const _debugSocketUrl = 'http://localhost:3000/chat';
+  // Android emulator host mapping: host localhost is reachable as 10.0.2.2.
+  static const _debugBaseUrl = 'http://10.0.2.2:3000/api/v1';
+  static const _debugSocketUrl = 'http://10.0.2.2:3000/chat';
 
   /// Release derlemelerinde URL’ler mutlaka build-time olarak verilmelidir.
   /// Örn: --dart-define=API_BASE_URL=https://api.example.com/api/v1
