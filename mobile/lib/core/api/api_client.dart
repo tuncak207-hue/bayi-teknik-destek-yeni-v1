@@ -13,8 +13,11 @@ class ApiClient {
 
   factory ApiClient() {
     if (_instance != null) return _instance!;
-    if (bool.fromEnvironment('dart.vm.product') && !ApiConfig.isConfigured) {
-      throw StateError('Release build requires HTTPS API_BASE_URL and SOCKET_URL dart-defines.');
+    if (bool.fromEnvironment('dart.vm.product')) {
+      final configError = ApiConfig.releaseValidationError;
+      if (configError != null) {
+        throw StateError('Güvenli release yapılandırması geçersiz: $configError');
+      }
     }
 
     final dio = Dio(BaseOptions(

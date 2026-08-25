@@ -60,6 +60,21 @@ flutter {
     source = "../.."
 }
 
+tasks.matching { task ->
+    task.name.contains("Release", ignoreCase = true) &&
+      (task.name.contains("assemble", ignoreCase = true) || task.name.contains("bundle", ignoreCase = true))
+}.configureEach {
+    doFirst {
+        if (!keystorePropertiesFile.exists()) {
+            throw GradleException("Release signing yapılandırması eksik: mobile/android/key.properties dosyası bulunamadı.")
+        }
+        val googleServicesFile = rootProject.file("app/google-services.json")
+        if (!googleServicesFile.exists()) {
+            throw GradleException("Firebase release yapılandırması eksik: mobile/android/app/google-services.json bulunamadı.")
+        }
+    }
+}
+
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 }
