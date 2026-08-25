@@ -6,8 +6,6 @@ import '../../core/theme/app_theme.dart';
 import '../../core/theme/theme_controller.dart';
 import '../../core/widgets/design_system.dart';
 import '../auth/data/auth_repository.dart';
-import '../dealers/blocked_users_screen.dart';
-import '../../core/events/notification_badge_bus.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -19,7 +17,6 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final Dio _dio = ApiClient().dio;
   Map<String, dynamic>? _profile;
-  int _unreadNotifications = 0;
   String? _loadError;
   List<dynamic> _badges = [];
   Map<String, dynamic>? _myStats;
@@ -28,17 +25,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     _load();
-    _loadUnreadCount();
     _loadBadges();
     _loadMyStats();
-    // Bildirim geldiğinde bu ekrandaki zil sayısı da anlık güncellensin.
-    NotificationBadgeBus.trigger.addListener(_loadUnreadCount);
-  }
-
-  @override
-  void dispose() {
-    NotificationBadgeBus.trigger.removeListener(_loadUnreadCount);
-    super.dispose();
   }
 
   Future<void> _loadMyStats() async {
@@ -69,15 +57,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (mounted) {
         setState(() => _loadError = 'Profil yüklenemedi. İnternet bağlantınızı kontrol edip tekrar deneyin.');
       }
-    }
-  }
-
-  Future<void> _loadUnreadCount() async {
-    try {
-      final res = await _dio.get('/notifications/unread-count');
-      if (mounted) setState(() => _unreadNotifications = res.data['count'] ?? 0);
-    } catch (_) {
-      // Sessizce yut, rozet ikincil bir bilgi.
     }
   }
 

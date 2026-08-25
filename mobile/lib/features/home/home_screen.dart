@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:dio/dio.dart';
 import 'dart:async';
-import 'dart:io';
 import '../../app/top_nav_bar.dart';
 import 'home_slideshow.dart';
-import 'package:image_picker/image_picker.dart';
 import '../../core/api/api_client.dart';
 import '../../core/api/socket_service.dart';
 import '../../core/notifications/notification_sound_service.dart';
@@ -15,9 +13,7 @@ import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_components.dart';
 import '../../core/storage/stat_badge_tracker.dart';
 import '../announcements/critical_announcement_gate.dart';
-import 'voice_quick_question_sheet.dart';
 import 'quick_actions_data.dart';
-import 'reorder_quick_actions_screen.dart';
 import '../../core/events/home_scroll_to_top_bus.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -28,10 +24,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final _questionController = TextEditingController();
   final Dio _dio = ApiClient().dio;
   final _badgeTracker = StatBadgeTracker();
-  String? _firstName;
   Map<String, dynamic>? _stats;
   bool _statsError = false;
   Map<String, bool> _hasNewBadge = {};
@@ -49,7 +43,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _loadProfile();
     _loadStats();
     _loadPinnedDocuments();
     _loadQuickActionsOrder();
@@ -57,12 +50,6 @@ class _HomeScreenState extends State<HomeScreen> {
     // (RootShell) dinlendiği için, buradan gelen sinyalle kart
     // rozetlerini tazeliyoruz — Ana Sayfa şu an görünür olmasa bile.
     NotificationBadgeBus.trigger.addListener(_loadCategoryBadges);
-    // Sağ üstteki bildirim zili de anlık güncellensin diye — önceden
-    // sadece ekran ilk açıldığında bir kez yükleniyordu, bildirim
-    // geldiğinde kartlar tazeleniyordu ama zil eski sayıyı göstermeye
-    // devam ediyordu.
-    NotificationBadgeBus.trigger.addListener(_loadUnreadNotifications);
-    _loadUnreadNotifications();
     // Ana Sayfa açıldığında henüz onaylanmamış kritik duyuru varsa
     // kapatılamayan bir uyarı göster.
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -96,10 +83,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     _messageSub?.cancel();
-    _questionController.dispose();
     _scrollController.dispose();
     NotificationBadgeBus.trigger.removeListener(_loadCategoryBadges);
-    NotificationBadgeBus.trigger.removeListener(_loadUnreadNotifications);
     HomeScrollToTopBus.trigger.removeListener(_scrollToTop);
     super.dispose();
   }
@@ -167,15 +152,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> _loadProfile() async {
-    try {
-      final res = await _dio.get('/users/me');
-      if (mounted) setState(() => _firstName = res.data['firstName']);
-    } catch (_) {
-      // Profil alınamazsa genel karşılama metniyle devam et.
-    }
-  }
-
   Future<void> _loadStats({int attempt = 0}) async {
     try {
       final res = await _dio.get('/stats/me');
@@ -219,57 +195,6 @@ class _HomeScreenState extends State<HomeScreen> {
     final value = (_stats![key] ?? 0) as int;
     await _badgeTracker.markSeen(key, value);
     if (mounted) setState(() => _hasNewBadge[key] = false);
-  }
-
-  int _unreadNotifications = 0;
-
-  Future<void> _loadUnreadNotifications() async {
-    try {
-      final res = await _dio.get('/notifications/unread-count');
-      if (mounted) setState(() => _unreadNotifications = res.data['count'] ?? 0);
-    } catch (_) {
-      // İkincil bir bilgi, sessizce yut.
-    }
-  }
-
-  File? _homePendingImage;
-
-  Future<void> _pickHomeImage() async {
-    final source = await showModalBottomSheet<ImageSource>(
-      context: context,
-      builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.photo_camera_outlined),
-              title: const Text('Kamera ile çek'),
-              onTap: () => Navigator.pop(context, ImageSource.camera),
-            ),
-            ListTile(
-              leading: const Icon(Icons.photo_library_outlined),
-              title: const Text('Galeriden Seç'),
-              onTap: () => Navigator.pop(context, ImageSource.gallery),
-            ),
-          ],
-        ),
-      ),
-    );
-    if (source == null) return;
-    final picked = await ImagePicker().pickImage(source: source, imageQuality: 85);
-    if (picked != null) setState(() => _homePendingImage = File(picked.path));
-  }
-
-  /// Önceden bu, yazılan soruyu HİÇ kullanmadan sadece AI sekmesine
-  /// yönlendiriyordu — soru kayboluyordu. Artık soru (ve varsa fotoğraf)
-  /// doğrudan gönderiliyor, AI cevabıyla birlikte açılan sohbete gidiliyor.
-  void _askAi() {
-    final question = _questionController.text.trim();
-    final image = _homePendingImage;
-    if (question.isEmpty && image == null) return;
-    _questionController.clear();
-    setState(() => _homePendingImage = null);
-    context.push('/ai-send', extra: {'question': question, 'image': image});
   }
 
   @override

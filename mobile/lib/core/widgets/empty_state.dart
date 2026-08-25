@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'app_components.dart';
 
 /// Geriye dönük uyumluluk sarmalayıcısıdır. Eski ekranlar bu sınıfı
