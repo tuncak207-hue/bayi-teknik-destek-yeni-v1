@@ -6,7 +6,7 @@ import '../theme/app_theme.dart';
 
 /// Alt sayfalar için tek tip başlık ve geri navigasyonu. Ana sekmelerin üst
 /// navigasyonu bu bileşeni kullanmaz; yalnızca push edilen alt ekranlarda kullanılır.
-class AppPageHeader extends StatelessWidget {
+class AppPageHeader extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final List<Widget>? actions;
   final VoidCallback? onBack;
@@ -17,6 +17,9 @@ class AppPageHeader extends StatelessWidget {
     this.actions,
     this.onBack,
   });
+
+  @override
+  Size get preferredSize => const Size.fromHeight(76);
 
   @override
   Widget build(BuildContext context) {
