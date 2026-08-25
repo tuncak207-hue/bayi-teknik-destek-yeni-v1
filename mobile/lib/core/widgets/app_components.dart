@@ -377,6 +377,7 @@ class ReferenceCardContent extends StatelessWidget {
   final Color? iconColor;
   final Color? iconBackground;
   final bool compact;
+  final bool titleAsLabel;
 
   const ReferenceCardContent({
     super.key,
@@ -388,6 +389,7 @@ class ReferenceCardContent extends StatelessWidget {
     this.iconColor,
     this.iconBackground,
     this.compact = false,
+    this.titleAsLabel = false,
   });
 
   @override
@@ -397,7 +399,11 @@ class ReferenceCardContent extends StatelessWidget {
     final foreground = iconColor ?? scheme.onSurfaceVariant;
     final iconSize = compact ? 44.0 : 64.0;
     final iconGlyphSize = compact ? 21.0 : 28.0;
-    final titleStyle = compact ? theme.textTheme.titleSmall : theme.textTheme.titleMedium;
+    final titleStyle = titleAsLabel
+        ? theme.textTheme.bodySmall
+        : compact
+            ? theme.textTheme.titleSmall
+            : theme.textTheme.titleMedium;
     final descriptionStyle = compact ? theme.textTheme.bodySmall : theme.textTheme.bodyMedium;
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -421,8 +427,8 @@ class ReferenceCardContent extends StatelessWidget {
           maxLines: compact ? 2 : null,
           overflow: compact ? TextOverflow.ellipsis : null,
           style: titleStyle?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: scheme.onSurface,
+                fontWeight: titleAsLabel ? FontWeight.w500 : FontWeight.w700,
+                color: titleAsLabel ? scheme.onSurfaceVariant : scheme.onSurface,
               ),
         ),
         if (description != null) ...[

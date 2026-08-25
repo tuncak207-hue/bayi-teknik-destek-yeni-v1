@@ -586,6 +586,7 @@ class _QuickAction extends StatelessWidget {
                   iconColor: AppColors.primary,
                   iconBackground: AppColors.primarySoft,
                   compact: true,
+                  titleAsLabel: true,
                 ),
               ),
               if (badgeCount > 0)
