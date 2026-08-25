@@ -494,17 +494,18 @@ class _StatCard extends StatelessWidget {
     // artık kenarlıksız + çok hafif gölgeli, ikon küçük/soluk, rakam
     // güçlü/kalın, etiket küçük/muted.
     return Material(
-      color: AppColors.surfaceSecondary,
-      borderRadius: BorderRadius.circular(AppRadius.md),
+      color: const Color(0xFFF8F7FC),
+      borderRadius: BorderRadius.circular(AppRadius.lg),
       child: InkWell(
-        borderRadius: BorderRadius.circular(AppRadius.md),
+        borderRadius: BorderRadius.circular(AppRadius.lg),
         onTap: onTap,
         child: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(AppRadius.md),
-            boxShadow: AppShadows.subtle,
+            borderRadius: BorderRadius.circular(AppRadius.lg),
+            border: Border.all(color: AppColors.outline.withValues(alpha: 0.72)),
+            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.035), blurRadius: 10, offset: const Offset(0, 3))],
           ),
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.lg),
           child: Stack(
             clipBehavior: Clip.none,
             children: [
@@ -569,9 +570,9 @@ class _QuickAction extends StatelessWidget {
         onTap: onTap,
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: const Color(0xFFF8F7FC),
             borderRadius: BorderRadius.circular(AppRadius.lg),
-            border: Border.all(color: const Color(0xFFF0F0F1)),
+            border: Border.all(color: AppColors.outline.withValues(alpha: 0.72)),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.035),
@@ -580,7 +581,7 @@ class _QuickAction extends StatelessWidget {
               ),
             ],
           ),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.lg),
           child: Stack(
             clipBehavior: Clip.none,
             children: [
