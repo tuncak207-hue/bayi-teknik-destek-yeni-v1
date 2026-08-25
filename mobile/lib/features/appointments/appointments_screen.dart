@@ -556,6 +556,7 @@ class _CreateAppointmentSheetState extends State<_CreateAppointmentSheet> {
           ],
         ),
       ),
+      ),
     );
   }
 }
