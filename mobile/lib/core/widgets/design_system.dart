@@ -105,17 +105,19 @@ class StandardCard extends StatelessWidget {
   final VoidCallback? onTap;
   final Border? border;
 
-  const StandardCard({super.key, required this.child, this.padding = const EdgeInsets.all(AppSpacing.md), this.onTap, this.border});
+  const StandardCard({super.key, required this.child, this.padding = const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.lg), this.onTap, this.border});
 
   @override
   Widget build(BuildContext context) {
     final card = Container(
         padding: padding,
         decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(16),
-        border: border ?? Border.all(color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.7)),
-        boxShadow: [BoxShadow(color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.08), blurRadius: 12, offset: const Offset(0, 3))],
+        color: Theme.of(context).brightness == Brightness.dark
+            ? Theme.of(context).colorScheme.surfaceContainerLow
+            : const Color(0xFFF8F7FC),
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        border: border ?? Border.all(color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.72)),
+        boxShadow: [BoxShadow(color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.035), blurRadius: 10, offset: const Offset(0, 3))],
       ),
       child: child,
     );
