@@ -5,7 +5,6 @@ import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/theme_controller.dart';
 import '../../core/widgets/design_system.dart';
-import '../../core/widgets/app_components.dart';
 import '../auth/data/auth_repository.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -747,12 +746,19 @@ class _StatCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: accent.withValues(alpha: 0.1)),
       ),
-      child: ReferenceCardContent(
-        icon: icon,
-        title: value,
-        description: label,
-        iconColor: accent,
-        iconBackground: accent.withValues(alpha: 0.12),
+      child: Column(
+        children: [
+          Container(
+            width: 26,
+            height: 26,
+            decoration: BoxDecoration(color: accent.withValues(alpha: 0.12), shape: BoxShape.circle),
+            child: Icon(icon, size: 13, color: accent),
+          ),
+          const SizedBox(height: 6),
+          Text(value, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: Theme.of(context).colorScheme.onSurface)),
+          const SizedBox(height: 1),
+          Text(label, style: TextStyle(fontSize: 10, color: Theme.of(context).colorScheme.onSurfaceVariant, fontWeight: FontWeight.w600), textAlign: TextAlign.center),
+        ],
       ),
     );
   }

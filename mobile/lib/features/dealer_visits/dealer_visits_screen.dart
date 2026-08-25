@@ -139,22 +139,26 @@ class _DealerVisitsScreenState extends State<DealerVisitsScreen> {
                             context,
                             MaterialPageRoute(builder: (_) => _VisitDetailScreen(visitId: v['id'])),
                           ).then((_) => _load()),
-                          child: ReferenceCardContent(
-                            icon: Icons.storefront_outlined,
-                            title: v['dealer']?['company'] ?? v['dealerNameFreeText'] ?? 'Bayi belirtilmedi',
-                            description: '${_visitTypeLabels[v['visitType']] ?? v['visitType']} · ${v['city'] ?? '—'}',
-                            iconColor: AppColors.navy,
-                            iconBackground: AppColors.navy.withValues(alpha: 0.08),
-                            metadata: Wrap(
-                              alignment: WrapAlignment.center,
-                              spacing: 8,
-                              runSpacing: 6,
-                              children: [
-                                StatusBadge(label: _outcomeLabels[v['outcome']] ?? v['outcome'], tone: _outcomeTone(v['outcome'])),
-                                if (needsFollowUp) const StatusBadge(label: 'Takip', tone: AppStatusTone.pending),
-                                CardFooterMeta(icon: Icons.event_outlined, label: _formatDate(v['visitDate'])),
-                              ],
-                            ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              CardHeaderRow(
+                                title: v['dealer']?['company'] ?? v['dealerNameFreeText'] ?? 'Bayi belirtilmedi',
+                                subtitle: '${_visitTypeLabels[v['visitType']] ?? v['visitType']} · ${v['city'] ?? '—'}',
+                              ),
+                              const SizedBox(height: 8),
+                              Row(
+                                children: [
+                                  StatusBadge(label: _outcomeLabels[v['outcome']] ?? v['outcome'], tone: _outcomeTone(v['outcome'])),
+                                  if (needsFollowUp) ...[
+                                    const SizedBox(width: 6),
+                                    const StatusBadge(label: 'Takip', tone: AppStatusTone.pending),
+                                  ],
+                                  const Spacer(),
+                                  CardFooterMeta(icon: Icons.event_outlined, label: _formatDate(v['visitDate'])),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
                       );

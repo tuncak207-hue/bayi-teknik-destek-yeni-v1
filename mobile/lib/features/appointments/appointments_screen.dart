@@ -246,68 +246,117 @@ class _AppointmentCard extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: AppSpacing.sm),
       child: StandardCard(
         padding: const EdgeInsets.all(AppSpacing.lg),
-        child: ReferenceCardContent(
-          icon: type == 'ON_SITE' ? Icons.location_on_outlined : Icons.call_outlined,
-          title: appointment['subject'] ?? '',
-          description: (appointment['description'] ?? '').toString().isNotEmpty
-              ? appointment['description']
-              : (type == 'ON_SITE' ? 'Sahada Ziyaret' : 'Telefon/Görüntülü Destek'),
-          iconColor: AppColors.navy,
-          iconBackground: AppColors.brand.withValues(alpha: 0.10),
-          metadata: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _statusPill(status),
-              if (start != null) ...[
-                const SizedBox(height: 6),
-                Text(
-                  '${start.day.toString().padLeft(2, '0')}.${start.month.toString().padLeft(2, '0')}.${start.year}  ·  '
-                  '${start.hour.toString().padLeft(2, '0')}:${start.minute.toString().padLeft(2, '0')}',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 13, color: AppColors.navy, fontWeight: FontWeight.w600),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [AppColors.navy.withValues(alpha: 0.10), AppColors.brand.withValues(alpha: 0.10)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    type == 'ON_SITE' ? Icons.location_on_outlined : Icons.call_outlined,
+                    size: 18,
+                    color: AppColors.navy,
+                  ),
                 ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    appointment['subject'] ?? '',
+                    style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15.5, color: AppColors.navy, letterSpacing: -0.2),
+                  ),
+                ),
+                _statusPill(status),
               ],
-              if ((appointment['province'] ?? '').toString().isNotEmpty) ...[
-                const SizedBox(height: 4),
-                Text(
-                  [appointment['district'], appointment['province']].where((s) => s != null && s.toString().isNotEmpty).join(', '),
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
-                ),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Icon(Icons.category_outlined, size: 14, color: Colors.grey.shade500),
+                const SizedBox(width: 4),
+                Text(type == 'ON_SITE' ? 'Sahada Ziyaret' : 'Telefon/Görüntülü Destek',
+                    style: TextStyle(fontSize: 12.5, color: Colors.grey.shade700)),
               ],
-              if ((appointment['adminNote'] ?? '').toString().isNotEmpty) ...[
-                const SizedBox(height: 8),
-                Text(
-                  appointment['adminNote'],
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 12.5, height: 1.35),
-                ),
-              ],
-            ],
-          ),
-          action: Wrap(
-            alignment: WrapAlignment.center,
-            spacing: 4,
-            children: [
-              if (!isCancelled)
-                TextButton.icon(
-                  onPressed: onEdit,
-                  icon: const Icon(Icons.edit_calendar_outlined, size: 15, color: AppColors.navy),
-                  label: const Text('Düzenle', style: TextStyle(color: AppColors.navy)),
-                ),
-              if (!isCancelled && status == 'PENDING')
-                TextButton.icon(
-                  onPressed: onCancel,
-                  icon: const Icon(Icons.close, size: 15, color: Colors.orange),
-                  label: const Text('İptal Et', style: TextStyle(color: Colors.orange)),
-                ),
-              TextButton.icon(
-                onPressed: onDelete,
-                icon: const Icon(Icons.delete_outline, size: 15, color: Colors.red),
-                label: const Text('Sil', style: TextStyle(color: Colors.red)),
+            ),
+            if (start != null) ...[
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  Icon(Icons.schedule, size: 14, color: Colors.grey.shade500),
+                  const SizedBox(width: 4),
+                  Text(
+                    '${start.day.toString().padLeft(2, '0')}.${start.month.toString().padLeft(2, '0')}.${start.year}  ·  '
+                    '${start.hour.toString().padLeft(2, '0')}:${start.minute.toString().padLeft(2, '0')}',
+                    style: const TextStyle(fontSize: 13, color: AppColors.navy, fontWeight: FontWeight.w600),
+                  ),
+                ],
               ),
             ],
-          ),
+            if ((appointment['description'] ?? '').toString().isNotEmpty) ...[
+              const SizedBox(height: 10),
+              Text(appointment['description'], style: const TextStyle(fontSize: 13, height: 1.4)),
+            ],
+            if ((appointment['province'] ?? '').toString().isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Icon(Icons.location_on_outlined, size: 13, color: Colors.grey.shade400),
+                  const SizedBox(width: 4),
+                  Text(
+                    [appointment['district'], appointment['province']].where((s) => s != null && s.toString().isNotEmpty).join(', '),
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                  ),
+                ],
+              ),
+            ],
+            if ((appointment['adminNote'] ?? '').toString().isNotEmpty) ...[
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(10)),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(Icons.info_outline, size: 14, color: Colors.grey.shade500),
+                    const SizedBox(width: 6),
+                    Expanded(child: Text(appointment['adminNote'], style: const TextStyle(fontSize: 12.5))),
+                  ],
+                ),
+              ),
+            ],
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                if (!isCancelled) ...[
+                  TextButton.icon(
+                    onPressed: onEdit,
+                    icon: const Icon(Icons.edit_calendar_outlined, size: 15, color: AppColors.navy),
+                    label: const Text('Düzenle', style: TextStyle(color: AppColors.navy)),
+                  ),
+                  if (status == 'PENDING')
+                    TextButton.icon(
+                      onPressed: onCancel,
+                      icon: const Icon(Icons.close, size: 15, color: Colors.orange),
+                      label: const Text('İptal Et', style: TextStyle(color: Colors.orange)),
+                    ),
+                ],
+                TextButton.icon(
+                  onPressed: onDelete,
+                  icon: const Icon(Icons.delete_outline, size: 15, color: Colors.red),
+                  label: const Text('Sil', style: TextStyle(color: Colors.red)),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
