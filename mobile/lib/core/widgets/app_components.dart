@@ -137,7 +137,14 @@ class AppButton extends StatelessWidget {
         break;
     }
 
-    return fullWidth ? SizedBox(width: double.infinity, child: button) : button;
+    final accessibleButton = Semantics(
+      button: true,
+      enabled: onPressed != null && !loading,
+      excludeSemantics: true,
+      label: loading ? '$label, yükleniyor' : label,
+      child: button,
+    );
+    return fullWidth ? SizedBox(width: double.infinity, child: accessibleButton) : accessibleButton;
   }
 }
 
@@ -184,14 +191,15 @@ class _AppTextFieldState extends State<AppTextField> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final hasError = widget.errorText != null && widget.errorText!.isNotEmpty;
     final borderColor = !widget.enabled
-        ? AppColors.outline
+        ? scheme.outline
         : hasError
-            ? AppColors.errorColor
+            ? scheme.error
             : _focused
-                ? AppColors.primary
-                : AppColors.outline;
+                ? scheme.primary
+                : scheme.outline;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -201,7 +209,7 @@ class _AppTextFieldState extends State<AppTextField> {
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 140),
             decoration: BoxDecoration(
-              color: widget.enabled ? AppColors.surfaceBase : AppColors.surfaceVariant,
+              color: widget.enabled ? scheme.surfaceContainerHighest : scheme.surfaceContainer,
               borderRadius: BorderRadius.circular(AppRadius.md),
               border: Border.all(color: borderColor, width: (_focused || hasError) ? 1.4 : 1),
             ),
@@ -212,7 +220,7 @@ class _AppTextFieldState extends State<AppTextField> {
                 if (widget.icon != null) ...[
                   Padding(
                     padding: EdgeInsets.only(top: (widget.maxLines ?? 1) > 1 ? 14 : 0),
-                    child: Icon(widget.icon, size: 18, color: hasError ? AppColors.errorColor : (_focused ? AppColors.primary : AppColors.textMuted)),
+                    child: Icon(widget.icon, size: 18, color: hasError ? scheme.error : (_focused ? scheme.primary : scheme.onSurfaceVariant)),
                   ),
                   const SizedBox(width: AppSpacing.xs),
                 ],
@@ -226,10 +234,10 @@ class _AppTextFieldState extends State<AppTextField> {
                     maxLines: widget.obscureText ? 1 : widget.maxLines,
                     onChanged: widget.onChanged,
                     onSubmitted: (_) => widget.onSubmitted?.call(),
-                    style: const TextStyle(fontSize: 15, color: AppColors.textPrimary),
+                    style: TextStyle(fontSize: 15, color: scheme.onSurface),
                     decoration: InputDecoration(
                       labelText: widget.label,
-                      labelStyle: TextStyle(color: AppColors.textMuted, fontSize: 14.5),
+                      labelStyle: TextStyle(color: scheme.onSurfaceVariant, fontSize: 14.5),
                       border: InputBorder.none,
                       isDense: true,
                       contentPadding: const EdgeInsets.symmetric(vertical: 14),
@@ -245,7 +253,7 @@ class _AppTextFieldState extends State<AppTextField> {
             padding: const EdgeInsets.only(top: AppSpacing.xxs, left: 4),
             child: Text(
               hasError ? widget.errorText! : widget.helperText!,
-              style: TextStyle(fontSize: 12, color: hasError ? AppColors.errorColor : AppColors.textMuted),
+              style: TextStyle(fontSize: 12, color: hasError ? scheme.error : scheme.onSurfaceVariant),
             ),
           ),
       ],
@@ -273,6 +281,7 @@ class AppCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     // Kullanıcı isteği: "Kartların etrafındaki ince gri border'lar fazla
     // belirgin... Gereksiz border'ları kaldır. Çok hafif shadow/elevation
     // kullan." Kenarlık kaldırıldı, çok hafif gölge geri getirildi —
@@ -281,9 +290,15 @@ class AppCard extends StatelessWidget {
     final content = Container(
       padding: padding ?? const EdgeInsets.all(AppSpacing.sm),
       decoration: BoxDecoration(
-        color: AppColors.surfaceBase,
+        color: scheme.surface,
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        boxShadow: elevated ? AppShadows.card : AppShadows.subtle,
+        boxShadow: [
+          BoxShadow(
+            color: scheme.shadow.withValues(alpha: elevated ? 0.10 : 0.05),
+            blurRadius: elevated ? 14 : 8,
+            offset: Offset(0, elevated ? 4 : 2),
+          ),
+        ],
       ),
       child: child,
     );
@@ -363,29 +378,34 @@ class AppEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.xl, horizontal: AppSpacing.lg),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 64,
-            height: 64,
-            decoration: BoxDecoration(color: AppColors.surfaceVariant, shape: BoxShape.circle),
-            child: Icon(icon, size: 28, color: AppColors.textMuted),
+    final scheme = Theme.of(context).colorScheme;
+    return Semantics(
+      container: true,
+      liveRegion: true,
+      label: [title, if (description != null) description].whereType<String>().join('. '),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.xl, horizontal: AppSpacing.lg),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(color: scheme.surfaceContainerHighest, shape: BoxShape.circle),
+            child: Icon(icon, size: 28, color: scheme.onSurfaceVariant),
           ),
           const SizedBox(height: AppSpacing.sm),
           Text(
             title,
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: scheme.onSurface),
           ),
           if (description != null) ...[
             const SizedBox(height: AppSpacing.xxs),
             Text(
               description!,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 13.5, color: AppColors.textMuted, height: 1.4),
+              style: TextStyle(fontSize: 13.5, color: scheme.onSurfaceVariant, height: 1.4),
             ),
           ],
           if (actionLabel != null && onAction != null) ...[
@@ -408,9 +428,13 @@ class AppLoadingState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Shimmer.fromColors(
-      baseColor: AppColors.surfaceVariant,
-      highlightColor: Colors.white,
+    final scheme = Theme.of(context).colorScheme;
+    return Semantics(
+      liveRegion: true,
+      label: 'Yükleniyor',
+      child: Shimmer.fromColors(
+        baseColor: scheme.surfaceContainerHighest,
+      highlightColor: scheme.surfaceContainer,
       child: Column(
         children: List.generate(
           lines,
@@ -418,7 +442,7 @@ class AppLoadingState extends StatelessWidget {
             margin: const EdgeInsets.only(bottom: AppSpacing.xs),
             height: 72,
             decoration: BoxDecoration(
-              color: AppColors.surfaceVariant,
+              color: scheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(AppRadius.lg),
             ),
           ),
@@ -440,31 +464,37 @@ class AppErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.xl, horizontal: AppSpacing.lg),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 64,
-            height: 64,
-            decoration: BoxDecoration(color: AppColors.errorContainer, shape: BoxShape.circle),
-            child: Icon(Icons.wifi_off_rounded, size: 28, color: AppColors.errorColor),
+    final scheme = Theme.of(context).colorScheme;
+    return Semantics(
+      container: true,
+      liveRegion: true,
+      label: message ?? 'Bir şeyler ters gitti. Veriler yüklenemedi.',
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.xl, horizontal: AppSpacing.lg),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(color: scheme.errorContainer, shape: BoxShape.circle),
+            child: Icon(Icons.wifi_off_rounded, size: 28, color: scheme.error),
           ),
           const SizedBox(height: AppSpacing.sm),
           const Text(
             'Bir şeyler ters gitti',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: scheme.onSurface),
           ),
           const SizedBox(height: AppSpacing.xxs),
           Text(
             message ?? 'Veriler yüklenemedi. İnternet bağlantınızı kontrol edip tekrar deneyin.',
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 13.5, color: AppColors.textMuted, height: 1.4),
+            style: TextStyle(fontSize: 13.5, color: scheme.onSurfaceVariant, height: 1.4),
           ),
           const SizedBox(height: AppSpacing.md),
           AppButton.secondary(label: 'Tekrar Dene', onPressed: onRetry, icon: Icons.refresh, fullWidth: false),
-        ],
+          ],
+        ),
       ),
     );
   }

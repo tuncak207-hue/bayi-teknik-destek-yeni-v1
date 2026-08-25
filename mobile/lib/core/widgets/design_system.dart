@@ -231,18 +231,19 @@ class PlatformFormScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     if (Platform.isIOS) {
       return CupertinoPageScaffold(
-        backgroundColor: CupertinoColors.white,
+        backgroundColor: scheme.surface,
         navigationBar: CupertinoNavigationBar(
-          backgroundColor: CupertinoColors.white,
+          backgroundColor: scheme.surface,
           border: null,
           leading: CupertinoButton(
             padding: EdgeInsets.zero,
             onPressed: () => Navigator.pop(context),
-            child: const Text('İptal', style: TextStyle(color: CupertinoColors.systemGrey, fontSize: 16)),
+            child: Text('İptal', style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 16)),
           ),
-          middle: Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+          middle: Text(title, style: TextStyle(color: scheme.onSurface, fontWeight: FontWeight.w600, fontSize: 16)),
           trailing: CupertinoButton(
             padding: EdgeInsets.zero,
             onPressed: canSubmit && !submitting ? onSubmit : null,
@@ -251,7 +252,7 @@ class PlatformFormScaffold extends StatelessWidget {
                 : Text(
                     submitLabel,
                     style: TextStyle(
-                      color: canSubmit ? CupertinoColors.activeBlue : CupertinoColors.systemGrey3,
+                      color: canSubmit ? scheme.primary : scheme.onSurfaceVariant.withValues(alpha: 0.45),
                       fontWeight: FontWeight.w600,
                       fontSize: 16,
                     ),
@@ -270,12 +271,13 @@ class PlatformFormScaffold extends StatelessWidget {
     }
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: scheme.surface,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: scheme.surface,
         elevation: 0,
-        surfaceTintColor: Colors.white,
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 17, color: Colors.black)),
+        surfaceTintColor: scheme.surface,
+        automaticallyImplyLeading: true,
+        title: Text(title, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 17, color: scheme.onSurface)),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 8),
@@ -286,7 +288,7 @@ class PlatformFormScaffold extends StatelessWidget {
                   : Text(
                       submitLabel.toUpperCase(),
                       style: TextStyle(
-                        color: canSubmit ? Colors.black : Colors.grey.shade300,
+                        color: canSubmit ? scheme.primary : scheme.onSurfaceVariant.withValues(alpha: 0.45),
                         fontWeight: FontWeight.w800,
                         fontSize: 13.5,
                         letterSpacing: 0.5,
@@ -333,13 +335,14 @@ class PlatformTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     if (Platform.isIOS) {
       return CupertinoTextField.borderless(
         controller: controller,
         onChanged: onChanged,
         placeholder: hint,
-        placeholderStyle: TextStyle(fontSize: fontSize, fontWeight: fontWeight, color: CupertinoColors.systemGrey3),
-        style: TextStyle(fontSize: fontSize, fontWeight: fontWeight, color: CupertinoColors.black, height: 1.4),
+        placeholderStyle: TextStyle(fontSize: fontSize, fontWeight: fontWeight, color: scheme.onSurfaceVariant.withValues(alpha: 0.6)),
+        style: TextStyle(fontSize: fontSize, fontWeight: fontWeight, color: scheme.onSurface, height: 1.4),
         padding: EdgeInsets.zero,
         minLines: minLines,
         maxLines: maxLines,
@@ -350,10 +353,10 @@ class PlatformTextField extends StatelessWidget {
       onChanged: onChanged,
       minLines: minLines,
       maxLines: maxLines,
-      style: TextStyle(fontSize: fontSize, fontWeight: fontWeight, color: Colors.black, height: 1.4),
+      style: TextStyle(fontSize: fontSize, fontWeight: fontWeight, color: scheme.onSurface, height: 1.4),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: TextStyle(fontSize: fontSize, fontWeight: fontWeight, color: Colors.grey.shade300),
+        hintStyle: TextStyle(fontSize: fontSize, fontWeight: fontWeight, color: scheme.onSurfaceVariant.withValues(alpha: 0.6)),
         border: InputBorder.none,
         contentPadding: EdgeInsets.zero,
       ),
