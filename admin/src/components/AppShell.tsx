@@ -16,11 +16,11 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="flex min-h-screen bg-[#F7F8FA]">
+    <div className="flex min-h-screen bg-[#f6f7f9] text-gray-900">
       <Sidebar collapsed={collapsed} mobileOpen={mobileOpen} onCloseMobile={() => setMobileOpen(false)} />
       <div className="flex-1 flex flex-col min-w-0">
         <Topbar onToggleMobile={() => setMobileOpen((v) => !v)} onToggleCollapse={() => setCollapsed((v) => !v)} />
-        <main className="flex-1 p-4 md:p-6 overflow-y-auto">{children}</main>
+        <main className="flex-1 p-3 sm:p-4 lg:p-6 overflow-y-auto">{children}</main>
       </div>
     </div>
   );

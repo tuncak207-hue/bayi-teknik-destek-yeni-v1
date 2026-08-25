@@ -72,9 +72,9 @@ export default function Sidebar({
 
   const content = (
     <>
-      <div className={`h-14 flex items-center border-b border-gray-100 ${collapsed ? 'px-3 justify-center' : 'px-4'}`}>
+      <div className={`h-16 flex items-center border-b border-gray-100/80 ${collapsed ? 'px-3 justify-center' : 'px-5'}`}>
         <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-6 h-6 rounded-md bg-navy flex items-center justify-center text-white font-bold text-[11px] shrink-0">
+          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-brand to-brand-dark flex items-center justify-center text-white font-bold text-[11px] shadow-sm shrink-0">
             E
           </div>
           {!collapsed && (
@@ -85,7 +85,7 @@ export default function Sidebar({
         </div>
       </div>
 
-      <nav className={`flex-1 space-y-0.5 overflow-y-auto py-3 ${collapsed ? 'px-2' : 'px-2.5'}`}>
+      <nav className={`flex-1 space-y-1 overflow-y-auto py-4 ${collapsed ? 'px-2' : 'px-3'}`}>
         {items.map(({ href, label, Icon }) => {
           const active = href === '/' ? pathname === '/' : pathname?.startsWith(href);
           const badgeKey = badgeKeyByHref[href];
@@ -97,9 +97,9 @@ export default function Sidebar({
               href={href}
               onClick={onCloseMobile}
               title={collapsed ? label : undefined}
-              className={`group relative flex items-center gap-2.5 rounded-md h-8 text-[12.5px] font-medium transition-colors ${
+              className={`group relative flex items-center gap-2.5 rounded-lg h-9 text-[12.5px] font-medium transition-colors ${
                 collapsed ? 'px-2 justify-center' : 'px-2.5'
-              } ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-800'}`}
+              } ${active ? 'bg-brand/10 text-brand-dark shadow-sm' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-800'}`}
             >
               <Icon className={active ? 'text-brand' : 'text-gray-400 group-hover:text-gray-500'} width={15} height={15} />
               {!collapsed && <span className="truncate flex-1">{label}</span>}
