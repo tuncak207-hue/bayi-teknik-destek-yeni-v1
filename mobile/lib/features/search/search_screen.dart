@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/design_system.dart';
+import '../../core/widgets/app_components.dart';
 
 enum _SearchScope { all, documents, dealers, posts }
 
@@ -288,34 +289,24 @@ class _ResultCard extends StatelessWidget {
       child: StandardCard(
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
         onTap: onTap,
-        child: Row(
-          children: [
-            if (avatarLetter != null)
-              CircleAvatar(
-                radius: 19,
-                backgroundColor: AppColors.navy,
-                child: Text(avatarLetter!, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
-              )
-            else
-              Container(
-                width: 38,
-                height: 38,
-                decoration: BoxDecoration(color: (iconColor ?? AppColors.navy).withValues(alpha: 0.08), borderRadius: BorderRadius.circular(11)),
-                child: Icon(icon, color: iconColor ?? AppColors.navy, size: 18),
-              ),
-            const SizedBox(width: AppSpacing.sm),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5)),
-                  const SizedBox(height: 2),
-                  Text(subtitle, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
-                ],
-              ),
-            ),
-            Icon(trailingIcon ?? Icons.chevron_right, size: 18, color: Colors.grey.shade300),
-          ],
+        child: ReferenceCardContent(
+          icon: icon ?? Icons.person_outline,
+          title: title,
+          description: subtitle,
+          iconColor: iconColor ?? AppColors.navy,
+          iconBackground: (iconColor ?? AppColors.navy).withValues(alpha: 0.08),
+          metadata: avatarLetter == null
+              ? null
+              : CircleAvatar(
+                  radius: 12,
+                  backgroundColor: AppColors.navy,
+                  child: Text(avatarLetter!, style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700)),
+                ),
+          action: IconButton(
+            tooltip: 'Aç',
+            onPressed: onTap,
+            icon: Icon(trailingIcon ?? Icons.chevron_right, color: Colors.grey.shade500),
+          ),
         ),
       ),
     );

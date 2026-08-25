@@ -4,6 +4,7 @@ import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/theme_controller.dart';
 import '../../core/widgets/design_system.dart';
+import '../../core/widgets/app_components.dart';
 import '../../core/auth/biometric_service.dart';
 
 const Map<String, String> _kNotificationTypeLabels = {
@@ -97,28 +98,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 StandardCard(
                   child: ValueListenableBuilder<bool>(
                     valueListenable: ThemeController().biometricLockEnabled,
-                    builder: (context, enabled, _) => SwitchListTile(
-                      title: const Text('Parmak İzi ile Açılış Kilidi'),
-                      subtitle: const Text('Uygulama her açıldığında biyometrik onay istenir'),
-                      value: enabled,
-                      onChanged: (v) async {
-                        if (v) {
-                          final available = await BiometricService().isAvailable();
-                          if (!available) {
-                            if (mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Bu cihazda parmak izi/yüz tanıma desteklenmiyor.')),
-                              );
+                    builder: (context, enabled, _) => ReferenceCardContent(
+                      icon: Icons.fingerprint,
+                      title: 'Parmak İzi ile Açılış Kilidi',
+                      description: 'Uygulama her açıldığında biyometrik onay istenir',
+                      iconColor: Theme.of(context).colorScheme.primary,
+                      iconBackground: Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
+                      action: Switch(
+                        value: enabled,
+                        onChanged: (v) async {
+                          if (v) {
+                            final available = await BiometricService().isAvailable();
+                            if (!available) {
+                              if (mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Bu cihazda parmak izi/yüz tanıma desteklenmiyor.')),
+                                );
+                              }
+                              return;
                             }
-                            return;
+                            final confirmed = await BiometricService().authenticate();
+                            if (!confirmed) return;
                           }
-                          // Etkinleştirirken hemen bir kez doğrulama isteyip
-                          // gerçekten çalıştığından emin oluyoruz.
-                          final confirmed = await BiometricService().authenticate();
-                          if (!confirmed) return;
-                        }
-                        ThemeController().setBiometricLockEnabled(v);
-                      },
+                          ThemeController().setBiometricLockEnabled(v);
+                        },
+                      ),
                     ),
                   ),
                 ),
