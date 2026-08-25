@@ -105,7 +105,7 @@ class StandardCard extends StatelessWidget {
   final VoidCallback? onTap;
   final Border? border;
 
-  const StandardCard({super.key, required this.child, this.padding = const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.lg), this.onTap, this.border});
+  const StandardCard({super.key, required this.child, this.padding = const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.md), this.onTap, this.border});
 
   @override
   Widget build(BuildContext context) {
