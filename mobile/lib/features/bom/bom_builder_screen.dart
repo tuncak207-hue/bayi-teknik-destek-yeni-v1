@@ -126,43 +126,26 @@ class _BomListScreenState extends State<BomListScreen> {
                       return StandardCard(
                         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
                         onTap: () => _openBuilder(existingList: l),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 44,
-                              height: 44,
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(colors: [Color(0xFF6E1420), AppColors.brand]),
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                              child: const Icon(Icons.receipt_long_outlined, color: Colors.white, size: 20),
-                            ),
-                            const SizedBox(width: AppSpacing.sm),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(l['title'] ?? '', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14.5, color: AppColors.navy)),
-                                  const SizedBox(height: 4),
-                                  Row(
-                                    children: [
-                                      CardFooterMeta(icon: Icons.inventory_2_outlined, label: '${items.length} kalem'),
-                                      if (location.isNotEmpty) ...[
-                                        const SizedBox(width: 10),
-                                        Expanded(child: CardFooterMeta(icon: Icons.location_on_outlined, label: location)),
-                                      ],
-                                    ],
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text(_formatDate(l['updatedAt']), style: TextStyle(fontSize: 10.5, color: Colors.grey.shade400)),
-                                ],
-                              ),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.delete_outline, color: Colors.grey),
-                              onPressed: () => _delete(l),
-                            ),
-                          ],
+                        child: ReferenceCardContent(
+                          icon: Icons.receipt_long_outlined,
+                          title: l['title'] ?? '',
+                          description: location.isNotEmpty ? location : 'Malzeme listesi',
+                          iconColor: Colors.white,
+                          iconBackground: AppColors.brand,
+                          metadata: Wrap(
+                            alignment: WrapAlignment.center,
+                            spacing: 8,
+                            runSpacing: 6,
+                            children: [
+                              CardFooterMeta(icon: Icons.inventory_2_outlined, label: '${items.length} kalem'),
+                              CardFooterMeta(icon: Icons.schedule_outlined, label: _formatDate(l['updatedAt'])),
+                            ],
+                          ),
+                          action: IconButton(
+                            tooltip: 'Sil',
+                            icon: const Icon(Icons.delete_outline, color: Colors.grey),
+                            onPressed: () => _delete(l),
+                          ),
                         ),
                       );
                     },

@@ -390,7 +390,8 @@ class ReferenceCardContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
     final foreground = iconColor ?? scheme.onSurfaceVariant;
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -411,7 +412,7 @@ class ReferenceCardContent extends StatelessWidget {
         Text(
           title,
           textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+          style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w700,
                 color: scheme.onSurface,
               ),
@@ -423,7 +424,7 @@ class ReferenceCardContent extends StatelessWidget {
             textAlign: TextAlign.center,
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            style: theme.textTheme.bodyMedium?.copyWith(
                   color: scheme.onSurfaceVariant,
                   height: 1.4,
                 ),
@@ -464,7 +465,6 @@ class AppEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
     return Semantics(
       container: true,
       liveRegion: true,
@@ -479,7 +479,6 @@ class AppEmptyState extends StatelessWidget {
               ? AppButton.secondary(label: actionLabel!, onPressed: onAction, fullWidth: false)
               : null,
         ),
-      ),
       ),
     );
   }
