@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import '../theme/app_theme.dart';
 
-/// Kullanıcı isteği: "UI tarafında tekrar eden yapıları reusable
-/// component haline getir." Bu dosya, uygulamanın tüm ekranlarında
-/// AYNI görsel dili kullanacak temel bileşenleri içerir. Bir ekrandaki
-/// buton, başka bir ekranda FARKLI görünmemeli — bu dosya bunu garanti
+/// KullanÄ±cÄ± isteÄŸi: "UI tarafÄ±nda tekrar eden yapÄ±larÄ± reusable
+/// component haline getir." Bu dosya, uygulamanÄ±n tÃ¼m ekranlarÄ±nda
+/// AYNI gÃ¶rsel dili kullanacak temel bileÅŸenleri iÃ§erir. Bir ekrandaki
+/// buton, baÅŸka bir ekranda FARKLI gÃ¶rÃ¼nmemeli â€” bu dosya bunu garanti
 /// eder.
 
 // ============================================================
-// APP BUTTON — Primary / Secondary / Tertiary / Destructive
+// APP BUTTON â€” Primary / Secondary / Tertiary / Destructive
 // ============================================================
 
 enum AppButtonVariant { primary, secondary, tertiary, destructive }
@@ -141,7 +141,7 @@ class AppButton extends StatelessWidget {
       button: true,
       enabled: onPressed != null && !loading,
       excludeSemantics: true,
-      label: loading ? '$label, yükleniyor' : label,
+      label: loading ? '$label, yÃ¼kleniyor' : label,
       child: button,
     );
     return fullWidth ? SizedBox(width: double.infinity, child: accessibleButton) : accessibleButton;
@@ -149,7 +149,7 @@ class AppButton extends StatelessWidget {
 }
 
 // ============================================================
-// APP TEXT FIELD — Focus / Error / Disabled / Filled durumları
+// APP TEXT FIELD â€” Focus / Error / Disabled / Filled durumlarÄ±
 // ============================================================
 
 class AppTextField extends StatefulWidget {
@@ -262,7 +262,7 @@ class _AppTextFieldState extends State<AppTextField> {
 }
 
 // ============================================================
-// APP CARD — ince kenarlık, çok hafif gölge, tutarlı padding
+// APP CARD â€” ince kenarlÄ±k, Ã§ok hafif gÃ¶lge, tutarlÄ± padding
 // ============================================================
 
 class AppCard extends StatelessWidget {
@@ -282,11 +282,11 @@ class AppCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    // Kullanıcı isteği: "Kartların etrafındaki ince gri border'lar fazla
-    // belirgin... Gereksiz border'ları kaldır. Çok hafif shadow/elevation
-    // kullan." Kenarlık kaldırıldı, çok hafif gölge geri getirildi —
-    // kartlar artık çizgiyle çevrelenmiş kutular gibi değil, arka
-    // plandan hafifçe "yükselerek" ayrışıyor.
+    // KullanÄ±cÄ± isteÄŸi: "KartlarÄ±n etrafÄ±ndaki ince gri border'lar fazla
+    // belirgin... Gereksiz border'larÄ± kaldÄ±r. Ã‡ok hafif shadow/elevation
+    // kullan." KenarlÄ±k kaldÄ±rÄ±ldÄ±, Ã§ok hafif gÃ¶lge geri getirildi â€”
+    // kartlar artÄ±k Ã§izgiyle Ã§evrelenmiÅŸ kutular gibi deÄŸil, arka
+    // plandan hafifÃ§e "yÃ¼kselerek" ayrÄ±ÅŸÄ±yor.
     final content = Container(
       padding: padding ?? const EdgeInsets.all(AppSpacing.sm),
       decoration: BoxDecoration(
@@ -298,7 +298,7 @@ class AppCard extends StatelessWidget {
             blurRadius: elevated ? 14 : 8,
             offset: Offset(0, elevated ? 4 : 2),
           ),
-      ),
+        ],
       child: child,
     );
 
@@ -317,7 +317,7 @@ class AppCard extends StatelessWidget {
 }
 
 // ============================================================
-// APP BADGE — durum/etiket rozeti
+// APP BADGE â€” durum/etiket rozeti
 // ============================================================
 
 enum AppBadgeTone { neutral, success, warning, error, info, brand }
@@ -356,7 +356,7 @@ class AppBadge extends StatelessWidget {
 }
 
 // ============================================================
-// APP EMPTY STATE — icon + başlık + açıklama + opsiyonel aksiyon
+// APP EMPTY STATE â€” icon + baÅŸlÄ±k + aÃ§Ä±klama + opsiyonel aksiyon
 // ============================================================
 
 class AppEmptyState extends StatelessWidget {
@@ -418,7 +418,7 @@ class AppEmptyState extends StatelessWidget {
 }
 
 // ============================================================
-// APP LOADING STATE — shimmer/skeleton, sadece dönen ikon değil
+// APP LOADING STATE â€” shimmer/skeleton, sadece dÃ¶nen ikon deÄŸil
 // ============================================================
 
 class AppLoadingState extends StatelessWidget {
@@ -430,7 +430,7 @@ class AppLoadingState extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     return Semantics(
       liveRegion: true,
-      label: 'Yükleniyor',
+      label: 'YÃ¼kleniyor',
       child: Shimmer.fromColors(
         baseColor: scheme.surfaceContainerHighest,
       highlightColor: scheme.surfaceContainer,
@@ -445,7 +445,6 @@ class AppLoadingState extends StatelessWidget {
               borderRadius: BorderRadius.circular(AppRadius.lg),
             ),
           ),
-        ],
         ),
       ),
     );
@@ -453,7 +452,7 @@ class AppLoadingState extends StatelessWidget {
 }
 
 // ============================================================
-// APP ERROR STATE — kullanıcı dostu mesaj + retry aksiyonu
+// APP ERROR STATE â€” kullanÄ±cÄ± dostu mesaj + retry aksiyonu
 // ============================================================
 
 class AppErrorState extends StatelessWidget {
@@ -468,7 +467,7 @@ class AppErrorState extends StatelessWidget {
     return Semantics(
       container: true,
       liveRegion: true,
-      label: message ?? 'Bir şeyler ters gitti. Veriler yüklenemedi.',
+      label: message ?? 'Bir ÅŸeyler ters gitti. Veriler yÃ¼klenemedi.',
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: AppSpacing.xl, horizontal: AppSpacing.lg),
         child: Column(
@@ -482,12 +481,12 @@ class AppErrorState extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.sm),
           Text(
-            'Bir şeyler ters gitti',
+            'Bir ÅŸeyler ters gitti',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: scheme.onSurface),
           ),
           const SizedBox(height: AppSpacing.xxs),
           Text(
-            message ?? 'Veriler yüklenemedi. İnternet bağlantınızı kontrol edip tekrar deneyin.',
+            message ?? 'Veriler yÃ¼klenemedi. Ä°nternet baÄŸlantÄ±nÄ±zÄ± kontrol edip tekrar deneyin.',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 13.5, color: scheme.onSurfaceVariant, height: 1.4),
           ),
