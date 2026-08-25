@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'dart:io' show Platform;
 import 'package:go_router/go_router.dart';
@@ -92,11 +92,26 @@ class _CommunityScreenState extends State<CommunityScreen> {
     final myId = CurrentUser().id;
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppBar(title: const Text('Bayilere Sor')),
       floatingActionButton: StandardFab(label: 'Soru Paylaş', onPressed: _openCreateSheet),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      body: Column(
+      body: SafeArea(
+        child: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(AppSpacing.sm, AppSpacing.md, AppSpacing.md, 0),
+            child: Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_back, color: AppColors.navy),
+                  onPressed: () => context.pop(),
+                ),
+                Text(
+                  'Bayilere Sor',
+                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: AppColors.navy, letterSpacing: -0.7, height: 1.1),
+                ),
+              ],
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.only(left: AppSpacing.md, right: AppSpacing.md, top: AppSpacing.sm),
             child: SingleChildScrollView(
@@ -220,6 +235,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
                       ),
           ),
         ],
+      ),
       ),
     );
   }

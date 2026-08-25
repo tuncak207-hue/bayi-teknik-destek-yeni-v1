@@ -59,25 +59,35 @@ class _SalesConsultantsScreenState extends State<SalesConsultantsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppBar(title: const Text('Satış Danışmanına Sor')),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : _consultants.isEmpty
-              ? EmptyState(
-                  icon: Icons.support_agent_outlined,
-                  title: 'Henüz satış danışmanı eklenmedi',
-                  description: 'Admin, satış danışmanı hesabı ekleyince burada görünecek.',
-                )
-              : RefreshIndicator(
-                  onRefresh: _load,
-                  child: ListView(
-                    padding: const EdgeInsets.all(AppSpacing.md),
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(AppSpacing.md),
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [AppColors.navy, Color(0xFF1D3A56)],
+      body: SafeArea(
+        child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, 0),
+            child: Text(
+              'Satış Danışmanına Sor',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: AppColors.navy, letterSpacing: -0.6, height: 1.1),
+            ),
+          ),
+          Expanded(
+            child: _loading
+                ? const Center(child: CircularProgressIndicator())
+                : _consultants.isEmpty
+                    ? EmptyState(
+                        icon: Icons.support_agent_outlined,
+                        title: 'Henüz satış danışmanı eklenmedi',
+                        description: 'Admin, satış danışmanı hesabı ekleyince burada görünecek.',
+                      )
+                    : RefreshIndicator(
+                        onRefresh: _load,
+                        child: ListView(
+                          padding: const EdgeInsets.all(AppSpacing.md),
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(AppSpacing.md),
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [AppColors.navy, Color(0xFF1D3A56)],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
@@ -200,6 +210,10 @@ class _SalesConsultantsScreenState extends State<SalesConsultantsScreen> {
                     ],
                   ),
                 ),
+          ),
+        ],
+      ),
+      ),
     );
   }
 }

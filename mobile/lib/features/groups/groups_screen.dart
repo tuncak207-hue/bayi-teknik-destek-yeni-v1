@@ -107,24 +107,33 @@ class _GroupsScreenState extends State<GroupsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppBar(title: const Text('Gruplar')),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : _groups.isEmpty
-              ? EmptyState(icon: Icons.groups_2_outlined, title: 'Henüz oluşturulmuş bir grup yok')
-              : RefreshIndicator(
-                  onRefresh: _load,
-                  child: CustomScrollView(
-                    slivers: [
-                      SliverPadding(
-                        padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, 0),
-                        sliver: SliverToBoxAdapter(
-                          child: Text(
-                            'Gruplar',
-                            style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: AppColors.navy, letterSpacing: -0.7, height: 1.1),
-                          ),
-                        ),
-                      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(AppSpacing.sm, AppSpacing.md, AppSpacing.md, AppSpacing.sm),
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back, color: AppColors.navy),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  const Text(
+                    'Gruplar',
+                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: AppColors.navy, letterSpacing: -0.7, height: 1.1),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: _loading
+                ? const Center(child: CircularProgressIndicator())
+                : _groups.isEmpty
+                    ? EmptyState(icon: Icons.groups_2_outlined, title: 'Henüz oluşturulmuş bir grup yok')
+                    : RefreshIndicator(
+                        onRefresh: _load,
+                        child: CustomScrollView(
+                          slivers: [
                       SliverPadding(
                         padding: const EdgeInsets.all(AppSpacing.md),
                         sliver: SliverGrid(
@@ -230,9 +239,13 @@ class _GroupsScreenState extends State<GroupsScreen> {
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                ),
+                          ],
+                        ),
+                      ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

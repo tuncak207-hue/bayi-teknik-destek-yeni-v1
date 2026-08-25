@@ -214,29 +214,40 @@ class _DocumentWalletScreenState extends State<DocumentWalletScreen> {
     final grouped = _grouped;
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppBar(title: const Text('Evrak Çantası')),
       floatingActionButton: StandardFab(label: 'Belge Ekle', onPressed: _addDocument),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : _documents.isEmpty
-              ? EmptyState(
-                  icon: Icons.folder_open_outlined,
-                  title: 'Henüz bir belgeniz yok',
-                  description: 'İSG evrakları, sertifikalar, yetki belgeleriniz gibi evraklarınızı burada saklayabilirsiniz.',
-                )
-              : RefreshIndicator(
-                  onRefresh: _load,
-                  child: ListView(
-                    padding: const EdgeInsets.all(AppSpacing.md),
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.only(bottom: AppSpacing.sm, left: 2),
-                        child: Text(
-                          'Evrak Çantası',
-                          style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: AppColors.navy, letterSpacing: -0.7, height: 1.1),
-                        ),
-                      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(AppSpacing.sm, AppSpacing.md, AppSpacing.md, AppSpacing.sm),
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back, color: AppColors.navy),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  const Text(
+                    'Evrak Çantası',
+                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: AppColors.navy, letterSpacing: -0.7, height: 1.1),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: _loading
+                ? const Center(child: CircularProgressIndicator())
+                : _documents.isEmpty
+                    ? EmptyState(
+                        icon: Icons.folder_open_outlined,
+                        title: 'Henüz bir belgeniz yok',
+                        description: 'İSG evrakları, sertifikalar, yetki belgeleriniz gibi evraklarınızı burada saklayabilirsiniz.',
+                      )
+                    : RefreshIndicator(
+                        onRefresh: _load,
+                        child: ListView(
+                          padding: const EdgeInsets.all(AppSpacing.md),
+                          children: [
                       ..._kCategoryLabels.entries.where((e) => grouped.containsKey(e.key)).map((entry) {
                       final docs = grouped[entry.key]!;
                       return Column(
@@ -299,9 +310,13 @@ class _DocumentWalletScreenState extends State<DocumentWalletScreen> {
                         ],
                       );
                     }).toList(),
-                    ],
-                  ),
-                ),
+                          ],
+                        ),
+                      ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -65,40 +65,45 @@ class _CommissioningListScreenState extends State<CommissioningListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppBar(title: const Text('Devreye Alma Raporları')),
       floatingActionButton: StandardFab(label: 'Yeni Rapor', onPressed: _openCreate),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : _reports.isEmpty
-              ? EmptyState(
-                  icon: Icons.checklist_outlined,
-                  title: 'Henüz bir devreye alma raporu yok',
-                  description: 'Sağ alttaki butondan yeni bir rapor oluşturabilirsiniz.',
-                )
-              : RefreshIndicator(
-                  onRefresh: _load,
-                  child: CustomScrollView(
-                    slivers: [
-                      SliverPadding(
-                        padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, 0),
-                        sliver: SliverToBoxAdapter(
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              const Text(
-                                'Devreye Alma',
-                                style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: AppColors.navy, letterSpacing: -0.7, height: 1.1),
-                              ),
-                              const SizedBox(width: 8),
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 4),
-                                child: Text('${_reports.length}', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.grey.shade400)),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(AppSpacing.sm, AppSpacing.md, AppSpacing.md, AppSpacing.sm),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back, color: AppColors.navy),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  const Text(
+                    'Devreye Alma',
+                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: AppColors.navy, letterSpacing: -0.7, height: 1.1),
+                  ),
+                  const SizedBox(width: 8),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: Text('${_reports.length}', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.grey.shade400)),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: _loading
+                ? const Center(child: CircularProgressIndicator())
+                : _reports.isEmpty
+                    ? EmptyState(
+                        icon: Icons.checklist_outlined,
+                        title: 'Henüz bir devreye alma raporu yok',
+                        description: 'Sağ alttaki butondan yeni bir rapor oluşturabilirsiniz.',
+                      )
+                    : RefreshIndicator(
+                        onRefresh: _load,
+                        child: CustomScrollView(
+                          slivers: [
                       SliverPadding(
                         padding: const EdgeInsets.all(AppSpacing.md),
                         sliver: SliverGrid(
@@ -178,9 +183,13 @@ class _CommissioningListScreenState extends State<CommissioningListScreen> {
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                ),
+                          ],
+                        ),
+                      ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

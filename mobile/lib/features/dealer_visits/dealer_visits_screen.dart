@@ -97,10 +97,10 @@ class _DealerVisitsScreenState extends State<DealerVisitsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppBar(title: const Text('Bayi Ziyaretleri')),
       floatingActionButton: StandardFab(label: 'Yeni Ziyaret', onPressed: _openCreate),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      body: _loading
+      body: SafeArea(
+        child: _loading
           ? const Center(child: CircularProgressIndicator())
           : _visits.isEmpty
               ? const EmptyState(icon: Icons.location_on_outlined, title: 'Henüz ziyaret kaydınız yok', description: 'Sağ alttaki butondan ilk ziyaret raporunuzu oluşturun.')
@@ -165,6 +165,7 @@ class _DealerVisitsScreenState extends State<DealerVisitsScreen> {
                     },
                   ),
                 ),
+      ),
     );
   }
 }

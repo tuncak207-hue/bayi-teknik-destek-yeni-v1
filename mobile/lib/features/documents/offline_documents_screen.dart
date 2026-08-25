@@ -59,8 +59,8 @@ class _OfflineDocumentsScreenState extends State<OfflineDocumentsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppBar(title: const Text('İndirilenlerim')),
-      body: _loading
+      body: SafeArea(
+        child: _loading
           ? const Center(child: CircularProgressIndicator())
           : _documents.isEmpty
               ? EmptyState(
@@ -112,6 +112,7 @@ class _OfflineDocumentsScreenState extends State<OfflineDocumentsScreen> {
                     );
                   },
                 ),
+      ),
     );
   }
 }

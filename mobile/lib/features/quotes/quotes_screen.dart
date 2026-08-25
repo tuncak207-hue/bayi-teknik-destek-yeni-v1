@@ -100,53 +100,55 @@ class _QuotesScreenState extends State<QuotesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppBar(
-        title: const Text('Teklif Al'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.picture_as_pdf_outlined),
-            tooltip: 'Fiyat Listesi PDF',
-            onPressed: _openPriceListPdf,
-          ),
-        ],
-      ),
       floatingActionButton: StandardFab(label: 'Yeni Teklif', onPressed: () => _openBuilder()),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : _quotes.isEmpty
-              ? EmptyState(
-                  icon: Icons.request_quote_outlined,
-                  title: 'Henüz bir teklifiniz yok',
-                  description: 'Sağ alttaki butondan müşteriniz için yangın sistemi teklifi oluşturabilirsiniz.',
-                )
-              : RefreshIndicator(
-                  onRefresh: _load,
-                  child: ListView.separated(
-                    padding: const EdgeInsets.all(AppSpacing.md),
-                    itemCount: _quotes.length + 1,
-                    separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.xs),
-                    itemBuilder: (context, index) {
-                      if (index == 0) {
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: AppSpacing.sm, left: 2),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              const Text(
-                                'Teklif Al',
-                                style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: AppColors.navy, letterSpacing: -0.7, height: 1.1),
-                              ),
-                              const SizedBox(width: 8),
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 4),
-                                child: Text('${_quotes.length}', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.grey.shade400)),
-                              ),
-                            ],
-                          ),
-                        );
-                      }
-                      final q = _quotes[index - 1];
+      body: SafeArea(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(AppSpacing.sm, AppSpacing.md, AppSpacing.md, AppSpacing.sm),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back, color: AppColors.navy),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  const Text(
+                    'Teklif Al',
+                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: AppColors.navy, letterSpacing: -0.7, height: 1.1),
+                  ),
+                  const SizedBox(width: 8),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: Text('${_quotes.length}', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.grey.shade400)),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    icon: const Icon(Icons.picture_as_pdf_outlined),
+                    tooltip: 'Fiyat Listesi PDF',
+                    onPressed: _openPriceListPdf,
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: _loading
+                ? const Center(child: CircularProgressIndicator())
+                : _quotes.isEmpty
+                    ? EmptyState(
+                        icon: Icons.request_quote_outlined,
+                        title: 'Henüz bir teklifiniz yok',
+                        description: 'Sağ alttaki butondan müşteriniz için yangın sistemi teklifi oluşturabilirsiniz.',
+                      )
+                    : RefreshIndicator(
+                        onRefresh: _load,
+                        child: ListView.separated(
+                          padding: const EdgeInsets.all(AppSpacing.md),
+                          itemCount: _quotes.length,
+                          separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.xs),
+                          itemBuilder: (context, index) {
+                      final q = _quotes[index];
                       final items = (q['items'] as List?) ?? [];
                       return StandardCard(
                         padding: const EdgeInsets.all(AppSpacing.sm),
@@ -206,9 +208,13 @@ class _QuotesScreenState extends State<QuotesScreen> {
                           ],
                         ),
                       );
-                    },
-                  ),
-                ),
+                          },
+                        ),
+                      ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

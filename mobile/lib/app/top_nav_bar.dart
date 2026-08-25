@@ -57,57 +57,68 @@ class TopNavSliverAppBar extends StatelessWidget {
   /// görünüme sahip olsun diye.
   Widget _buildIconsRow() {
     return Padding(
-      padding: const EdgeInsets.only(top: 20),
+      padding: const EdgeInsets.only(top: 10, bottom: 6),
       child: SizedBox(
-        height: 52,
+        height: 56,
         child: Row(
           children: [
             _TopNavItem(
-              icon: Icons.home_outlined,
-              selectedIcon: Icons.home,
+              icon: Icons.home_rounded,
+              selectedIcon: Icons.home_rounded,
               label: 'Ana Sayfa',
               isSelected: selectedDestination == 0,
               onTap: () => onTap(0),
             ),
             _TopNavItem(
-              icon: Icons.smart_toy_outlined,
-              selectedIcon: Icons.smart_toy,
+              // Kullanıcı isteği: "ikonların tipini değiştir, daha
+              // premium olsun" — AI ikonu, uygulamanın diğer yerlerinde
+              // (Ana Sayfa banner'ı) zaten kullandığımız "parıltı"
+              // ikonuyla tutarlı hale getirildi.
+              icon: Icons.auto_awesome_outlined,
+              selectedIcon: Icons.auto_awesome_rounded,
               label: 'AI',
               isSelected: selectedDestination == 1,
               onTap: () => onTap(1),
             ),
             _TopNavItem(
-              icon: Icons.call_outlined,
-              selectedIcon: Icons.call,
+              icon: Icons.call_rounded,
+              selectedIcon: Icons.call_rounded,
               label: 'Ara',
               isSelected: false,
               onTap: () => onTap(2),
             ),
             _TopNavItem(
-              icon: Icons.chat_bubble_outline,
-              selectedIcon: Icons.chat_bubble,
+              icon: Icons.forum_outlined,
+              selectedIcon: Icons.forum_rounded,
               label: 'Mesajlar',
               isSelected: selectedDestination == 3,
               badgeCount: unreadMessages,
               onTap: () => onTap(3),
             ),
             _TopNavItem(
-              icon: Icons.person_outline,
-              selectedIcon: Icons.person,
+              icon: Icons.person_rounded,
+              selectedIcon: Icons.person_rounded,
               label: 'Profil',
               isSelected: selectedDestination == 4,
               onTap: () => onTap(4),
             ),
-            Padding(
-              padding: const EdgeInsets.only(right: 6),
-              child: IconButton(
-                icon: Badge(
-                  isLabelVisible: unreadNotifications > 0,
-                  label: Text('$unreadNotifications'),
-                  child: const Icon(Icons.notifications_outlined, size: 22),
+            // ÖNEMLİ DÜZELTME: Bu öğe önceden Expanded değildi — diğer 5
+            // sekme eşit genişlik paylaşırken bu sabit boyutta kalıyor,
+            // bu da Profil ile Zil arasındaki boşluğun diğer ikon
+            // aralarından farklı (dar) görünmesine yol açıyordu. Artık
+            // diğerleriyle aynı şekilde Expanded + Center kullanıyor,
+            // böylece 6 ikon da eşit aralıklı.
+            Expanded(
+              child: Center(
+                child: IconButton(
+                  icon: Badge(
+                    isLabelVisible: unreadNotifications > 0,
+                    label: Text('$unreadNotifications'),
+                    child: const Icon(Icons.notifications_rounded, size: 22),
+                  ),
+                  tooltip: 'Bildirimler',
+                  onPressed: onNotificationsTap,
                 ),
-                tooltip: 'Bildirimler',
-                onPressed: onNotificationsTap,
               ),
             ),
           ],
@@ -187,8 +198,8 @@ class _TopNavItem extends StatelessWidget {
               children: [
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 180),
-                  width: 42,
-                  height: 42,
+                  width: 44,
+                  height: 44,
                   decoration: BoxDecoration(
                     color: isSelected ? AppColors.primaryContainer : Colors.transparent,
                     borderRadius: BorderRadius.circular(14),

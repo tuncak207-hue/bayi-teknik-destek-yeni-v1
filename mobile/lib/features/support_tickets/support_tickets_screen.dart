@@ -91,23 +91,34 @@ class _SupportTicketsScreenState extends State<SupportTicketsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppBar(title: const Text('Teknik Destek')),
       floatingActionButton: StandardFab(label: 'Yeni Kayıt', onPressed: () => _openCreate(isEmergency: false)),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : RefreshIndicator(
-              onRefresh: _load,
-              child: ListView(
-                padding: const EdgeInsets.all(AppSpacing.md),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(AppSpacing.sm, AppSpacing.md, AppSpacing.md, AppSpacing.sm),
+              child: Row(
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.only(bottom: AppSpacing.md, left: 2),
-                    child: Text(
-                      'Teknik Destek',
-                      style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: AppColors.navy, letterSpacing: -0.7, height: 1.1),
-                    ),
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back, color: AppColors.navy),
+                    onPressed: () => Navigator.pop(context),
                   ),
+                  const Text(
+                    'Teknik Destek',
+                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: AppColors.navy, letterSpacing: -0.7, height: 1.1),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: _loading
+                ? const Center(child: CircularProgressIndicator())
+                : RefreshIndicator(
+                    onRefresh: _load,
+                    child: ListView(
+                      padding: const EdgeInsets.all(AppSpacing.md),
+                      children: [
                   Material(
                     color: Colors.transparent,
                     child: InkWell(
@@ -200,9 +211,13 @@ class _SupportTicketsScreenState extends State<SupportTicketsScreen> {
                         ),
                       );
                     }),
-                ],
-              ),
+                      ],
+                    ),
+                  ),
             ),
+          ],
+        ),
+      ),
     );
   }
 }

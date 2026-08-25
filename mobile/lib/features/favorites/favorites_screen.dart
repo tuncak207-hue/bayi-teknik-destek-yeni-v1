@@ -57,32 +57,41 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppBar(title: const Text('Favorilerim')),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : _favorites.isEmpty
-              ? EmptyState(
-                  icon: Icons.bookmark_border,
-                  title: 'Henüz favori eklemediniz',
-                  description: 'AI cevaplarında bulunan kaydet simgesine dokunarak buraya ekleyebilirsiniz.',
-                )
-              : RefreshIndicator(
-                  onRefresh: _load,
-                  child: ListView.separated(
-                    padding: const EdgeInsets.all(AppSpacing.md),
-                    itemCount: _favorites.length + 1,
-                    separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.xs),
-                    itemBuilder: (context, index) {
-                      if (index == 0) {
-                        return const Padding(
-                          padding: EdgeInsets.only(bottom: AppSpacing.sm, left: 2),
-                          child: Text(
-                            'Favorilerim',
-                            style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: AppColors.navy, letterSpacing: -0.7, height: 1.1),
-                          ),
-                        );
-                      }
-                      final f = _favorites[index - 1];
+      body: SafeArea(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(AppSpacing.sm, AppSpacing.md, AppSpacing.md, AppSpacing.sm),
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back, color: AppColors.navy),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  const Text(
+                    'Favorilerim',
+                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: AppColors.navy, letterSpacing: -0.7, height: 1.1),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: _loading
+                ? const Center(child: CircularProgressIndicator())
+                : _favorites.isEmpty
+                    ? EmptyState(
+                        icon: Icons.bookmark_border,
+                        title: 'Henüz favori eklemediniz',
+                        description: 'AI cevaplarında bulunan kaydet simgesine dokunarak buraya ekleyebilirsiniz.',
+                      )
+                    : RefreshIndicator(
+                        onRefresh: _load,
+                        child: ListView.separated(
+                          padding: const EdgeInsets.all(AppSpacing.md),
+                          itemCount: _favorites.length,
+                          separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.xs),
+                          itemBuilder: (context, index) {
+                      final f = _favorites[index];
                       final message = f['message'];
                       final document = f['document'];
 
@@ -159,9 +168,13 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                       }
 
                       return const SizedBox.shrink();
-                    },
-                  ),
-                ),
+                          },
+                        ),
+                      ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

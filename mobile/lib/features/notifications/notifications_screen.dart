@@ -169,34 +169,47 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppBar(
-        title: const Text('Bildirimler'),
-        actions: [
-          if (_notifications.any((n) => n['readAt'] == null))
-            TextButton(
-              onPressed: _markAllRead,
-              child: const Text('Tümünü Okundu İşaretle', style: TextStyle(color: AppColors.brand, fontSize: 12.5)),
-            ),
-          if (_notifications.isNotEmpty)
-            PopupMenuButton<String>(
-              onSelected: (v) {
-                if (v == 'clear-all') _clearAll();
-              },
-              itemBuilder: (context) => [
-                const PopupMenuItem(value: 'clear-all', child: Text('Tümünü Sil')),
+      body: SafeArea(
+        child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, 0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Text(
+                    'Bildirimler',
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: AppColors.navy, letterSpacing: -0.6, height: 1.1),
+                  ),
+                ),
+                if (_notifications.any((n) => n['readAt'] == null))
+                  TextButton(
+                    onPressed: _markAllRead,
+                    child: const Text('Tümünü Okundu İşaretle', style: TextStyle(color: AppColors.brand, fontSize: 12.5)),
+                  ),
+                if (_notifications.isNotEmpty)
+                  PopupMenuButton<String>(
+                    onSelected: (v) {
+                      if (v == 'clear-all') _clearAll();
+                    },
+                    itemBuilder: (context) => [
+                      const PopupMenuItem(value: 'clear-all', child: Text('Tümünü Sil')),
+                    ],
+                  ),
               ],
             ),
-        ],
-      ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : _notifications.isEmpty
-              ? RefreshIndicator(
-                  onRefresh: _load,
-                  child: ListView(
-                    children: [
-                      const SizedBox(height: 60),
-                      const EmptyState(icon: Icons.notifications_none, title: 'Henüz bir bildiriminiz yok'),
+          ),
+          Expanded(
+            child: _loading
+                ? const Center(child: CircularProgressIndicator())
+                : _notifications.isEmpty
+                    ? RefreshIndicator(
+                        onRefresh: _load,
+                        child: ListView(
+                          children: [
+                            const SizedBox(height: 60),
+                            const EmptyState(icon: Icons.notifications_none, title: 'Henüz bir bildiriminiz yok'),
                     ],
                   ),
                 )
@@ -299,6 +312,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     },
                   ),
                 ),
+          ),
+        ],
+      ),
+      ),
     );
   }
 

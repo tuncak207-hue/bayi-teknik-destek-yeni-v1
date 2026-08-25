@@ -135,7 +135,6 @@ class _SpecialtyScreenState extends State<SpecialtyScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppBar(title: const Text('Uzmanlık ve Sertifikalar')),
       // ÖNEMLİ DÜZELTME: "sayfanın altında kalıyor" — SafeArea hiç yoktu.
       body: SafeArea(
         child: _loading
@@ -143,6 +142,13 @@ class _SpecialtyScreenState extends State<SpecialtyScreen> {
           : ListView(
               padding: const EdgeInsets.all(AppSpacing.md),
               children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                  child: Text(
+                    'Uzmanlık ve Sertifikalar',
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: AppColors.navy, letterSpacing: -0.5, height: 1.1),
+                  ),
+                ),
                 const Text('Uzmanlık Alanları', style: TextStyle(fontWeight: FontWeight.w700, color: AppColors.navy)),
                 const SizedBox(height: 4),
                 Text(
@@ -218,6 +224,7 @@ class _SpecialtyScreenState extends State<SpecialtyScreen> {
                   }),
               ],
             ),
+      ),
     );
   }
 }
@@ -365,7 +372,6 @@ class _AddCertificationSheetState extends State<_AddCertificationSheet> {
                 : const Text('Kaydet'),
           ),
         ],
-      ),
       ),
     );
   }

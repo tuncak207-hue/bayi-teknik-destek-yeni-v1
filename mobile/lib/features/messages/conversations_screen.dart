@@ -160,29 +160,42 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // ÖNEMLİ DÜZELTME: "mesajlara basınca geri ok işareti çıksın, menü
-    // değil" — paylaşılan tam menü yerine, AI ekranındaki gibi sadece
-    // basit bir geri oku olan AppBar'a dönüldü.
+    // Kullanıcı isteği: "tüm menü kartlarında appbar silinecek, yerine
+    // Gruplar'daki gibi büyük başlık gelecek" — Mesajlar da diğer 19
+    // ana menü kartıyla aynı tutarlı desene geçirildi.
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppBar(
-        title: Text(_showArchived ? 'Arşivlenmiş Sohbetler' : 'Mesajlar'),
-        leading: Navigator.of(context).canPop()
-            ? IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => Navigator.of(context).pop())
-            : IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.go('/home')),
-        actions: [
-          IconButton(
-            icon: Icon(_showArchived ? Icons.chat_bubble_outline : Icons.archive_outlined),
-            tooltip: _showArchived ? 'Sohbetlere Dön' : 'Arşivi Görüntüle',
-            onPressed: () {
-              setState(() => _showArchived = !_showArchived);
-              _load();
-            },
-          ),
-        ],
-      ),
-      body: Column(
+      body: SafeArea(
+        child: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(AppSpacing.sm, AppSpacing.md, AppSpacing.md, 0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_back, color: AppColors.navy),
+                  onPressed: () {
+                    if (Navigator.canPop(context)) Navigator.pop(context);
+                  },
+                ),
+                Expanded(
+                  child: Text(
+                    _showArchived ? 'Arşivlenmiş Sohbetler' : 'Mesajlar',
+                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: AppColors.navy, letterSpacing: -0.7, height: 1.1),
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(_showArchived ? Icons.chat_bubble_outline : Icons.archive_outlined),
+                  tooltip: _showArchived ? 'Sohbetlere Dön' : 'Arşivi Görüntüle',
+                  onPressed: () {
+                    setState(() => _showArchived = !_showArchived);
+                    _load();
+                  },
+                ),
+              ],
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.sm, AppSpacing.md, AppSpacing.xs),
             child: TextField(
@@ -412,6 +425,7 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                         ),
             ),
         ],
+      ),
       ),
     );
   }

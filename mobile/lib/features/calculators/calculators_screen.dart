@@ -37,9 +37,16 @@ class _CalculatorsScreenState extends State<CalculatorsScreen> with SingleTicker
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppBar(title: const Text('Teknik Hesaplamalar')),
-      body: Column(
+      body: SafeArea(
+        child: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, 0),
+            child: Text(
+              'Teknik Hesaplamalar',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: AppColors.navy, letterSpacing: -0.6, height: 1.1),
+            ),
+          ),
           // Standart alt çizgili TabBar yerine, daha "premium" duran
           // ikonlu bir segment kontrolü.
           Padding(
@@ -85,6 +92,7 @@ class _CalculatorsScreenState extends State<CalculatorsScreen> with SingleTicker
             ),
           ),
         ],
+      ),
       ),
     );
   }

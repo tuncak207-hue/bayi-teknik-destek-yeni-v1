@@ -53,36 +53,45 @@ class _AnnouncementsScreenState extends State<AnnouncementsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppBar(title: const Text('Duyurular')),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : _announcements.isEmpty
-              ? RefreshIndicator(
-                  onRefresh: _load,
-                  child: ListView(
-                    children: [
-                      const SizedBox(height: 60),
-                      const EmptyState(icon: Icons.campaign_outlined, title: 'Henüz bir duyuru yok'),
-                    ],
+      body: SafeArea(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(AppSpacing.sm, AppSpacing.md, AppSpacing.md, AppSpacing.sm),
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back, color: AppColors.navy),
+                    onPressed: () => Navigator.pop(context),
                   ),
-                )
-              : RefreshIndicator(
-                  onRefresh: _load,
-                  child: ListView.separated(
-                    padding: const EdgeInsets.all(AppSpacing.md),
-                    itemCount: _announcements.length + 1,
-                    separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.xs),
-                    itemBuilder: (context, index) {
-                      if (index == 0) {
-                        return const Padding(
-                          padding: EdgeInsets.only(bottom: AppSpacing.sm, left: 2),
-                          child: Text(
-                            'Duyurular',
-                            style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: AppColors.navy, letterSpacing: -0.7, height: 1.1),
-                          ),
-                        );
-                      }
-                      final a = _announcements[index - 1];
+                  const Text(
+                    'Duyurular',
+                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: AppColors.navy, letterSpacing: -0.7, height: 1.1),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: _loading
+                ? const Center(child: CircularProgressIndicator())
+                : _announcements.isEmpty
+                    ? RefreshIndicator(
+                        onRefresh: _load,
+                        child: ListView(
+                          children: [
+                            const SizedBox(height: 60),
+                            const EmptyState(icon: Icons.campaign_outlined, title: 'Henüz bir duyuru yok'),
+                          ],
+                        ),
+                      )
+                    : RefreshIndicator(
+                        onRefresh: _load,
+                        child: ListView.separated(
+                          padding: const EdgeInsets.all(AppSpacing.md),
+                          itemCount: _announcements.length,
+                          separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.xs),
+                          itemBuilder: (context, index) {
+                      final a = _announcements[index];
                       final isCritical = a['isCritical'] == true;
                       final isUnread = a['isRead'] != true;
                       return Container(
@@ -158,9 +167,13 @@ class _AnnouncementsScreenState extends State<AnnouncementsScreen> {
                           ),
                         ),
                       );
-                    },
-                  ),
-                ),
+                          },
+                        ),
+                      ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

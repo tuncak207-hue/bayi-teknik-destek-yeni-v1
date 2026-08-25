@@ -33,6 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final _badgeTracker = StatBadgeTracker();
   String? _firstName;
   Map<String, dynamic>? _stats;
+  bool _statsError = false;
   Map<String, bool> _hasNewBadge = {};
   List<dynamic> _pinnedDocuments = [];
   List<QuickActionDef> _quickActionsOrder = kAllQuickActions;
@@ -175,7 +176,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> _loadStats() async {
+  Future<void> _loadStats({int attempt = 0}) async {
     try {
       final res = await _dio.get('/stats/me');
       if (!mounted) return;
@@ -190,9 +191,23 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         _stats = data;
         _hasNewBadge = badges;
+        _statsError = false;
       });
     } catch (_) {
-      // İstatistik ikincil bir bilgi, sessizce yut.
+      // ÖNEMLİ DÜZELTME: "istatistikler çıkmıyor, tekrar dene ile
+      // çıkıyor" — bu, uygulama soğuk açılışında ilk isteğin (bağlantı
+      // tam hazır olmadan atıldığı için) başarısız olup, birkaç saniye
+      // sonraki elle denemenin çalışması anlamına geliyordu — klasik bir
+      // "soğuk başlangıç" zamanlama sorunu. Kullanıcı hiçbir şey
+      // yapmadan, otomatik olarak birkaç kez (artan bekleme ile) tekrar
+      // deniyoruz; sadece bunlar da başarısız olursa hata gösteriyoruz.
+      if (!mounted) return;
+      if (attempt < 2) {
+        await Future.delayed(Duration(milliseconds: 800 * (attempt + 1)));
+        if (mounted) _loadStats(attempt: attempt + 1);
+        return;
+      }
+      setState(() => _statsError = true);
     }
   }
 
@@ -273,12 +288,15 @@ class _HomeScreenState extends State<HomeScreen> {
       body: CustomScrollView(
         controller: _scrollController,
         slivers: [
-          TopNavSliverAppBar(
+          SliverPadding(
+            padding: const EdgeInsets.only(top: 8),
+            sliver: TopNavSliverAppBar(
             selectedDestination: navData.selectedDestination,
             unreadMessages: navData.unreadMessages,
             unreadNotifications: navData.unreadNotifications,
             onTap: navData.onTap,
             onNotificationsTap: navData.onNotificationsTap,
+          ),
           ),
           SliverSafeArea(
             top: false,
@@ -286,11 +304,22 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.all(AppSpacing.md),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
+            // Kullanıcı isteği: "tüm menüler için uygulayalım" — diğer
+            // liste ekranlarındaki (Bayiler, Gruplar vb.) büyük başlık
+            // dili, ortak üst menüye geçen bu ekranda da tutarlılık için
+            // geri eklendi.
+            const Padding(
+              padding: EdgeInsets.only(bottom: AppSpacing.sm, left: 2),
+              child: Text(
+                'Ana Sayfa',
+                style: TextStyle(fontSize: 21, fontWeight: FontWeight.w700, color: AppColors.navy, letterSpacing: -0.35, height: 1.15),
+              ),
+            ),
             // Kullanıcı isteği: "uygulama açılırken ekranda slayt
             // dönsün" — admin panelden yönetilen, otomatik dönen
             // tanıtım slaytları, Ana Sayfa'nın en üstünde.
             const HomeSlideshow(),
-            const SizedBox(height: AppSpacing.md),
+            const SizedBox(height: AppSpacing.sm),
             // AI'a Sor — kullanıcı isteği: "hiçbir yerde gölge olmayacak,
             // arka fon bembeyaz." Eski gradyanlı/gölgeli lacivert kart
             // tamamen kaldırıldı, düz turuncu (marka rengi), gölgesiz,
@@ -299,7 +328,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onTap: () => context.push('/ai-quick'),
               borderRadius: BorderRadius.circular(AppRadius.xl),
               child: Container(
-                padding: const EdgeInsets.all(AppSpacing.lg),
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: 16),
                 decoration: BoxDecoration(
                   color: AppColors.primary,
                   borderRadius: BorderRadius.circular(AppRadius.xl),
@@ -325,12 +354,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           Text(
                             'AI Teknik Asistan',
-                            style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: -0.3),
+                            style: TextStyle(fontSize: 19, fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: -0.25),
                           ),
                           SizedBox(height: 3),
                           Text(
                             'Saniyeler içinde teknik cevap alın',
-                            style: TextStyle(fontSize: 12.5, color: Colors.white70, fontWeight: FontWeight.w500),
+                            style: TextStyle(fontSize: 13, color: Colors.white70, fontWeight: FontWeight.w500, height: 1.2),
                           ),
                         ],
                       ),
@@ -340,13 +369,18 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: AppSpacing.lg),
+            const SizedBox(height: AppSpacing.sm),
             // İstatistikler — kullanıcı isteği üzerine (dashboard tarzı)
             // en üste, göze ilk çarpan yere taşındı.
             const Text('BU AY', style: AppText.eyebrow),
             const SizedBox(height: AppSpacing.xs),
             _stats == null
-                ? const AppLoadingState(lines: 1)
+                ? (_statsError
+                    ? AppErrorState(
+                        message: 'İstatistikler yüklenemedi.',
+                        onRetry: _loadStats,
+                      )
+                    : const AppLoadingState(lines: 1))
                 : Row(
                     children: [
                       Expanded(
@@ -390,8 +424,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
                   ),
-            const SizedBox(height: AppSpacing.lg),
-            // Hızlı İşlemler — kullanıcı isteği üzerine başlık yazısı
+            const SizedBox(height: 4),
+            // Hızlı İşlemler — daha sıkı dashboard ritmi.
             // kaldırıldı, "Düzenle" yazısı yerine sadece ikon konuldu,
             // ve AI butonunun hemen altına (yukarı) taşındı.
             // Kullanıcı isteği: "Filtre ikonu havada duruyorsa, ilgili
@@ -402,35 +436,34 @@ class _HomeScreenState extends State<HomeScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text('HIZLI İŞLEMLER', style: AppText.eyebrow),
-                IconButton(
-                  onPressed: () async {
-                    await context.push('/reorder-quick-actions');
-                    _loadQuickActionsOrder();
-                  },
-                  icon: const Icon(Icons.tune, size: 18, color: AppColors.textSecondary),
-                  tooltip: 'Sıralamayı Düzenle',
-                  padding: EdgeInsets.zero,
-                  // ÖNEMLİ DÜZELTME: "BU AY ile HIZLI İŞLEMLER arasında
-                  // hâlâ fazla boşluk var" sorununun asıl kaynağı buradaydı
-                  // — IconButton, görsel boyutu küçük olsa bile (28x28),
-                  // Flutter'ın varsayılan Material dokunma hedefi kuralı
-                  // (MaterialTapTargetSize.padded) yüzünden etrafına
-                  // GÖRÜNMEZ, en az 48px'lik bir alan ekliyordu. Bu görünmez
-                  // alan, satırın toplam yüksekliğini büyütüp ızgarayı
-                  // aşağı itiyordu. shrinkWrap ile bu görünmez alan kaldırıldı.
-                  style: IconButton.styleFrom(tapTargetSize: MaterialTapTargetSize.shrinkWrap, visualDensity: VisualDensity.compact),
-                  constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+                SizedBox(
+                  width: 28,
+                  height: 28,
+                  child: IconButton(
+                    onPressed: () async {
+                      await context.push('/reorder-quick-actions');
+                      _loadQuickActionsOrder();
+                    },
+                    icon: const Icon(Icons.tune, size: 18, color: AppColors.textSecondary),
+                    tooltip: 'Sıralamayı Düzenle',
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints.tightFor(width: 28, height: 28),
+                    visualDensity: VisualDensity.standard,
+                  ),
                 ),
               ],
             ),
-            const SizedBox(height: 2),
-            GridView.count(
+            const SizedBox(height: 0),
+            Transform.translate(
+              offset: const Offset(0, 4),
+              child: GridView.count(
               crossAxisCount: 3,
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              mainAxisSpacing: AppSpacing.xs,
-              crossAxisSpacing: AppSpacing.xs,
-              childAspectRatio: 1.22,
+              mainAxisSpacing: AppSpacing.sm,
+              crossAxisSpacing: AppSpacing.sm,
+              childAspectRatio: 1.06,
+              padding: EdgeInsets.zero,
               children: _quickActionsOrder
                   // "Bayi Ziyaretleri" sadece SALES (satış danışmanı)
                   // rolündeki hesaplara gösterilir — bayilerin bu
@@ -448,6 +481,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         },
                       ))
                   .toList(),
+              ),
             ),
             const SizedBox(height: AppSpacing.xs),
             if (_pinnedDocuments.isNotEmpty) ...[
@@ -545,7 +579,7 @@ class _StatCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(AppRadius.md),
             boxShadow: AppShadows.subtle,
           ),
-          padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs, horizontal: AppSpacing.xxs),
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
           child: Stack(
             clipBehavior: Clip.none,
             children: [
@@ -553,9 +587,9 @@ class _StatCard extends StatelessWidget {
                 children: [
                   Icon(icon, color: AppColors.textMuted, size: 13),
                   const SizedBox(height: 4),
-                  Text(value, style: AppText.statValue.copyWith(fontSize: 17, fontWeight: FontWeight.w800)),
+                  Text(value, style: AppText.statValue.copyWith(fontSize: 20, fontWeight: FontWeight.w800)),
                   const SizedBox(height: 1),
-                  Text(label, style: AppText.statLabel.copyWith(fontSize: 9.5), textAlign: TextAlign.center),
+                  Text(label, style: AppText.statLabel.copyWith(fontSize: 10.5), textAlign: TextAlign.center),
                 ],
               ),
               if (showBadge)
@@ -582,18 +616,15 @@ class _QuickAction extends StatelessWidget {
   final VoidCallback onTap;
   final int badgeCount;
 
-  const _QuickAction({required this.icon, required this.label, required this.onTap, this.badgeCount = 0});
+  const _QuickAction({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    this.badgeCount = 0,
+  });
 
   @override
   Widget build(BuildContext context) {
-    // Kullanıcı isteği: "Bütün kartları aynı: border + turuncu daire +
-    // ikon şeklinde yapma. Görsel ağırlıkları kontrollü şekilde
-    // çeşitlendir." — ikon simgesinin karakter koduna göre (deterministik,
-    // her açılışta aynı kalır) iki farklı stil arasında geçiş yapılıyor:
-    // biri dolgulu yumuşak daire, diğeri daha minimal (düz ikon + küçük
-    // alt vurgu çizgisi) — ikon dili (stroke/boyut) aynı kalıyor, sadece
-    // konteyner ağırlığı değişiyor.
-    final isSoftVariant = icon.codePoint.isEven;
     return Material(
       color: Colors.white,
       borderRadius: BorderRadius.circular(AppRadius.lg),
@@ -602,71 +633,91 @@ class _QuickAction extends StatelessWidget {
         onTap: onTap,
         child: Container(
           decoration: BoxDecoration(
+            color: Colors.white,
             borderRadius: BorderRadius.circular(AppRadius.lg),
-            boxShadow: AppShadows.subtle,
+            border: Border.all(color: const Color(0xFFF0F0F1)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.035),
+                blurRadius: 14,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+          child: Stack(
+            clipBehavior: Clip.none,
             children: [
-              Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  if (isSoftVariant)
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
                     Container(
-                      width: 34,
-                      height: 38,
+                      width: 44,
+                      height: 44,
                       decoration: const BoxDecoration(
                         color: AppColors.primarySoft,
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(icon, color: AppColors.primary, size: 17),
-                    )
-                  else
+                      child: Icon(
+                        icon,
+                        color: AppColors.primary,
+                        size: 21,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    // ÖNEMLİ DÜZELTME: Etiketler tek satır ("Ara", "Gruplar")
+                    // veya iki satır ("Bayilere Sor", "Satış Danışmanına
+                    // Sor") olabiliyor. İçerik dikeyde ortalandığı için,
+                    // farklı satır sayısı ikon dairesinin hücreden hücreye
+                    // (ve satırdan satıra) farklı yükseklikte görünmesine
+                    // yol açıyordu. Etiket alanına, iki satırlık sabit bir
+                    // yükseklik ayırarak (ve metni üste hizalayarak) tüm
+                    // kartlardaki ikon konumunu, etiket kaç satır sürerse
+                    // sürsün sabitliyoruz.
                     SizedBox(
-                      width: 34,
-                      height: 38,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(icon, color: AppColors.textPrimary, size: 19),
-                          const SizedBox(height: 4),
-                          Container(width: 11, height: 2.5, decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(2))),
-                        ],
-                      ),
-                    ),
-                  // Kart üzerindeki rozet — o kartla ilgili okunmamış bir
-                  // bildirim varsa (yeni mesaj, yorum vb.) burada anlık
-                  // olarak gösterilir.
-                  if (badgeCount > 0)
-                    Positioned(
-                      top: -4,
-                      right: -4,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-                        constraints: const BoxConstraints(minWidth: 18),
-                        decoration: BoxDecoration(
-                          color: AppColors.brand,
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: Colors.white, width: 1.5),
-                        ),
-                        child: Text(
-                          badgeCount > 99 ? '99+' : '$badgeCount',
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700),
+                      height: 28,
+                      child: Text(
+                        label,
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w600,
+                          fontSize: 11.5,
+                          color: AppColors.textPrimary,
+                          height: 1.15,
+                          letterSpacing: -0.15,
                         ),
                       ),
                     ),
-                ],
+                  ],
+                ),
               ),
-              const SizedBox(height: 5),
-              Text(
-                label,
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 11.5, color: AppColors.navy, height: 1.15, letterSpacing: -0.1),
-              ),
+              if (badgeCount > 0)
+                Positioned(
+                  top: -5,
+                  right: -5,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                    constraints: const BoxConstraints(minWidth: 18),
+                    decoration: BoxDecoration(
+                      color: AppColors.brand,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.white, width: 1.5),
+                    ),
+                    child: Text(
+                      badgeCount > 99 ? '99+' : '$badgeCount',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 9,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                ),
             ],
           ),
         ),
@@ -762,3 +813,6 @@ class _TodayForMeSectionState extends State<_TodayForMeSection> {
     );
   }
 }
+
+
+

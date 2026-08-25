@@ -93,26 +93,36 @@ class _BomListScreenState extends State<BomListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppBar(title: const Text('Malzeme Listeleri')),
       floatingActionButton: StandardFab(label: 'Yeni Liste', onPressed: () => _openBuilder()),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : _lists.isEmpty
-              ? EmptyState(
-                  icon: Icons.inventory_2_outlined,
-                  title: 'Henüz bir malzeme listeniz yok',
-                  description: 'Sağ alttaki butondan yeni bir liste oluşturabilirsiniz.',
-                )
-              : RefreshIndicator(
-                  onRefresh: _load,
-                  child: ListView.separated(
-                    padding: const EdgeInsets.all(AppSpacing.md),
-                    itemCount: _lists.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.xs),
-                    itemBuilder: (context, index) {
-                      final l = _lists[index];
-                      final items = (l['items'] as List?) ?? [];
+      body: SafeArea(
+        child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, 0),
+            child: Text(
+              'Malzeme Listeleri',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: AppColors.navy, letterSpacing: -0.6, height: 1.1),
+            ),
+          ),
+          Expanded(
+            child: _loading
+                ? const Center(child: CircularProgressIndicator())
+                : _lists.isEmpty
+                    ? EmptyState(
+                        icon: Icons.inventory_2_outlined,
+                        title: 'Henüz bir malzeme listeniz yok',
+                        description: 'Sağ alttaki butondan yeni bir liste oluşturabilirsiniz.',
+                      )
+                    : RefreshIndicator(
+                        onRefresh: _load,
+                        child: ListView.separated(
+                          padding: const EdgeInsets.all(AppSpacing.md),
+                          itemCount: _lists.length,
+                          separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.xs),
+                          itemBuilder: (context, index) {
+                            final l = _lists[index];
+                            final items = (l['items'] as List?) ?? [];
                       final location = [l['district'], l['province']].where((s) => s != null && s.toString().isNotEmpty).join(', ');
                       return StandardCard(
                         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
@@ -159,6 +169,10 @@ class _BomListScreenState extends State<BomListScreen> {
                     },
                   ),
                 ),
+          ),
+        ],
+      ),
+      ),
     );
   }
 }
