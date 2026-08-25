@@ -32,8 +32,11 @@ class AppPageHeader extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       backgroundColor: backgroundColor ?? scheme.surface,
       foregroundColor: foreground,
-      surfaceTintColor: backgroundColor ?? scheme.surface,
-      title: Text(title, style: Theme.of(context).textTheme.titleLarge?.copyWith(color: foreground)),
+      surfaceTintColor: scheme.primary.withValues(alpha: 0.04),
+      elevation: 0,
+      scrolledUnderElevation: 1,
+      toolbarHeight: 64,
+      title: Text(title, style: Theme.of(context).textTheme.titleLarge?.copyWith(color: foreground, fontWeight: FontWeight.w700)),
       centerTitle: true,
       automaticallyImplyLeading: false,
       leading: IconButton(
@@ -107,11 +110,11 @@ class StandardCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final card = Container(
-      padding: padding,
-      decoration: BoxDecoration(
+        padding: padding,
+        decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(16),
-        border: border,
+        border: border ?? Border.all(color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.7)),
         boxShadow: [BoxShadow(color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.08), blurRadius: 12, offset: const Offset(0, 3))],
       ),
       child: child,
@@ -279,11 +282,12 @@ class PlatformFormScaffold extends StatelessWidget {
         elevation: 0,
         surfaceTintColor: scheme.surface,
         automaticallyImplyLeading: true,
-        title: Text(title, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 17, color: scheme.onSurface)),
+        title: Text(title, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700, color: scheme.onSurface)),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 8),
             child: TextButton(
+              style: TextButton.styleFrom(minimumSize: const Size(0, 48), padding: const EdgeInsets.symmetric(horizontal: 16)),
               onPressed: canSubmit && !submitting ? onSubmit : null,
               child: submitting
                   ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))

@@ -75,7 +75,7 @@ class AppButton extends StatelessWidget {
         : Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (icon != null) ...[Icon(icon, size: 18), const SizedBox(width: AppSpacing.xxs + 2)],
+              if (icon != null) ...[Icon(icon, size: 18), const SizedBox(width: AppSpacing.xs)],
               Text(label),
             ],
           );
@@ -134,8 +134,10 @@ class AppButton extends StatelessWidget {
             backgroundColor: AppColors.errorContainer,
             foregroundColor: AppColors.errorColor,
             elevation: 0,
-            padding: const EdgeInsets.symmetric(vertical: 15),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
+            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+            minimumSize: const Size(0, 48),
+            tapTargetSize: MaterialTapTargetSize.padded,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
           ),
           child: child,
