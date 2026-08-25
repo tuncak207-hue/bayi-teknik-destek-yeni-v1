@@ -40,6 +40,10 @@ class SocketService {
       io.OptionBuilder()
           .setTransports(['websocket'])
           .setAuth({'token': token})
+          .enableReconnection()
+          .setReconnectionAttempts(10)
+          .setReconnectionDelay(1000)
+          .setReconnectionDelayMax(10000)
           .disableAutoConnect()
           .build(),
     );

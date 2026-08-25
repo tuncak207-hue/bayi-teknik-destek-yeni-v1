@@ -5,6 +5,7 @@ import '../auth/token_storage.dart';
 class ApiClient {
   final Dio dio;
   final TokenStorage _tokenStorage = TokenStorage();
+  Future<bool>? _refreshFuture;
 
   ApiClient._internal(this.dio);
 
@@ -12,6 +13,9 @@ class ApiClient {
 
   factory ApiClient() {
     if (_instance != null) return _instance!;
+    if (bool.fromEnvironment('dart.vm.product') && !ApiConfig.isConfigured) {
+      throw StateError('Release build requires HTTPS API_BASE_URL and SOCKET_URL dart-defines.');
+    }
 
     final dio = Dio(BaseOptions(
       baseUrl: ApiConfig.baseUrl,
@@ -30,10 +34,11 @@ class ApiClient {
         handler.next(options);
       },
       onError: (error, handler) async {
-        if (error.response?.statusCode == 401) {
+        if (error.response?.statusCode == 401 && error.requestOptions.extra['retried'] != true) {
           final refreshed = await client._tryRefresh();
           if (refreshed) {
             final opts = error.requestOptions;
+            opts.extra['retried'] = true;
             final token = await client._tokenStorage.getAccessToken();
             opts.headers['Authorization'] = 'Bearer $token';
             try {
@@ -52,7 +57,16 @@ class ApiClient {
     return client;
   }
 
-  Future<bool> _tryRefresh() async {
+  Future<bool> _tryRefresh() {
+    final ongoing = _refreshFuture;
+    if (ongoing != null) return ongoing;
+    final future = _performRefresh();
+    _refreshFuture = future;
+    future.whenComplete(() => _refreshFuture = null);
+    return future;
+  }
+
+  Future<bool> _performRefresh() async {
     try {
       final refreshToken = await _tokenStorage.getRefreshToken();
       if (refreshToken == null) return false;

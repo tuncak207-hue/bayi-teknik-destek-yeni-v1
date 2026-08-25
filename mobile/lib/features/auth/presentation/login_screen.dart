@@ -9,6 +9,7 @@ import '../../../core/auth/biometric_service.dart';
 import '../../../core/auth/token_storage.dart';
 import '../../../core/auth/current_user.dart';
 import '../../../core/api/socket_service.dart';
+import '../../../core/notifications/push_notification_service.dart';
 import '../data/auth_providers.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -80,6 +81,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       // şifreye hiç ihtiyaç yok.
       await CurrentUser().load();
       await SocketService().connect();
+      await PushNotificationService().initAndRegister();
       if (mounted) context.go('/home');
     } catch (e) {
       if (mounted) {
@@ -120,6 +122,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     } finally {
       if (mounted) setState(() => _googleLoading = false);
     }
+  }
+
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    super.dispose();
   }
 
   @override

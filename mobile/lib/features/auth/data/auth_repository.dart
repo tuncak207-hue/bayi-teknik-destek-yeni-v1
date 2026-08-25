@@ -8,6 +8,11 @@ import '../../../core/auth/current_user.dart';
 import '../../../core/notifications/push_notification_service.dart';
 
 class AuthRepository {
+  static const _googleServerClientId = String.fromEnvironment(
+    'GOOGLE_SERVER_CLIENT_ID',
+    defaultValue: '677096560319-612fv939c3apr5sfs67pl28onlk57486.apps.googleusercontent.com',
+  );
+
   final Dio _dio = ApiClient().dio;
   final TokenStorage _tokenStorage = TokenStorage();
 
@@ -37,7 +42,7 @@ class AuthRepository {
 
   Future<String?> loginWithGoogle() async {
     final googleUser = await GoogleSignIn(
-      serverClientId: '677096560319-612fv939c3apr5sfs67pl28onlk57486.apps.googleusercontent.com',
+      serverClientId: _googleServerClientId,
     ).signIn();
     if (googleUser == null) {
       throw Exception('Google girişi iptal edildi.');

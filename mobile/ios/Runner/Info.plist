@@ -26,6 +26,18 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Destek taleplerine fotoğraf eklemek ve QR kod taramak için kameraya erişim gerekir.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Teknik asistana sesli soru göndermek için mikrofona erişim gerekir.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Destek taleplerine galeriden fotoğraf eklemek için fotoğraflarınıza erişim gerekir.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Oluşturulan belgeleri fotoğraflarınıza kaydetmek için izin gerekir.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
