@@ -109,25 +109,24 @@ class StandardCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
-    final radius = BorderRadius.circular(AppRadius.lg);
     final card = Container(
-      padding: padding,
-      decoration: BoxDecoration(
-        color: theme.brightness == Brightness.dark ? scheme.surfaceContainerLow : const Color(0xFFF8F7FC),
-        borderRadius: radius,
-        border: border ?? Border.all(color: scheme.outlineVariant.withValues(alpha: 0.72)),
-        boxShadow: [BoxShadow(color: scheme.shadow.withValues(alpha: 0.035), blurRadius: 10, offset: const Offset(0, 3))],
+        padding: padding,
+        decoration: BoxDecoration(
+        color: Theme.of(context).brightness == Brightness.dark
+            ? Theme.of(context).colorScheme.surfaceContainerLow
+            : const Color(0xFFF8F7FC),
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        border: border ?? Border.all(color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.72)),
+        boxShadow: [BoxShadow(color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.035), blurRadius: 10, offset: const Offset(0, 3))],
       ),
       child: child,
     );
     if (onTap == null) return card;
     return Material(
       color: Colors.transparent,
-      borderRadius: radius,
+      borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
       child: InkWell(
-        borderRadius: radius,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
         onTap: onTap,
         child: card,
       ),

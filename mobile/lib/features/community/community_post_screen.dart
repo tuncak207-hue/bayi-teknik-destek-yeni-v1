@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../core/widgets/design_system.dart';
-import '../../core/widgets/app_components.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:dio/dio.dart';
 import '../../core/api/api_client.dart';
@@ -98,18 +97,21 @@ class _CommunityPostScreenState extends State<CommunityPostScreen> {
             child: ListView(
               padding: const EdgeInsets.all(AppSpacing.md),
               children: [
-                StandardCard(
-                  padding: const EdgeInsets.all(AppSpacing.sm),
-                  child: ReferenceCardContent(
-                    icon: Icons.forum_outlined,
-                    title: _post!['title'] ?? '',
-                    description: _post!['body'] ?? '',
-                    iconColor: AppColors.primary,
-                    iconBackground: AppColors.primary.withValues(alpha: 0.10),
-                    metadata: Text(
-                      author != null ? '${author['company']} — ${author['firstName']} ${author['lastName']}' : '',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 12.5, color: Colors.grey.shade600),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(AppSpacing.sm),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(_post!['title'] ?? '', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: AppColors.navy)),
+                        const SizedBox(height: 6),
+                        Text(
+                          author != null ? '${author['company']} — ${author['firstName']} ${author['lastName']}' : '',
+                          style: TextStyle(fontSize: 12.5, color: Colors.grey.shade600),
+                        ),
+                        const SizedBox(height: AppSpacing.xs),
+                        Text(_post!['body'] ?? ''),
+                      ],
                     ),
                   ),
                 ),
@@ -133,22 +135,44 @@ class _CommunityPostScreenState extends State<CommunityPostScreen> {
                   final isAi = c['isAI'] == true;
                   final commentAuthor = c['author'];
                   final isMyComment = commentAuthor != null && commentAuthor['id'] == CurrentUser().id;
-                  return StandardCard(
-                    padding: const EdgeInsets.all(AppSpacing.sm),
-                    child: ReferenceCardContent(
-                      icon: isAi ? Icons.smart_toy_outlined : Icons.person_outline,
-                      title: isAi ? 'AI destekli topluluk cevabı' : '${commentAuthor?['firstName'] ?? ''} ${commentAuthor?['lastName'] ?? ''}',
-                      description: isAi ? null : c['body'] ?? '',
-                      iconColor: isAi ? AppColors.brand : AppColors.navy,
-                      iconBackground: (isAi ? AppColors.brand : AppColors.navy).withValues(alpha: 0.10),
-                      metadata: isAi ? MarkdownBody(data: c['body'] ?? '', selectable: true) : null,
-                      action: isMyComment
-                          ? IconButton(
-                              tooltip: 'Yorumu sil',
-                              onPressed: () => _deleteComment(c['id']),
-                              icon: Icon(Icons.delete_outline, size: 18, color: Colors.grey.shade500),
-                            )
-                          : null,
+                  return Card(
+                    margin: const EdgeInsets.only(bottom: AppSpacing.xs),
+                    child: Padding(
+                      padding: const EdgeInsets.all(AppSpacing.sm),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                isAi ? Icons.smart_toy_outlined : Icons.person_outline,
+                                size: 15,
+                                color: isAi ? AppColors.brand : AppColors.navy,
+                              ),
+                              const SizedBox(width: 4),
+                              Expanded(
+                                child: Text(
+                                  isAi ? 'AI destekli topluluk cevabı' : '${commentAuthor?['firstName'] ?? ''} ${commentAuthor?['lastName'] ?? ''}',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w700,
+                                    color: isAi ? AppColors.brand : AppColors.navy,
+                                  ),
+                                ),
+                              ),
+                              if (isMyComment)
+                                InkWell(
+                                  onTap: () => _deleteComment(c['id']),
+                                  child: Icon(Icons.delete_outline, size: 16, color: Colors.grey.shade500),
+                                ),
+                            ],
+                          ),
+                          const SizedBox(height: 6),
+                          isAi
+                              ? MarkdownBody(data: c['body'] ?? '', selectable: true)
+                              : Text(c['body'] ?? ''),
+                        ],
+                      ),
                     ),
                   );
                 }),

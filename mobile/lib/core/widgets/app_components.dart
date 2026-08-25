@@ -366,97 +366,6 @@ class AppBadge extends StatelessWidget {
   }
 }
 
-/// Randevu Al referansındaki ortak kart iç kompozisyonu.
-/// İkon, başlık, açıklama, metadata ve aksiyonları aynı merkez ekseninde tutar.
-class ReferenceCardContent extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String? description;
-  final Widget? metadata;
-  final Widget? action;
-  final Color? iconColor;
-  final Color? iconBackground;
-  final bool compact;
-  final bool titleAsLabel;
-
-  const ReferenceCardContent({
-    super.key,
-    required this.icon,
-    required this.title,
-    this.description,
-    this.metadata,
-    this.action,
-    this.iconColor,
-    this.iconBackground,
-    this.compact = false,
-    this.titleAsLabel = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
-    final foreground = iconColor ?? scheme.onSurfaceVariant;
-    final iconSize = compact ? 44.0 : 64.0;
-    final iconGlyphSize = compact ? 21.0 : 28.0;
-    final titleStyle = titleAsLabel
-        ? theme.textTheme.bodySmall
-        : compact
-            ? theme.textTheme.titleSmall
-            : theme.textTheme.titleMedium;
-    final descriptionStyle = compact ? theme.textTheme.bodySmall : theme.textTheme.bodyMedium;
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Center(
-          child: Container(
-            width: iconSize,
-            height: iconSize,
-            decoration: BoxDecoration(
-              color: iconBackground ?? scheme.surfaceContainerHighest,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, size: iconGlyphSize, color: foreground),
-          ),
-        ),
-        SizedBox(height: compact ? AppSpacing.xs : AppSpacing.md),
-        Text(
-          title,
-          textAlign: TextAlign.center,
-          maxLines: compact ? 2 : null,
-          overflow: compact ? TextOverflow.ellipsis : null,
-          style: titleStyle?.copyWith(
-                fontWeight: titleAsLabel ? FontWeight.w500 : FontWeight.w700,
-                color: titleAsLabel ? scheme.onSurfaceVariant : scheme.onSurface,
-              ),
-        ),
-        if (description != null) ...[
-          SizedBox(height: compact ? 2 : AppSpacing.xs),
-          Text(
-            description!,
-            textAlign: TextAlign.center,
-            maxLines: compact ? 1 : 3,
-            overflow: TextOverflow.ellipsis,
-            style: descriptionStyle?.copyWith(
-                  color: scheme.onSurfaceVariant,
-                  height: compact ? 1.15 : 1.4,
-                ),
-          ),
-        ],
-        if (metadata != null) ...[
-          SizedBox(height: compact ? 2 : AppSpacing.sm),
-          Center(child: metadata!),
-        ],
-        if (action != null) ...[
-          SizedBox(height: compact ? AppSpacing.xs : AppSpacing.lg),
-          Center(child: action!),
-        ],
-      ],
-    );
-  }
-}
-
 // ============================================================
 // APP EMPTY STATE ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â icon + baÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸lÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚ÂÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±k + aÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€Â¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚ÂÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±klama + opsiyonel aksiyon
 // ============================================================
@@ -479,20 +388,42 @@ class AppEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Semantics(
       container: true,
       liveRegion: true,
       label: [title, if (description != null) description].whereType<String>().join('. '),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: AppSpacing.xl, horizontal: AppSpacing.lg),
-        child: ReferenceCardContent(
-          icon: icon,
-          title: title,
-          description: description,
-          action: actionLabel != null && onAction != null
-              ? AppButton.secondary(label: actionLabel!, onPressed: onAction, fullWidth: false)
-              : null,
-        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(color: scheme.surfaceContainerHighest, shape: BoxShape.circle),
+            child: Icon(icon, size: 28, color: scheme.onSurfaceVariant),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: scheme.onSurface),
+          ),
+          if (description != null) ...[
+            const SizedBox(height: AppSpacing.xxs),
+            Text(
+              description!,
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 13.5, color: scheme.onSurfaceVariant, height: 1.4),
+            ),
+          ],
+          if (actionLabel != null && onAction != null) ...[
+            const SizedBox(height: AppSpacing.md),
+            AppButton.secondary(label: actionLabel!, onPressed: onAction, fullWidth: false),
+          ],
+        ],
+      ),
       ),
     );
   }

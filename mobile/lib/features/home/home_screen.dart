@@ -381,35 +381,31 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 0),
             Transform.translate(
               offset: const Offset(0, 4),
-              child: GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                padding: EdgeInsets.zero,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  mainAxisExtent: 150,
-                  mainAxisSpacing: AppSpacing.sm,
-                  crossAxisSpacing: AppSpacing.sm,
-                ),
-                itemCount: _quickActionsOrder
-                    .where((action) => action.id != 'dealer_visits' || CurrentUser().role == 'SALES' || CurrentUser().role == 'ADMIN')
-                    .length,
-                itemBuilder: (context, index) {
-                  final action = _quickActionsOrder
-                      .where((action) => action.id != 'dealer_visits' || CurrentUser().role == 'SALES' || CurrentUser().role == 'ADMIN')
-                      .elementAt(index);
-                  return _QuickAction(
-                    icon: action.icon,
-                    label: action.label,
-                    badgeCount: _categoryBadges[action.id] ?? 0,
-                    onTap: () {
-                      if (_categoryBadges.containsKey(action.id) && (_categoryBadges[action.id] ?? 0) > 0) {
-                        setState(() => _categoryBadges[action.id] = 0);
-                      }
-                      _handleQuickActionTap(action);
-                    },
-                  );
-                },
+              child: GridView.count(
+              crossAxisCount: 3,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              mainAxisSpacing: AppSpacing.sm,
+              crossAxisSpacing: AppSpacing.sm,
+              childAspectRatio: 0.88,
+              padding: EdgeInsets.zero,
+              children: _quickActionsOrder
+                  // "Bayi Ziyaretleri" sadece SALES (satış danışmanı)
+                  // rolündeki hesaplara gösterilir — bayilerin bu
+                  // özellikle bir ilgisi yok.
+                  .where((action) => action.id != 'dealer_visits' || CurrentUser().role == 'SALES' || CurrentUser().role == 'ADMIN')
+                  .map((action) => _QuickAction(
+                        icon: action.icon,
+                        label: action.label,
+                        badgeCount: _categoryBadges[action.id] ?? 0,
+                        onTap: () {
+                          if (_categoryBadges.containsKey(action.id) && (_categoryBadges[action.id] ?? 0) > 0) {
+                            setState(() => _categoryBadges[action.id] = 0);
+                          }
+                          _handleQuickActionTap(action);
+                        },
+                      ))
+                  .toList(),
               ),
             ),
             const SizedBox(height: AppSpacing.xs),
@@ -509,18 +505,28 @@ class _StatCard extends StatelessWidget {
             border: Border.all(color: AppColors.outline.withValues(alpha: 0.72)),
             boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.035), blurRadius: 10, offset: const Offset(0, 3))],
           ),
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.sm),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.lg),
           child: Stack(
             clipBehavior: Clip.none,
             children: [
-              Center(
-                child: ReferenceCardContent(
-                  icon: icon,
-                  title: value,
-                  description: label,
-                  iconColor: AppColors.textMuted,
-                  iconBackground: AppColors.primarySoft,
-                  compact: true,
+              SizedBox(
+                height: 78,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Center(child: Icon(icon, color: AppColors.textMuted, size: 14)),
+                    const SizedBox(height: 4),
+                    Center(child: Text(value, style: AppText.statValue.copyWith(fontSize: 20, fontWeight: FontWeight.w800))),
+                    const SizedBox(height: 1),
+                    Text(
+                      label,
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppText.statLabel.copyWith(fontSize: 11.5),
+                    ),
+                  ],
                 ),
               ),
               if (showBadge)
@@ -575,18 +581,55 @@ class _QuickAction extends StatelessWidget {
               ),
             ],
           ),
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.sm),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.lg),
           child: Stack(
             clipBehavior: Clip.none,
             children: [
               Center(
-                child: ReferenceCardContent(
-                  icon: icon,
-                  title: label,
-                  iconColor: AppColors.primary,
-                  iconBackground: AppColors.primarySoft,
-                  compact: true,
-                  titleAsLabel: true,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: const BoxDecoration(
+                        color: AppColors.primarySoft,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        icon,
+                        color: AppColors.primary,
+                        size: 21,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    // ÖNEMLİ DÜZELTME: Etiketler tek satır ("Ara", "Gruplar")
+                    // veya iki satır ("Bayilere Sor", "Satış Danışmanına
+                    // Sor") olabiliyor. İçerik dikeyde ortalandığı için,
+                    // farklı satır sayısı ikon dairesinin hücreden hücreye
+                    // (ve satırdan satıra) farklı yükseklikte görünmesine
+                    // yol açıyordu. Etiket alanına, iki satırlık sabit bir
+                    // yükseklik ayırarak (ve metni üste hizalayarak) tüm
+                    // kartlardaki ikon konumunu, etiket kaç satır sürerse
+                    // sürsün sabitliyoruz.
+                    SizedBox(
+                      height: 28,
+                      child: Text(
+                        label,
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w600,
+                          fontSize: 11.5,
+                          color: AppColors.textPrimary,
+                          height: 1.15,
+                          letterSpacing: -0.15,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               if (badgeCount > 0)

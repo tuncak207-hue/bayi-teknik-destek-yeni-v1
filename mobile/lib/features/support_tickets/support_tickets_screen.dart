@@ -174,24 +174,39 @@ class _SupportTicketsScreenState extends State<SupportTicketsScreen> {
                           ),
                           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
                           border: isEmergency ? Border.all(color: Colors.red.withValues(alpha: 0.35), width: 1.5) : null,
-                          child: ReferenceCardContent(
-                            icon: isEmergency ? Icons.warning_amber_rounded : Icons.build_outlined,
-                            title: t['productName'] ?? t['description'] ?? '',
-                            description: t['description'] == null || t['description'] == t['productName']
-                                ? null
-                                : t['description'],
-                            iconColor: _priorityColor(t['priority']),
-                            iconBackground: _priorityColor(t['priority']).withValues(alpha: 0.1),
-                            metadata: Wrap(
-                              alignment: WrapAlignment.center,
-                              spacing: 8,
-                              runSpacing: 6,
-                              children: [
-                                if (isEmergency) const StatusBadge(label: 'ACİL', tone: AppStatusTone.danger),
-                                StatusBadge(label: _statusText(t['status']), tone: _statusTone(t['status'])),
-                                CardFooterMeta(icon: Icons.schedule_outlined, label: _formatDate(t['createdAt'])),
-                              ],
-                            ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(color: _priorityColor(t['priority']).withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
+                                child: Icon(
+                                  isEmergency ? Icons.warning_amber_rounded : Icons.build_outlined,
+                                  color: _priorityColor(t['priority']),
+                                  size: 19,
+                                ),
+                              ),
+                              const SizedBox(width: AppSpacing.sm),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    CardHeaderRow(
+                                      title: t['productName'] ?? t['description'] ?? '',
+                                      trailing: isEmergency ? const StatusBadge(label: 'ACİL', tone: AppStatusTone.danger) : null,
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Row(
+                                      children: [
+                                        StatusBadge(label: _statusText(t['status']), tone: _statusTone(t['status'])),
+                                        const SizedBox(width: 8),
+                                        CardFooterMeta(icon: Icons.schedule_outlined, label: _formatDate(t['createdAt'])),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       );

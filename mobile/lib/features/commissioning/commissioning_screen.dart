@@ -125,41 +125,57 @@ class _CommissioningListScreenState extends State<CommissioningListScreen> {
                               return StandardCard(
                                 onTap: () => _openDetail(r),
                                 padding: const EdgeInsets.all(AppSpacing.sm),
-                        child: ReferenceCardContent(
-                          icon: isComplete ? Icons.check_circle_outline : Icons.fact_check_outlined,
-                          title: r['siteName'] ?? '',
-                          description: '${r['panelBrand']} ${r['panelModel']}',
-                          iconColor: isComplete ? Colors.green : AppColors.brand,
-                          iconBackground: (isComplete ? Colors.green : AppColors.brand).withValues(alpha: 0.10),
-                          metadata: Wrap(
-                            alignment: WrapAlignment.center,
-                            spacing: 8,
-                            runSpacing: 6,
-                            children: [
-                              StatusBadge(
-                                label: isComplete ? 'Tamamlandı' : 'Devam Ediyor',
-                                tone: isComplete ? AppStatusTone.success : AppStatusTone.pending,
-                              ),
-                              SizedBox(
-                                width: 28,
-                                height: 28,
-                                child: Stack(
-                                  alignment: Alignment.center,
-                                  children: [
-                                    CircularProgressIndicator(
-                                      value: progress,
-                                      strokeWidth: 3,
-                                      backgroundColor: const Color(0xFFEFF1F4),
-                                      valueColor: AlwaysStoppedAnimation(isComplete ? Colors.green : AppColors.brand),
-                                    ),
-                                    Icon(isComplete ? Icons.check : null, size: 13, color: Colors.green),
-                                  ],
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                StatusBadge(
+                                  label: isComplete ? 'Tamamlandı' : 'Devam Ediyor',
+                                  tone: isComplete ? AppStatusTone.success : AppStatusTone.pending,
                                 ),
-                              ),
-                              CardFooterMeta(icon: Icons.checklist_rtl, label: '$checkedCount/${items.length}'),
-                              Text(_formatDate(r['createdAt']), style: TextStyle(fontSize: 10.5, color: Colors.grey.shade400)),
-                            ],
-                          ),
+                                SizedBox(
+                                  width: 28,
+                                  height: 28,
+                                  child: Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      CircularProgressIndicator(
+                                        value: progress,
+                                        strokeWidth: 3,
+                                        backgroundColor: const Color(0xFFEFF1F4),
+                                        valueColor: AlwaysStoppedAnimation(isComplete ? Colors.green : AppColors.brand),
+                                      ),
+                                      Icon(isComplete ? Icons.check : null, size: 13, color: Colors.green),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const Spacer(),
+                            Text(
+                              r['siteName'] ?? '',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: AppColors.navy),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '${r['panelBrand']} ${r['panelModel']}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(fontSize: 11.5, color: Colors.grey.shade500),
+                            ),
+                            const SizedBox(height: 10),
+                            Row(
+                              children: [
+                                CardFooterMeta(icon: Icons.checklist_rtl, label: '$checkedCount/${items.length}'),
+                                const Spacer(),
+                                Text(_formatDate(r['createdAt']), style: TextStyle(fontSize: 10.5, color: Colors.grey.shade400)),
+                              ],
+                            ),
+                          ],
                         ),
                       );
                             },
