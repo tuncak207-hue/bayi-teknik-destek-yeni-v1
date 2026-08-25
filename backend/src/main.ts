@@ -1,9 +1,25 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
+import helmet from 'helmet';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { cors: true });
+  const isProduction = process.env.NODE_ENV === 'production';
+  const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:3001')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+  const app = await NestFactory.create(AppModule, {
+    cors: {
+      origin: allowedOrigins,
+      credentials: true,
+    },
+    bodyParser: true,
+  });
+  app.use(helmet());
+  if (!isProduction) {
+    app.enableShutdownHooks();
+  }
   app.useGlobalPipes(
     new ValidationPipe({ whitelist: true, transform: true, forbidNonWhitelisted: true }),
   );

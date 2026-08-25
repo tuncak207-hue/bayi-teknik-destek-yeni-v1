@@ -181,7 +181,7 @@ export class ChatController {
   }
 
   @Get('attachments/signed-url')
-  getAttachmentUrl(@Query('key') key: string) {
-    return this.storage.getSignedUrl(key);
+  getAttachmentUrl(@Req() req: any, @Query('key') key: string) {
+    return this.messages.getAttachmentSignedUrl(req.user.sub, key);
   }
 }

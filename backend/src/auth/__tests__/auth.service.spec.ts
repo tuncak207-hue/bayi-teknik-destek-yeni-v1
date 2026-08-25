@@ -15,6 +15,7 @@ describe('AuthService', () => {
       user: {
         findUnique: jest.fn(),
         create: jest.fn(),
+        update: jest.fn().mockResolvedValue({}),
       },
     };
 
