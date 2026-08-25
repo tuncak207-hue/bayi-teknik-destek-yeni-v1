@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../core/theme/app_theme.dart';
 
 /// Kullanıcı isteği: "üst menü barı ana menüden bağımsız olmamalı, ana
 /// menünün bir parçası gibi hareket etmeli." Önceki yaklaşım (kaydırma
