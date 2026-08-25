@@ -23,7 +23,7 @@ class AppPageHeader extends StatelessWidget implements PreferredSizeWidget {
   });
 
   @override
-  Size get preferredSize => const Size.fromHeight(76);
+  Size get preferredSize => const Size.fromHeight(64);
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +33,7 @@ class AppPageHeader extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: backgroundColor ?? scheme.surface,
       foregroundColor: foreground,
       surfaceTintColor: backgroundColor ?? scheme.surface,
-      title: Text(title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: foreground)),
+      title: Text(title, style: Theme.of(context).textTheme.titleLarge?.copyWith(color: foreground)),
       centerTitle: true,
       automaticallyImplyLeading: false,
       leading: IconButton(
@@ -109,10 +109,10 @@ class StandardCard extends StatelessWidget {
     final card = Container(
       padding: padding,
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        color: Theme.of(context).colorScheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(16),
         border: border,
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 12, offset: const Offset(0, 3))],
+        boxShadow: [BoxShadow(color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.08), blurRadius: 12, offset: const Offset(0, 3))],
       ),
       child: child,
     );
@@ -196,9 +196,11 @@ class StandardFab extends StatelessWidget {
       backgroundColor: AppColors.brand,
       foregroundColor: Colors.white,
       elevation: 2,
+      extendedIconLabelSpacing: 8,
       icon: Icon(icon),
       label: Text(label, style: const TextStyle(fontWeight: FontWeight.w700)),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      extendedPadding: const EdgeInsets.symmetric(horizontal: 20),
     );
   }
 }

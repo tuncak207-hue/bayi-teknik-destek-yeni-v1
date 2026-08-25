@@ -213,7 +213,9 @@ class AppTheme {
         // Sor dahil, ~40 ekran) buradan besleniyor — merkezi olarak
         // yükseklik artırılıp nefes payı eklendi, tek tek ekran
         // değiştirmeye gerek kalmadı.
-        toolbarHeight: 76,
+        toolbarHeight: 64,
+        scrolledUnderElevation: 1,
+        surfaceTintColor: AppColors.primary.withValues(alpha: 0.05),
         titleTextStyle: TextStyle(
           fontFamily: _platformFontFamily,
           color: AppColors.navy,
@@ -233,7 +235,9 @@ class AppTheme {
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
           textStyle: TextStyle(fontFamily: _platformFontFamily, fontWeight: FontWeight.w700, letterSpacing: 0.3, fontSize: 15),
-          elevation: 0,
+          elevation: 1,
+          minimumSize: const Size(0, 48),
+          tapTargetSize: MaterialTapTargetSize.padded,
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
@@ -241,7 +245,9 @@ class AppTheme {
           foregroundColor: AppColors.navy,
           side: const BorderSide(color: AppColors.navy, width: 1.4),
           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSpacing.radius)),
+          minimumSize: const Size(0, 48),
+          tapTargetSize: MaterialTapTargetSize.padded,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -259,11 +265,13 @@ class AppTheme {
           borderRadius: BorderRadius.circular(AppSpacing.radius),
           borderSide: const BorderSide(color: AppColors.brand, width: 1.6),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        floatingLabelBehavior: FloatingLabelBehavior.auto,
       ),
       cardTheme: CardThemeData(
-        elevation: 0,
-        shadowColor: Colors.transparent,
+        elevation: 1,
+        shadowColor: Colors.black26,
+        surfaceTintColor: AppColors.primary.withValues(alpha: 0.04),
         color: Colors.white,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
@@ -272,8 +280,11 @@ class AppTheme {
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: Colors.white,
-        elevation: 0,
-        indicatorColor: AppColors.primary.withValues(alpha: 0.12),
+        elevation: 2,
+        height: 80,
+        indicatorColor: AppColors.primary.withValues(alpha: 0.16),
+        indicatorShape: const StadiumBorder(),
+        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
         labelTextStyle: WidgetStateProperty.resolveWith(
           (states) => TextStyle(
             fontFamily: _platformFontFamily,
@@ -293,6 +304,23 @@ class AppTheme {
       // Kullanıcı isteği: "tüm o küçük onay pencereleri için değiştir" —
       // AlertDialog/showDialog kullanan HER yer (silme onayları, çıkış
       // onayı, randevu/rapor sil vb.) bu merkezi ayarı otomatik alır.
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        elevation: 2,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        insetPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      ),
+      chipTheme: ChipThemeData(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        side: BorderSide(color: AppColors.outline),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+      ),
+      listTileTheme: const ListTileThemeData(
+        minVerticalPadding: 8,
+        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
+      ),
       dialogTheme: DialogThemeData(
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.white,
@@ -418,7 +446,9 @@ class AppTheme {
         foregroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
-        toolbarHeight: 76,
+        toolbarHeight: 64,
+        scrolledUnderElevation: 1,
+        surfaceTintColor: const Color(0xFFFF8A55).withValues(alpha: 0.08),
         titleTextStyle: TextStyle(fontFamily: _platformFontFamily, color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700),
       ),
       cardTheme: CardThemeData(
@@ -457,6 +487,24 @@ class AppTheme {
         ),
       ),
       dividerTheme: DividerThemeData(color: Colors.white.withValues(alpha: 0.08), thickness: 1),
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        elevation: 2,
+        backgroundColor: darkCard,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        insetPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      ),
+      chipTheme: ChipThemeData(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        side: BorderSide(color: Colors.white.withValues(alpha: 0.12)),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+      ),
+      listTileTheme: const ListTileThemeData(
+        minVerticalPadding: 8,
+        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
+      ),
       dialogTheme: DialogThemeData(
         backgroundColor: darkCard,
         surfaceTintColor: darkCard,

@@ -90,8 +90,10 @@ class AppButton extends StatelessWidget {
             foregroundColor: AppColors.onPrimary,
             disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.4),
             elevation: 0,
-            padding: const EdgeInsets.symmetric(vertical: 15),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
+            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+            minimumSize: const Size(0, 48),
+            tapTargetSize: MaterialTapTargetSize.padded,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15, letterSpacing: -0.1),
           ),
           child: child,
@@ -103,8 +105,10 @@ class AppButton extends StatelessWidget {
           style: OutlinedButton.styleFrom(
             foregroundColor: AppColors.textPrimary,
             side: BorderSide(color: AppColors.outlineStrong, width: 1.2),
-            padding: const EdgeInsets.symmetric(vertical: 15),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
+            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+            minimumSize: const Size(0, 48),
+            tapTargetSize: MaterialTapTargetSize.padded,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15, letterSpacing: -0.1),
           ),
           child: child,
@@ -115,7 +119,9 @@ class AppButton extends StatelessWidget {
           onPressed: loading ? null : onPressed,
           style: TextButton.styleFrom(
             foregroundColor: AppColors.primary,
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+            minimumSize: const Size(0, 44),
+            tapTargetSize: MaterialTapTargetSize.padded,
             textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14.5),
           ),
           child: child,
@@ -210,10 +216,10 @@ class _AppTextFieldState extends State<AppTextField> {
             duration: const Duration(milliseconds: 140),
             decoration: BoxDecoration(
               color: widget.enabled ? scheme.surfaceContainerHighest : scheme.surfaceContainer,
-              borderRadius: BorderRadius.circular(AppRadius.md),
-              border: Border.all(color: borderColor, width: (_focused || hasError) ? 1.4 : 1),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: borderColor, width: (_focused || hasError) ? 2 : 1),
             ),
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 2),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
             child: Row(
               crossAxisAlignment: (widget.maxLines ?? 1) > 1 ? CrossAxisAlignment.start : CrossAxisAlignment.center,
               children: [
@@ -234,13 +240,14 @@ class _AppTextFieldState extends State<AppTextField> {
                     maxLines: widget.obscureText ? 1 : widget.maxLines,
                     onChanged: widget.onChanged,
                     onSubmitted: (_) => widget.onSubmitted?.call(),
-                    style: TextStyle(fontSize: 15, color: scheme.onSurface),
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: scheme.onSurface, fontSize: 15),
                     decoration: InputDecoration(
                       labelText: widget.label,
                       labelStyle: TextStyle(color: scheme.onSurfaceVariant, fontSize: 14.5),
                       border: InputBorder.none,
                       isDense: true,
                       contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                      floatingLabelBehavior: FloatingLabelBehavior.auto,
                     ),
                   ),
                 ),
@@ -288,9 +295,9 @@ class AppCard extends StatelessWidget {
     // kartlar artÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚ÂÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±k ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€Â¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â§izgiyle ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€Â¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â§evrelenmiÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ kutular gibi deÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚ÂÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸il, arka
     // plandan hafifÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€Â¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â§e "yÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€Â¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¼kselerek" ayrÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚ÂÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚ÂÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±yor.
     final content = Container(
-      padding: padding ?? const EdgeInsets.all(AppSpacing.sm),
+      padding: padding ?? const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: scheme.surface,
+        color: scheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(AppRadius.lg),
         boxShadow: [
           BoxShadow(

@@ -45,84 +45,41 @@ class TopNavSliverAppBar extends StatelessWidget {
       // padding sorunu YOK). Menünün Status Bar'a olan tek gerçek mesafesi,
       // aşağıdaki title Padding'inin top değeriydi (önceden sadece 6px).
       // Menü KONTEYNERİNİN kendisi (ikonların içi değil) aşağı alındı.
-      toolbarHeight: 82,
+      toolbarHeight: 72,
       automaticallyImplyLeading: false,
       titleSpacing: 0,
-      title: _buildIconsRow(),
+      title: _buildIconsRow(context),
     );
   }
 
   /// Ortak ikon satırı — hem kaydırılabilir (SliverAppBar) hem sabit
   /// (StaticTopNavBar) versiyon TARAFINDAN paylaşılıyor, ikisi de aynı
   /// görünüme sahip olsun diye.
-  Widget _buildIconsRow() {
+  Widget _buildIconsRow(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Padding(
-      padding: const EdgeInsets.only(top: 10, bottom: 6),
-      child: SizedBox(
-        height: 56,
-        child: Row(
-          children: [
-            _TopNavItem(
-              icon: Icons.home_rounded,
-              selectedIcon: Icons.home_rounded,
-              label: 'Ana Sayfa',
-              isSelected: selectedDestination == 0,
-              onTap: () => onTap(0),
-            ),
-            _TopNavItem(
-              // Kullanıcı isteği: "ikonların tipini değiştir, daha
-              // premium olsun" — AI ikonu, uygulamanın diğer yerlerinde
-              // (Ana Sayfa banner'ı) zaten kullandığımız "parıltı"
-              // ikonuyla tutarlı hale getirildi.
-              icon: Icons.auto_awesome_outlined,
-              selectedIcon: Icons.auto_awesome_rounded,
-              label: 'AI',
-              isSelected: selectedDestination == 1,
-              onTap: () => onTap(1),
-            ),
-            _TopNavItem(
-              icon: Icons.call_rounded,
-              selectedIcon: Icons.call_rounded,
-              label: 'Ara',
-              isSelected: false,
-              onTap: () => onTap(2),
-            ),
-            _TopNavItem(
-              icon: Icons.forum_outlined,
-              selectedIcon: Icons.forum_rounded,
-              label: 'Mesajlar',
-              isSelected: selectedDestination == 3,
-              badgeCount: unreadMessages,
-              onTap: () => onTap(3),
-            ),
-            _TopNavItem(
-              icon: Icons.person_rounded,
-              selectedIcon: Icons.person_rounded,
-              label: 'Profil',
-              isSelected: selectedDestination == 4,
-              onTap: () => onTap(4),
-            ),
-            // ÖNEMLİ DÜZELTME: Bu öğe önceden Expanded değildi — diğer 5
-            // sekme eşit genişlik paylaşırken bu sabit boyutta kalıyor,
-            // bu da Profil ile Zil arasındaki boşluğun diğer ikon
-            // aralarından farklı (dar) görünmesine yol açıyordu. Artık
-            // diğerleriyle aynı şekilde Expanded + Center kullanıyor,
-            // böylece 6 ikon da eşit aralıklı.
-            Expanded(
-              child: Center(
-                child: IconButton(
-                  icon: Badge(
-                    isLabelVisible: unreadNotifications > 0,
-                    label: Text('$unreadNotifications'),
-                    child: const Icon(Icons.notifications_rounded, size: 22),
+      padding: const EdgeInsets.fromLTRB(20, 4, 12, 4),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              'Bayi Teknik Destek',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.2,
                   ),
-                  tooltip: 'Bildirimler',
-                  onPressed: onNotificationsTap,
-                ),
-              ),
             ),
-          ],
-        ),
+          ),
+          IconButton(
+            tooltip: 'Bildirimler',
+            onPressed: onNotificationsTap,
+            icon: Badge(
+              isLabelVisible: unreadNotifications > 0,
+              label: Text(unreadNotifications > 9 ? '9+' : '$unreadNotifications'),
+              child: Icon(Icons.notifications_outlined, color: scheme.onSurfaceVariant),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -161,7 +118,7 @@ class StaticTopNavBar extends StatelessWidget {
           unreadNotifications: unreadNotifications,
           onTap: onTap,
           onNotificationsTap: onNotificationsTap,
-        )._buildIconsRow(),
+        )._buildIconsRow(context),
       ),
     );
   }
