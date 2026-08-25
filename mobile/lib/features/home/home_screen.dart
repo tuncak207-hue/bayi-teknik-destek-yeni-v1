@@ -509,25 +509,12 @@ class _StatCard extends StatelessWidget {
           child: Stack(
             clipBehavior: Clip.none,
             children: [
-              SizedBox(
-                height: 78,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Center(child: Icon(icon, color: AppColors.textMuted, size: 14)),
-                    const SizedBox(height: 4),
-                    Center(child: Text(value, style: AppText.statValue.copyWith(fontSize: 20, fontWeight: FontWeight.w800))),
-                    const SizedBox(height: 1),
-                    Text(
-                      label,
-                      textAlign: TextAlign.center,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppText.statLabel.copyWith(fontSize: 11.5),
-                    ),
-                  ],
-                ),
+              ReferenceCardContent(
+                icon: icon,
+                title: value,
+                description: label,
+                iconColor: AppColors.textMuted,
+                iconBackground: AppColors.primarySoft,
               ),
               if (showBadge)
                 Positioned(
@@ -585,52 +572,11 @@ class _QuickAction extends StatelessWidget {
           child: Stack(
             clipBehavior: Clip.none,
             children: [
-              Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 44,
-                      height: 44,
-                      decoration: const BoxDecoration(
-                        color: AppColors.primarySoft,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        icon,
-                        color: AppColors.primary,
-                        size: 21,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    // ÖNEMLİ DÜZELTME: Etiketler tek satır ("Ara", "Gruplar")
-                    // veya iki satır ("Bayilere Sor", "Satış Danışmanına
-                    // Sor") olabiliyor. İçerik dikeyde ortalandığı için,
-                    // farklı satır sayısı ikon dairesinin hücreden hücreye
-                    // (ve satırdan satıra) farklı yükseklikte görünmesine
-                    // yol açıyordu. Etiket alanına, iki satırlık sabit bir
-                    // yükseklik ayırarak (ve metni üste hizalayarak) tüm
-                    // kartlardaki ikon konumunu, etiket kaç satır sürerse
-                    // sürsün sabitliyoruz.
-                    SizedBox(
-                      height: 28,
-                      child: Text(
-                        label,
-                        textAlign: TextAlign.center,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w600,
-                          fontSize: 11.5,
-                          color: AppColors.textPrimary,
-                          height: 1.15,
-                          letterSpacing: -0.15,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+              ReferenceCardContent(
+                icon: icon,
+                title: label,
+                iconColor: AppColors.primary,
+                iconBackground: AppColors.primarySoft,
               ),
               if (badgeCount > 0)
                 Positioned(
