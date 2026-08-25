@@ -270,13 +270,14 @@ class AppTheme {
         floatingLabelBehavior: FloatingLabelBehavior.auto,
       ),
       cardTheme: CardThemeData(
-        elevation: 1,
-        shadowColor: Colors.black26,
-        surfaceTintColor: AppColors.primary.withValues(alpha: 0.04),
-        color: Colors.white,
+        elevation: 0,
+        shadowColor: Colors.black.withValues(alpha: 0.04),
+        surfaceTintColor: Colors.transparent,
+        color: const Color(0xFFF8F7FC),
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.lg),
+          side: BorderSide(color: AppColors.outline.withValues(alpha: 0.72)),
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(

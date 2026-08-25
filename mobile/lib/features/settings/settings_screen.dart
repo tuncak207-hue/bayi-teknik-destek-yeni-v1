@@ -94,9 +94,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               padding: const EdgeInsets.all(AppSpacing.md),
               children: [
                 const _SectionTitle('Güvenlik'),
-                Card(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18), side: BorderSide(color: AppColors.divider)),
-                  elevation: 0,
+                StandardCard(
                   child: ValueListenableBuilder<bool>(
                     valueListenable: ThemeController().biometricLockEnabled,
                     builder: (context, enabled, _) => SwitchListTile(
@@ -127,9 +125,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                 const SizedBox(height: AppSpacing.lg),
                 const _SectionTitle('Yazı Boyutu'),
-                Card(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18), side: BorderSide(color: AppColors.divider)),
-                  elevation: 0,
+                StandardCard(
                   child: Padding(
                     padding: const EdgeInsets.all(AppSpacing.sm),
                     child: Column(
@@ -163,9 +159,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                 const SizedBox(height: AppSpacing.lg),
                 const _SectionTitle('Sessiz Saatler'),
-                Card(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18), side: BorderSide(color: AppColors.divider)),
-                  elevation: 0,
+                StandardCard(
                   child: Column(
                     children: [
                       SwitchListTile(
@@ -199,9 +193,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                 const SizedBox(height: AppSpacing.lg),
                 const _SectionTitle('Bildirim Tercihleri'),
-                Card(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18), side: BorderSide(color: AppColors.divider)),
-                  elevation: 0,
+                StandardCard(
                   child: Column(
                     children: _kNotificationTypeLabels.entries
                         .map((e) => SwitchListTile(
