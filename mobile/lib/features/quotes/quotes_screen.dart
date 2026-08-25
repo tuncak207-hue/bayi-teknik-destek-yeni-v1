@@ -153,59 +153,36 @@ class _QuotesScreenState extends State<QuotesScreen> {
                       return StandardCard(
                         padding: const EdgeInsets.all(AppSpacing.sm),
                         onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => _QuoteDetailScreen(quote: q))),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 44,
-                              height: 44,
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(colors: [AppColors.navy, Color(0xFF1D3A56)]),
-                                borderRadius: BorderRadius.circular(14),
+                        child: ReferenceCardContent(
+                          icon: Icons.request_quote_outlined,
+                          title: q['title'] ?? '',
+                          description: '${q['customerName'] ?? 'Müşteri belirtilmedi'} · ${items.length} kalem',
+                          iconColor: Colors.white,
+                          iconBackground: AppColors.navy,
+                          metadata: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text('${(q['totalAmount'] as num).toStringAsFixed(0)} €', style: const TextStyle(fontWeight: FontWeight.w800, color: AppColors.brand, fontSize: 14)),
+                              const SizedBox(height: 4),
+                              CardFooterMeta(icon: Icons.schedule_outlined, label: _formatDate(q['createdAt'])),
+                            ],
+                          ),
+                          action: Wrap(
+                            alignment: WrapAlignment.center,
+                            spacing: 4,
+                            children: [
+                              IconButton(
+                                tooltip: 'Düzenle',
+                                icon: const Icon(Icons.edit_outlined, size: 18, color: Colors.grey),
+                                onPressed: () => _openBuilder(existingQuote: q),
                               ),
-                              child: const Icon(Icons.request_quote_outlined, color: Colors.white, size: 20),
-                            ),
-                            const SizedBox(width: AppSpacing.sm),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(q['title'] ?? '', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14.5, color: AppColors.navy)),
-                                  const SizedBox(height: 4),
-                                  CardFooterMeta(
-                                    icon: Icons.person_outline,
-                                    label: '${q['customerName'] ?? 'Müşteri belirtilmedi'} · ${items.length} kalem · ${_formatDate(q['createdAt'])}',
-                                  ),
-                                ],
+                              IconButton(
+                                tooltip: 'Sil',
+                                icon: const Icon(Icons.delete_outline, size: 18, color: Colors.grey),
+                                onPressed: () => _delete(q),
                               ),
-                            ),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Text('${(q['totalAmount'] as num).toStringAsFixed(0)} €', style: const TextStyle(fontWeight: FontWeight.w800, color: AppColors.brand, fontSize: 14)),
-                                const SizedBox(height: 2),
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    IconButton(
-                                      icon: const Icon(Icons.edit_outlined, size: 18, color: Colors.grey),
-                                      onPressed: () => _openBuilder(existingQuote: q),
-                                      padding: EdgeInsets.zero,
-                                      constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-                                      tooltip: 'Düzenle',
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(Icons.delete_outline, size: 18, color: Colors.grey),
-                                      onPressed: () => _delete(q),
-                                      padding: EdgeInsets.zero,
-                                      constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-                                      tooltip: 'Sil',
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       );
                           },
