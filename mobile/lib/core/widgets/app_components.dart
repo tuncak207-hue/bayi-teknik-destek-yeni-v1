@@ -298,7 +298,6 @@ class AppCard extends StatelessWidget {
             blurRadius: elevated ? 14 : 8,
             offset: Offset(0, elevated ? 4 : 2),
           ),
-        ],
       ),
       child: child,
     );
