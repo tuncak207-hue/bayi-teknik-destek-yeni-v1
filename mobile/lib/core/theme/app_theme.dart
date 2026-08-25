@@ -207,7 +207,6 @@ class AppTheme {
         // Kullanıcı isteği: "hiç bir şeyde gölge olmayacak" — AppBar'ın
         // gölgesi de tamamen kaldırıldı.
         elevation: 0,
-        scrolledUnderElevation: 0,
         centerTitle: true,
         // ÖNEMLİ DÜZELTME: "Bayilere Sor gibi ekranlarda başlık Status
         // Bar'a çok yakın, bunu Ana Sayfa'da yaptığımız gibi tüm
@@ -306,19 +305,10 @@ class AppTheme {
       // Kullanıcı isteği: "tüm o küçük onay pencereleri için değiştir" —
       // AlertDialog/showDialog kullanan HER yer (silme onayları, çıkış
       // onayı, randevu/rapor sil vb.) bu merkezi ayarı otomatik alır.
-      bottomSheetTheme: const BottomSheetThemeData(
-        showDragHandle: true,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(28))),
-        clipBehavior: Clip.antiAlias,
-      ),
       searchBarTheme: SearchBarThemeData(
         elevation: WidgetStateProperty.all(0),
         shape: WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
         padding: WidgetStateProperty.all(const EdgeInsets.symmetric(horizontal: 16)),
-      ),
-      datePickerTheme: DatePickerThemeData(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-        headerHeadlineStyle: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
       ),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
@@ -526,19 +516,10 @@ class AppTheme {
         ),
       ),
       dividerTheme: DividerThemeData(color: Colors.white.withValues(alpha: 0.08), thickness: 1),
-      bottomSheetTheme: const BottomSheetThemeData(
-        showDragHandle: true,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(28))),
-        clipBehavior: Clip.antiAlias,
-      ),
       searchBarTheme: SearchBarThemeData(
         elevation: WidgetStateProperty.all(0),
         shape: WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
         padding: WidgetStateProperty.all(const EdgeInsets.symmetric(horizontal: 16)),
-      ),
-      datePickerTheme: DatePickerThemeData(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-        headerHeadlineStyle: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
       ),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,

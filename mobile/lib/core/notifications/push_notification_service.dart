@@ -21,9 +21,6 @@ class PushNotificationService {
   final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
   bool _initialized = false;
   bool _listenersRegistered = false;
-  StreamSubscription<String>? _tokenRefreshSubscription;
-  StreamSubscription<RemoteMessage>? _messageSubscription;
-  StreamSubscription<RemoteMessage>? _openedAppSubscription;
 
   Future<void> initAndRegister() async {
     try {
@@ -61,10 +58,10 @@ class PushNotificationService {
       _listenersRegistered = true;
 
       // Token yenilenirse (ör. uygulama yeniden yüklenirse) tekrar backend'e gönder.
-      _tokenRefreshSubscription = messaging.onTokenRefresh.listen(_sendTokenToBackend);
+      messaging.onTokenRefresh.listen(_sendTokenToBackend);
 
       // Uygulama ön plandayken gelen bildirimleri kullanıcıya göster.
-      _messageSubscription = FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
         // Ses her zaman çalsın — "en önemli kural: her bildirimde ses"
         NotificationSoundService().play();
 
@@ -85,7 +82,7 @@ class PushNotificationService {
       // Uygulama arka plandayken bildirime dokunulup öne getirildiğinde,
       // ilgili ekrana yönlendir (derin bağlantı — bildirim listesindeki
       // tıklama davranışıyla aynı mantık).
-      _openedAppSubscription = FirebaseMessaging.onMessageOpenedApp.listen(_handleNotificationTap);
+      FirebaseMessaging.onMessageOpenedApp.listen(_handleNotificationTap);
 
       // Uygulama tamamen kapalıyken bildirime dokunularak açıldıysa da
       // aynı şekilde yönlendir.
