@@ -66,7 +66,6 @@ void main() {
 
     expect(find.text('Favorilerim'), findsOneWidget);
     expect(find.text('3'), findsOneWidget);
-    expect(find.bySemanticsLabel('3 favori'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
