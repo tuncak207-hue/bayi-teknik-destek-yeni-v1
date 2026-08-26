@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_components.dart';
+import '../../core/widgets/design_system.dart';
 import '../../core/events/notification_badge_bus.dart';
 
 class AnnouncementsScreen extends StatefulWidget {
@@ -66,7 +67,7 @@ class _AnnouncementsScreenState extends State<AnnouncementsScreen> {
                   ),
                   const Text(
                     'Duyurular',
-                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: AppColors.navy, letterSpacing: -0.7, height: 1.1),
+                    style: AppText.screenTitle,
                   ),
                 ],
               ),
@@ -235,8 +236,8 @@ class _AnnouncementDetailScreenState extends State<_AnnouncementDetailScreen> {
     final isCritical = a['isCritical'] == true;
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppBar(
-        title: const Text('Duyuru'),
+      appBar: AppPageHeader(
+        title: 'Duyuru',
         actions: [
           IconButton(
             icon: _dismissing
