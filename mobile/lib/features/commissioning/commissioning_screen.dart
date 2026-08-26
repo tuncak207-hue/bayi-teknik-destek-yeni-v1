@@ -375,8 +375,8 @@ class _CommissioningFormScreenState extends State<CommissioningFormScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppBar(
-        title: Text(_isEditing ? 'Devreye Alma Raporu' : 'Yeni Devreye Alma Raporu'),
+      appBar: AppPageHeader(
+        title: _isEditing ? 'Devreye Alma Raporu' : 'Yeni Devreye Alma Raporu',
         actions: [if (_isEditing) pdfMenu],
       ),
       body: SafeArea(child: _buildBody(progress, hasSavedSignature)),

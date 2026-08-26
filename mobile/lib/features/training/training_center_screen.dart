@@ -119,7 +119,7 @@ class _TrainingCenterScreenState extends State<TrainingCenterScreen> {
                   ),
                   const Text(
                     'Eğitim Merkezi',
-                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: AppColors.navy, letterSpacing: -0.7, height: 1.1),
+                    style: AppText.screenTitle,
                   ),
                 ],
               ),

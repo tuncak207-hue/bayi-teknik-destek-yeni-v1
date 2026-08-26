@@ -439,8 +439,8 @@ class _BomBuilderScreenState extends State<BomBuilderScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppBar(
-        title: Text(_isEditing ? 'Malzeme Listesi' : 'Yeni Malzeme Listesi'),
+      appBar: AppPageHeader(
+        title: _isEditing ? 'Malzeme Listesi' : 'Yeni Malzeme Listesi',
         actions: [if (_items.isNotEmpty) pdfMenu],
       ),
       // ÖNEMLİ DÜZELTME: "Oluştur kısmı sayfanın en altında kalıyor,

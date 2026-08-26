@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/widgets/design_system.dart';
 
 /// Ürün etiketindeki barkodu/QR kodu okutup, doğrudan ilgili dokümanı
 /// bulmaya çalışır — sahada model adını elle aramaya gerek kalmaz.
@@ -104,8 +105,8 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Barkod/QR ile Doküman Bul'),
+      appBar: AppPageHeader(
+        title: 'Barkod/QR ile Doküman Bul',
         actions: [
           IconButton(icon: const Icon(Icons.flash_on), onPressed: () => _controller.toggleTorch()),
         ],
