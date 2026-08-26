@@ -49,6 +49,26 @@ void main() {
     semanticsHandle.dispose();
   });
 
+  testWidgets('Başlık rozeti başlığın yanında render ediliyor', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          appBar: AppPageHeader(
+            title: 'Favorilerim',
+            titleBadge: Semantics(
+              label: '3 favori',
+              child: Chip(label: Text('3')),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('Favorilerim'), findsOneWidget);
+    expect(find.text('3'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('Ortak input dark temada render ediliyor', (WidgetTester tester) async {
     final controller = TextEditingController();
     addTearDown(controller.dispose);
