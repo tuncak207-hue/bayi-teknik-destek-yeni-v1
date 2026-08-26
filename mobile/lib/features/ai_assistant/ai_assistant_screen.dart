@@ -82,7 +82,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
         }
       }
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message), backgroundColor: Colors.red.shade600),
+        SnackBar(content: Text(message), backgroundColor: AppColors.navy),
       );
     } finally {
       if (mounted) setState(() => _submitting = false);
@@ -197,7 +197,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
                 width: 44,
                 height: 44,
                 decoration: const BoxDecoration(
-                  gradient: LinearGradient(colors: [AppColors.navy, Color(0xFF1D3A56)]),
+                  gradient: LinearGradient(colors: [AppColors.navy, AppColors.navyLight]),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(Icons.smart_toy_outlined, color: Colors.white, size: 20),

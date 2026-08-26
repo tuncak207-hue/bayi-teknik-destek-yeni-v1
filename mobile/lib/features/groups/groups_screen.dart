@@ -54,7 +54,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
           TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Ayrıl', style: TextStyle(color: Colors.red)),
+            child: const Text('Ayrıl', style: TextStyle(color: AppColors.navy)),
           ),
         ],
       ),
@@ -175,7 +175,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
                                         if (value == 'leave') _leave(g['id'], g['name'] ?? '');
                                       },
                                       itemBuilder: (context) => [
-                                        const PopupMenuItem(value: 'leave', child: Text('Ayrıl', style: TextStyle(color: Colors.red))),
+                                        const PopupMenuItem(value: 'leave', child: Text('Ayrıl', style: TextStyle(color: AppColors.navy))),
                                       ],
                                     ),
                                 ],

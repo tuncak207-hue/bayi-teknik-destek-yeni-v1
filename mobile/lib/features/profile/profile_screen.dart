@@ -114,7 +114,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   if (error != null)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 12),
-                      child: Text(error!, style: const TextStyle(color: Colors.red, fontSize: 13)),
+                      child: Text(error!, style: const TextStyle(color: AppColors.navy, fontSize: 13)),
                     ),
                   _PremiumDialogField(controller: firstNameController, label: 'Ad', icon: Icons.person_outline),
                   const SizedBox(height: 10),
@@ -183,7 +183,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   if (error != null)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 12),
-                      child: Text(error!, style: const TextStyle(color: Colors.red, fontSize: 13)),
+                      child: Text(error!, style: const TextStyle(color: AppColors.navy, fontSize: 13)),
                     ),
                   TextField(
                     controller: currentController,
@@ -239,7 +239,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   if (error != null)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 12),
-                      child: Text(error!, style: const TextStyle(color: Colors.red, fontSize: 13)),
+                      child: Text(error!, style: const TextStyle(color: AppColors.navy, fontSize: 13)),
                     ),
                   TextField(
                     controller: passwordController,
@@ -252,7 +252,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             actions: [
               TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
               ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                style: ElevatedButton.styleFrom(backgroundColor: AppColors.navy),
                 onPressed: () async {
                   try {
                     await _dio.delete('/users/me', data: {'password': passwordController.text});
@@ -417,7 +417,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ShaderMask(
                         blendMode: BlendMode.srcIn,
                         shaderCallback: (bounds) => const LinearGradient(
-                          colors: [AppColors.navy, Color(0xFF1D3A56)],
+                          colors: [AppColors.navy, AppColors.navyLight],
                         ).createShader(bounds),
                         child: Text(
                           '${_profile!['firstName']} ${_profile!['lastName']}',
@@ -629,13 +629,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     _ProfileTile(
                       icon: Icons.logout,
                       title: 'Çıkış Yap',
-                      color: Colors.red,
+                      color: AppColors.navy,
                       onTap: _logout,
                     ),
                     _ProfileTile(
                       icon: Icons.delete_forever_outlined,
                       title: 'Hesabımı Sil',
-                      color: Colors.red,
+                      color: AppColors.navy,
                       onTap: _openDeleteAccountDialog,
                     ),
                   ],

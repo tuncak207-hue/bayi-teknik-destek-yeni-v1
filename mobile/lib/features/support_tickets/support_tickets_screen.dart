@@ -54,7 +54,7 @@ class _SupportTicketsScreenState extends State<SupportTicketsScreen> {
   Color _priorityColor(String priority) {
     switch (priority) {
       case 'EMERGENCY':
-        return Colors.red;
+        return AppColors.navy;
       case 'HIGH':
         return Colors.orange;
       default:
@@ -106,7 +106,19 @@ class _SupportTicketsScreenState extends State<SupportTicketsScreen> {
                   ),
                   const Text(
                     'Teknik Destek',
-                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: AppColors.navy, letterSpacing: -0.7, height: 1.1),
+                    style: AppText.screenTitle,
+                  ),
+                  const SizedBox(width: AppSpacing.xs),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppColors.primarySoft,
+                      borderRadius: BorderRadius.circular(AppRadius.pill),
+                    ),
+                    child: Text(
+                      '${_tickets.length}',
+                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.primary),
+                    ),
                   ),
                 ],
               ),
@@ -127,9 +139,9 @@ class _SupportTicketsScreenState extends State<SupportTicketsScreen> {
                       child: Container(
                         padding: const EdgeInsets.all(AppSpacing.md),
                         decoration: BoxDecoration(
-                          gradient: const LinearGradient(colors: [Color(0xFFB91C1C), Color(0xFFEF4444)]),
+                          gradient: const LinearGradient(colors: [AppColors.navy, AppColors.navyLight]),
                           borderRadius: BorderRadius.circular(20),
-                          boxShadow: [BoxShadow(color: Colors.red.withValues(alpha: 0.35), blurRadius: 18, offset: const Offset(0, 6))],
+                          boxShadow: [BoxShadow(color: AppColors.navy.withValues(alpha: 0.35), blurRadius: 18, offset: const Offset(0, 6))],
                         ),
                         child: Row(
                           children: [
@@ -158,9 +170,12 @@ class _SupportTicketsScreenState extends State<SupportTicketsScreen> {
                   ),
                   const SizedBox(height: AppSpacing.md),
                   if (_tickets.isEmpty)
-                    const Padding(
-                      padding: EdgeInsets.only(top: 40),
-                      child: AppEmptyState(icon: Icons.build_circle_outlined, title: 'Henüz bir teknik destek kaydınız yok'),
+                    Padding(
+                      padding: const EdgeInsets.only(top: AppSpacing.xl),
+                      child: StandardCard(
+                        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
+                        child: const AppEmptyState(icon: Icons.build_circle_outlined, title: 'Henüz bir teknik destek kaydınız yok'),
+                      ),
                     )
                   else
                     ..._tickets.map((t) {
@@ -173,7 +188,7 @@ class _SupportTicketsScreenState extends State<SupportTicketsScreen> {
                             MaterialPageRoute(builder: (_) => _TicketDetailScreen(ticketId: t['id'])),
                           ),
                           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
-                          border: isEmergency ? Border.all(color: Colors.red.withValues(alpha: 0.35), width: 1.5) : null,
+                          border: isEmergency ? Border.all(color: AppColors.navy.withValues(alpha: 0.35), width: 1.5) : null,
                           child: Row(
                             children: [
                               Container(
@@ -317,7 +332,7 @@ class _CreateTicketScreenState extends State<_CreateTicketScreen> {
             onPressed: () => Navigator.pop(context),
             child: const Text('İptal', style: TextStyle(color: CupertinoColors.systemGrey, fontSize: 16)),
           ),
-          middle: Text(widget.isEmergency ? 'Acil Teknik Destek' : 'Yeni Teknik Destek Kaydı', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+          middle: Text(widget.isEmergency ? 'Acil Teknik Destek' : 'Yeni Teknik Destek Kaydı', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: AppColors.navy)),
         ),
         child: SafeArea(child: _buildForm()),
       );
@@ -337,15 +352,15 @@ class _CreateTicketScreenState extends State<_CreateTicketScreen> {
             Container(
               margin: const EdgeInsets.only(bottom: AppSpacing.md),
               padding: const EdgeInsets.all(AppSpacing.sm),
-              decoration: BoxDecoration(color: Colors.red.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(14)),
+              decoration: BoxDecoration(color: AppColors.navy.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(14)),
               child: Row(
                 children: [
-                  const Icon(Icons.warning_amber_rounded, color: Colors.red, size: 18),
+                  const Icon(Icons.warning_amber_rounded, color: AppColors.navy, size: 18),
                   const SizedBox(width: 8),
                   const Expanded(
                     child: Text(
                       'Bu kayıt ACİL olarak işaretlenip mühendis ve yöneticilere anında bildirilecek.',
-                      style: TextStyle(fontSize: 12.5, color: Colors.red),
+                      style: TextStyle(fontSize: 12.5, color: AppColors.navy),
                     ),
                   ),
                 ],
@@ -389,7 +404,7 @@ class _CreateTicketScreenState extends State<_CreateTicketScreen> {
             child: ElevatedButton(
               onPressed: _submitting ? null : _submit,
               style: ElevatedButton.styleFrom(
-                backgroundColor: widget.isEmergency ? Colors.red : AppColors.brand,
+                backgroundColor: widget.isEmergency ? AppColors.navy : AppColors.brand,
                 padding: const EdgeInsets.symmetric(vertical: 14),
               ),
               child: _submitting
@@ -461,13 +476,13 @@ class _TicketDetailScreenState extends State<_TicketDetailScreen> {
               Container(
                 margin: const EdgeInsets.only(bottom: AppSpacing.sm),
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(color: Colors.red.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(20)),
+                decoration: BoxDecoration(color: AppColors.navy.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(20)),
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.warning_amber_rounded, size: 14, color: Colors.red),
+                    Icon(Icons.warning_amber_rounded, size: 14, color: AppColors.navy),
                     SizedBox(width: 6),
-                    Text('ACİL KAYIT', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Colors.red)),
+                    Text('ACİL KAYIT', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AppColors.navy)),
                   ],
                 ),
               ),
@@ -495,13 +510,13 @@ class _TicketDetailScreenState extends State<_TicketDetailScreen> {
                 padding: const EdgeInsets.all(AppSpacing.md),
                 margin: const EdgeInsets.only(bottom: AppSpacing.md),
                 decoration: BoxDecoration(
-                  color: slaStatus['resolutionBreached'] == true ? Colors.red.withValues(alpha: 0.06) : Colors.white,
+                  color: slaStatus['resolutionBreached'] == true ? AppColors.navy.withValues(alpha: 0.06) : Colors.white,
                   borderRadius: BorderRadius.circular(18),
                   boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 2))],
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.timer_outlined, color: slaStatus['resolutionBreached'] == true ? Colors.red : AppColors.brand),
+                    Icon(Icons.timer_outlined, color: slaStatus['resolutionBreached'] == true ? AppColors.navy : AppColors.brand),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Column(
@@ -513,7 +528,7 @@ class _TicketDetailScreenState extends State<_TicketDetailScreen> {
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w800,
-                              color: slaStatus['resolutionBreached'] == true ? Colors.red : AppColors.navy,
+                              color: slaStatus['resolutionBreached'] == true ? AppColors.navy : AppColors.navy,
                             ),
                           ),
                         ],
@@ -725,7 +740,7 @@ class _MeasurementSectionState extends State<_MeasurementSection> {
       await _load();
       if (res.data['isOutOfRange'] == true && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('⚠️ Girilen değer kabul edilebilir aralığın dışında!'), backgroundColor: Colors.red),
+          const SnackBar(content: Text('⚠️ Girilen değer kabul edilebilir aralığın dışında!'), backgroundColor: AppColors.navy),
         );
       }
     } finally {
@@ -788,12 +803,12 @@ class _MeasurementSectionState extends State<_MeasurementSection> {
                 padding: const EdgeInsets.symmetric(vertical: 4),
                 child: Row(
                   children: [
-                    Icon(outOfRange ? Icons.warning_amber_rounded : Icons.check_circle_outline, size: 16, color: outOfRange ? Colors.red : Colors.green),
+                    Icon(outOfRange ? Icons.warning_amber_rounded : Icons.check_circle_outline, size: 16, color: outOfRange ? AppColors.navy : Colors.green),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         '${m['measurementType']['name']}: ${m['value']} ${m['measurementType']['unit']}',
-                        style: TextStyle(fontSize: 12.5, color: outOfRange ? Colors.red : AppColors.navy, fontWeight: FontWeight.w600),
+                        style: TextStyle(fontSize: 12.5, color: outOfRange ? AppColors.navy : AppColors.navy, fontWeight: FontWeight.w600),
                       ),
                     ),
                   ],

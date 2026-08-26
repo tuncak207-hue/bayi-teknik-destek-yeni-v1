@@ -54,7 +54,7 @@ class _TeamScreenState extends State<TeamScreen> {
           TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Kaldır', style: TextStyle(color: Colors.red)),
+            child: const Text('Kaldır', style: TextStyle(color: AppColors.navy)),
           ),
         ],
       ),
@@ -118,7 +118,7 @@ class _TeamScreenState extends State<TeamScreen> {
                           width: 44,
                           height: 44,
                           decoration: BoxDecoration(
-                            gradient: const LinearGradient(colors: [AppColors.navy, Color(0xFF1D3A56)]),
+                            gradient: const LinearGradient(colors: [AppColors.navy, AppColors.navyLight]),
                             shape: BoxShape.circle,
                           ),
                           child: Center(
@@ -131,7 +131,7 @@ class _TeamScreenState extends State<TeamScreen> {
                         title: Text('${m['firstName']} ${m['lastName']}', style: const TextStyle(fontWeight: FontWeight.w800, color: AppColors.navy, letterSpacing: -0.1)),
                         subtitle: Text(m['email'] ?? '', style: TextStyle(color: Colors.grey.shade500, fontWeight: FontWeight.w500)),
                         trailing: IconButton(
-                          icon: const Icon(Icons.delete_outline, color: Colors.red),
+                          icon: const Icon(Icons.delete_outline, color: AppColors.navy),
                           onPressed: () => _remove(m['id']),
                         ),
                       ),

@@ -316,7 +316,7 @@ class _CommissioningFormScreenState extends State<CommissioningFormScreen> {
         content: const Text('Bu devreye alma raporunu kalıcı olarak silmek istediğinize emin misiniz?'),
         actions: [
           TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
-          TextButton(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('Sil', style: TextStyle(color: Colors.red))),
+          TextButton(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('Sil', style: TextStyle(color: AppColors.navy))),
         ],
       ),
     );
@@ -376,7 +376,7 @@ class _CommissioningFormScreenState extends State<CommissioningFormScreen> {
             itemBuilder: (context) => [
               const PopupMenuItem(value: 'view', child: Text('PDF Görüntüle')),
               const PopupMenuItem(value: 'share', child: Text('PDF Paylaş')),
-              const PopupMenuItem(value: 'delete', child: Text('Raporu Sil', style: TextStyle(color: Colors.red))),
+              const PopupMenuItem(value: 'delete', child: Text('Raporu Sil', style: TextStyle(color: AppColors.navy))),
             ],
             icon: const Icon(Icons.more_vert),
           );

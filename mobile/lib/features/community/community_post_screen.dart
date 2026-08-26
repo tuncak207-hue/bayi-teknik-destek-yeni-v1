@@ -69,7 +69,7 @@ class _CommunityPostScreenState extends State<CommunityPostScreen> {
           TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Sil', style: TextStyle(color: Colors.red)),
+            child: const Text('Sil', style: TextStyle(color: AppColors.navy)),
           ),
         ],
       ),

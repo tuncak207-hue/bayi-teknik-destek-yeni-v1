@@ -156,7 +156,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Tümünü Sil', style: TextStyle(color: Colors.red)),
+            child: const Text('Tümünü Sil', style: TextStyle(color: AppColors.navy)),
           ),
         ],
       ),
@@ -229,7 +229,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         direction: DismissDirection.endToStart,
                         onDismissed: (_) => _deleteNotification(n['id']),
                         background: Container(
-                          decoration: BoxDecoration(color: Colors.red.shade400, borderRadius: BorderRadius.circular(16)),
+                          decoration: BoxDecoration(color: AppColors.navy, borderRadius: BorderRadius.circular(16)),
                           alignment: Alignment.centerRight,
                           padding: const EdgeInsets.only(right: 20),
                           child: const Icon(Icons.delete_outline, color: Colors.white),

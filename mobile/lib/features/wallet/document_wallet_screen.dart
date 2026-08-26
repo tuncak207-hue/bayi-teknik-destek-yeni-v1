@@ -110,7 +110,7 @@ class _DocumentWalletScreenState extends State<DocumentWalletScreen> {
         if (serverMessage is String && serverMessage.isNotEmpty) message = serverMessage;
         if (e.response == null) message = 'Sunucuya ulaşılamadı. İnternet bağlantınızı kontrol edin.';
       }
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: Colors.red));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: AppColors.navy));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -134,7 +134,7 @@ class _DocumentWalletScreenState extends State<DocumentWalletScreen> {
         if (serverMessage is String && serverMessage.isNotEmpty) message = serverMessage;
         if (e.response == null) message = 'Sunucuya ulaşılamadı. İnternet bağlantınızı kontrol edin.';
       }
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: Colors.red));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: AppColors.navy));
     }
   }
 
@@ -192,7 +192,7 @@ class _DocumentWalletScreenState extends State<DocumentWalletScreen> {
         content: Text('"${doc['name']}" kalıcı olarak silinecek. Emin misiniz?'),
         actions: [
           TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
-          TextButton(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('Sil', style: TextStyle(color: Colors.red))),
+          TextButton(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('Sil', style: TextStyle(color: AppColors.navy))),
         ],
       ),
     );
@@ -213,7 +213,20 @@ class _DocumentWalletScreenState extends State<DocumentWalletScreen> {
   Widget build(BuildContext context) {
     final grouped = _grouped;
     return Scaffold(
-      appBar: const AppPageHeader(title: 'Evrak Çantası'),
+      appBar: AppPageHeader(
+        title: 'Evrak Çantası',
+        titleBadge: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            color: AppColors.primarySoft,
+            borderRadius: BorderRadius.circular(AppRadius.pill),
+          ),
+          child: Text(
+            '${_documents.length}',
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.primary),
+          ),
+        ),
+      ),
       backgroundColor: const Color(0xFFFFFFFF),
       floatingActionButton: StandardFab(label: 'Belge Ekle', onPressed: _addDocument),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -224,10 +237,24 @@ class _DocumentWalletScreenState extends State<DocumentWalletScreen> {
               child: _loading
                 ? const Center(child: CircularProgressIndicator())
                 : _documents.isEmpty
-                    ? AppEmptyState(
-                        icon: Icons.folder_open_outlined,
-                        title: 'Henüz bir belgeniz yok',
-                        description: 'İSG evrakları, sertifikalar, yetki belgeleriniz gibi evraklarınızı burada saklayabilirsiniz.',
+                    ? RefreshIndicator(
+                        onRefresh: _load,
+                        child: ListView(
+                          children: [
+                            const SizedBox(height: 72),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                              child: StandardCard(
+                                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
+                                child: const AppEmptyState(
+                                  icon: Icons.folder_open_outlined,
+                                  title: 'Henüz bir belgeniz yok',
+                                  description: 'İSG evrakları, sertifikalar, yetki belgeleriniz gibi evraklarınızı burada saklayabilirsiniz.',
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       )
                     : RefreshIndicator(
                         onRefresh: _load,
@@ -286,7 +313,7 @@ class _DocumentWalletScreenState extends State<DocumentWalletScreen> {
                                           const PopupMenuItem(value: 'view', child: Text('Görüntüle')),
                                           const PopupMenuItem(value: 'edit', child: Text('Adı/Türü Düzenle')),
                                           const PopupMenuItem(value: 'share', child: Text('Paylaş')),
-                                          const PopupMenuItem(value: 'delete', child: Text('Sil', style: TextStyle(color: Colors.red))),
+                                          const PopupMenuItem(value: 'delete', child: Text('Sil', style: TextStyle(color: AppColors.navy))),
                                         ],
                                       ),
                                 onTap: isBusy ? null : () => _viewDocument(doc),

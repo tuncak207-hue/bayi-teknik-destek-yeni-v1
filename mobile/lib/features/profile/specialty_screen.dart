@@ -9,6 +9,7 @@ import '../../core/auth/current_user.dart';
 import '../../core/events/notification_badge_bus.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/design_system.dart';
+import '../../core/widgets/app_components.dart';
 import '../../core/pdf/document_pdf_exporter.dart';
 
 const _kAvailableTags = ['Yangın Alarm', 'Kamera', 'Honeywell', 'Hanwha', 'Teknik Destek', 'Erişim Kontrol', 'Yangın Söndürme'];
@@ -135,7 +136,20 @@ class _SpecialtyScreenState extends State<SpecialtyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppPageHeader(title: 'Uzmanlık ve Sertifikalar'),
+      appBar: AppPageHeader(
+        title: 'Uzmanlık ve Sertifikalar',
+        titleBadge: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            color: AppColors.primarySoft,
+            borderRadius: BorderRadius.circular(AppRadius.pill),
+          ),
+          child: Text(
+            '${_certifications.length}',
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.primary),
+          ),
+        ),
+      ),
       backgroundColor: const Color(0xFFFFFFFF),
       // ÖNEMLİ DÜZELTME: "sayfanın altında kalıyor" — SafeArea hiç yoktu.
       body: SafeArea(
@@ -144,13 +158,6 @@ class _SpecialtyScreenState extends State<SpecialtyScreen> {
           : ListView(
               padding: const EdgeInsets.all(AppSpacing.md),
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                  child: Text(
-                    'Uzmanlık ve Sertifikalar',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: AppColors.navy, letterSpacing: -0.5, height: 1.1),
-                  ),
-                ),
                 const Text('Uzmanlık Alanları', style: TextStyle(fontWeight: FontWeight.w700, color: AppColors.navy)),
                 const SizedBox(height: 4),
                 Text(
@@ -201,8 +208,15 @@ class _SpecialtyScreenState extends State<SpecialtyScreen> {
                 ),
                 if (_certifications.isEmpty)
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
-                    child: Text('Henüz sertifika eklenmedi.', style: TextStyle(color: Colors.grey.shade500)),
+                    padding: const EdgeInsets.only(top: AppSpacing.md),
+                    child: StandardCard(
+                      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
+                      child: const AppEmptyState(
+                        icon: Icons.verified_outlined,
+                        title: 'Henüz sertifika eklenmedi',
+                        description: 'Yukarıdaki "Ekle" butonundan yeni bir sertifika ekleyebilirsiniz.',
+                      ),
+                    ),
                   )
                 else
                   ..._certifications.map((c) {
@@ -234,7 +248,7 @@ class _SpecialtyScreenState extends State<SpecialtyScreen> {
                               const PopupMenuItem(value: 'document', child: Text('Fotoğrafı Görüntüle')),
                             const PopupMenuItem(value: 'pdf-view', child: Text('PDF Görüntüle')),
                             const PopupMenuItem(value: 'pdf-share', child: Text('PDF Paylaş')),
-                            const PopupMenuItem(value: 'delete', child: Text('Sil', style: TextStyle(color: Colors.red))),
+                            const PopupMenuItem(value: 'delete', child: Text('Sil', style: TextStyle(color: AppColors.navy))),
                           ],
                         ),
                       ),
@@ -307,7 +321,7 @@ class _AddCertificationSheetState extends State<_AddCertificationSheet> {
   Future<void> _submit() async {
     if (_brandController.text.trim().isEmpty || _titleController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Lütfen marka ve unvan alanlarını doldurun.'), backgroundColor: Colors.red),
+        const SnackBar(content: Text('Lütfen marka ve unvan alanlarını doldurun.'), backgroundColor: AppColors.navy),
       );
       return;
     }
@@ -337,7 +351,7 @@ class _AddCertificationSheetState extends State<_AddCertificationSheet> {
         if (serverMessage is String && serverMessage.isNotEmpty) message = serverMessage;
         if (e.response == null) message = 'Sunucuya ulaşılamadı. İnternet bağlantınızı kontrol edin.';
       }
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: Colors.red));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: AppColors.navy));
     } finally {
       if (mounted) setState(() => _submitting = false);
     }

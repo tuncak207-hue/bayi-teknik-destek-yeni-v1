@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:dio/dio.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import '../../core/api/socket_service.dart';
+import '../../core/theme/app_theme.dart';
+import '../../core/widgets/design_system.dart';
 import 'data/ai_repository.dart';
 import 'domain/chat_message.dart';
 import 'presentation/message_bubble.dart';
@@ -115,7 +116,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
       if (!mounted) return;
       setState(() => _messages[index] = msg.copyWith(memoryIsVerified: false));
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Doğrulama başarısız oldu, tekrar deneyin.'), backgroundColor: Colors.red),
+        const SnackBar(content: Text('Doğrulama başarısız oldu, tekrar deneyin.'), backgroundColor: AppColors.navy),
       );
     }
   }
@@ -182,7 +183,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Yeni sohbet başlatılamadı, tekrar deneyin.'), backgroundColor: Colors.red),
+        const SnackBar(content: Text('Yeni sohbet başlatılamadı, tekrar deneyin.'), backgroundColor: AppColors.navy),
       );
     }
   }
@@ -197,7 +198,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Geçmiş yüklenemedi.'), backgroundColor: Colors.red),
+        const SnackBar(content: Text('Geçmiş yüklenemedi.'), backgroundColor: AppColors.navy),
       );
       return;
     }
@@ -328,7 +329,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
         }
       }
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message), backgroundColor: Colors.red.shade600),
+        SnackBar(content: Text(message), backgroundColor: AppColors.navy),
       );
     } finally {
       if (mounted) setState(() => _sending = false);
@@ -387,18 +388,17 @@ class _AiChatScreenState extends State<AiChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('AI Teknik Asistan'),
+      appBar: AppPageHeader(
+        title: 'AI Teknik Asistan',
+        titleSpacing: 0,
         // ÖNEMLİ DÜZELTME: Bu ekran, alt menüdeki "AI" sekmesinin kök
         // ekranına (AiAssistantScreen) otomatik yönlendirmeyle
         // (pushReplacement) açılıyor — bu, geri gidilecek bir sayfa
-        // bırakmadığı için geri oku hiç çıkmıyordu. Artık geri
-        // gidilebiliyorsa normal geri davranışı, gidilemiyorsa (bu
-        // ekran sekmenin kökündeyse) doğrudan Ana Sayfa'ya dönen açık
-        // bir buton gösteriliyor.
-        leading: Navigator.of(context).canPop()
-            ? IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => Navigator.of(context).pop())
-            : IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.go('/home')),
+        // bırakmadığı için geri oku hiç çıkmıyordu. AppPageHeader'ın
+        // varsayılan geri davranışı zaten bunu çözüyor: geri
+        // gidilebiliyorsa normal pop, gidilemiyorsa (bu ekran sekmenin
+        // kökündeyse) doğrudan Ana Sayfa'ya döner — burada elle
+        // tekrarlamaya gerek yok.
         actions: [
           // Kullanıcı isteği: eski sohbetlere geri dönebilmek için.
           IconButton(
@@ -475,7 +475,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
                     tooltip: 'Fotoğraf çek / galeriden seç',
                   ),
                   IconButton(
-                    icon: Icon(_listening ? Icons.mic : Icons.mic_none_outlined, color: _listening ? Colors.red : null),
+                    icon: Icon(_listening ? Icons.mic : Icons.mic_none_outlined, color: _listening ? AppColors.navy : null),
                     onPressed: _toggleListening,
                     tooltip: 'Sesli soru',
                   ),

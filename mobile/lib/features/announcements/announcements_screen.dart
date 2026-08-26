@@ -227,7 +227,7 @@ class _AnnouncementDetailScreenState extends State<_AnnouncementDetailScreen> {
           TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Kaldır', style: TextStyle(color: Colors.red)),
+            child: const Text('Kaldır', style: TextStyle(color: AppColors.navy)),
           ),
         ],
       ),

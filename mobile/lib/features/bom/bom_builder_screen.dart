@@ -72,7 +72,7 @@ class _BomListScreenState extends State<BomListScreen> {
           TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Sil', style: TextStyle(color: Colors.red)),
+            child: const Text('Sil', style: TextStyle(color: AppColors.navy)),
           ),
         ],
       ),
@@ -167,7 +167,7 @@ class _BomListScreenState extends State<BomListScreen> {
                               width: 44,
                               height: 44,
                               decoration: BoxDecoration(
-                                gradient: const LinearGradient(colors: [Color(0xFF6E1420), AppColors.brand]),
+                                gradient: const LinearGradient(colors: [AppColors.navy, AppColors.brand]),
                                 borderRadius: BorderRadius.circular(14),
                               ),
                               child: const Icon(Icons.receipt_long_outlined, color: Colors.white, size: 20),
@@ -311,7 +311,7 @@ class _BomBuilderScreenState extends State<BomBuilderScreen> {
     // önceden uyarılıyor hem de gerçek hata mesajı gösteriliyor.
     if (title.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Lütfen bir liste başlığı yazın.'), backgroundColor: Colors.red),
+        const SnackBar(content: Text('Lütfen bir liste başlığı yazın.'), backgroundColor: AppColors.navy),
       );
       return;
     }
@@ -346,7 +346,7 @@ class _BomBuilderScreenState extends State<BomBuilderScreen> {
         }
       }
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message), backgroundColor: Colors.red),
+        SnackBar(content: Text(message), backgroundColor: AppColors.navy),
       );
     } finally {
       if (mounted) setState(() => _saving = false);

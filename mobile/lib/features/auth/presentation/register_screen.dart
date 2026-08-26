@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:dio/dio.dart';
 import '../data/auth_providers.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/design_system.dart';
 import '../../../core/widgets/email_split_field.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
@@ -104,9 +105,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.surface,
-      appBar: AppBar(
+      appBar: const AppPageHeader(
         backgroundColor: Colors.white,
-        title: const Text('Bayi Kaydı'),
+        title: 'Bayi Kaydı',
       ),
       body: SafeArea(
         child: SingleChildScrollView(

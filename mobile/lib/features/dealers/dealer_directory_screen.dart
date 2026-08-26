@@ -60,7 +60,7 @@ class _DealerDirectoryScreenState extends State<DealerDirectoryScreen> {
           TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Engelle', style: TextStyle(color: Colors.red)),
+            child: const Text('Engelle', style: TextStyle(color: AppColors.navy)),
           ),
         ],
       ),

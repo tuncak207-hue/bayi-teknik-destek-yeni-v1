@@ -345,8 +345,8 @@ class _CreateVisitScreenState extends State<_CreateVisitScreen> {
                   Container(
                     padding: const EdgeInsets.all(AppSpacing.sm),
                     margin: const EdgeInsets.only(bottom: AppSpacing.sm),
-                    decoration: BoxDecoration(color: Colors.red.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(12)),
-                    child: Text(_error!, style: const TextStyle(color: Colors.red, fontSize: 13)),
+                    decoration: BoxDecoration(color: AppColors.navy.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(12)),
+                    child: Text(_error!, style: const TextStyle(color: AppColors.navy, fontSize: 13)),
                   ),
                 StandardCard(
                   child: Column(

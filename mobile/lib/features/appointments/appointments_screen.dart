@@ -48,7 +48,7 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
           TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('İptal Et', style: TextStyle(color: Colors.red)),
+            child: const Text('İptal Et', style: TextStyle(color: AppColors.navy)),
           ),
         ],
       ),
@@ -68,7 +68,7 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
           TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Sil', style: TextStyle(color: Colors.red)),
+            child: const Text('Sil', style: TextStyle(color: AppColors.navy)),
           ),
         ],
       ),
@@ -351,8 +351,8 @@ class _AppointmentCard extends StatelessWidget {
                 ],
                 TextButton.icon(
                   onPressed: onDelete,
-                  icon: const Icon(Icons.delete_outline, size: 15, color: Colors.red),
-                  label: const Text('Sil', style: TextStyle(color: Colors.red)),
+                  icon: const Icon(Icons.delete_outline, size: 15, color: AppColors.navy),
+                  label: const Text('Sil', style: TextStyle(color: AppColors.navy)),
                 ),
               ],
             ),
