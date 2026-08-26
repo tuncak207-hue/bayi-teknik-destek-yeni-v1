@@ -100,7 +100,7 @@ export function PillButton({
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`text-[12.5px] font-medium h-8 px-3 rounded-md transition-colors disabled:opacity-50 ${variants[variant]}`}
+      className={`text-[12.5px] font-medium h-8 px-3 rounded-md transition-all active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30 disabled:opacity-50 ${variants[variant]}`}
     >
       {children}
     </button>
