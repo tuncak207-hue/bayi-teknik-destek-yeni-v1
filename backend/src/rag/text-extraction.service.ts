@@ -74,12 +74,38 @@ export class TextExtractionService {
   }
 
   private async extractXlsx(buffer: Buffer): Promise<ExtractedPage[]> {
-    const XLSX = require('xlsx');
-    const workbook = XLSX.read(buffer, { type: 'buffer' });
-    return workbook.SheetNames.map((name: string, idx: number) => {
-      const sheet = workbook.Sheets[name];
-      const csv = XLSX.utils.sheet_to_csv(sheet);
-      return { page: idx + 1, text: `Sayfa: ${name}\n${csv}` };
+    const maxBytes = 10 * 1024 * 1024;
+    const maxRows = 10_000;
+    const maxColumns = 200;
+
+    if (buffer.length > maxBytes) {
+      throw new Error('Spreadsheet dosyası izin verilen 10 MB sınırını aşıyor.');
+    }
+
+    const ExcelJS = require('exceljs');
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.load(buffer);
+
+    return workbook.worksheets.map((worksheet: any, idx: number) => {
+      if (worksheet.rowCount > maxRows || worksheet.columnCount > maxColumns) {
+        throw new Error(
+          `Spreadsheet boyutu izin verilen sınırı aşıyor: maksimum ${maxRows} satır ve ${maxColumns} sütun.`,
+        );
+      }
+
+      const lines: string[] = [];
+      worksheet.eachRow({ includeEmpty: false }, (row: any) => {
+        const values = Array.from(
+          { length: Math.min(row.cellCount, maxColumns) },
+          (_, columnIndex) => {
+            const cell = row.getCell(columnIndex + 1);
+            return String(cell.text ?? '').replace(/[\\r\\n]+/g, ' ').trim();
+          },
+        );
+        lines.push(values.join(','));
+      });
+
+      return { page: idx + 1, text: `Sayfa: ${worksheet.name}\n${lines.join('\\n')}` };
     });
   }
 
