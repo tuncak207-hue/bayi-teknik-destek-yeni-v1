@@ -55,7 +55,7 @@ void main() {
         home: Scaffold(
           appBar: AppPageHeader(
             title: 'Favorilerim',
-            titleBadge: const Semantics(
+            titleBadge: Semantics(
               label: '3 favori',
               child: Chip(label: Text('3')),
             ),
