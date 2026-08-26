@@ -8,6 +8,7 @@ import '../../core/api/api_client.dart';
 import '../../core/api/socket_service.dart';
 import '../../core/auth/current_user.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/widgets/design_system.dart';
 import '../../core/events/messages_badge_bus.dart';
 
 class ChatThreadScreen extends StatefulWidget {
@@ -273,7 +274,7 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
           TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Sil', style: TextStyle(color: Colors.red)),
+            child: const Text('Sil', style: TextStyle(color: AppColors.navy)),
           ),
         ],
       ),
@@ -304,7 +305,7 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
           TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Sil', style: TextStyle(color: Colors.red)),
+            child: const Text('Sil', style: TextStyle(color: AppColors.navy)),
           ),
         ],
       ),
@@ -401,8 +402,8 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.delete_outline, color: Colors.red),
-                title: const Text('Sil', style: TextStyle(color: Colors.red)),
+                leading: const Icon(Icons.delete_outline, color: AppColors.navy),
+                title: const Text('Sil', style: TextStyle(color: AppColors.navy)),
                 onTap: () {
                   Navigator.pop(context);
                   _deleteMessage(message['id']);
@@ -410,8 +411,8 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
               ),
             ] else
               ListTile(
-                leading: const Icon(Icons.delete_outline, color: Colors.red),
-                title: const Text('Sil (sadece benden)', style: TextStyle(color: Colors.red)),
+                leading: const Icon(Icons.delete_outline, color: AppColors.navy),
+                title: const Text('Sil (sadece benden)', style: TextStyle(color: AppColors.navy)),
                 onTap: () {
                   Navigator.pop(context);
                   _hideMessageForMe(message['id']);
@@ -492,8 +493,8 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
+      appBar: AppPageHeader(
+        title: widget.title,
         actions: [
           ...widget.extraAppBarActions,
           IconButton(

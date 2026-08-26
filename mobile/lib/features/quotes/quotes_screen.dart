@@ -81,7 +81,7 @@ class _QuotesScreenState extends State<QuotesScreen> {
         content: Text('"${quote['title']}" silinecek. Emin misiniz?'),
         actions: [
           TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
-          TextButton(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('Sil', style: TextStyle(color: Colors.red))),
+          TextButton(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('Sil', style: TextStyle(color: AppColors.navy))),
         ],
       ),
     );
@@ -118,8 +118,18 @@ class _QuotesScreenState extends State<QuotesScreen> {
                     'Teklif Al',
                     style: AppText.screenTitle,
                   ),
-                  const SizedBox(width: 8),
-                  Text('${_quotes.length}', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.grey.shade400)),
+                  const SizedBox(width: AppSpacing.xs),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppColors.primarySoft,
+                      borderRadius: BorderRadius.circular(AppRadius.pill),
+                    ),
+                    child: Text(
+                      '${_quotes.length}',
+                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.primary),
+                    ),
+                  ),
                   const Spacer(),
                   IconButton(
                     icon: const Icon(Icons.picture_as_pdf_outlined),

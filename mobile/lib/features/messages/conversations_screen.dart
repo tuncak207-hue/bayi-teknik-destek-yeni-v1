@@ -114,7 +114,7 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
           TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Sil', style: TextStyle(color: Colors.red)),
+            child: const Text('Sil', style: TextStyle(color: AppColors.navy)),
           ),
         ],
       ),
@@ -171,23 +171,18 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
         children: [
           AppPageHeader(
             title: _showArchived ? 'Arşivlenmiş Sohbetler' : 'Mesajlar',
-            actions: [
-              Padding(
-                padding: const EdgeInsets.only(right: AppSpacing.xs),
-                child: Center(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: AppColors.primarySoft,
-                      borderRadius: BorderRadius.circular(AppRadius.pill),
-                    ),
-                    child: Text(
-                      '${_conversations.length}',
-                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.primary),
-                    ),
-                  ),
-                ),
+            titleBadge: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: AppColors.primarySoft,
+                borderRadius: BorderRadius.circular(AppRadius.pill),
               ),
+              child: Text(
+                '${_conversations.length}',
+                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.primary),
+              ),
+            ),
+            actions: [
               IconButton(
                 icon: Icon(_showArchived ? Icons.chat_bubble_outline : Icons.archive_outlined),
                 tooltip: _showArchived ? 'Sohbetlere Dön' : 'Arşivi Görüntüle',
@@ -321,7 +316,7 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                                   }
                                 },
                                 secondaryBackground: Container(
-                                  decoration: BoxDecoration(color: Colors.red.shade400, borderRadius: BorderRadius.circular(16)),
+                                  decoration: BoxDecoration(color: AppColors.navy, borderRadius: BorderRadius.circular(16)),
                                   alignment: Alignment.centerRight,
                                   padding: const EdgeInsets.only(right: 20),
                                   child: const Icon(Icons.delete_outline, color: Colors.white),

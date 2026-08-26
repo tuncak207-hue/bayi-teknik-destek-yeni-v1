@@ -6,6 +6,7 @@ import 'package:open_filex/open_filex.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/widgets/design_system.dart';
 import '../../core/storage/offline_documents_store.dart';
 import '../../core/auth/current_user.dart';
 
@@ -265,8 +266,8 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppBar(
-        title: Text(widget.page != null ? 'Doküman — Sayfa ${widget.page}' : 'Doküman'),
+      appBar: AppPageHeader(
+        title: widget.page != null ? 'Doküman — Sayfa ${widget.page}' : 'Doküman',
         actions: [
           if (!_loading && _error == null) ...[
             IconButton(

@@ -237,7 +237,7 @@ export class StatsService {
     startOfMonth.setDate(1);
     startOfMonth.setHours(0, 0, 0, 0);
 
-    const [questionsThisMonth, favoritesCount, conversations] = await Promise.all([
+    const [questionsThisMonth, favoritesCount, conversations, supportTicketsCount] = await Promise.all([
       this.prisma.message.count({
         where: {
           senderId: userId,
@@ -250,9 +250,12 @@ export class StatsService {
       this.prisma.conversation.count({
         where: { type: 'AI', participants: { some: { userId } } },
       }),
+      // Ana ekrandaki istatistik kartı artık "Toplam Sohbet" yerine bayinin
+      // kendi teknik destek talep sayısını gösteriyor.
+      this.prisma.supportTicket.count({ where: { dealerId: userId } }),
     ]);
 
-    return { questionsThisMonth, favoritesCount, totalAiConversations: conversations };
+    return { questionsThisMonth, favoritesCount, totalAiConversations: conversations, supportTicketsCount };
   }
 
   /**

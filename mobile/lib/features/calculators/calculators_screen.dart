@@ -139,12 +139,12 @@ class _ResultCard extends StatelessWidget {
     if (error != null) {
       return Container(
         padding: const EdgeInsets.all(AppSpacing.sm),
-        decoration: BoxDecoration(color: Colors.red.shade50, borderRadius: BorderRadius.circular(AppSpacing.radius)),
+        decoration: BoxDecoration(color: AppColors.navy.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(AppSpacing.radius)),
         child: Row(
           children: [
-            Icon(Icons.error_outline, color: Colors.red.shade400, size: 18),
+            Icon(Icons.error_outline, color: AppColors.navy, size: 18),
             const SizedBox(width: 8),
-            Expanded(child: Text(error!, style: const TextStyle(color: Colors.red))),
+            Expanded(child: Text(error!, style: const TextStyle(color: AppColors.navy))),
           ],
         ),
       );
@@ -201,7 +201,7 @@ class _ResultCard extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 10),
               decoration: BoxDecoration(
-                color: result![statusKey] == true ? Colors.green.withValues(alpha: 0.08) : Colors.red.withValues(alpha: 0.08),
+                color: result![statusKey] == true ? Colors.green.withValues(alpha: 0.08) : AppColors.navy.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -210,7 +210,7 @@ class _ResultCard extends StatelessWidget {
                   Icon(
                     result![statusKey] == true ? Icons.check_circle : Icons.warning_amber_rounded,
                     size: 16,
-                    color: result![statusKey] == true ? Colors.green.shade700 : Colors.red.shade700,
+                    color: result![statusKey] == true ? Colors.green.shade700 : AppColors.navy,
                   ),
                   const SizedBox(width: 6),
                   Text(
@@ -218,7 +218,7 @@ class _ResultCard extends StatelessWidget {
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 13,
-                      color: result![statusKey] == true ? Colors.green.shade700 : Colors.red.shade700,
+                      color: result![statusKey] == true ? Colors.green.shade700 : AppColors.navy,
                     ),
                   ),
                 ],

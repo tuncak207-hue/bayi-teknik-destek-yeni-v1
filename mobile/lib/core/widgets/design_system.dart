@@ -12,6 +12,13 @@ class AppPageHeader extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onBack;
   final Color? backgroundColor;
   final Color? foregroundColor;
+  /// Başlığın hemen yanına (ör. bir sayaç rozeti) yerleştirilecek isteğe
+  /// bağlı küçük bileşen — "rozet en sağda değil, başlığın yanında olmalı"
+  /// isteği için: actions sağ kenara yaslanır, bu ise başlıkla birlikte akar.
+  final Widget? titleBadge;
+  /// Başlığın geri okuna olan mesafesi — "yazı ortada duruyor, sola yakın
+  /// olmalı" gibi tekil isteklerde, bu ekrana özel daraltmak için.
+  final double? titleSpacing;
 
   const AppPageHeader({
     super.key,
@@ -20,6 +27,8 @@ class AppPageHeader extends StatelessWidget implements PreferredSizeWidget {
     this.onBack,
     this.backgroundColor,
     this.foregroundColor,
+    this.titleBadge,
+    this.titleSpacing,
   });
 
   @override
@@ -36,8 +45,19 @@ class AppPageHeader extends StatelessWidget implements PreferredSizeWidget {
       elevation: 0,
       scrolledUnderElevation: 1,
       toolbarHeight: 64,
-      title: Text(title, style: AppText.screenTitle.copyWith(color: foreground)),
+      title: titleBadge == null
+          ? Text(title, style: AppText.screenTitle.copyWith(color: foreground))
+          : Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Flexible(child: Text(title, style: AppText.screenTitle.copyWith(color: foreground), overflow: TextOverflow.ellipsis)),
+                const SizedBox(width: AppSpacing.xs),
+                titleBadge!,
+              ],
+            ),
       centerTitle: false,
+      titleSpacing: titleSpacing,
       automaticallyImplyLeading: false,
       leading: IconButton(
         tooltip: 'Geri',

@@ -61,24 +61,17 @@ class _OfflineDocumentsScreenState extends State<OfflineDocumentsScreen> {
     return Scaffold(
       appBar: AppPageHeader(
         title: 'İndirilenlerim',
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: AppSpacing.md),
-            child: Center(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: AppColors.primarySoft,
-                  borderRadius: BorderRadius.circular(AppRadius.pill),
-                ),
-                child: Text(
-                  '${_documents.length}',
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.primary),
-                ),
-              ),
-            ),
+        titleBadge: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            color: AppColors.primarySoft,
+            borderRadius: BorderRadius.circular(AppRadius.pill),
           ),
-        ],
+          child: Text(
+            '${_documents.length}',
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.primary),
+          ),
+        ),
       ),
       backgroundColor: const Color(0xFFFFFFFF),
       body: SafeArea(
@@ -130,7 +123,7 @@ class _OfflineDocumentsScreenState extends State<OfflineDocumentsScreen> {
                         title: Text(d['title'] ?? '', style: const TextStyle(fontWeight: FontWeight.w800, color: AppColors.navy, letterSpacing: -0.1)),
                         subtitle: Text('${d['brand']} / ${d['model']}', style: TextStyle(color: Colors.grey.shade500, fontWeight: FontWeight.w500)),
                         trailing: IconButton(
-                          icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
+                          icon: const Icon(Icons.delete_outline, color: AppColors.navy, size: 20),
                           onPressed: () => _remove(d['documentId']),
                           tooltip: 'İndirileni kaldır',
                         ),

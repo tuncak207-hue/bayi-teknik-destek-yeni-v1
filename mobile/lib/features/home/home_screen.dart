@@ -160,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
       // Her istatistik için, sunucudan gelen sayı daha önce görülenden
       // büyükse "yeni" rozetini yak.
       final badges = <String, bool>{};
-      for (final key in ['questionsThisMonth', 'favoritesCount', 'totalAiConversations']) {
+      for (final key in ['questionsThisMonth', 'favoritesCount', 'supportTicketsCount']) {
         final value = (data[key] ?? 0) as int;
         badges[key] = await _badgeTracker.hasNewValue(key, value);
       }
@@ -337,13 +337,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(width: AppSpacing.sm),
                       Expanded(
                         child: _StatCard(
-                          icon: Icons.forum_outlined,
-                          value: '${_stats!['totalAiConversations'] ?? 0}',
-                          label: 'Toplam Sohbet',
-                          showBadge: _hasNewBadge['totalAiConversations'] == true,
+                          icon: Icons.support_agent_outlined,
+                          value: '${_stats!['supportTicketsCount'] ?? 0}',
+                          label: 'Teknik Destek Talebi',
+                          showBadge: _hasNewBadge['supportTicketsCount'] == true,
                           onTap: () async {
-                            await _markStatSeen('totalAiConversations');
-                            if (mounted) context.push('/ai-quick');
+                            await _markStatSeen('supportTicketsCount');
+                            if (mounted) context.push('/support-tickets');
                           },
                         ),
                       ),
@@ -727,7 +727,7 @@ class _TodayForMeSectionState extends State<_TodayForMeSection> {
             children: [
               if (appointments.isNotEmpty) _summaryChip(Icons.event_outlined, '${appointments.length} bugünkü randevu', AppColors.navy),
               if (openTickets > 0) _summaryChip(Icons.build_outlined, '$openTickets açık teknik destek', AppColors.brand),
-              if (slaRisk > 0) _summaryChip(Icons.warning_amber_rounded, '$slaRisk kayıtta SLA riski', Colors.red),
+              if (slaRisk > 0) _summaryChip(Icons.warning_amber_rounded, '$slaRisk kayıtta SLA riski', AppColors.navy),
             ],
           ),
         ],
