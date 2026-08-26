@@ -139,9 +139,9 @@ class _SupportTicketsScreenState extends State<SupportTicketsScreen> {
                       child: Container(
                         padding: const EdgeInsets.all(AppSpacing.md),
                         decoration: BoxDecoration(
-                          gradient: const LinearGradient(colors: [AppColors.navy, AppColors.navyLight]),
+                          gradient: LinearGradient(colors: [AppColors.infoColor, AppColors.infoColor.withValues(alpha: 0.8)]),
                           borderRadius: BorderRadius.circular(20),
-                          boxShadow: [BoxShadow(color: AppColors.navy.withValues(alpha: 0.35), blurRadius: 18, offset: const Offset(0, 6))],
+                          boxShadow: [BoxShadow(color: AppColors.infoColor.withValues(alpha: 0.35), blurRadius: 18, offset: const Offset(0, 6))],
                         ),
                         child: Row(
                           children: [

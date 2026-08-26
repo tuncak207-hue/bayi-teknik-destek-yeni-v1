@@ -231,6 +231,10 @@ class _CommissioningFormScreenState extends State<CommissioningFormScreen> {
   late final _notesController = TextEditingController(text: widget.existingReport?['notes'] ?? '');
   late final _customerController = TextEditingController(text: widget.existingReport?['customerName'] ?? '');
   final _signatureKey = GlobalKey<SignaturePadState>();
+  // "Ekranda çizgi oluşuyor" düzeltmesi: parmak imza kutusundayken listeyi
+  // kaydırılamaz yapıp, kutunun üzerinden geçen kaydırma hareketlerinin
+  // yanlışlıkla imza olarak kaydedilmesini engelliyor.
+  bool _signing = false;
   List<Map<String, dynamic>> _items = [];
   bool _loadingTemplate = true;
   bool _submitting = false;
@@ -405,10 +409,24 @@ class _CommissioningFormScreenState extends State<CommissioningFormScreen> {
   }
 
   Widget _buildBody(double progress, bool hasSavedSignature) {
+    // ÖNEMLİ DÜZELTME: "Kaydet yazısı sayfanın altında kayboluyor" — buton,
+    // kaydırılabilir listenin son öğesiydi ve altında sadece standart bir
+    // kenar boşluğu vardı; klavye açıkken veya cihazın alt hareket
+    // çubuğu/güvenli alanı geniş olduğunda ekranın en altına yapışıp
+    // kırpılmış görünüyordu. Artık altta hem klavye yüksekliği hem de
+    // cihazın güvenli alanı + bolca ekstra pay hesaba katılıyor.
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    final safeBottom = MediaQuery.of(context).padding.bottom;
     return _loadingTemplate
           ? const Center(child: CircularProgressIndicator())
           : ListView(
-              padding: const EdgeInsets.all(AppSpacing.md),
+              physics: _signing ? const NeverScrollableScrollPhysics() : const AlwaysScrollableScrollPhysics(),
+              padding: EdgeInsets.fromLTRB(
+                AppSpacing.md,
+                AppSpacing.md,
+                AppSpacing.md,
+                AppSpacing.md + safeBottom + (bottomInset > 0 ? bottomInset : AppSpacing.xl),
+              ),
               children: [
                 PremiumFormSection(
                   title: 'Saha Bilgileri',
@@ -569,7 +587,13 @@ class _CommissioningFormScreenState extends State<CommissioningFormScreen> {
                             style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
                       ],
                       const SizedBox(height: AppSpacing.sm),
-                      SignaturePad(key: _signatureKey, onChanged: (_) {}),
+                      SignaturePad(
+                        key: _signatureKey,
+                        onChanged: (_) {},
+                        onDrawingChanged: (drawing) {
+                          if (_signing != drawing) setState(() => _signing = drawing);
+                        },
+                      ),
                       Align(
                         alignment: Alignment.centerRight,
                         child: TextButton.icon(

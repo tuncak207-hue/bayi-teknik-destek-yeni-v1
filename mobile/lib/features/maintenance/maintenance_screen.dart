@@ -347,6 +347,10 @@ class _CreateMaintenanceScreenState extends State<_CreateMaintenanceScreen> {
   final _notes = TextEditingController();
   final _signatureKey = GlobalKey<SignaturePadState>();
   bool _submitting = false;
+  // "Ekranda çizgi oluşuyor" düzeltmesi: parmak imza kutusundayken listeyi
+  // kaydırılamaz yapıp, kutunun üzerinden geçen kaydırma hareketlerinin
+  // yanlışlıkla imza olarak kaydedilmesini engelliyor.
+  bool _signing = false;
 
   Future<void> _submit() async {
     if (_siteName.text.trim().isEmpty || _notes.text.trim().isEmpty) {
@@ -404,8 +408,23 @@ class _CreateMaintenanceScreenState extends State<_CreateMaintenanceScreen> {
   }
 
   Widget _buildForm() {
+    // ÖNEMLİ DÜZELTME: "Kaydet yazısı sayfanın altında kayboluyor" —
+    // buton, kaydırılabilir listenin son öğesiydi ve altında sadece
+    // standart bir kenar boşluğu vardı. Klavye açıkken veya cihazın alt
+    // hareket çubuğu/güvenli alanı geniş olduğunda bu, butonun (veya
+    // yazısının) ekranın en altına yapışıp kırpılmış görünmesine yol
+    // açıyordu. Artık altta hem klavye yüksekliği hem de cihazın güvenli
+    // alanı + bolca ekstra pay hesaba katılıyor.
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    final safeBottom = MediaQuery.of(context).padding.bottom;
     return ListView(
-        padding: const EdgeInsets.all(AppSpacing.md),
+        physics: _signing ? const NeverScrollableScrollPhysics() : const AlwaysScrollableScrollPhysics(),
+        padding: EdgeInsets.fromLTRB(
+          AppSpacing.md,
+          AppSpacing.md,
+          AppSpacing.md,
+          AppSpacing.md + safeBottom + (bottomInset > 0 ? bottomInset : AppSpacing.xl),
+        ),
         children: [
           // Göz alıcı bir üst başlık kartı — Devreye Alma ile aynı tasarım dili.
           Container(
@@ -483,7 +502,13 @@ class _CreateMaintenanceScreenState extends State<_CreateMaintenanceScreen> {
                   ],
                 ),
                 const SizedBox(height: AppSpacing.sm),
-                SignaturePad(key: _signatureKey, onChanged: (_) {}),
+                SignaturePad(
+                  key: _signatureKey,
+                  onChanged: (_) {},
+                  onDrawingChanged: (drawing) {
+                    if (_signing != drawing) setState(() => _signing = drawing);
+                  },
+                ),
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton.icon(
