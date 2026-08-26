@@ -28,19 +28,20 @@ class AppPageHeader extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final foreground = foregroundColor ?? scheme.onSurface;
+    final foreground = foregroundColor ?? AppColors.navy;
     return AppBar(
-      backgroundColor: backgroundColor ?? scheme.surface,
+      backgroundColor: backgroundColor ?? AppColors.background,
       foregroundColor: foreground,
       surfaceTintColor: scheme.primary.withValues(alpha: 0.04),
       elevation: 0,
       scrolledUnderElevation: 1,
       toolbarHeight: 64,
-      title: Text(title, style: Theme.of(context).textTheme.titleLarge?.copyWith(color: foreground, fontWeight: FontWeight.w700)),
-      centerTitle: true,
+      title: Text(title, style: AppText.screenTitle.copyWith(color: foreground)),
+      centerTitle: false,
       automaticallyImplyLeading: false,
       leading: IconButton(
         tooltip: 'Geri',
+        color: foreground,
         icon: const Icon(Icons.arrow_back),
         onPressed: onBack ?? () {
           if (Navigator.of(context).canPop()) {
