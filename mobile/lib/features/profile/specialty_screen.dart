@@ -175,7 +175,23 @@ class _SpecialtyScreenState extends State<SpecialtyScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('Sertifikalar', style: TextStyle(fontWeight: FontWeight.w700, color: AppColors.navy)),
+                    Row(
+                      children: [
+                        const Text('Sertifikalar', style: TextStyle(fontWeight: FontWeight.w700, color: AppColors.navy)),
+                        const SizedBox(width: AppSpacing.xs),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: AppColors.primarySoft,
+                            borderRadius: BorderRadius.circular(AppRadius.pill),
+                          ),
+                          child: Text(
+                            '${_certifications.length}',
+                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.primary),
+                          ),
+                        ),
+                      ],
+                    ),
                     TextButton.icon(
                       onPressed: _openAddCertSheet,
                       icon: const Icon(Icons.add, size: 16),

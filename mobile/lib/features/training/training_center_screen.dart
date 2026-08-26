@@ -6,6 +6,7 @@ import 'package:video_player/video_player.dart';
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_components.dart';
+import '../../core/widgets/design_system.dart';
 import '../../core/events/notification_badge_bus.dart';
 
 /// Eğitim Merkezi — bayilerin video ve doküman (PDF) eğitim içeriklerini
@@ -121,6 +122,18 @@ class _TrainingCenterScreenState extends State<TrainingCenterScreen> {
                     'Eğitim Merkezi',
                     style: AppText.screenTitle,
                   ),
+                  const SizedBox(width: AppSpacing.xs),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppColors.primarySoft,
+                      borderRadius: BorderRadius.circular(AppRadius.pill),
+                    ),
+                    child: Text(
+                      '${_contents.length}',
+                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.primary),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -128,10 +141,24 @@ class _TrainingCenterScreenState extends State<TrainingCenterScreen> {
               child: _loading
                 ? const Center(child: CircularProgressIndicator())
                 : _contents.isEmpty
-                    ? AppEmptyState(
-                        icon: Icons.school_outlined,
-                        title: 'Henüz eğitim içeriği eklenmedi',
-                        description: 'Admin yeni video veya doküman ekleyince burada görünecek.',
+                    ? RefreshIndicator(
+                        onRefresh: _load,
+                        child: ListView(
+                          children: [
+                            const SizedBox(height: 72),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                              child: StandardCard(
+                                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
+                                child: const AppEmptyState(
+                                  icon: Icons.school_outlined,
+                                  title: 'Henüz eğitim içeriği eklenmedi',
+                                  description: 'Admin yeni video veya doküman ekleyince burada görünecek.',
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       )
                     : RefreshIndicator(
                         onRefresh: _load,

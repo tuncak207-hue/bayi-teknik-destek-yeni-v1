@@ -213,28 +213,13 @@ class _DocumentWalletScreenState extends State<DocumentWalletScreen> {
   Widget build(BuildContext context) {
     final grouped = _grouped;
     return Scaffold(
-      appBar: const AppPageHeader(title: 'Belge Kasası'),
+      appBar: const AppPageHeader(title: 'Evrak Çantası'),
       backgroundColor: const Color(0xFFFFFFFF),
       floatingActionButton: StandardFab(label: 'Belge Ekle', onPressed: _addDocument),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: SafeArea(
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.sm, AppSpacing.md, AppSpacing.md, AppSpacing.sm),
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back, color: AppColors.navy),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  const Text(
-                    'Evrak Çantası',
-                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: AppColors.navy, letterSpacing: -0.7, height: 1.1),
-                  ),
-                ],
-              ),
-            ),
             Expanded(
               child: _loading
                 ? const Center(child: CircularProgressIndicator())
