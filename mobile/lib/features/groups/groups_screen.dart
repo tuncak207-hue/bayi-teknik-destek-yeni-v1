@@ -158,7 +158,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
                                     width: 40,
                                     height: 40,
                                     decoration: BoxDecoration(
-                                      color: (isMember ? AppColors.brand : AppColors.navy).withValues(alpha: 0.08),
+                                      color: (isMember ? AppColors.brand : AppColors.infoColor).withValues(alpha: 0.08),
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: isOpening
@@ -166,7 +166,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
                                             padding: EdgeInsets.all(10),
                                             child: CircularProgressIndicator(strokeWidth: 2),
                                           )
-                                        : Icon(_iconFor(g['name'] ?? ''), color: isMember ? AppColors.brand : AppColors.navy, size: 19),
+                                        : Icon(_iconFor(g['name'] ?? ''), color: isMember ? AppColors.brand : AppColors.infoColor, size: 19),
                                   ),
                                   if (isMember)
                                     PopupMenuButton<String>(
@@ -200,7 +200,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
                                 Container(
                                   width: double.infinity,
                                   padding: const EdgeInsets.symmetric(vertical: 7),
-                                  decoration: BoxDecoration(color: AppColors.navy, borderRadius: BorderRadius.circular(9)),
+                                  decoration: BoxDecoration(color: AppColors.infoColor, borderRadius: BorderRadius.circular(9)),
                                   child: const Text('Katıl', textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w700)),
                                 )
                               else

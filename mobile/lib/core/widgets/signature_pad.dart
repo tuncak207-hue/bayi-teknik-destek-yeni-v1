@@ -7,8 +7,17 @@ import '../theme/app_theme.dart';
 /// aynı bileşeni kullanıyor (kod tekrarını önlemek ve tutarlı görünüm için).
 class SignaturePad extends StatefulWidget {
   final ValueChanged<List<Offset?>> onChanged;
+  /// Parmak imza alanına değdiğinde true, kalktığında false ile çağrılır.
+  /// "Ekranda çizgi oluşuyor" hatasının kök nedeni buydu: bu alan bir
+  /// kaydırılabilir ListView'ın içindeydi ve sayfayı kaydırmak için yapılan
+  /// her dokunuş, imza alanının üzerinden geçtiğinde YANLIŞLIKLA kısa bir
+  /// çizgi olarak kaydediliyordu. Üst ekran bu geri çağrıyı kullanarak,
+  /// parmak imza kutusunun içindeyken listenin kaymasını geçici olarak
+  /// kapatabilir — böylece kutunun üzerindeki her dokunuş SADECE imza
+  /// olarak yorumlanır, kayma ile karışmaz.
+  final ValueChanged<bool>? onDrawingChanged;
 
-  const SignaturePad({super.key, required this.onChanged});
+  const SignaturePad({super.key, required this.onChanged, this.onDrawingChanged});
 
   @override
   State<SignaturePad> createState() => SignaturePadState();
@@ -66,6 +75,7 @@ class SignaturePadState extends State<SignaturePad> {
           // — bu, üst kaydırma widget'ıyla YARIŞMIYOR, kesin çalışıyor.
           Listener(
             onPointerDown: (event) {
+              widget.onDrawingChanged?.call(true);
               final box = context.findRenderObject() as RenderBox?;
               final local = box?.globalToLocal(event.position);
               setState(() => _points = [..._points, local]);
@@ -80,6 +90,10 @@ class SignaturePadState extends State<SignaturePad> {
             onPointerUp: (_) {
               setState(() => _points = [..._points, null]);
               widget.onChanged(_points);
+              widget.onDrawingChanged?.call(false);
+            },
+            onPointerCancel: (_) {
+              widget.onDrawingChanged?.call(false);
             },
             child: CustomPaint(painter: _SignaturePainter(_points), size: Size.infinite),
           ),
