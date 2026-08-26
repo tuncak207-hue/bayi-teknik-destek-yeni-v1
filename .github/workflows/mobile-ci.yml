@@ -38,10 +38,21 @@ jobs:
         run: flutter analyze --no-fatal-infos
 
       - name: Test with coverage
-        run: flutter test --coverage
+        run: flutter test --coverage test/widget_test.dart
 
       - name: Verify Android debug build
         run: flutter build apk --debug
+
+      - name: Run production API integration smoke test
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        env:
+          API_BASE_URL: ${{ secrets.MOBILE_API_BASE_URL }}
+        run: |
+          set -euo pipefail
+          test -n "$API_BASE_URL" || { echo "MOBILE_API_BASE_URL secret is required for API integration test"; exit 1; }
+          case "$API_BASE_URL" in https://*) ;; *) echo "API endpoint must use HTTPS"; exit 1 ;; esac
+          flutter test test/api_integration_test.dart \
+            --dart-define=API_BASE_URL="$API_BASE_URL"
 
       - name: Validate production release contract
         if: ${{ github.event_name == 'workflow_dispatch' }}
