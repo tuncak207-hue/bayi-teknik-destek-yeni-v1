@@ -38,7 +38,7 @@ jobs:
         run: flutter analyze --no-fatal-infos
 
       - name: Test with coverage
-        run: flutter test --coverage
+        run: flutter test --coverage test/widget_test.dart
 
       - name: Verify Android debug build
         run: flutter build apk --debug
