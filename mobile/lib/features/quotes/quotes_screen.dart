@@ -108,7 +108,7 @@ class _QuotesScreenState extends State<QuotesScreen> {
             Padding(
               padding: const EdgeInsets.fromLTRB(AppSpacing.sm, AppSpacing.md, AppSpacing.md, AppSpacing.sm),
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   IconButton(
                     icon: const Icon(Icons.arrow_back, color: AppColors.navy),
@@ -116,13 +116,10 @@ class _QuotesScreenState extends State<QuotesScreen> {
                   ),
                   const Text(
                     'Teklif Al',
-                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: AppColors.navy, letterSpacing: -0.7, height: 1.1),
+                    style: AppText.screenTitle,
                   ),
                   const SizedBox(width: 8),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 4),
-                    child: Text('${_quotes.length}', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.grey.shade400)),
-                  ),
+                  Text('${_quotes.length}', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.grey.shade400)),
                   const Spacer(),
                   IconButton(
                     icon: const Icon(Icons.picture_as_pdf_outlined),
@@ -136,10 +133,24 @@ class _QuotesScreenState extends State<QuotesScreen> {
               child: _loading
                 ? const Center(child: CircularProgressIndicator())
                 : _quotes.isEmpty
-                    ? AppEmptyState(
-                        icon: Icons.request_quote_outlined,
-                        title: 'Henüz bir teklifiniz yok',
-                        description: 'Sağ alttaki butondan müşteriniz için yangın sistemi teklifi oluşturabilirsiniz.',
+                    ? RefreshIndicator(
+                        onRefresh: _load,
+                        child: ListView(
+                          children: [
+                            const SizedBox(height: 72),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                              child: StandardCard(
+                                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
+                                child: const AppEmptyState(
+                                  icon: Icons.request_quote_outlined,
+                                  title: 'Henüz bir teklifiniz yok',
+                                  description: 'Sağ alttaki butondan müşteriniz için yangın sistemi teklifi oluşturabilirsiniz.',
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       )
                     : RefreshIndicator(
                         onRefresh: _load,
@@ -159,7 +170,7 @@ class _QuotesScreenState extends State<QuotesScreen> {
                               width: 44,
                               height: 44,
                               decoration: BoxDecoration(
-                                gradient: const LinearGradient(colors: [AppColors.navy, Color(0xFF1D3A56)]),
+                                gradient: const LinearGradient(colors: [AppColors.navy, AppColors.navyLight]),
                                 borderRadius: BorderRadius.circular(14),
                               ),
                               child: const Icon(Icons.request_quote_outlined, color: Colors.white, size: 20),
@@ -716,8 +727,8 @@ class _QuoteDetailScreenState extends State<_QuoteDetailScreen> {
     final items = (q['items'] as List);
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppBar(
-        title: const Text('Teklif Detayı'),
+      appBar: AppPageHeader(
+        title: 'Teklif Detayı',
         actions: [
           if (_exporting)
             const Padding(padding: EdgeInsets.all(16), child: SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2)))

@@ -156,7 +156,23 @@ class _SearchScreenState extends State<SearchScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text('SON ARAMALAR', style: AppText.eyebrow),
+                              Row(
+                                children: [
+                                  const Text('SON ARAMALAR', style: AppText.eyebrow),
+                                  const SizedBox(width: AppSpacing.xs),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.primarySoft,
+                                      borderRadius: BorderRadius.circular(AppRadius.pill),
+                                    ),
+                                    child: Text(
+                                      '${_recentSearches.length}',
+                                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.primary),
+                                    ),
+                                  ),
+                                ],
+                              ),
                               TextButton(onPressed: _clearRecentSearches, child: const Text('Temizle', style: TextStyle(fontSize: 12.5))),
                             ],
                           ),
@@ -217,13 +233,17 @@ class _SearchScreenState extends State<SearchScreen> {
                       if (documents.isEmpty && dealers.isEmpty && posts.isEmpty)
                         Padding(
                           padding: const EdgeInsets.only(top: AppSpacing.xl),
-                          child: Center(
-                            child: Column(
-                              children: [
-                                Icon(Icons.search_off, size: 44, color: Colors.grey.shade300),
-                                const SizedBox(height: 10),
-                                Text('Sonuç bulunamadı.', style: TextStyle(color: Colors.grey.shade500, fontSize: 13)),
-                              ],
+                          child: StandardCard(
+                            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
+                            child: Center(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.search_off, size: 44, color: Colors.grey.shade300),
+                                  const SizedBox(height: 10),
+                                  Text('Sonuç bulunamadı.', style: TextStyle(color: Colors.grey.shade500, fontSize: 13)),
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -347,27 +367,35 @@ class _EmptyHint extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.xl),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 72,
-              height: 72,
-              decoration: BoxDecoration(color: AppColors.navy.withValues(alpha: 0.05), shape: BoxShape.circle),
-              child: Icon(Icons.search, size: 32, color: Colors.grey.shade400),
+    return ListView(
+      children: [
+        const SizedBox(height: 72),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+          child: StandardCard(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 72,
+                    height: 72,
+                    decoration: BoxDecoration(color: AppColors.navy.withValues(alpha: 0.05), shape: BoxShape.circle),
+                    child: Icon(Icons.search, size: 32, color: Colors.grey.shade400),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  Text(
+                    'Doküman, marka/model veya bayi adı yazarak arama yapın.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: AppSpacing.md),
-            Text(
-              'Doküman, marka/model veya bayi adı yazarak arama yapın.',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
-            ),
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
 }

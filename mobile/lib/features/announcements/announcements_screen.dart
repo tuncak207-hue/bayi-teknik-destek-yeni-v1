@@ -69,6 +69,18 @@ class _AnnouncementsScreenState extends State<AnnouncementsScreen> {
                     'Duyurular',
                     style: AppText.screenTitle,
                   ),
+                  const SizedBox(width: AppSpacing.xs),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppColors.primarySoft,
+                      borderRadius: BorderRadius.circular(AppRadius.pill),
+                    ),
+                    child: Text(
+                      '${_announcements.length}',
+                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.primary),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -80,8 +92,14 @@ class _AnnouncementsScreenState extends State<AnnouncementsScreen> {
                         onRefresh: _load,
                         child: ListView(
                           children: [
-                            const SizedBox(height: 60),
-                            const AppEmptyState(icon: Icons.campaign_outlined, title: 'Henüz bir duyuru yok'),
+                            const SizedBox(height: 72),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                              child: StandardCard(
+                                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
+                                child: const AppEmptyState(icon: Icons.campaign_outlined, title: 'Henüz bir duyuru yok'),
+                              ),
+                            ),
                           ],
                         ),
                       )

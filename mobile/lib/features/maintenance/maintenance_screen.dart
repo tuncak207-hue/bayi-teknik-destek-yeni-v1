@@ -81,7 +81,7 @@ class _MaintenanceScreenState extends State<MaintenanceScreen> {
             Padding(
               padding: const EdgeInsets.fromLTRB(AppSpacing.sm, AppSpacing.md, AppSpacing.md, AppSpacing.sm),
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   IconButton(
                     icon: const Icon(Icons.arrow_back, color: AppColors.navy),
@@ -89,12 +89,19 @@ class _MaintenanceScreenState extends State<MaintenanceScreen> {
                   ),
                   const Text(
                     'Bakım Geçmişi',
-                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: AppColors.navy, letterSpacing: -0.7, height: 1.1),
+                    style: AppText.screenTitle,
                   ),
-                  const SizedBox(width: 8),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 4),
-                    child: Text('${_records.length}', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.grey.shade400)),
+                  const SizedBox(width: AppSpacing.xs),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppColors.primarySoft,
+                      borderRadius: BorderRadius.circular(AppRadius.pill),
+                    ),
+                    child: Text(
+                      '${_records.length}',
+                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.primary),
+                    ),
                   ),
                 ],
               ),
@@ -103,10 +110,24 @@ class _MaintenanceScreenState extends State<MaintenanceScreen> {
               child: _loading
                 ? const Center(child: CircularProgressIndicator())
                 : _records.isEmpty
-                    ? AppEmptyState(
-                        icon: Icons.build_outlined,
-                        title: 'Henüz bir bakım kaydınız yok',
-                        description: 'Sahada tamamladığınız bakımları burada dijital olarak kaydedebilirsiniz.',
+                    ? RefreshIndicator(
+                        onRefresh: _load,
+                        child: ListView(
+                          children: [
+                            const SizedBox(height: 72),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                              child: StandardCard(
+                                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
+                                child: const AppEmptyState(
+                                  icon: Icons.build_outlined,
+                                  title: 'Henüz bir bakım kaydınız yok',
+                                  description: 'Sahada tamamladığınız bakımları burada dijital olarak kaydedebilirsiniz.',
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       )
                     : RefreshIndicator(
                         onRefresh: _load,
@@ -240,8 +261,8 @@ class _MaintenanceDetailScreenState extends State<_MaintenanceDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppBar(
-        title: const Text('Bakım Kaydı'),
+      appBar: AppPageHeader(
+        title: 'Bakım Kaydı',
         actions: [
           if (_exporting)
             const Padding(

@@ -59,32 +59,57 @@ class _OfflineDocumentsScreenState extends State<OfflineDocumentsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppPageHeader(title: 'Çevrimdışı Belgeler'),
+      appBar: AppPageHeader(
+        title: 'İndirilenlerim',
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: AppSpacing.md),
+            child: Center(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppColors.primarySoft,
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
+                ),
+                child: Text(
+                  '${_documents.length}',
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.primary),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
       backgroundColor: const Color(0xFFFFFFFF),
       body: SafeArea(
         child: _loading
           ? const Center(child: CircularProgressIndicator())
           : _documents.isEmpty
-              ? AppEmptyState(
-                  icon: Icons.download_outlined,
-                  title: 'Henüz indirilmiş bir doküman yok',
-                  description: 'Bir dokümanı açıp "Çevrimdışı İndir" ile buraya ekleyebilirsiniz.',
+              ? RefreshIndicator(
+                  onRefresh: _load,
+                  child: ListView(
+                    children: [
+                      const SizedBox(height: 72),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                        child: StandardCard(
+                          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
+                          child: const AppEmptyState(
+                            icon: Icons.download_outlined,
+                            title: 'Henüz indirilmiş bir doküman yok',
+                            description: 'Bir dokümanı açıp "Çevrimdışı İndir" ile buraya ekleyebilirsiniz.',
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 )
               : ListView.separated(
                   padding: const EdgeInsets.all(AppSpacing.md),
-                  itemCount: _documents.length + 1,
+                  itemCount: _documents.length,
                   separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.xs),
                   itemBuilder: (context, index) {
-                    if (index == 0) {
-                      return const Padding(
-                        padding: EdgeInsets.only(bottom: AppSpacing.sm, left: 2),
-                        child: Text(
-                          'İndirilenlerim',
-                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: AppColors.navy, letterSpacing: -0.6, height: 1.1),
-                        ),
-                      );
-                    }
-                    final d = _documents[index - 1];
+                    final d = _documents[index];
                     return Container(
                       decoration: BoxDecoration(
                         color: Colors.white,

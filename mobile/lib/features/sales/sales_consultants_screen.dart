@@ -59,18 +59,11 @@ class _SalesConsultantsScreenState extends State<SalesConsultantsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppPageHeader(title: 'Satış Danışmanları'),
+      appBar: const AppPageHeader(title: 'Satış Danışmanına Sor'),
       backgroundColor: const Color(0xFFFFFFFF),
       body: SafeArea(
         child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, 0),
-            child: Text(
-              'Satış Danışmanına Sor',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: AppColors.navy, letterSpacing: -0.6, height: 1.1),
-            ),
-          ),
           Expanded(
             child: _loading
                 ? const Center(child: CircularProgressIndicator())
@@ -89,7 +82,7 @@ class _SalesConsultantsScreenState extends State<SalesConsultantsScreen> {
                               padding: const EdgeInsets.all(AppSpacing.md),
                               decoration: BoxDecoration(
                                 gradient: const LinearGradient(
-                                  colors: [AppColors.navy, Color(0xFF1D3A56)],
+                                  colors: [AppColors.navy, AppColors.navyLight],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),

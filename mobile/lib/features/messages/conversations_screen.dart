@@ -172,6 +172,22 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
           AppPageHeader(
             title: _showArchived ? 'Arşivlenmiş Sohbetler' : 'Mesajlar',
             actions: [
+              Padding(
+                padding: const EdgeInsets.only(right: AppSpacing.xs),
+                child: Center(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppColors.primarySoft,
+                      borderRadius: BorderRadius.circular(AppRadius.pill),
+                    ),
+                    child: Text(
+                      '${_conversations.length}',
+                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.primary),
+                    ),
+                  ),
+                ),
+              ),
               IconButton(
                 icon: Icon(_showArchived ? Icons.chat_bubble_outline : Icons.archive_outlined),
                 tooltip: _showArchived ? 'Sohbetlere Dön' : 'Arşivi Görüntüle',
@@ -262,12 +278,18 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                           child: ListView(
                             children: [
                               const SizedBox(height: 60),
-                              AppEmptyState(
-                                icon: _showArchived ? Icons.archive_outlined : Icons.chat_bubble_outline,
-                                title: _showArchived ? 'Arşivlenmiş sohbet yok' : 'Henüz mesajınız yok',
-                                description: _showArchived
-                                    ? 'Bir sohbeti sağa kaydırarak arşive ekleyebilirsiniz.'
-                                    : 'Yukarıdaki arama kutusuna bir bayi adı yazarak mesaj başlatabilirsiniz.',
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                                child: StandardCard(
+                                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
+                                  child: AppEmptyState(
+                                    icon: _showArchived ? Icons.archive_outlined : Icons.chat_bubble_outline,
+                                    title: _showArchived ? 'Arşivlenmiş sohbet yok' : 'Henüz mesajınız yok',
+                                    description: _showArchived
+                                        ? 'Bir sohbeti sağa kaydırarak arşive ekleyebilirsiniz.'
+                                        : 'Yukarıdaki arama kutusuna bir bayi adı yazarak mesaj başlatabilirsiniz.',
+                                  ),
+                                ),
                               ),
                             ],
                           ),

@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_components.dart';
+import '../../core/widgets/design_system.dart';
 import '../../core/widgets/section_header.dart';
 
 class FavoritesScreen extends StatefulWidget {
@@ -92,10 +93,24 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
               child: _loading
                 ? const Center(child: CircularProgressIndicator())
                 : _favorites.isEmpty
-                    ? AppEmptyState(
-                        icon: Icons.bookmark_border,
-                        title: 'Henüz favori eklemediniz',
-                        description: 'AI cevaplarında bulunan kaydet simgesine dokunarak buraya ekleyebilirsiniz.',
+                    ? RefreshIndicator(
+                        onRefresh: _load,
+                        child: ListView(
+                          children: [
+                            const SizedBox(height: 72),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                              child: StandardCard(
+                                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
+                                child: const AppEmptyState(
+                                  icon: Icons.bookmark_border,
+                                  title: 'Henüz favori eklemediniz',
+                                  description: 'AI cevaplarında bulunan kaydet simgesine dokunarak buraya ekleyebilirsiniz.',
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       )
                     : RefreshIndicator(
                         onRefresh: _load,

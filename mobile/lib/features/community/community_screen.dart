@@ -97,7 +97,27 @@ class _CommunityScreenState extends State<CommunityScreen> {
       body: SafeArea(
         child: Column(
         children: [
-          const AppPageHeader(title: 'Bayilere Sor'),
+          AppPageHeader(
+            title: 'Bayilere Sor',
+            actions: [
+              Padding(
+                padding: const EdgeInsets.only(right: AppSpacing.md),
+                child: Center(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppColors.primarySoft,
+                      borderRadius: BorderRadius.circular(AppRadius.pill),
+                    ),
+                    child: Text(
+                      '${_posts.length}',
+                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.primary),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
           Padding(
             padding: const EdgeInsets.only(left: AppSpacing.md, right: AppSpacing.md, top: AppSpacing.sm),
             child: SingleChildScrollView(
@@ -128,10 +148,24 @@ class _CommunityScreenState extends State<CommunityScreen> {
             child: _loading
                 ? const Center(child: CircularProgressIndicator())
                 : _posts.isEmpty
-                    ? AppEmptyState(
-                        icon: Icons.forum_outlined,
-                        title: 'Henüz bir paylaşım yok',
-                        description: 'Sağ alttaki butondan diğer bayilere soru sorabilirsiniz.',
+                    ? RefreshIndicator(
+                        onRefresh: _load,
+                        child: ListView(
+                          children: [
+                            const SizedBox(height: 72),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                              child: StandardCard(
+                                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
+                                child: const AppEmptyState(
+                                  icon: Icons.forum_outlined,
+                                  title: 'Henüz bir paylaşım yok',
+                                  description: 'Sağ alttaki butondan diğer bayilere soru sorabilirsiniz.',
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       )
                     : RefreshIndicator(
                         onRefresh: _load,
@@ -373,11 +407,9 @@ class _CreatePostSheetState extends State<_CreatePostSheet> {
     final canSubmit = _titleController.text.trim().isNotEmpty && _bodyController.text.trim().isNotEmpty && !_submitting;
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
+      appBar: AppPageHeader(
         backgroundColor: Colors.white,
-        elevation: 0,
-        surfaceTintColor: Colors.white,
-        title: Text(_isEditing ? 'Gönderiyi Düzenle' : 'Soru Paylaş', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 17, color: Colors.black)),
+        title: _isEditing ? 'Gönderiyi Düzenle' : 'Soru Paylaş',
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 8),
