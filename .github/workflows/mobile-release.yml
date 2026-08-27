@@ -76,6 +76,8 @@ jobs:
           SOCKET_URL: ${{ secrets.MOBILE_SOCKET_URL }}
         run: |
           set -euo pipefail
+          API_BASE_URL=$(printf '%s' "$API_BASE_URL" | tr -d '[:space:]')
+          SOCKET_URL=$(printf '%s' "$SOCKET_URL" | tr -d '[:space:]')
           test -n "$API_BASE_URL" || { echo "Missing MOBILE_API_BASE_URL"; exit 1; }
           test -n "$SOCKET_URL" || { echo "Missing MOBILE_SOCKET_URL"; exit 1; }
           case "$API_BASE_URL" in https://*) ;; *) echo "MOBILE_API_BASE_URL must use HTTPS"; exit 1 ;; esac
@@ -86,6 +88,7 @@ jobs:
           API_BASE_URL: ${{ secrets.MOBILE_API_BASE_URL }}
         run: |
           set -euo pipefail
+          API_BASE_URL=$(printf '%s' "$API_BASE_URL" | tr -d '[:space:]')
           response=$(curl --fail --silent --show-error --retry 3 --retry-delay 5 "$API_BASE_URL/health")
           echo "$response" | grep -q '"status":"ok"'
 
