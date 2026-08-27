@@ -36,13 +36,15 @@ export default function GroupsPage() {
   }
 
   return (
-    <div>
-      <form onSubmit={createGroup} className="flex gap-3 mb-6">
+    <div className="admin-page">
+      <div className="mb-7"><p className="admin-eyebrow">İLETİŞİM / TOPLULUK</p><h2 className="admin-page-title">Gruplar</h2><p className="admin-page-subtitle">Bayi iletişim gruplarını oluşturun ve üyelik yapılarını yönetin.</p></div>
+      <form onSubmit={createGroup} className="flex flex-col sm:flex-row gap-3 mb-6">
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Yeni grup adı (örn. Yangın Alarm)"
-          className="flex-1 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-navy/10 focus:border-navy transition"
+          aria-label="Yeni grup adı"
+          className="flex-1 h-11 border border-slate-200 bg-white rounded-xl px-3.5 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition"
         />
         <PillButton type="submit" variant="primary">Grup Oluştur</PillButton>
       </form>
@@ -56,7 +58,7 @@ export default function GroupsPage() {
               setSelected(g);
               setEditing(false);
             }}
-            className="text-left bg-white rounded-lg border border-gray-100 shadow-[0_1px_2px_rgba(15,23,42,0.04)] shadow-gray-100/50 p-5 hover:shadow-md hover:shadow-gray-200/60 hover:-translate-y-0.5 transition-all"
+            className="text-left bg-white rounded-2xl border border-slate-200/80 shadow-[0_10px_30px_rgba(15,23,42,0.035)] p-5 hover:border-blue-200 hover:shadow-[0_14px_30px_rgba(30,64,175,0.10)] hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30 transition-all"
           >
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white mb-3 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">👥</div>
             <p className="text-sm font-bold text-navy truncate">{g.name}</p>
@@ -67,8 +69,8 @@ export default function GroupsPage() {
       {groups?.length === 0 && <p className="text-center text-gray-400 py-16">Henüz grup oluşturulmadı.</p>}
 
       {selected && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4" onClick={() => setSelected(null)}>
-          <div className="bg-white rounded-lg w-full max-w-sm overflow-hidden" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-slate-950/45 backdrop-blur-[2px] flex items-center justify-center z-50 p-4" onClick={() => setSelected(null)}>
+          <div className="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <div className="h-1.5 bg-brand" />
             <div className="p-6">
               {editing ? (
