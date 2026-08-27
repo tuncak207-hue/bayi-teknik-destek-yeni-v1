@@ -96,7 +96,11 @@ jobs:
         env:
           API_BASE_URL: ${{ secrets.MOBILE_API_BASE_URL }}
           SOCKET_URL: ${{ secrets.MOBILE_SOCKET_URL }}
-        run: flutter build appbundle --release --dart-define=API_BASE_URL="$API_BASE_URL" --dart-define=SOCKET_URL="$SOCKET_URL"
+        run: |
+          set -euo pipefail
+          API_BASE_URL=$(printf '%s' "$API_BASE_URL" | tr -d '[:space:]')
+          SOCKET_URL=$(printf '%s' "$SOCKET_URL" | tr -d '[:space:]')
+          flutter build appbundle --release "--dart-define=API_BASE_URL=$API_BASE_URL" "--dart-define=SOCKET_URL=$SOCKET_URL"
 
       - name: Upload signed App Bundle
         uses: actions/upload-artifact@v4
