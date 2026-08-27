@@ -1,0 +1,85 @@
+name: Mobile Production Release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mobile-production-release
+  cancel-in-progress: false
+
+env:
+  FLUTTER_CHANNEL: stable
+
+jobs:
+  release:
+    name: Build signed Android release
+    runs-on: ubuntu-latest
+    environment: production
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Materialize production-only files
+        env:
+          GOOGLE_SERVICES_JSON_B64: ${{ secrets.FIREBASE_GOOGLE_SERVICES_JSON_B64 }}
+          KEY_PROPERTIES_B64: ${{ secrets.ANDROID_KEY_PROPERTIES_B64 }}
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
+        run: |
+          set -euo pipefail
+          test -n "$GOOGLE_SERVICES_JSON_B64" || { echo "Missing FIREBASE_GOOGLE_SERVICES_JSON_B64"; exit 1; }
+          test -n "$KEY_PROPERTIES_B64" || { echo "Missing ANDROID_KEY_PROPERTIES_B64"; exit 1; }
+          test -n "$KEYSTORE_B64" || { echo "Missing ANDROID_KEYSTORE_B64"; exit 1; }
+          printf '%s' "$GOOGLE_SERVICES_JSON_B64" | base64 --decode > android/app/google-services.json
+          printf '%s' "$KEY_PROPERTIES_B64" | base64 --decode > android/key.properties
+          KEYSTORE_PATH=$(awk -F= '$1 == "storeFile" {print substr($0, index($0, "=") + 1)}' android/key.properties)
+          test -n "$KEYSTORE_PATH" || { echo "key.properties must define storeFile"; exit 1; }
+          mkdir -p "$(dirname "$KEYSTORE_PATH")"
+          printf '%s' "$KEYSTORE_B64" | base64 --decode > "$KEYSTORE_PATH"
+          test -s android/app/google-services.json
+          test -s android/key.properties
+          test -s "$KEYSTORE_PATH"
+
+      - name: Validate production endpoints
+        env:
+          API_BASE_URL: ${{ secrets.MOBILE_API_BASE_URL }}
+          SOCKET_URL: ${{ secrets.MOBILE_SOCKET_URL }}
+        run: |
+          set -euo pipefail
+          test -n "$API_BASE_URL" || { echo "Missing MOBILE_API_BASE_URL"; exit 1; }
+          test -n "$SOCKET_URL" || { echo "Missing MOBILE_SOCKET_URL"; exit 1; }
+          case "$API_BASE_URL" in https://*) ;; *) echo "MOBILE_API_BASE_URL must use HTTPS"; exit 1 ;; esac
+          case "$SOCKET_URL" in https://*) ;; *) echo "MOBILE_SOCKET_URL must use HTTPS"; exit 1 ;; esac
+
+      - name: Run production API smoke test
+        env:
+          API_BASE_URL: ${{ secrets.MOBILE_API_BASE_URL }}
+        run: flutter test test/api_integration_test.dart --dart-define=API_BASE_URL="$API_BASE_URL"
+
+      - name: Build signed release APK
+        env:
+          API_BASE_URL: ${{ secrets.MOBILE_API_BASE_URL }}
+          SOCKET_URL: ${{ secrets.MOBILE_SOCKET_URL }}
+        run: flutter build apk --release --dart-define=API_BASE_URL="$API_BASE_URL" --dart-define=SOCKET_URL="$SOCKET_URL"
+
+      - name: Upload signed APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: entpa-android-release-${{ github.run_number }}
+          path: mobile/build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
+          retention-days: 14
