@@ -88,11 +88,9 @@ export default function DealerVisitsPage() {
   }
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-4">
-        <p className="text-[13px] text-gray-400 max-w-lg">
-          Satış ekibinin bayi ziyaretlerini kaydedin, takip edin ve saha faaliyetlerini tek ekrandan izleyin.
-        </p>
+    <div className="admin-page">
+      <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between mb-7">
+        <div><p className="admin-eyebrow">OPERASYON / SAHA</p><h2 className="admin-page-title">Bayi Ziyaretleri</h2><p className="admin-page-subtitle">Saha faaliyetlerini, takip gerektiren kayıtları ve satış ekibi performansını tek ekrandan yönetin.</p></div>
         <PillButton onClick={() => setShowForm(true)} variant="primary">+ Yeni Ziyaret</PillButton>
       </div>
 
@@ -100,42 +98,43 @@ export default function DealerVisitsPage() {
         <button
           onClick={() => exportVisitsToPdf(visits || [], filters)}
           disabled={!visits?.length}
-          className="text-[12.5px] font-medium text-gray-600 border border-gray-200 rounded-lg px-3 h-8 hover:bg-gray-50 transition disabled:opacity-40"
+          className="text-[12.5px] font-semibold text-slate-700 bg-white border border-slate-200 rounded-xl px-3.5 h-10 hover:bg-slate-50 hover:border-slate-300 transition disabled:opacity-40"
         >
           ⬇ PDF Rapor
         </button>
         <button
           onClick={() => exportVisitsToCsv(visits || [])}
           disabled={!visits?.length}
-          className="text-[12.5px] font-medium text-gray-600 border border-gray-200 rounded-lg px-3 h-8 hover:bg-gray-50 transition disabled:opacity-40"
+          className="text-[12.5px] font-semibold text-slate-700 bg-white border border-slate-200 rounded-xl px-3.5 h-10 hover:bg-slate-50 hover:border-slate-300 transition disabled:opacity-40"
         >
           ⬇ Excel&apos;e Aktar (CSV)
         </button>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200/70 p-3 mb-4 flex flex-wrap gap-2 items-center">
+      <div className="admin-surface p-4 mb-5 flex flex-wrap gap-2.5 items-center">
         <input
           value={filters.search}
           onChange={(e) => setFilters({ ...filters, search: e.target.value })}
           placeholder="Bayi, satışçı, görüşülen kişi, not ara..."
-          className="h-8 flex-1 min-w-[200px] bg-gray-50 border border-gray-200/70 rounded-lg px-3 text-[12.5px] focus:outline-none focus:ring-2 focus:ring-gray-200"
+          aria-label="Bayi ziyaretlerinde ara"
+          className="h-10 flex-1 min-w-[220px] bg-slate-50 border border-slate-200/80 rounded-xl px-3.5 text-[12.5px] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300"
         />
-        <input type="date" value={filters.from} onChange={(e) => setFilters({ ...filters, from: e.target.value })} className="h-8 border border-gray-200 rounded-lg px-2 text-[12.5px]" />
+        <input type="date" value={filters.from} onChange={(e) => setFilters({ ...filters, from: e.target.value })} className="h-10 border border-slate-200 rounded-xl bg-white px-2.5 text-[12.5px] focus:outline-none focus:ring-2 focus:ring-blue-500/20" />
         <span className="text-gray-300 text-xs">—</span>
-        <input type="date" value={filters.to} onChange={(e) => setFilters({ ...filters, to: e.target.value })} className="h-8 border border-gray-200 rounded-lg px-2 text-[12.5px]" />
+        <input type="date" value={filters.to} onChange={(e) => setFilters({ ...filters, to: e.target.value })} className="h-10 border border-slate-200 rounded-xl bg-white px-2.5 text-[12.5px] focus:outline-none focus:ring-2 focus:ring-blue-500/20" />
         <input
           value={filters.city}
           onChange={(e) => setFilters({ ...filters, city: e.target.value })}
           placeholder="Şehir"
           className="h-8 w-24 border border-gray-200 rounded-lg px-2 text-[12.5px]"
         />
-        <select value={filters.visitType} onChange={(e) => setFilters({ ...filters, visitType: e.target.value })} className="h-8 border border-gray-200 rounded-lg px-2 text-[12.5px]">
+        <select value={filters.visitType} onChange={(e) => setFilters({ ...filters, visitType: e.target.value })} className="h-10 border border-slate-200 rounded-xl bg-white px-2.5 text-[12.5px] focus:outline-none focus:ring-2 focus:ring-blue-500/20">
           <option value="">Tüm Türler</option>
           {Object.entries(visitTypeLabels).map(([k, v]) => (
             <option key={k} value={k}>{v}</option>
           ))}
         </select>
-        <select value={filters.outcome} onChange={(e) => setFilters({ ...filters, outcome: e.target.value })} className="h-8 border border-gray-200 rounded-lg px-2 text-[12.5px]">
+        <select value={filters.outcome} onChange={(e) => setFilters({ ...filters, outcome: e.target.value })} className="h-10 border border-slate-200 rounded-xl bg-white px-2.5 text-[12.5px] focus:outline-none focus:ring-2 focus:ring-blue-500/20">
           <option value="">Tüm Sonuçlar</option>
           {Object.entries(outcomeLabels).map(([k, v]) => (
             <option key={k} value={k}>{v}</option>
@@ -159,7 +158,7 @@ export default function DealerVisitsPage() {
             <button
               key={v.id}
               onClick={() => setSelected(v)}
-              className="w-full text-left bg-white rounded-xl border border-gray-200/70 p-4 hover:shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-all flex items-center gap-3"
+              className="w-full text-left bg-white rounded-2xl border border-slate-200/80 p-4 hover:border-blue-200 hover:shadow-[0_12px_26px_rgba(30,64,175,0.08)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30 transition-all flex items-center gap-3"
             >
               <IconBadge icon={<IconMapPin width={16} height={16} />} color={v.needsFollowUp ? 'amber' : 'blue'} size="md" />
               <div className="flex-1 min-w-0 grid grid-cols-1 sm:grid-cols-4 gap-2 items-center">
