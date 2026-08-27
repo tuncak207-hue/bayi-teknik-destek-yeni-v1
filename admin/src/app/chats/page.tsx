@@ -30,16 +30,17 @@ export default function ChatsPage() {
   }
 
   return (
-    <div>
-      <p className="text-[13px] text-gray-400 mb-6">
+    <div className="admin-page">
+      <div className="mb-7"><p className="admin-eyebrow">İLETİŞİM / MODERASYON</p><h2 className="admin-page-title">Sohbetler</h2><p className="admin-page-subtitle">Bayi ve grup sohbetlerini izleyin, gerektiğinde mesajları yönetin.</p></div>
+      <p className="sr-only">
         Bayiler arası ve grup sohbetlerini görüntüleyin, uygunsuz mesajları veya tüm sohbeti silin, kullanıcılara
         süreli mesajlaşma yasağı verin.
       </p>
 
-      <div className="bg-white rounded-lg border border-gray-100 shadow-[0_1px_2px_rgba(15,23,42,0.04)] shadow-gray-100/50 divide-y divide-gray-50 overflow-hidden">
+      <div className="admin-surface divide-y divide-slate-100 overflow-hidden">
         {conversations?.map((c: any) => (
           <div key={c.id}>
-            <div className="flex items-center justify-between px-5 py-4 hover:bg-gray-50/60 transition-colors">
+            <div className="flex items-center justify-between px-5 py-4 hover:bg-slate-50/70 transition-colors">
               <div className="min-w-0">
                 <div className="text-sm font-bold text-navy truncate">{participantsLabel(c)}</div>
                 <div className="text-xs text-gray-400 mt-0.5 truncate">
@@ -49,7 +50,7 @@ export default function ChatsPage() {
               <div className="flex gap-3 items-center whitespace-nowrap shrink-0 ml-4">
                 <button
                   onClick={() => setOpenId(openId === c.id ? null : c.id)}
-                  className="text-sm font-medium text-navy border border-gray-200 rounded-xl px-3.5 py-1.5 hover:bg-gray-50 transition"
+                  className="text-[12.5px] font-semibold text-slate-700 border border-slate-200 rounded-xl px-3.5 h-9 hover:bg-slate-50 transition"
                 >
                   {openId === c.id ? 'Kapat' : 'Görüntüle'}
                 </button>
@@ -86,9 +87,9 @@ function ConversationMessages({ conversationId, onChanged }: { conversationId: s
   }
 
   return (
-    <div className="bg-gray-50 px-4 py-3 space-y-2 border-t border-gray-100">
+    <div className="bg-slate-50/80 px-4 py-4 space-y-2.5 border-t border-slate-100">
       {messages?.map((m: any) => (
-        <div key={m.id} className="flex items-start justify-between bg-white rounded-lg px-3 py-2 border border-gray-100">
+        <div key={m.id} className="flex items-start justify-between bg-white rounded-xl px-3.5 py-3 border border-slate-200/80 shadow-sm">
           <div className="flex-1 min-w-0">
             <div className="text-xs text-gray-500">
               {m.sender ? `${m.sender.firstName} ${m.sender.lastName} (${m.sender.company})` : 'AI'} ·{' '}
