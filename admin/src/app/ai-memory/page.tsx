@@ -38,19 +38,21 @@ export default function AiMemoryPage() {
   }
 
   return (
-    <div>
-      <p className="text-[13px] text-gray-400 mb-4 max-w-2xl">
+    <div className="admin-page">
+      <div className="mb-7"><p className="admin-eyebrow">AI / BİLGİ KALİTESİ</p><h2 className="admin-page-title">AI Teknik Hafıza</h2><p className="admin-page-subtitle">AI’ın kullandığı teknik cevapları doğrulayın, güncelleyin ve aktiflik durumunu yönetin.</p></div>
+      <p className="sr-only">
         AI, benzer bir teknik soru daha önce sorulup güvenilir bir cevap oluşturulduysa dokümanları yeniden taramak yerine
         buradaki kayıtlı cevapları kullanır. Bir kaydı <strong>doğrulanmış</strong> olarak işaretlemeden, AI o cevabı
         otomatik/kesin olarak tekrar kullanmaz.
       </p>
 
-      <div className="bg-white rounded-xl border border-gray-200/70 p-3 mb-4 flex flex-wrap gap-2 items-center">
+      <div className="admin-surface p-4 mb-5 flex flex-wrap gap-2.5 items-center">
         <input
           value={productFilter}
           onChange={(e) => setProductFilter(e.target.value)}
           placeholder="Ürün adına göre filtrele..."
-          className="h-8 flex-1 min-w-[200px] bg-gray-50 border border-gray-200/70 rounded-lg px-3 text-[12.5px] focus:outline-none focus:ring-2 focus:ring-gray-200"
+          aria-label="Ürüne göre filtrele"
+          className="h-10 flex-1 min-w-[220px] bg-slate-50 border border-slate-200/80 rounded-xl px-3.5 text-[12.5px] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300"
         />
         <label className="flex items-center gap-1.5 text-[12.5px] text-gray-600 h-8 px-2">
           <input type="checkbox" checked={onlyNeedsReview} onChange={(e) => setOnlyNeedsReview(e.target.checked)} />
@@ -75,7 +77,8 @@ export default function AiMemoryPage() {
               <button
                 key={e.id}
                 onClick={() => setSelected(e)}
-                className={`w-full text-left bg-white rounded-xl border p-4 hover:shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-all flex items-center gap-3 ${
+                                  className={`w-full text-left bg-white rounded-2xl border p-4 hover:border-blue-200 hover:shadow-[0_12px_26px_rgba(30,64,175,0.08)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30 transition-all flex items-center gap-3 ${
+
                   e.needsReverification ? 'border-amber-200' : 'border-gray-200/70'
                 } ${!e.isActive ? 'opacity-50' : ''}`}
               >
@@ -137,8 +140,8 @@ function MemoryDetailDrawer({
   const citations = Array.isArray(entry.citations) ? entry.citations : [];
 
   return (
-    <div className="fixed inset-0 bg-black/30 flex justify-end z-50" onClick={onClose}>
-      <div className="bg-white w-full max-w-lg h-full overflow-y-auto p-6" onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 bg-slate-950/45 backdrop-blur-[2px] flex justify-end z-50" onClick={onClose}>
+      <div className="bg-white w-full max-w-lg h-full overflow-y-auto p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-start justify-between mb-1">
           <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide">Teknik Hafıza Kaydı</p>
           <button onClick={onClose} className="text-gray-300 hover:text-gray-600">✕</button>
