@@ -60,13 +60,14 @@ export default function DealersPage() {
   });
 
   return (
-    <div>
-      <p className="text-[13px] text-gray-400 mb-4">Bir bayi kartına tıklayarak detaylarını görüntüleyip düzenleyebilir veya silebilirsiniz.</p>
+    <div className="admin-page">
+      <div className="mb-6"><p className="admin-eyebrow">BAYİ AĞI</p><h2 className="admin-page-title">Bayiler</h2><p className="admin-page-subtitle">Bayi kartını açarak detayları görüntüleyebilir, düzenleyebilir veya durumunu güncelleyebilirsiniz.</p></div>
       <input
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Firma, isim veya e-posta ile ara..."
-        className="w-full max-w-sm border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm mb-5 focus:outline-none focus:ring-2 focus:ring-navy/10 focus:border-navy transition"
+        aria-label="Bayi ara"
+        className="w-full max-w-sm h-11 border border-slate-200 bg-white rounded-xl px-3.5 text-sm mb-6 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition"
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -77,7 +78,7 @@ export default function DealersPage() {
               setSelected(d);
               setEditing(false);
             }}
-            className="text-left bg-white rounded-lg border border-gray-100 shadow-[0_1px_2px_rgba(15,23,42,0.04)] shadow-gray-100/50 p-5 hover:shadow-md hover:shadow-gray-200/60 hover:-translate-y-0.5 transition-all"
+            className="text-left bg-white rounded-2xl border border-slate-200/80 shadow-[0_10px_30px_rgba(15,23,42,0.035)] p-5 hover:border-blue-200 hover:shadow-[0_14px_30px_rgba(30,64,175,0.10)] hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30 transition-all"
           >
             <div className="flex items-start justify-between mb-3">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
@@ -97,8 +98,9 @@ export default function DealersPage() {
       )}
 
       {selected && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4" onClick={() => setSelected(null)}>
-          <div className="bg-white rounded-lg w-full max-w-md overflow-hidden" onClick={(e) => e.stopPropagation()}>
+                    <div className="fixed inset-0 bg-slate-950/45 backdrop-blur-[2px] flex items-center justify-center z-50 p-4" onClick={() => setSelected(null)}>
+              <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl" onClick={(e) => e.stopPropagation()}>
+
             <div className="h-1.5 bg-brand" />
             <div className="p-6">
               {editing ? (

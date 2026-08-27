@@ -59,7 +59,7 @@ export function IconBadge({ icon, color = 'navy', size = 'md' }: { icon: React.R
 
 export function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={`bg-white rounded-lg border border-gray-200/80 shadow-[0_1px_2px_rgba(15,23,42,0.03)] ${className}`}>
+    <div className={`bg-white rounded-2xl border border-slate-200/80 shadow-[0_10px_30px_rgba(15,23,42,0.035)] ${className}`}>
       {children}
     </div>
   );
@@ -67,10 +67,10 @@ export function Card({ children, className = '' }: { children: React.ReactNode; 
 
 export function CardHeader({ title, subtitle, action }: { title: string; subtitle?: string; action?: React.ReactNode }) {
   return (
-    <div className="flex items-start justify-between px-4 py-3 border-b border-gray-100/80">
+    <div className="flex items-start justify-between gap-4 px-5 py-4 border-b border-slate-100/90">
       <div>
-        <h3 className="text-[13px] font-semibold text-gray-900">{title}</h3>
-        {subtitle && <p className="text-[12px] text-gray-400 mt-0.5">{subtitle}</p>}
+        <h3 className="text-[14px] font-bold tracking-[-0.015em] text-slate-900">{title}</h3>
+        {subtitle && <p className="text-[12px] leading-5 text-slate-500 mt-1">{subtitle}</p>}
       </div>
       {action}
     </div>
@@ -100,7 +100,7 @@ export function PillButton({
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`text-[12.5px] font-medium h-8 px-3 rounded-md transition-all active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30 disabled:opacity-50 ${variants[variant]}`}
+      className={`inline-flex items-center justify-center text-[12.5px] font-semibold h-9 px-3.5 rounded-lg transition-all duration-150 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30 disabled:cursor-not-allowed disabled:opacity-50 ${variants[variant]}`}
     >
       {children}
     </button>
