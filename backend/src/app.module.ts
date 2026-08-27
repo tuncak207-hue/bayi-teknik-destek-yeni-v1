@@ -33,6 +33,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import { KnowledgeBaseModule } from './knowledge-base/knowledge-base.module';
 import { QuotesModule } from './quotes/quotes.module';
 import { PrismaModule } from './common/prisma/prisma.module';
+import { HealthController } from './health.controller';
 
 @Module({
   imports: [
@@ -70,6 +71,7 @@ import { PrismaModule } from './common/prisma/prisma.module';
     KnowledgeBaseModule,
     QuotesModule,
   ],
+  controllers: [HealthController],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
 export class AppModule {}
