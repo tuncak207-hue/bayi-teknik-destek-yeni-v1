@@ -28,11 +28,11 @@ export default function ProductAnalysisPage() {
   }
 
   return (
-    <div>
-      <p className="text-sm text-gray-500 mb-6">Ürün sağlık skorları, versiyon karşılaştırması ve AR-GE&apos;ye otomatik geri bildirim uyarıları.</p>
+    <div className="admin-page">
+      <div className="mb-7"><p className="admin-eyebrow">ANALİZ / ÜRÜN SAĞLIĞI</p><h2 className="admin-page-title">Ürün Analizi</h2><p className="admin-page-subtitle">Ürün sağlık skorlarını, versiyon performansını ve AR-GE geri bildirimlerini izleyin.</p></div>
 
       {rndAlerts?.length > 0 && (
-        <div className="bg-white rounded-lg border border-red-200 p-6 mb-8">
+        <div className="admin-surface border-blue-200 p-6 mb-8">
           <h3 className="text-sm font-bold text-red-700 mb-3">🔬 AR-GE Geri Bildirim Uyarıları</h3>
           <p className="text-xs text-gray-400 mb-4">Son 30 günde 5+ kayıt ve 3+ farklı bayide görülen ürün/model kombinasyonları — ürün problemi olabilir.</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -48,7 +48,7 @@ export default function ProductAnalysisPage() {
         </div>
       )}
 
-      <div className="bg-white rounded-lg border border-gray-100 p-6 mb-8">
+      <div className="admin-surface p-6 mb-8">
         <h3 className="text-sm font-bold text-gray-700 mb-3">Ürün Versiyon Analizi</h3>
         <form onSubmit={searchVersion} className="flex gap-2 mb-4">
           <input
@@ -57,7 +57,7 @@ export default function ProductAnalysisPage() {
             placeholder="Ürün adı girin (örn. MA8000)"
             className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm"
           />
-          <button type="submit" className="text-sm font-medium text-white bg-navy px-4 py-2 rounded-lg hover:bg-navy-light transition">
+          <button type="submit" className="text-[12.5px] font-semibold text-white bg-[var(--admin-navy)] px-4 h-10 rounded-xl hover:bg-slate-800 transition">
             Analiz Et
           </button>
         </form>
@@ -80,12 +80,12 @@ export default function ProductAnalysisPage() {
         )}
       </div>
 
-      <div className="bg-white rounded-lg border border-gray-100 overflow-hidden">
+      <div className="admin-surface overflow-hidden">
         <div className="p-4 border-b border-gray-100">
           <h3 className="text-sm font-bold text-gray-700">Ürün Sağlık Skorları</h3>
         </div>
         <table className="w-full text-sm">
-          <thead className="bg-gray-50 text-gray-500 text-left">
+          <thead className="bg-slate-50/80 text-slate-500 text-left text-[11px] uppercase tracking-[0.08em]">
             <tr>
               <th className="px-4 py-3">Ürün</th>
               <th className="px-4 py-3">Seri No</th>
@@ -97,7 +97,7 @@ export default function ProductAnalysisPage() {
           <tbody>
             {healthScores?.map((h: any) => (
               <Fragment key={h.serialNumber}>
-                <tr className="border-t border-gray-100">
+                <tr className="border-t border-slate-100 hover:bg-slate-50/60 transition-colors">
                   <td className="px-4 py-3">{h.productName} {h.productModel && <span className="text-gray-400">({h.productModel})</span>}</td>
                   <td className="px-4 py-3 text-gray-500">{h.serialNumber}</td>
                   <td className="px-4 py-3 font-bold">{h.score}</td>
