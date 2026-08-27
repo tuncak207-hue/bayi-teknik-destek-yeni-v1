@@ -59,8 +59,10 @@ jobs:
             echo "Decoded FIREBASE_GOOGLE_SERVICES_JSON_B64 is not valid JSON"
             exit 1
           fi
-          KEYSTORE_PATH=$(awk -F= '$1 == "storeFile" {print substr($0, index($0, "=") + 1)}' android/key.properties)
-          test -n "$KEYSTORE_PATH" || { echo "key.properties must define storeFile"; exit 1; }
+          # Local key.properties may contain a Windows absolute path. CI uses an app-relative path.
+          grep -q '^storeFile=' android/key.properties || { echo "key.properties must define storeFile"; exit 1; }
+          sed -i 's#^storeFile=.*#storeFile=entpa-upload-key.jks#' android/key.properties
+          KEYSTORE_PATH="android/app/entpa-upload-key.jks"
           mkdir -p "$(dirname "$KEYSTORE_PATH")"
           if ! printf '%s' "$KEYSTORE_B64" | tr -d '[:space:]' | base64 --decode > "$KEYSTORE_PATH"; then
             echo "Invalid Base64: ANDROID_KEYSTORE_B64"
