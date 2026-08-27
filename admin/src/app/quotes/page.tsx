@@ -88,12 +88,13 @@ export default function QuotesPage() {
   }
 
   return (
-    <div>
-      <p className="text-sm text-gray-500 mb-6">
+    <div className="admin-page">
+      <div className="mb-7"><p className="admin-eyebrow">TİCARİ OPERASYON</p><h2 className="admin-page-title">Teklif ve Fiyat Kataloğu</h2><p className="admin-page-subtitle">Bayilerin teklif akışında kullandığı ürün kataloğunu ve referans fiyat listesini yönetin.</p></div>
+      <p className="sr-only">
         Bayilerin &quot;Teklif Al&quot; ekranında kullandığı fiyat/malzeme kataloğunu ve referans fiyat listesi PDF&apos;ini buradan yönetin.
       </p>
 
-      <div className="bg-white rounded-lg border border-gray-100 p-6 mb-8 max-w-2xl">
+      <div className="admin-surface p-6 mb-8 max-w-2xl">
         <h3 className="text-sm font-bold text-gray-700 mb-1">Excel&apos;den Toplu İçe Aktar</h3>
         <p className="text-xs text-gray-400 mb-3">
           Excel dosyanızdaki tabloyu (Seri / Ürün Kodu / Açıklama / Adet / Fiyat sütunlarıyla) seçip kopyalayın (Ctrl+C), aşağıya yapıştırın.
@@ -127,7 +128,7 @@ export default function QuotesPage() {
         )}
       </div>
 
-      <div className="bg-white rounded-lg border border-gray-100 p-6 mb-8 max-w-xl">
+      <div className="admin-surface p-6 mb-8 max-w-xl">
         <h3 className="text-sm font-bold text-gray-700 mb-3">Referans Fiyat Listesi PDF</h3>
         <p className="text-xs text-gray-400 mb-3">Bayilerin &quot;Teklif Al&quot; ekranından görüntüleyebileceği tam fiyat listesi dokümanı.</p>
         <label className="inline-block text-sm font-medium text-white bg-navy px-4 py-2 rounded-xl hover:bg-navy-light transition cursor-pointer">
@@ -151,7 +152,7 @@ export default function QuotesPage() {
       </div>
 
       {showForm && (
-        <form onSubmit={addPriceItem} className="bg-white rounded-lg border border-gray-100 p-6 mb-6 flex items-end gap-2 flex-wrap">
+        <form onSubmit={addPriceItem} className="admin-surface p-6 mb-6 flex items-end gap-2 flex-wrap">
           <div className="w-32">
             <label className="block text-xs text-gray-400 mb-1">Marka</label>
             <input value={brand} onChange={(e) => setBrand(e.target.value)} className="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm" placeholder="Honeywell" />
