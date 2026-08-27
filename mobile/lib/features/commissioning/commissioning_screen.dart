@@ -414,7 +414,8 @@ class _CommissioningFormScreenState extends State<CommissioningFormScreen> {
     // kenar boşluğu vardı; klavye açıkken veya cihazın alt hareket
     // çubuğu/güvenli alanı geniş olduğunda ekranın en altına yapışıp
     // kırpılmış görünüyordu. Artık altta hem klavye yüksekliği hem de
-    // cihazın güvenli alanı + bolca ekstra pay hesaba katılıyor.
+    // cihazın güvenli alanı + bolca ekstra pay hesaba katılıyor. Bakım
+    // formuyla tutarlı olması için pay burada da bir kez daha artırıldı.
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
     final safeBottom = MediaQuery.of(context).padding.bottom;
     return _loadingTemplate
@@ -425,7 +426,9 @@ class _CommissioningFormScreenState extends State<CommissioningFormScreen> {
                 AppSpacing.md,
                 AppSpacing.md,
                 AppSpacing.md,
-                AppSpacing.md + safeBottom + (bottomInset > 0 ? bottomInset : AppSpacing.xl),
+                AppSpacing.xl +
+                    safeBottom +
+                    (bottomInset > 0 ? bottomInset + AppSpacing.lg : AppSpacing.xxl + AppSpacing.lg),
               ),
               children: [
                 PremiumFormSection(

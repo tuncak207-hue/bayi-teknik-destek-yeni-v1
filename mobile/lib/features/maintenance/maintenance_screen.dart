@@ -414,7 +414,9 @@ class _CreateMaintenanceScreenState extends State<_CreateMaintenanceScreen> {
     // hareket çubuğu/güvenli alanı geniş olduğunda bu, butonun (veya
     // yazısının) ekranın en altına yapışıp kırpılmış görünmesine yol
     // açıyordu. Artık altta hem klavye yüksekliği hem de cihazın güvenli
-    // alanı + bolca ekstra pay hesaba katılıyor.
+    // alanı + bolca ekstra pay hesaba katılıyor. Kullanıcı butonun hâlâ
+    // alt kenara çok yakın olduğunu belirtti, bu yüzden pay bir kez daha
+    // artırıldı — buton artık ekranın altından belirgin şekilde yukarıda.
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
     final safeBottom = MediaQuery.of(context).padding.bottom;
     return ListView(
@@ -423,7 +425,9 @@ class _CreateMaintenanceScreenState extends State<_CreateMaintenanceScreen> {
           AppSpacing.md,
           AppSpacing.md,
           AppSpacing.md,
-          AppSpacing.md + safeBottom + (bottomInset > 0 ? bottomInset : AppSpacing.xl),
+          AppSpacing.xl +
+              safeBottom +
+              (bottomInset > 0 ? bottomInset + AppSpacing.lg : AppSpacing.xxl + AppSpacing.lg),
         ),
         children: [
           // Göz alıcı bir üst başlık kartı — Devreye Alma ile aynı tasarım dili.

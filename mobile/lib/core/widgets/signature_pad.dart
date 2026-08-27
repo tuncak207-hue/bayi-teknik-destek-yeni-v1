@@ -54,10 +54,71 @@ class SignaturePadState extends State<SignaturePad> {
     return byteData?.buffer.asUint8List();
   }
 
+  /// "Sayfayı her kaydırdığımda çizgi oluşuyor" — kök neden buydu: bir
+  /// dokunuş kutunun İÇİNDE başlayıp (ör. kutunun üst kenarına yakın,
+  /// kaydırmaya çalışırken) parmak kutunun DIŞINA çıkarak hareket etmeye
+  /// devam ettiğinde, Flutter aynı dokunuşun tüm hareket olaylarını HÂLÂ bu
+  /// Listener'a gönderiyordu — parmak ekranın en üstüne kadar gitse bile.
+  /// Bu, kutunun sınırlarının çok dışında (negatif/aşırı büyük) noktaların
+  /// çiziliyor olması demekti; üstelik düz bir Container hiçbir şeyi
+  /// kırpmadığı için, bu "kutunun dışına taşan" çizgi kutunun üstündeki
+  /// TÜM sayfa içeriğinin üzerinden geçerek görünüyordu. Şimdi iki katmanlı
+  /// düzeltme var: (1) parmak kutunun sınırlarının dışına çıkar çıkmaz o
+  /// vuruş çizime dahil edilmiyor (çizgi orada temiz şekilde kesiliyor),
+  /// (2) her ihtimale karşı ClipRect ile çizim alanı kutunun kendi
+  /// sınırlarına kesin olarak kırpılıyor — hiçbir noktada dışarı taşamaz.
+  bool _isDrawing = false;
+
+  void _handleDown(PointerDownEvent event, RenderBox? box) {
+    widget.onDrawingChanged?.call(true);
+    final local = box?.globalToLocal(event.position);
+    _isDrawing = true;
+    setState(() => _points = [..._points, local]);
+    widget.onChanged(_points);
+  }
+
+  void _handleMove(PointerMoveEvent event, RenderBox? box) {
+    if (!_isDrawing) return;
+    final local = box?.globalToLocal(event.position);
+    final size = box?.size;
+    final withinBounds = local != null &&
+        size != null &&
+        local.dx >= 0 &&
+        local.dy >= 0 &&
+        local.dx <= size.width &&
+        local.dy <= size.height;
+    if (!withinBounds) {
+      // Parmak kutunun dışına çıktı — bu vuruşu artık çizime dahil etme,
+      // çizgiyi burada kes. Sayfanın normal kaymasına izin ver.
+      _isDrawing = false;
+      widget.onDrawingChanged?.call(false);
+      if (_points.isNotEmpty && _points.last != null) {
+        setState(() => _points = [..._points, null]);
+        widget.onChanged(_points);
+      }
+      return;
+    }
+    setState(() => _points = [..._points, local]);
+    widget.onChanged(_points);
+  }
+
+  void _handleUp() {
+    _isDrawing = false;
+    setState(() => _points = [..._points, null]);
+    widget.onChanged(_points);
+    widget.onDrawingChanged?.call(false);
+  }
+
+  void _handleCancel() {
+    _isDrawing = false;
+    widget.onDrawingChanged?.call(false);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 180,
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: const Color(0xFFFAFAFB),
         borderRadius: BorderRadius.circular(14),
@@ -74,27 +135,10 @@ class SignaturePadState extends State<SignaturePad> {
           // çizilmiyordu. Listener ile HAM dokunma olayları dinleniyor
           // — bu, üst kaydırma widget'ıyla YARIŞMIYOR, kesin çalışıyor.
           Listener(
-            onPointerDown: (event) {
-              widget.onDrawingChanged?.call(true);
-              final box = context.findRenderObject() as RenderBox?;
-              final local = box?.globalToLocal(event.position);
-              setState(() => _points = [..._points, local]);
-              widget.onChanged(_points);
-            },
-            onPointerMove: (event) {
-              final box = context.findRenderObject() as RenderBox?;
-              final local = box?.globalToLocal(event.position);
-              setState(() => _points = [..._points, local]);
-              widget.onChanged(_points);
-            },
-            onPointerUp: (_) {
-              setState(() => _points = [..._points, null]);
-              widget.onChanged(_points);
-              widget.onDrawingChanged?.call(false);
-            },
-            onPointerCancel: (_) {
-              widget.onDrawingChanged?.call(false);
-            },
+            onPointerDown: (event) => _handleDown(event, context.findRenderObject() as RenderBox?),
+            onPointerMove: (event) => _handleMove(event, context.findRenderObject() as RenderBox?),
+            onPointerUp: (_) => _handleUp(),
+            onPointerCancel: (_) => _handleCancel(),
             child: CustomPaint(painter: _SignaturePainter(_points), size: Size.infinite),
           ),
           if (_points.isEmpty)
