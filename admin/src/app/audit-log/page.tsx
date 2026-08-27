@@ -15,12 +15,12 @@ export default function AuditLogPage() {
   const { data: logs } = useSWR('/audit-log', fetcher, { refreshInterval: 15000 });
 
   return (
-    <div>
-      <p className="text-[13px] text-gray-400 mb-6">Admin hesaplarının yaptığı kritik işlemlerin kaydı — hesap verebilirlik için.</p>
+    <div className="admin-page">
+      <div className="mb-7"><p className="admin-eyebrow">GÜVENLİK / DENETİM</p><h2 className="admin-page-title">İşlem Günlüğü</h2><p className="admin-page-subtitle">Admin hesaplarının yaptığı kritik işlemleri izleyin; kayıtlar hesap verebilirlik için canlı olarak yenilenir.</p></div>
 
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <div className="admin-surface overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50 text-gray-500 text-left">
+          <thead className="bg-slate-50/80 text-slate-500 text-left text-[11px] uppercase tracking-[0.08em]">
             <tr>
               <th className="px-4 py-3">İşlem</th>
               <th className="px-4 py-3">Yapan Admin</th>
@@ -30,7 +30,7 @@ export default function AuditLogPage() {
           </thead>
           <tbody>
             {logs?.map((log: any) => (
-              <tr key={log.id} className="border-t border-gray-100">
+              <tr key={log.id} className="border-t border-slate-100 hover:bg-slate-50/60 transition-colors">
                 <td className="px-4 py-3 font-medium">{actionLabels[log.action] ?? log.action}</td>
                 <td className="px-4 py-3">
                   {log.admin?.firstName} {log.admin?.lastName}
