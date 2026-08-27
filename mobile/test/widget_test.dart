@@ -89,4 +89,50 @@ void main() {
     expect(find.text('Arama'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('Header layout contract is stable', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData.light(useMaterial3: true),
+        home: Scaffold(
+          appBar: AppPageHeader(
+            title: 'Randevularım',
+            titleBadge: const Chip(label: Text('2')),
+          ),
+        ),
+      ),
+    );
+
+    final header = find.byType(AppBar);
+    expect(header, findsOneWidget);
+    expect(tester.getSize(header).height, 64);
+    expect(find.text('Randevularım'), findsOneWidget);
+    expect(find.text('2'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Standard card contract is stable', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData.light(useMaterial3: true),
+        home: Scaffold(
+          body: Padding(
+            padding: const EdgeInsets.all(16),
+            child: StandardCard(
+              child: const CardHeaderRow(
+                title: 'Randevu Al',
+                subtitle: 'Yeni teknik destek randevusu oluştur',
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byType(StandardCard), findsOneWidget);
+    expect(find.byType(CardHeaderRow), findsOneWidget);
+    expect(find.text('Randevu Al'), findsOneWidget);
+    expect(find.text('Yeni teknik destek randevusu oluştur'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 }

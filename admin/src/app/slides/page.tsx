@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useState } from 'react';
 import useSWR from 'swr';
 import { api } from '@/lib/api';
@@ -66,7 +67,7 @@ export default function SlidesPage() {
     <div className="p-8 max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold text-gray-900 mb-1">Ana Sayfa Slaytları</h1>
       <p className="text-sm text-gray-500 mb-6">
-        Burada yüklediğiniz görseller, mobil uygulamanın Ana Sayfa'sında otomatik olarak dönen bir slayt bandı şeklinde gösterilir.
+        Burada yüklediğiniz görseller, mobil uygulamanın Ana Sayfa&apos;sında otomatik olarak dönen bir slayt bandı şeklinde gösterilir.
       </p>
 
       <Card className="mb-8 p-6">
@@ -122,7 +123,15 @@ export default function SlidesPage() {
         <div className="space-y-3">
           {slides.map((s: any) => (
             <Card key={s.id} className="p-4 flex items-center gap-4">
-              <img src={s.imageUrl} alt={s.title || 'Slayt'} className="w-28 h-16 object-cover rounded-lg bg-gray-100 flex-shrink-0" />
+              <Image
+                src={s.imageUrl}
+                alt={s.title || 'Slayt'}
+                width={112}
+                height={64}
+                unoptimized
+                loader={({ src }) => src}
+                className="w-28 h-16 object-cover rounded-lg bg-gray-100 flex-shrink-0"
+              />
               <div className="flex-1 min-w-0">
                 <div className="font-semibold text-gray-900 truncate">{s.title || '(Başlıksız)'}</div>
                 <div className="text-sm text-gray-500 truncate">{s.subtitle || '—'}</div>

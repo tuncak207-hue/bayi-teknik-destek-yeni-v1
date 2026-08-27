@@ -1,7 +1,10 @@
 import axios from 'axios';
 
+const configuredApiUrl = process.env.NEXT_PUBLIC_API_URL;
+const defaultApiUrl = process.env.NODE_ENV === 'production' ? '/api/v1' : 'http://localhost:3000/api/v1';
+
 export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1',
+  baseURL: configuredApiUrl || defaultApiUrl,
 });
 
 api.interceptors.request.use((config) => {
@@ -26,7 +29,7 @@ async function refreshAccessToken(): Promise<string | null> {
   if (!refreshToken) return null;
   try {
     const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1'}/auth/refresh`,
+      `${configuredApiUrl || defaultApiUrl}/auth/refresh`,
       {},
       { headers: { Authorization: `Bearer ${refreshToken}` } },
     );
@@ -71,7 +74,7 @@ api.interceptors.response.use(
 
       localStorage.removeItem('admin_token');
       localStorage.removeItem('admin_refresh_token');
-      window.location.href = '/login';
+      window.location.replace(new URL('/login', window.location.origin).toString());
     }
     return Promise.reject(err);
   },
