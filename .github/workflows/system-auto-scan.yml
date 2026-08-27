@@ -38,7 +38,25 @@ jobs:
         run: flutter analyze --no-fatal-infos
 
       - name: Test with coverage
-        run: flutter test --coverage
+        run: flutter test --coverage test/widget_test.dart
+
+      - name: Production API smoke test
+        if: ${{ env.MOBILE_API_BASE_URL != '' }}
+        env:
+          MOBILE_API_BASE_URL: ${{ secrets.MOBILE_API_BASE_URL }}
+        run: |
+          case "$MOBILE_API_BASE_URL" in
+            https://*) ;;
+            *) echo "MOBILE_API_BASE_URL must use HTTPS"; exit 1 ;;
+          esac
+          flutter test test/api_integration_test.dart \\
+            --dart-define=API_BASE_URL="$MOBILE_API_BASE_URL"
+
+      - name: Production API smoke test skipped
+        if: ${{ env.MOBILE_API_BASE_URL == '' }}
+        env:
+          MOBILE_API_BASE_URL: ${{ secrets.MOBILE_API_BASE_URL }}
+        run: echo "MOBILE_API_BASE_URL is not configured; production smoke test skipped."
 
   backend:
     name: Backend build, tests and audit
