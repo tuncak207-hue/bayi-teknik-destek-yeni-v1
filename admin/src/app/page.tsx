@@ -170,7 +170,7 @@ export default function DashboardPage() {
           {s?.documents?.topFavorited?.length ? (
             <div className="space-y-2">
               {s.documents.topFavorited.map((d: any, i: number) => (
-                <div key={d.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                <Link key={d.id} href="/documents" aria-label={`${d.title} dokümanını aç`} className="flex items-center gap-3 p-2 rounded-xl hover:bg-blue-50/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30 transition-colors">
                   <IconBadge icon={<IconDocument width={14} height={14} />} color={statColorCycle[i % statColorCycle.length]} size="sm" />
                   <div className="min-w-0 flex-1">
                     <div className="font-medium text-gray-800 truncate text-[13px]">{d.title}</div>
@@ -181,7 +181,7 @@ export default function DashboardPage() {
                   <span className="text-gray-600 font-semibold text-[12.5px] shrink-0 bg-gray-100 px-1.5 py-0.5 rounded">
                     {d.favoriteCount}
                   </span>
-                </div>
+                </Link>
               ))}
             </div>
           ) : (
@@ -248,8 +248,8 @@ function EmptyRow({ text }: { text: string }) {
 
 function Panel({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-white rounded-xl border border-gray-200/70 p-4">
-      <h3 className="text-[13px] font-semibold text-gray-800 mb-1">{title}</h3>
+    <div className="admin-surface p-5">
+      <h3 className="text-[14px] font-bold tracking-[-0.015em] text-slate-900 mb-4">{title}</h3>
       {children}
     </div>
   );
@@ -272,12 +272,13 @@ function Section({
 }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="bg-white rounded-xl border border-gray-200/70 mb-3 overflow-hidden">
+    <div className="admin-surface mb-4 overflow-hidden">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center justify-between px-4 h-11 text-left hover:bg-gray-50/70 transition-colors"
+        className="w-full flex items-center justify-between px-5 h-[60px] text-left hover:bg-slate-50/80 transition-colors"
       >
-        <div className="flex items-center gap-2.5">
+                  <div className="flex items-center gap-3">
+
           <h3 className="text-[13px] font-semibold text-gray-900">{title}</h3>
           {summary && <span className="text-[12px] text-gray-400">{summary}</span>}
           {!!urgentCount && (
@@ -309,14 +310,25 @@ function Section({
       </button>
       {open && (
         <div className="px-4 pb-4 pt-0.5 border-t border-gray-100">
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2.5 mt-3">{children}</div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 mt-4">{children}</div>
         </div>
       )}
     </div>
   );
 }
 
-/** Renkli, ikon rozetli istatistik karosu — "göz kamaştırıcı" kart dili. */
+/** Renkli, ikon rozetli ve ilgili modüle giden tıklanabilir istatistik karosu. */
+function statHref(label: string): string | undefined {
+  if (label.includes('Bayi')) return '/dealers';
+  if (label.includes('Ziyaret') || label.includes('Satışçı') || label.includes('Proje')) return '/dealer-visits';
+  if (label.includes('Doküman')) return '/documents';
+  if (label.includes('AI') || label.includes('Sohbet') || label.includes('Mesaj') || label.includes('Konuşma')) return '/chats';
+  if (label.includes('Randevu') || label.includes('Onay')) return '/appointments';
+  if (label.includes('Duyuru')) return '/announcements';
+  if (label.includes('Gönderi') || label.includes('Yorum')) return '/groups';
+  return undefined;
+}
+
 function StatTile({
   label,
   value,
@@ -328,16 +340,19 @@ function StatTile({
   color: IconColor;
   urgent?: boolean;
 }) {
-  return (
-    <div className={`relative bg-white rounded-xl p-3 border flex items-center gap-2.5 ${urgent ? 'border-amber-200 bg-amber-50/30' : 'border-gray-100'}`}>
+  const href = statHref(label);
+  const content = (
+    <>
       <IconBadge icon={<span className="w-1.5 h-1.5 rounded-full bg-white/90 block" />} color={color} size="sm" />
       <div className="min-w-0">
-        <p className="text-[11px] text-gray-500 leading-[1.2] line-clamp-2 min-h-[26px]">{label}</p>
-        <p className="text-[17px] font-bold text-gray-900 tabular-nums leading-tight mt-0.5">{value ?? '—'}</p>
+        <p className="text-[11px] text-slate-500 leading-[1.25] line-clamp-2 min-h-[28px]">{label}</p>
+        <p className="text-[18px] font-bold text-slate-950 tabular-nums leading-tight mt-1">{value ?? '—'}</p>
       </div>
-      {urgent && <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-amber-500" />}
-    </div>
+      {urgent && <span className="absolute top-3 right-3 w-1.5 h-1.5 rounded-full bg-amber-500" />}
+    </>
   );
+  const className = `relative flex items-center gap-3 rounded-xl p-3.5 border transition-all duration-150 ${urgent ? 'border-amber-200 bg-amber-50/45' : 'border-slate-100 bg-white'} ${href ? 'hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-[0_8px_20px_rgba(30,64,175,0.10)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30' : ''}`;
+  return href ? <Link href={href} className={className} aria-label={`${label} detaylarını aç`}>{content}</Link> : <div className={className}>{content}</div>;
 }
 
 const accentClasses: Record<string, string> = {

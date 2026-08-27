@@ -72,9 +72,9 @@ export default function Sidebar({
 
   const content = (
     <>
-      <div className={`h-16 flex items-center border-b border-gray-100/80 ${collapsed ? 'px-3 justify-center' : 'px-5'}`}>
+      <div className={`h-[72px] flex items-center border-b border-slate-100/90 ${collapsed ? 'px-3 justify-center' : 'px-5'}`}>
         <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-brand to-brand-dark flex items-center justify-center text-white font-bold text-[11px] shadow-sm shrink-0">
+          <div className="w-8 h-8 rounded-xl bg-[var(--admin-navy)] flex items-center justify-center text-white font-bold text-[11px] shadow-[0_6px_14px_rgba(16,42,67,0.22)] shrink-0">
             E
           </div>
           {!collapsed && (
@@ -97,9 +97,9 @@ export default function Sidebar({
               href={href}
               onClick={onCloseMobile}
               title={collapsed ? label : undefined}
-              className={`group relative flex items-center gap-2.5 rounded-lg h-9 text-[12.5px] font-medium transition-colors ${
+              className={`group relative flex items-center gap-3 rounded-xl h-10 text-[12.5px] font-semibold transition-all duration-150 ${
                 collapsed ? 'px-2 justify-center' : 'px-2.5'
-              } ${active ? 'bg-brand/10 text-brand-dark shadow-sm' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-800'}`}
+              } ${active ? 'bg-blue-50 text-blue-800 shadow-sm ring-1 ring-inset ring-blue-100' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'}`}
             >
               <Icon className={active ? 'text-brand' : 'text-gray-400 group-hover:text-gray-500'} width={15} height={15} />
               {!collapsed && <span className="truncate flex-1">{label}</span>}
@@ -127,14 +127,14 @@ export default function Sidebar({
 
   return (
     <>
-      <aside className={`hidden md:flex flex-col shrink-0 bg-white border-r border-gray-200/70 transition-all duration-150 ${collapsed ? 'w-14' : 'w-[224px]'}`}>
+      <aside className={`hidden md:flex flex-col shrink-0 bg-white border-r border-slate-200/80 transition-all duration-150 ${collapsed ? 'w-16' : 'w-[248px]'}`}>
         {content}
       </aside>
 
       {mobileOpen && (
         <div className="md:hidden fixed inset-0 z-40 flex">
           <div className="absolute inset-0 bg-black/30" onClick={onCloseMobile} />
-          <aside className="relative w-[224px] bg-white flex flex-col h-full shadow-xl">
+          <aside className="relative w-[248px] bg-white flex flex-col h-full shadow-2xl">
             {content}
           </aside>
         </div>
