@@ -16,13 +16,7 @@ export default function LoginPage() {
     setError('');
     setLoading(true);
     try {
-      const res = await api.post('/auth/login', { email, password });
-      localStorage.setItem('admin_token', res.data.accessToken);
-      // ÖNEMLİ: Önceden sadece erişim token'ı (15 dakikada bir sona
-      // eriyor) saklanıyordu, yenileme token'ı hiç kullanılmıyordu — bu
-      // yüzden 15 dakikada bir otomatik çıkış yapılıyordu. Artık
-      // yenileme token'ı da saklanıp otomatik kullanılıyor (api.ts).
-      localStorage.setItem('admin_refresh_token', res.data.refreshToken);
+      await api.post('/auth/login', { email, password });
       router.push('/');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Giriş başarısız.');

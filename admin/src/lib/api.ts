@@ -5,39 +5,25 @@ const defaultApiUrl = process.env.NODE_ENV === 'production' ? '/api/v1' : 'http:
 
 export const api = axios.create({
   baseURL: configuredApiUrl || defaultApiUrl,
+  withCredentials: true,
 });
 
-api.interceptors.request.use((config) => {
-  if (typeof window !== 'undefined') {
-    const token = localStorage.getItem('admin_token');
-    if (token) config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
-// ÖNEMLİ: Erişim token'ı sadece 15 dakikada bir sona eriyor — önceden
-// süresi dolduğunda hiç yenileme denenmeden direkt çıkış yapılıyordu
-// ("sürekli kapanıyor" sorununun kök sebebi buydu). Artık 401 alınca
-// önce sessizce yenileme token'ıyla (30 gün geçerli) yeni bir erişim
-// token'ı isteniyor; bu da başarısız olursa (örn. 30 gün de dolmuşsa)
-// ancak o zaman çıkış yapılıyor.
+// Admin JWT’leri HttpOnly cookie olarak tutulur; böylece JavaScript ve
+// localStorage üzerinden okunamaz. Mobil istemciler Bearer token kullanmaya
+// devam eder ve bu istemciye ait değildir.
 let isRefreshing = false;
-let refreshWaiters: Array<(token: string | null) => void> = [];
+let refreshWaiters: Array<(success: boolean) => void> = [];
 
-async function refreshAccessToken(): Promise<string | null> {
-  const refreshToken = localStorage.getItem('admin_refresh_token');
-  if (!refreshToken) return null;
+async function refreshAccessToken(): Promise<boolean> {
   try {
-    const res = await axios.post(
+    await axios.post(
       `${configuredApiUrl || defaultApiUrl}/auth/refresh`,
       {},
-      { headers: { Authorization: `Bearer ${refreshToken}` } },
+      { withCredentials: true },
     );
-    localStorage.setItem('admin_token', res.data.accessToken);
-    localStorage.setItem('admin_refresh_token', res.data.refreshToken);
-    return res.data.accessToken;
+    return true;
   } catch {
-    return null;
+    return false;
   }
 }
 
@@ -45,35 +31,26 @@ api.interceptors.response.use(
   (res) => res,
   async (err) => {
     const originalRequest = err.config;
-    if (err.response?.status === 401 && typeof window !== 'undefined' && !originalRequest._retried) {
+    if (err.response?.status === 401 && typeof window !== 'undefined' && !originalRequest?._retried) {
       originalRequest._retried = true;
 
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
-          refreshWaiters.push((token) => {
-            if (token) {
-              originalRequest.headers.Authorization = `Bearer ${token}`;
-              resolve(api(originalRequest));
-            } else {
-              reject(err);
-            }
+          refreshWaiters.push((success) => {
+            if (success) resolve(api(originalRequest));
+            else reject(err);
           });
         });
       }
 
       isRefreshing = true;
-      const newToken = await refreshAccessToken();
+      const refreshed = await refreshAccessToken();
       isRefreshing = false;
-      refreshWaiters.forEach((waiter) => waiter(newToken));
+      refreshWaiters.forEach((waiter) => waiter(refreshed));
       refreshWaiters = [];
 
-      if (newToken) {
-        originalRequest.headers.Authorization = `Bearer ${newToken}`;
-        return api(originalRequest);
-      }
+      if (refreshed) return api(originalRequest);
 
-      localStorage.removeItem('admin_token');
-      localStorage.removeItem('admin_refresh_token');
       window.location.replace(new URL('/login', window.location.origin).toString());
     }
     return Promise.reject(err);
