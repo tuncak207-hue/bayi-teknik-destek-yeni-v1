@@ -73,11 +73,13 @@ export default function Topbar({
     return () => clearTimeout(timeout);
   }, [query]);
 
-  function logout() {
+  async function logout() {
     if (!confirm('Oturumu kapatmak istediğinize emin misiniz?')) return;
-    localStorage.removeItem('admin_token');
-    localStorage.removeItem('admin_refresh_token');
-    router.push('/login');
+    try {
+      await api.post('/auth/logout');
+    } finally {
+      router.push('/login');
+    }
   }
 
   const title = pageTitles[pathname ?? ''] ?? 'Admin';
