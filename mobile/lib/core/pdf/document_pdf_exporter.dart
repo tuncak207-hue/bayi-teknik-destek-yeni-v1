@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
+
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -56,56 +57,105 @@ class DocumentPdfExporter {
         pageFormat: PdfPageFormat.a4,
         margin: const pw.EdgeInsets.all(32),
         build: (pw.Context ctx) => [
-          pw.Text('ENTPA Mühendislik Hizmeti', style: pw.TextStyle(fontSize: 11, color: PdfColors.grey600)),
+          pw.Text(
+            'ENTPA Mühendislik Hizmeti',
+            style: pw.TextStyle(fontSize: 11, color: PdfColors.grey600),
+          ),
           pw.SizedBox(height: 4),
-          pw.Text(documentTitle, style: pw.TextStyle(fontSize: 21, fontWeight: pw.FontWeight.bold)),
+          pw.Text(
+            documentTitle,
+            style: pw.TextStyle(fontSize: 21, fontWeight: pw.FontWeight.bold),
+          ),
           pw.SizedBox(height: 10),
           pw.Container(
             padding: const pw.EdgeInsets.all(10),
-            decoration: pw.BoxDecoration(color: PdfColors.grey100, borderRadius: pw.BorderRadius.circular(6)),
+            decoration: pw.BoxDecoration(
+              color: PdfColors.grey100,
+              borderRadius: pw.BorderRadius.circular(6),
+            ),
             child: pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
-                _infoLine('Tarih / Saat', DateTime.now().toString().substring(0, 16)),
+                _infoLine(
+                  'Tarih / Saat',
+                  DateTime.now().toString().substring(0, 16),
+                ),
                 _infoLine('Bayi', '$dealerName ($dealerCompany)'),
-                if (customerName != null && customerName.isNotEmpty) _infoLine('Müşteri', customerName),
+                if (customerName != null && customerName.isNotEmpty)
+                  _infoLine('Müşteri', customerName),
                 ...infoRows.map((r) => _infoLine(r.label, r.value)),
               ],
             ),
           ),
           pw.SizedBox(height: 20),
           if (checklist != null) ...[
-            pw.Text('Kontrol Listesi', style: pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold)),
+            pw.Text(
+              'Kontrol Listesi',
+              style: pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold),
+            ),
             pw.SizedBox(height: 8),
             pw.Table(
               border: pw.TableBorder.all(color: PdfColors.grey300),
-              columnWidths: {0: const pw.FlexColumnWidth(5), 1: const pw.FlexColumnWidth(1)},
+              columnWidths: {
+                0: const pw.FlexColumnWidth(5),
+                1: const pw.FlexColumnWidth(1),
+              },
               children: checklist
-                  .map((item) => pw.TableRow(children: [
-                        pw.Padding(padding: const pw.EdgeInsets.all(6), child: pw.Text(item.label, style: const pw.TextStyle(fontSize: 10))),
+                  .map(
+                    (item) => pw.TableRow(
+                      children: [
                         pw.Padding(
                           padding: const pw.EdgeInsets.all(6),
-                          child: pw.Text(item.checked ? 'Evet' : 'Hayır',
-                              style: pw.TextStyle(fontSize: 10, color: item.checked ? PdfColors.green700 : PdfColors.red700)),
+                          child: pw.Text(
+                            item.label,
+                            style: const pw.TextStyle(fontSize: 10),
+                          ),
                         ),
-                      ]))
+                        pw.Padding(
+                          padding: const pw.EdgeInsets.all(6),
+                          child: pw.Text(
+                            item.checked ? 'Evet' : 'Hayır',
+                            style: pw.TextStyle(
+                              fontSize: 10,
+                              color: item.checked
+                                  ? PdfColors.green700
+                                  : PdfColors.red700,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
                   .toList(),
             ),
             pw.SizedBox(height: 16),
           ],
           if (notes != null && notes.isNotEmpty) ...[
-            pw.Text('Notlar / Açıklama', style: pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold)),
+            pw.Text(
+              'Notlar / Açıklama',
+              style: pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold),
+            ),
             pw.SizedBox(height: 6),
             pw.Text(notes, style: const pw.TextStyle(fontSize: 10.5)),
             pw.SizedBox(height: 16),
           ],
           if (signatureBytes != null) ...[
             pw.SizedBox(height: 12),
-            pw.Text('Müşteri İmzası', style: pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold)),
+            pw.Text(
+              'Müşteri İmzası',
+              style: pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold),
+            ),
             pw.SizedBox(height: 6),
             pw.Container(
-              decoration: pw.BoxDecoration(border: pw.Border.all(color: PdfColors.grey300)),
-              child: pw.Image(pw.MemoryImage(signatureBytes), width: 200, height: 100, fit: pw.BoxFit.contain),
+              decoration: pw.BoxDecoration(
+                border: pw.Border.all(color: PdfColors.grey300),
+              ),
+              child: pw.Image(
+                pw.MemoryImage(signatureBytes),
+                width: 200,
+                height: 100,
+                fit: pw.BoxFit.contain,
+              ),
             ),
           ],
           pw.SizedBox(height: 30),
@@ -121,7 +171,9 @@ class DocumentPdfExporter {
     final bytes = await doc.save();
     final dir = await getTemporaryDirectory();
     final safeTitle = documentTitle.replaceAll(RegExp(r'[^\w\s-]'), '');
-    final file = File('${dir.path}/$safeTitle-${DateTime.now().millisecondsSinceEpoch}.pdf');
+    final file = File(
+      '${dir.path}/$safeTitle-${DateTime.now().millisecondsSinceEpoch}.pdf',
+    );
     await file.writeAsBytes(bytes);
     return file;
   }
@@ -131,8 +183,19 @@ class DocumentPdfExporter {
       padding: const pw.EdgeInsets.symmetric(vertical: 2),
       child: pw.Row(
         children: [
-          pw.SizedBox(width: 90, child: pw.Text(label, style: pw.TextStyle(fontSize: 10, color: PdfColors.grey600))),
-          pw.Expanded(child: pw.Text(value, style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold))),
+          pw.SizedBox(
+            width: 90,
+            child: pw.Text(
+              label,
+              style: pw.TextStyle(fontSize: 10, color: PdfColors.grey600),
+            ),
+          ),
+          pw.Expanded(
+            child: pw.Text(
+              value,
+              style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold),
+            ),
+          ),
         ],
       ),
     );
@@ -144,12 +207,18 @@ class DocumentPdfExporter {
 
   /// Backend'den bir imzanın imzalı (signed) URL'sini alıp bayt olarak
   /// indirir — PDF'e gömmek için.
-  static Future<Uint8List?> downloadSignature(Dio dio, String signedUrlEndpoint) async {
+  static Future<Uint8List?> downloadSignature(
+    Dio dio,
+    String signedUrlEndpoint,
+  ) async {
     try {
       final res = await dio.get(signedUrlEndpoint);
       final url = res.data as String?;
       if (url == null) return null;
-      final response = await Dio().get<List<int>>(url, options: Options(responseType: ResponseType.bytes));
+      final response = await Dio().get<List<int>>(
+        url,
+        options: Options(responseType: ResponseType.bytes),
+      );
       return Uint8List.fromList(response.data!);
     } catch (_) {
       return null;

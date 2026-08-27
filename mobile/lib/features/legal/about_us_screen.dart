@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../core/widgets/design_system.dart';
 
 class AboutUsScreen extends StatelessWidget {
@@ -22,8 +23,14 @@ class AboutUsScreen extends StatelessWidget {
           const SizedBox(height: 24),
           const _SectionTitle('Şirket Bilgileri'),
           const SizedBox(height: 8),
-          const _InfoRow(label: 'Ticaret Unvanı', value: 'ENTPA Elektronik Cihazlar Tic. Paz. ve Turizm A.Ş.'),
-          const _InfoRow(label: 'Adres', value: 'Y. Dudullu OSB, 1. Cadde No:23, 34775 Ümraniye – İstanbul / TR'),
+          const _InfoRow(
+            label: 'Ticaret Unvanı',
+            value: 'ENTPA Elektronik Cihazlar Tic. Paz. ve Turizm A.Ş.',
+          ),
+          const _InfoRow(
+            label: 'Adres',
+            value: 'Y. Dudullu OSB, 1. Cadde No:23, 34775 Ümraniye – İstanbul / TR',
+          ),
           const _InfoRow(label: 'E-posta', value: 'info@entpa.com.tr'),
           const SizedBox(height: 24),
           const _SectionTitle('Sürüm Bilgisi'),
@@ -50,7 +57,10 @@ class _SectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(text, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700));
+    return Text(
+      text,
+      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+    );
   }
 }
 
@@ -66,7 +76,10 @@ class _InfoRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(width: 140, child: Text(label, style: TextStyle(color: Colors.grey.shade600))),
+          SizedBox(
+            width: 140,
+            child: Text(label, style: TextStyle(color: Colors.grey.shade600)),
+          ),
           Expanded(child: Text(value)),
         ],
       ),

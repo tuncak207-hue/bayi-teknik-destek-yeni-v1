@@ -1,6 +1,8 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
 
@@ -58,7 +60,11 @@ class _HomeSlideshowState extends State<HomeSlideshow> {
     _autoPlayTimer = Timer.periodic(const Duration(seconds: 4), (_) {
       if (!mounted || !_pageController.hasClients) return;
       final next = (_currentPage + 1) % _slides.length;
-      _pageController.animateToPage(next, duration: const Duration(milliseconds: 500), curve: Curves.easeOut);
+      _pageController.animateToPage(
+        next,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeOut,
+      );
     });
   }
 
@@ -107,15 +113,23 @@ class _HomeSlideshowState extends State<HomeSlideshow> {
                         Image.network(
                           slide['imageUrl'] ?? '',
                           fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) => Container(
-                            color: AppColors.surfaceVariant,
-                            child: const Icon(Icons.image_not_supported_outlined, color: AppColors.textMuted),
-                          ),
+                          errorBuilder: (context, error, stackTrace) =>
+                              Container(
+                                color: AppColors.surfaceVariant,
+                                child: const Icon(
+                                  Icons.image_not_supported_outlined,
+                                  color: AppColors.textMuted,
+                                ),
+                              ),
                           loadingBuilder: (context, child, progress) {
                             if (progress == null) return child;
                             return Container(
                               color: AppColors.surfaceVariant,
-                              child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                              child: const Center(
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              ),
                             );
                           },
                         ),
@@ -125,12 +139,20 @@ class _HomeSlideshowState extends State<HomeSlideshow> {
                             right: 0,
                             bottom: 0,
                             child: Container(
-                              padding: const EdgeInsets.fromLTRB(14, 20, 14, 12),
+                              padding: const EdgeInsets.fromLTRB(
+                                14,
+                                20,
+                                14,
+                                12,
+                              ),
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                   begin: Alignment.topCenter,
                                   end: Alignment.bottomCenter,
-                                  colors: [Colors.transparent, Colors.black.withValues(alpha: 0.55)],
+                                  colors: [
+                                    Colors.transparent,
+                                    Colors.black.withValues(alpha: 0.55),
+                                  ],
                                 ),
                               ),
                               child: Column(
@@ -141,15 +163,27 @@ class _HomeSlideshowState extends State<HomeSlideshow> {
                                     slide['title'] ?? '',
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 14.5),
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 14.5,
+                                    ),
                                   ),
-                                  if ((slide['subtitle'] as String?)?.isNotEmpty == true) ...[
+                                  if ((slide['subtitle'] as String?)
+                                          ?.isNotEmpty ==
+                                      true) ...[
                                     const SizedBox(height: 2),
                                     Text(
                                       slide['subtitle'] ?? '',
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(color: Colors.white.withValues(alpha: 0.85), fontSize: 11.5, fontWeight: FontWeight.w500),
+                                      style: TextStyle(
+                                        color: Colors.white.withValues(
+                                          alpha: 0.85,
+                                        ),
+                                        fontSize: 11.5,
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                     ),
                                   ],
                                 ],

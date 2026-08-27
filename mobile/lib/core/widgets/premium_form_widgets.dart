@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../theme/app_theme.dart';
 
 /// Formlar için ortak bölüm başlığı — kullanıcı isteği üzerine (Bakım
@@ -11,7 +12,12 @@ class PremiumFormSection extends StatelessWidget {
   final List<Widget> children;
   final IconData? icon;
 
-  const PremiumFormSection({super.key, required this.title, required this.children, this.icon});
+  const PremiumFormSection({
+    super.key,
+    required this.title,
+    required this.children,
+    this.icon,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -24,14 +30,22 @@ class PremiumFormSection extends StatelessWidget {
               Container(
                 width: 26,
                 height: 26,
-                decoration: BoxDecoration(color: AppColors.navy.withValues(alpha: 0.07), borderRadius: BorderRadius.circular(8)),
+                decoration: BoxDecoration(
+                  color: AppColors.navy.withValues(alpha: 0.07),
+                  borderRadius: BorderRadius.circular(8),
+                ),
                 child: Icon(icon, size: 14, color: AppColors.navy),
               ),
               const SizedBox(width: 8),
             ],
             Text(
               title,
-              style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w800, color: AppColors.navy, letterSpacing: -0.1),
+              style: const TextStyle(
+                fontSize: 13.5,
+                fontWeight: FontWeight.w800,
+                color: AppColors.navy,
+                letterSpacing: -0.1,
+              ),
             ),
           ],
         ),
@@ -85,22 +99,36 @@ class _PremiumFieldState extends State<PremiumField> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: _focused ? AppColors.brand : Colors.grey.shade100, width: _focused ? 1.3 : 1),
+            border: Border.all(
+              color: _focused ? AppColors.brand : Colors.grey.shade100,
+              width: _focused ? 1.3 : 1,
+            ),
             boxShadow: [
               BoxShadow(
-                color: _focused ? AppColors.brand.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.03),
+                color: _focused
+                    ? AppColors.brand.withValues(alpha: 0.08)
+                    : Colors.black.withValues(alpha: 0.03),
                 blurRadius: _focused ? 12 : 8,
                 offset: const Offset(0, 2),
               ),
             ],
           ),
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 4),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.sm,
+            vertical: 4,
+          ),
           child: Row(
-            crossAxisAlignment: _isMultiline ? CrossAxisAlignment.start : CrossAxisAlignment.center,
+            crossAxisAlignment: _isMultiline
+                ? CrossAxisAlignment.start
+                : CrossAxisAlignment.center,
             children: [
               Padding(
                 padding: EdgeInsets.only(top: _isMultiline ? 14 : 0),
-                child: Icon(widget.icon, size: 18, color: _focused ? AppColors.brand : Colors.grey.shade400),
+                child: Icon(
+                  widget.icon,
+                  size: 18,
+                  color: _focused ? AppColors.brand : Colors.grey.shade400,
+                ),
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -108,7 +136,11 @@ class _PremiumFieldState extends State<PremiumField> {
                   controller: widget.controller,
                   minLines: widget.minLines,
                   maxLines: widget.maxLines,
-                  decoration: InputDecoration(labelText: widget.label, border: InputBorder.none, isDense: true),
+                  decoration: InputDecoration(
+                    labelText: widget.label,
+                    border: InputBorder.none,
+                    isDense: true,
+                  ),
                 ),
               ),
             ],

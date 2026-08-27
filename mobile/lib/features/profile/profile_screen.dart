@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:dio/dio.dart';
+
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/theme_controller.dart';
@@ -55,7 +56,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       // Önceden burada hata yakalama hiç yoktu — istek başarısız olunca
       // _profile hiç dolmuyor, ekran sonsuza kadar yükleniyor görünüyordu.
       if (mounted) {
-        setState(() => _loadError = 'Profil yüklenemedi. İnternet bağlantınızı kontrol edip tekrar deneyin.');
+        setState(
+          () => _loadError = 'Profil yüklenemedi. İnternet bağlantınızı kontrol edip tekrar deneyin.',
+        );
       }
     }
   }
@@ -73,8 +76,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _openEditProfileDialog() async {
-    final firstNameController = TextEditingController(text: _profile!['firstName']);
-    final lastNameController = TextEditingController(text: _profile!['lastName']);
+    final firstNameController = TextEditingController(
+      text: _profile!['firstName'],
+    );
+    final lastNameController = TextEditingController(
+      text: _profile!['lastName'],
+    );
     final phoneController = TextEditingController(text: _profile!['phone']);
     String? error;
 
@@ -83,16 +90,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder: (dialogContext) => StatefulBuilder(
         builder: (dialogContext, setDialogState) {
           Future<void> submit() async {
-            if (firstNameController.text.trim().isEmpty || lastNameController.text.trim().isEmpty) {
+            if (firstNameController.text.trim().isEmpty ||
+                lastNameController.text.trim().isEmpty) {
               setDialogState(() => error = 'Ad ve soyad boş olamaz.');
               return;
             }
             try {
-              await _dio.patch('/users/me', data: {
-                'firstName': firstNameController.text.trim(),
-                'lastName': lastNameController.text.trim(),
-                'phone': phoneController.text.trim(),
-              });
+              await _dio.patch(
+                '/users/me',
+                data: {
+                  'firstName': firstNameController.text.trim(),
+                  'lastName': lastNameController.text.trim(),
+                  'phone': phoneController.text.trim(),
+                },
+              );
               if (dialogContext.mounted) Navigator.pop(dialogContext);
               await _load();
               if (mounted) {
@@ -101,7 +112,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 );
               }
             } on DioException catch (e) {
-              setDialogState(() => error = e.response?.data?['message'] ?? 'Profil güncellenemedi.');
+              setDialogState(
+                () => error =
+                    e.response?.data?['message'] ?? 'Profil güncellenemedi.',
+              );
             }
           }
 
@@ -114,11 +128,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   if (error != null)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 12),
-                      child: Text(error!, style: const TextStyle(color: AppColors.navy, fontSize: 13)),
+                      child: Text(
+                        error!,
+                        style: const TextStyle(
+                          color: AppColors.navy,
+                          fontSize: 13,
+                        ),
+                      ),
                     ),
-                  _PremiumDialogField(controller: firstNameController, label: 'Ad', icon: Icons.person_outline),
+                  _PremiumDialogField(
+                    controller: firstNameController,
+                    label: 'Ad',
+                    icon: Icons.person_outline,
+                  ),
                   const SizedBox(height: 10),
-                  _PremiumDialogField(controller: lastNameController, label: 'Soyad', icon: Icons.person_outline),
+                  _PremiumDialogField(
+                    controller: lastNameController,
+                    label: 'Soyad',
+                    icon: Icons.person_outline,
+                  ),
                   const SizedBox(height: 10),
                   _PremiumDialogField(
                     controller: phoneController,
@@ -130,7 +158,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Vazgeç')),
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: const Text('Vazgeç'),
+              ),
               ElevatedButton(onPressed: submit, child: const Text('Kaydet')),
             ],
           );
@@ -151,7 +182,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         builder: (dialogContext, setDialogState) {
           Future<void> submit() async {
             if (newController.text.length < 8) {
-              setDialogState(() => error = 'Yeni şifre en az 8 karakter olmalı.');
+              setDialogState(
+                () => error = 'Yeni şifre en az 8 karakter olmalı.',
+              );
               return;
             }
             if (newController.text != confirmController.text) {
@@ -159,10 +192,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               return;
             }
             try {
-              await _dio.patch('/users/me/password', data: {
-                'currentPassword': currentController.text,
-                'newPassword': newController.text,
-              });
+              await _dio.patch(
+                '/users/me/password',
+                data: {
+                  'currentPassword': currentController.text,
+                  'newPassword': newController.text,
+                },
+              );
               if (dialogContext.mounted) Navigator.pop(dialogContext);
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -170,7 +206,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 );
               }
             } on DioException catch (e) {
-              setDialogState(() => error = e.response?.data?['message'] ?? 'Şifre değiştirilemedi.');
+              setDialogState(
+                () => error =
+                    e.response?.data?['message'] ?? 'Şifre değiştirilemedi.',
+              );
             }
           }
 
@@ -183,12 +222,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   if (error != null)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 12),
-                      child: Text(error!, style: const TextStyle(color: AppColors.navy, fontSize: 13)),
+                      child: Text(
+                        error!,
+                        style: const TextStyle(
+                          color: AppColors.navy,
+                          fontSize: 13,
+                        ),
+                      ),
                     ),
                   TextField(
                     controller: currentController,
                     obscureText: true,
-                    decoration: const InputDecoration(labelText: 'Mevcut Şifre'),
+                    decoration: const InputDecoration(
+                      labelText: 'Mevcut Şifre',
+                    ),
                   ),
                   const SizedBox(height: 12),
                   TextField(
@@ -200,13 +247,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   TextField(
                     controller: confirmController,
                     obscureText: true,
-                    decoration: const InputDecoration(labelText: 'Yeni Şifre (Tekrar)'),
+                    decoration: const InputDecoration(
+                      labelText: 'Yeni Şifre (Tekrar)',
+                    ),
                   ),
                 ],
               ),
             ),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Vazgeç')),
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: const Text('Vazgeç'),
+              ),
               ElevatedButton(onPressed: submit, child: const Text('Kaydet')),
             ],
           );
@@ -239,7 +291,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   if (error != null)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 12),
-                      child: Text(error!, style: const TextStyle(color: AppColors.navy, fontSize: 13)),
+                      child: Text(
+                        error!,
+                        style: const TextStyle(
+                          color: AppColors.navy,
+                          fontSize: 13,
+                        ),
+                      ),
                     ),
                   TextField(
                     controller: passwordController,
@@ -250,15 +308,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext, false),
+                child: const Text('Vazgeç'),
+              ),
               ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: AppColors.navy),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.navy,
+                ),
                 onPressed: () async {
                   try {
-                    await _dio.delete('/users/me', data: {'password': passwordController.text});
-                    if (dialogContext.mounted) Navigator.pop(dialogContext, true);
+                    await _dio.delete(
+                      '/users/me',
+                      data: {'password': passwordController.text},
+                    );
+                    if (dialogContext.mounted)
+                      Navigator.pop(dialogContext, true);
                   } on DioException catch (e) {
-                    setDialogState(() => error = e.response?.data?['message'] ?? 'Hesap silinemedi.');
+                    setDialogState(
+                      () => error =
+                          e.response?.data?['message'] ?? 'Hesap silinemedi.',
+                    );
                   }
                 },
                 child: const Text('Hesabımı Sil'),
@@ -286,7 +356,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.error_outline, color: AppColors.brand, size: 40),
+                const Icon(
+                  Icons.error_outline,
+                  color: AppColors.brand,
+                  size: 40,
+                ),
                 const SizedBox(height: AppSpacing.sm),
                 Text(_loadError!, textAlign: TextAlign.center),
                 const SizedBox(height: AppSpacing.md),
@@ -312,7 +386,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       );
     }
-    if (_profile == null) return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    if (_profile == null)
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
 
     // Profil sekmesi kök akış olduğu için geri oku göstermez; ikincil
     // profil ekranları AppPageHeader üzerinden geri navigasyon sağlar.
@@ -321,7 +396,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       backgroundColor: scheme.surface,
       appBar: const AppPageHeader(title: 'Profil'),
       body: ListView(
-            children: [
+        children: [
           // ---- Üst kimlik bandı: beyaz zemin ama çok katmanlı, göz alıcı bir
           // görsel doku ile — arka planda ince gradyan "halo" lekeleri,
           // büyük tipografi, çok katmanlı gölgeli avatar.
@@ -341,7 +416,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     height: 180,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      gradient: RadialGradient(colors: [AppColors.brand.withValues(alpha: 0.10), Colors.transparent]),
+                      gradient: RadialGradient(
+                        colors: [
+                          AppColors.brand.withValues(alpha: 0.10),
+                          Colors.transparent,
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -353,12 +433,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     height: 160,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      gradient: RadialGradient(colors: [AppColors.navy.withValues(alpha: 0.06), Colors.transparent]),
+                      gradient: RadialGradient(
+                        colors: [
+                          AppColors.navy.withValues(alpha: 0.06),
+                          Colors.transparent,
+                        ],
+                      ),
                     ),
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.xl, AppSpacing.md, AppSpacing.lg),
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.md,
+                    AppSpacing.xl,
+                    AppSpacing.md,
+                    AppSpacing.lg,
+                  ),
                   child: Column(
                     children: [
                       Stack(
@@ -369,24 +459,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               gradient: const SweepGradient(
-                                colors: [AppColors.brand, AppColors.navy, AppColors.brand],
+                                colors: [
+                                  AppColors.brand,
+                                  AppColors.navy,
+                                  AppColors.brand,
+                                ],
                               ),
                               boxShadow: [
-                                BoxShadow(color: AppColors.brand.withValues(alpha: 0.25), blurRadius: 24, offset: const Offset(0, 8)),
-                                BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 10, offset: const Offset(0, 2)),
+                                BoxShadow(
+                                  color: AppColors.brand.withValues(
+                                    alpha: 0.25,
+                                  ),
+                                  blurRadius: 24,
+                                  offset: const Offset(0, 8),
+                                ),
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.06),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 2),
+                                ),
                               ],
                             ),
                             child: Container(
                               padding: const EdgeInsets.all(3),
-                              decoration: BoxDecoration(color: scheme.surface, shape: BoxShape.circle),
+                              decoration: BoxDecoration(
+                                color: scheme.surface,
+                                shape: BoxShape.circle,
+                              ),
                               child: CircleAvatar(
                                 radius: 44,
                                 backgroundColor: scheme.surfaceContainerHighest,
-                                backgroundImage: _profile!['avatarUrl'] != null ? NetworkImage(_profile!['avatarUrl']) : null,
+                                backgroundImage: _profile!['avatarUrl'] != null
+                                    ? NetworkImage(_profile!['avatarUrl'])
+                                    : null,
                                 child: _profile!['avatarUrl'] == null
                                     ? Text(
-                                        _initials(_profile!['firstName'], _profile!['lastName']),
-                                        style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w800, color: AppColors.navy),
+                                        _initials(
+                                          _profile!['firstName'],
+                                          _profile!['lastName'],
+                                        ),
+                                        style: const TextStyle(
+                                          fontSize: 28,
+                                          fontWeight: FontWeight.w800,
+                                          color: AppColors.navy,
+                                        ),
                                       )
                                     : null,
                               ),
@@ -398,16 +514,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               bottom: 2,
                               child: Container(
                                 padding: const EdgeInsets.all(3),
-                                decoration: BoxDecoration(color: scheme.surface, shape: BoxShape.circle),
+                                decoration: BoxDecoration(
+                                  color: scheme.surface,
+                                  shape: BoxShape.circle,
+                                ),
                                 child: Container(
                                   width: 22,
                                   height: 22,
                                   decoration: BoxDecoration(
-                                    gradient: const LinearGradient(colors: [Color(0xFF22C55E), Color(0xFF16A34A)]),
+                                    gradient: const LinearGradient(
+                                      colors: [
+                                        Color(0xFF22C55E),
+                                        Color(0xFF16A34A),
+                                      ],
+                                    ),
                                     shape: BoxShape.circle,
-                                    boxShadow: [BoxShadow(color: const Color(0xFF16A34A).withValues(alpha: 0.4), blurRadius: 8)],
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: const Color(0xFF16A34A)
+                                            .withValues(alpha: 0.4),
+                                        blurRadius: 8,
+                                      ),
+                                    ],
                                   ),
-                                  child: const Icon(Icons.check, size: 14, color: Colors.white),
+                                  child: const Icon(
+                                    Icons.check,
+                                    size: 14,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
                             ),
@@ -421,25 +555,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ).createShader(bounds),
                         child: Text(
                           '${_profile!['firstName']} ${_profile!['lastName']}',
-                          style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: -0.6),
+                          style: const TextStyle(
+                            fontSize: 26,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.white,
+                            letterSpacing: -0.6,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 10),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
-                          gradient: LinearGradient(colors: [AppColors.navy.withValues(alpha: 0.06), AppColors.brand.withValues(alpha: 0.06)]),
+                          gradient: LinearGradient(
+                            colors: [
+                              AppColors.navy.withValues(alpha: 0.06),
+                              AppColors.brand.withValues(alpha: 0.06),
+                            ],
+                          ),
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: AppColors.navy.withValues(alpha: 0.08)),
+                          border: Border.all(
+                            color: AppColors.navy.withValues(alpha: 0.08),
+                          ),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.workspace_premium, size: 13, color: AppColors.brand),
+                            const Icon(
+                              Icons.workspace_premium,
+                              size: 13,
+                              color: AppColors.brand,
+                            ),
                             const SizedBox(width: 6),
                             Text(
                               _profile!['company'] ?? '',
-                              style: const TextStyle(color: AppColors.navy, fontSize: 12.5, fontWeight: FontWeight.w700),
+                              style: const TextStyle(
+                                color: AppColors.navy,
+                                fontSize: 12.5,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                           ],
                         ),
@@ -451,7 +608,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             Expanded(
                               child: _StatCard(
                                 icon: Icons.smart_toy_outlined,
-                                value: '${_myStats?['questionsThisMonth'] ?? '—'}',
+                                value:
+                                    '${_myStats?['questionsThisMonth'] ?? '—'}',
                                 label: 'Bu Ay Soru',
                                 accent: AppColors.navy,
                               ),
@@ -469,7 +627,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             Expanded(
                               child: _StatCard(
                                 icon: Icons.emoji_events_outlined,
-                                value: '${_badges.where((b) => b['earned'] == true).length}/${_badges.length}',
+                                value:
+                                    '${_badges.where((b) => b['earned'] == true).length}/${_badges.length}',
                                 label: 'Rozet',
                                 accent: const Color(0xFFCA8A04),
                               ),
@@ -481,13 +640,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       OutlinedButton.icon(
                         onPressed: _openEditProfileDialog,
                         style: OutlinedButton.styleFrom(
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
                           side: const BorderSide(color: AppColors.divider),
                           foregroundColor: AppColors.navy,
-                          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 18,
+                            vertical: 10,
+                          ),
                         ),
                         icon: const Icon(Icons.edit_outlined, size: 15),
-                        label: const Text('Profili Düzenle', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                        label: const Text(
+                          'Profili Düzenle',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -505,8 +675,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 _ProfileSection(
                   title: 'Hesap Bilgileri',
                   children: [
-                    _ProfileTile(icon: Icons.phone_outlined, title: _profile!['phone'] ?? ''),
-                    _ProfileTile(icon: Icons.email_outlined, title: _profile!['email'] ?? ''),
+                    _ProfileTile(
+                      icon: Icons.phone_outlined,
+                      title: _profile!['phone'] ?? '',
+                    ),
+                    _ProfileTile(
+                      icon: Icons.email_outlined,
+                      title: _profile!['email'] ?? '',
+                    ),
                   ],
                 ),
 
@@ -517,7 +693,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     title: 'Rozetler',
                     children: [
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(AppSpacing.sm, 0, AppSpacing.sm, AppSpacing.sm),
+                        padding: const EdgeInsets.fromLTRB(
+                          AppSpacing.sm,
+                          0,
+                          AppSpacing.sm,
+                          AppSpacing.sm,
+                        ),
                         child: Wrap(
                           spacing: 8,
                           runSpacing: 8,
@@ -526,20 +707,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             return Opacity(
                               opacity: earned ? 1.0 : 0.35,
                               child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 8,
+                                ),
                                 decoration: BoxDecoration(
-                                  color: earned ? AppColors.navy.withValues(alpha: 0.06) : Colors.grey.shade100,
-                                  borderRadius: BorderRadius.circular(AppSpacing.radius),
+                                  color: earned
+                                      ? AppColors.navy.withValues(alpha: 0.06)
+                                      : Colors.grey.shade100,
+                                  borderRadius: BorderRadius.circular(
+                                    AppSpacing.radius,
+                                  ),
                                   border: Border.all(color: AppColors.divider),
                                 ),
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Text(b['icon'] ?? '🏅', style: const TextStyle(fontSize: 22)),
+                                    Text(
+                                      b['icon'] ?? '🏅',
+                                      style: const TextStyle(fontSize: 22),
+                                    ),
                                     const SizedBox(height: 4),
                                     Text(
                                       b['label'] ?? '',
-                                      style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
+                                      style: const TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                       textAlign: TextAlign.center,
                                     ),
                                   ],
@@ -563,7 +757,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       title: 'Bildirimler',
                       value: _profile!['notificationsEnabled'] ?? true,
                       onChanged: (v) async {
-                        await _dio.patch('/users/me/settings', data: {'notificationsEnabled': v});
+                        await _dio.patch(
+                          '/users/me/settings',
+                          data: {'notificationsEnabled': v},
+                        );
                         setState(() => _profile!['notificationsEnabled'] = v);
                       },
                     ),
@@ -573,14 +770,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       value: _profile!['darkMode'] ?? false,
                       onChanged: (v) async {
                         ThemeController().setDark(v);
-                        await _dio.patch('/users/me/settings', data: {'darkMode': v});
+                        await _dio.patch(
+                          '/users/me/settings',
+                          data: {'darkMode': v},
+                        );
                         setState(() => _profile!['darkMode'] = v);
                       },
                     ),
                     _ProfileTile(
                       icon: Icons.language_outlined,
                       title: 'Dil',
-                      trailing: Text(_profile!['language'] == 'tr' ? 'Türkçe' : _profile!['language']),
+                      trailing: Text(
+                        _profile!['language'] == 'tr'
+                            ? 'Türkçe'
+                            : _profile!['language'],
+                      ),
                     ),
                     _ProfileTile(
                       icon: Icons.settings_outlined,
@@ -596,7 +800,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 _ProfileSection(
                   title: 'Hesap Yönetimi',
                   children: [
-                    _ProfileTile(icon: Icons.lock_outline, title: 'Şifre Değiştir', onTap: _openChangePasswordDialog),
+                    _ProfileTile(
+                      icon: Icons.lock_outline,
+                      title: 'Şifre Değiştir',
+                      onTap: _openChangePasswordDialog,
+                    ),
                     _ProfileTile(
                       icon: Icons.groups_outlined,
                       title: 'Ekip Üyelerim',
@@ -644,8 +852,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ],
             ),
           ),
-            ],
-          ),
+        ],
+      ),
     );
   }
 }
@@ -668,20 +876,37 @@ class _ProfileSection extends StatelessWidget {
           padding: const EdgeInsets.only(left: 6, bottom: 8),
           child: Text(
             title.toUpperCase(),
-            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Theme.of(context).colorScheme.onSurfaceVariant, letterSpacing: 0.8),
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              letterSpacing: 0.8,
+            ),
           ),
         ),
         Container(
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surfaceContainer,
             borderRadius: BorderRadius.circular(18),
-            boxShadow: [BoxShadow(color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.08), blurRadius: 14, offset: const Offset(0, 3))],
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(context).colorScheme.shadow
+                    .withValues(alpha: 0.08),
+                blurRadius: 14,
+                offset: const Offset(0, 3),
+              ),
+            ],
           ),
           child: Column(
             children: [
               for (int i = 0; i < children.length; i++) ...[
                 children[i],
-                if (i != children.length - 1) Divider(height: 1, indent: 64, color: Theme.of(context).colorScheme.outlineVariant),
+                if (i != children.length - 1)
+                  Divider(
+                    height: 1,
+                    indent: 64,
+                    color: Theme.of(context).colorScheme.outlineVariant,
+                  ),
               ],
             ],
           ),
@@ -701,7 +926,14 @@ class _ProfileTile extends StatelessWidget {
   final VoidCallback? onTap;
   final Color? color;
 
-  const _ProfileTile({required this.icon, required this.title, this.subtitle, this.trailing, this.onTap, this.color});
+  const _ProfileTile({
+    required this.icon,
+    required this.title,
+    this.subtitle,
+    this.trailing,
+    this.onTap,
+    this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -712,12 +944,35 @@ class _ProfileTile extends StatelessWidget {
       leading: Container(
         width: 38,
         height: 38,
-        decoration: BoxDecoration(color: tileColor.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(11)),
+        decoration: BoxDecoration(
+          color: tileColor.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(11),
+        ),
         child: Icon(icon, size: 18, color: tileColor),
       ),
-      title: Text(title, style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w500, color: color ?? scheme.onSurface)),
-      subtitle: subtitle != null ? Text(subtitle!, style: TextStyle(fontSize: 12, color: scheme.onSurfaceVariant)) : null,
-      trailing: trailing ?? (onTap != null ? Icon(Icons.chevron_right, size: 20, color: scheme.onSurfaceVariant.withValues(alpha: 0.5)) : null),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontSize: 14.5,
+          fontWeight: FontWeight.w500,
+          color: color ?? scheme.onSurface,
+        ),
+      ),
+      subtitle: subtitle != null
+          ? Text(
+              subtitle!,
+              style: TextStyle(fontSize: 12, color: scheme.onSurfaceVariant),
+            )
+          : null,
+      trailing:
+          trailing ??
+          (onTap != null
+              ? Icon(
+                  Icons.chevron_right,
+                  size: 20,
+                  color: scheme.onSurfaceVariant.withValues(alpha: 0.5),
+                )
+              : null),
       onTap: onTap,
     );
   }
@@ -731,7 +986,12 @@ class _StatCard extends StatelessWidget {
   final String label;
   final Color accent;
 
-  const _StatCard({required this.icon, required this.value, required this.label, this.accent = AppColors.brand});
+  const _StatCard({
+    required this.icon,
+    required this.value,
+    required this.label,
+    this.accent = AppColors.brand,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -739,7 +999,10 @@ class _StatCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [accent.withValues(alpha: 0.07), accent.withValues(alpha: 0.02)],
+          colors: [
+            accent.withValues(alpha: 0.07),
+            accent.withValues(alpha: 0.02),
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -751,13 +1014,31 @@ class _StatCard extends StatelessWidget {
           Container(
             width: 26,
             height: 26,
-            decoration: BoxDecoration(color: accent.withValues(alpha: 0.12), shape: BoxShape.circle),
+            decoration: BoxDecoration(
+              color: accent.withValues(alpha: 0.12),
+              shape: BoxShape.circle,
+            ),
             child: Icon(icon, size: 13, color: accent),
           ),
           const SizedBox(height: 6),
-          Text(value, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: Theme.of(context).colorScheme.onSurface)),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w900,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
           const SizedBox(height: 1),
-          Text(label, style: TextStyle(fontSize: 10, color: Theme.of(context).colorScheme.onSurfaceVariant, fontWeight: FontWeight.w600), textAlign: TextAlign.center),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 10,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              fontWeight: FontWeight.w600,
+            ),
+            textAlign: TextAlign.center,
+          ),
         ],
       ),
     );
@@ -770,7 +1051,12 @@ class _ProfileSwitchTile extends StatelessWidget {
   final bool value;
   final ValueChanged<bool> onChanged;
 
-  const _ProfileSwitchTile({required this.icon, required this.title, required this.value, required this.onChanged});
+  const _ProfileSwitchTile({
+    required this.icon,
+    required this.title,
+    required this.value,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -779,10 +1065,24 @@ class _ProfileSwitchTile extends StatelessWidget {
       secondary: Container(
         width: 38,
         height: 38,
-        decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(11)),
-        child: Icon(icon, size: 18, color: Theme.of(context).colorScheme.primary),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(11),
+        ),
+        child: Icon(
+          icon,
+          size: 18,
+          color: Theme.of(context).colorScheme.primary,
+        ),
       ),
-      title: Text(title, style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w500, color: Theme.of(context).colorScheme.onSurface)),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontSize: 14.5,
+          fontWeight: FontWeight.w500,
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
+      ),
       value: value,
       onChanged: onChanged,
       activeColor: AppColors.brand,
@@ -823,18 +1123,29 @@ class _PremiumDialogFieldState extends State<_PremiumDialogField> {
         decoration: BoxDecoration(
           color: scheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: _focused ? AppColors.brand : scheme.outlineVariant, width: _focused ? 1.3 : 1),
+          border: Border.all(
+            color: _focused ? AppColors.brand : scheme.outlineVariant,
+            width: _focused ? 1.3 : 1,
+          ),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
         child: Row(
           children: [
-            Icon(widget.icon, size: 18, color: _focused ? AppColors.brand : scheme.onSurfaceVariant),
+            Icon(
+              widget.icon,
+              size: 18,
+              color: _focused ? AppColors.brand : scheme.onSurfaceVariant,
+            ),
             const SizedBox(width: 10),
             Expanded(
               child: TextField(
                 controller: widget.controller,
                 keyboardType: widget.keyboardType,
-                decoration: InputDecoration(labelText: widget.label, border: InputBorder.none, isDense: true),
+                decoration: InputDecoration(
+                  labelText: widget.label,
+                  border: InputBorder.none,
+                  isDense: true,
+                ),
               ),
             ),
           ],

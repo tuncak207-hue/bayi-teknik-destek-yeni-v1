@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:dio/dio.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import 'top_nav_bar.dart';
 import '../core/api/api_client.dart';
 import '../core/api/socket_service.dart';
@@ -57,7 +58,8 @@ class _RootShellState extends State<RootShell> {
   Future<void> _loadUnreadNotifications() async {
     try {
       final res = await _dio.get('/notifications/unread-count');
-      if (mounted) setState(() => _unreadNotifications = res.data['count'] ?? 0);
+      if (mounted)
+        setState(() => _unreadNotifications = res.data['count'] ?? 0);
     } catch (_) {
       // İkincil bir bilgi, sessizce yut.
     }
@@ -116,7 +118,11 @@ class _RootShellState extends State<RootShell> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Arama başlatılamadı. Cihazınızda bir telefon uygulaması olduğundan emin olun.')),
+          const SnackBar(
+            content: Text(
+              'Arama başlatılamadı. Cihazınızda bir telefon uygulaması olduğundan emin olun.',
+            ),
+          ),
         );
       }
     }
@@ -132,7 +138,8 @@ class _RootShellState extends State<RootShell> {
     // Dal sırası:   0=Ana Sayfa, 1=AI,                              2=Mesajlar, 3=Profil
     const branchForDestination = {0: 0, 1: 1, 3: 2, 4: 3};
     const destinationForBranch = {0: 0, 1: 1, 2: 3, 3: 4};
-    final selectedDestination = destinationForBranch[widget.navigationShell.currentIndex] ?? 0;
+    final selectedDestination =
+        destinationForBranch[widget.navigationShell.currentIndex] ?? 0;
 
     void handleTap(int index) {
       if (index == 2) {
@@ -159,7 +166,9 @@ class _RootShellState extends State<RootShell> {
       unreadMessages: _unreadMessages,
       unreadNotifications: _unreadNotifications,
       onTap: handleTap,
-      onNotificationsTap: () => context.push('/notifications').then((_) => _loadUnreadNotifications()),
+      onNotificationsTap: () => context
+          .push('/notifications')
+          .then((_) => _loadUnreadNotifications()),
     );
     // ÖNEMLİ: "üst menü bağımsız olmamalı, ana menünün bir parçası
     // gibi hareket etmeli" — root_shell artık üst menüyü KENDİSİ

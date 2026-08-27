@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:dio/dio.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/design_system.dart';
@@ -75,16 +76,21 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
         child: ListView(
           shrinkWrap: true,
           children: documents
-              .map((d) => ListTile(
-                    leading: const Icon(Icons.picture_as_pdf_outlined, color: AppColors.navy),
-                    title: Text(d['title'] ?? ''),
-                    subtitle: Text('${d['brand']} / ${d['model']}'),
-                    onTap: () {
-                      Navigator.pop(context); // bottom sheet
-                      context.pop(); // scanner ekranı
-                      context.push('/documents/${d['id']}');
-                    },
-                  ))
+              .map(
+                (d) => ListTile(
+                  leading: const Icon(
+                    Icons.picture_as_pdf_outlined,
+                    color: AppColors.navy,
+                  ),
+                  title: Text(d['title'] ?? ''),
+                  subtitle: Text('${d['brand']} / ${d['model']}'),
+                  onTap: () {
+                    Navigator.pop(context); // bottom sheet
+                    context.pop(); // scanner ekranı
+                    context.push('/documents/${d['id']}');
+                  },
+                ),
+              )
               .toList(),
         ),
       ),
@@ -108,7 +114,10 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
       appBar: AppPageHeader(
         title: 'Barkod/QR ile Doküman Bul',
         actions: [
-          IconButton(icon: const Icon(Icons.flash_on), onPressed: () => _controller.toggleTorch()),
+          IconButton(
+            icon: const Icon(Icons.flash_on),
+            onPressed: () => _controller.toggleTorch(),
+          ),
         ],
       ),
       body: Stack(
@@ -129,7 +138,9 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
               bottom: 40,
               left: 0,
               right: 0,
-              child: Center(child: CircularProgressIndicator(color: Colors.white)),
+              child: Center(
+                child: CircularProgressIndicator(color: Colors.white),
+              ),
             ),
           Positioned(
             bottom: 16,
@@ -138,7 +149,11 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
             child: Text(
               'Ürün etiketindeki barkodu/QR kodu çerçeve içine hizalayın',
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white, fontSize: 12, shadows: [Shadow(blurRadius: 4)]),
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+                shadows: [Shadow(blurRadius: 4)],
+              ),
             ),
           ),
         ],

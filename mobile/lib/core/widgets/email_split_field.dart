@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../theme/app_theme.dart';
 
 /// Tek, premium bir e-posta giriş alanı. Önceden bu alan "kullanıcı
@@ -40,7 +41,8 @@ class EmailSplitFieldState extends State<EmailSplitField> {
   @override
   void initState() {
     super.initState();
-    final initial = (widget.initialUsername != null && widget.initialDomain != null)
+    final initial =
+        (widget.initialUsername != null && widget.initialDomain != null)
         ? '${widget.initialUsername}@${widget.initialDomain}'
         : '';
     _controller = TextEditingController(text: initial);
@@ -62,10 +64,15 @@ class EmailSplitFieldState extends State<EmailSplitField> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: _focused ? AppColors.brand : Colors.grey.shade200, width: _focused ? 1.4 : 1),
+          border: Border.all(
+            color: _focused ? AppColors.brand : Colors.grey.shade200,
+            width: _focused ? 1.4 : 1,
+          ),
           boxShadow: [
             BoxShadow(
-              color: _focused ? AppColors.brand.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.03),
+              color: _focused
+                  ? AppColors.brand.withValues(alpha: 0.08)
+                  : Colors.black.withValues(alpha: 0.03),
               blurRadius: _focused ? 14 : 8,
               offset: const Offset(0, 3),
             ),
@@ -79,9 +86,16 @@ class EmailSplitFieldState extends State<EmailSplitField> {
           decoration: InputDecoration(
             hintText: 'E-posta adresiniz',
             hintStyle: TextStyle(fontSize: 15, color: Colors.grey.shade400),
-            prefixIcon: Icon(Icons.mail_outline, size: 20, color: _focused ? AppColors.brand : Colors.grey.shade400),
+            prefixIcon: Icon(
+              Icons.mail_outline,
+              size: 20,
+              color: _focused ? AppColors.brand : Colors.grey.shade400,
+            ),
             border: InputBorder.none,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 16,
+            ),
           ),
         ),
       ),

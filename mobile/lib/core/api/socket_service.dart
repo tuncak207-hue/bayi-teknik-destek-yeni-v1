@@ -1,5 +1,7 @@
 import 'dart:async';
+
 import 'package:socket_io_client/socket_io_client.dart' as io;
+
 import 'api_config.dart';
 import '../auth/token_storage.dart';
 
@@ -19,13 +21,15 @@ class SocketService {
   // Mesajlar dışındaki TÜM bildirimler (randevu, eğitim içeriği, sertifika
   // uyarısı vb.) için — Firebase push yapılandırılmamışsa bile uygulama
   // açıkken anlık ulaşmasını sağlayan birincil kanal.
-  final _notificationController = StreamController<Map<String, dynamic>>.broadcast();
+  final _notificationController =
+      StreamController<Map<String, dynamic>>.broadcast();
 
   /// Her yeni mesajda (AI veya kullanıcı) tetiklenir. Dinleyen ekran
   /// conversationId'ye göre kendi listesini filtrelemeli.
   Stream<Map<String, dynamic>> get onMessage => _messageController.stream;
   Stream<String> get onTyping => _typingController.stream;
-  Stream<Map<String, dynamic>> get onNotification => _notificationController.stream;
+  Stream<Map<String, dynamic>> get onNotification =>
+      _notificationController.stream;
 
   bool get isConnected => _socket?.connected ?? false;
 

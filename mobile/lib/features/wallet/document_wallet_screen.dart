@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:share_plus/share_plus.dart';
+
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/design_system.dart';
@@ -77,8 +78,13 @@ class _DocumentWalletScreenState extends State<DocumentWalletScreen> {
     );
     if (choice == null) return;
 
-    final source = choice == 'camera' ? ImageSource.camera : ImageSource.gallery;
-    final picked = await ImagePicker().pickImage(source: source, imageQuality: 85);
+    final source = choice == 'camera'
+        ? ImageSource.camera
+        : ImageSource.gallery;
+    final picked = await ImagePicker().pickImage(
+      source: source,
+      imageQuality: 85,
+    );
     if (picked == null) return;
     final filePath = picked.path;
     final fileName = picked.name;
@@ -107,10 +113,14 @@ class _DocumentWalletScreenState extends State<DocumentWalletScreen> {
       String message = 'Kaydedilemedi, tekrar deneyin.';
       if (e is DioException) {
         final serverMessage = e.response?.data?['message'];
-        if (serverMessage is String && serverMessage.isNotEmpty) message = serverMessage;
-        if (e.response == null) message = 'Sunucuya ulaşılamadı. İnternet bağlantınızı kontrol edin.';
+        if (serverMessage is String && serverMessage.isNotEmpty)
+          message = serverMessage;
+        if (e.response == null)
+          message = 'Sunucuya ulaşılamadı. İnternet bağlantınızı kontrol edin.';
       }
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: AppColors.navy));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message), backgroundColor: AppColors.navy),
+      );
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -120,7 +130,10 @@ class _DocumentWalletScreenState extends State<DocumentWalletScreen> {
     final result = await showModalBottomSheet<Map<String, String>>(
       context: context,
       isScrollControlled: true,
-      builder: (_) => _DocumentMetaSheet(initialName: doc['name'], initialCategory: doc['category']),
+      builder: (_) => _DocumentMetaSheet(
+        initialName: doc['name'],
+        initialCategory: doc['category'],
+      ),
     );
     if (result == null) return;
     try {
@@ -131,10 +144,14 @@ class _DocumentWalletScreenState extends State<DocumentWalletScreen> {
       String message = 'Kaydedilemedi, tekrar deneyin.';
       if (e is DioException) {
         final serverMessage = e.response?.data?['message'];
-        if (serverMessage is String && serverMessage.isNotEmpty) message = serverMessage;
-        if (e.response == null) message = 'Sunucuya ulaşılamadı. İnternet bağlantınızı kontrol edin.';
+        if (serverMessage is String && serverMessage.isNotEmpty)
+          message = serverMessage;
+        if (e.response == null)
+          message = 'Sunucuya ulaşılamadı. İnternet bağlantınızı kontrol edin.';
       }
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: AppColors.navy));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message), backgroundColor: AppColors.navy),
+      );
     }
   }
 
@@ -149,7 +166,8 @@ class _DocumentWalletScreenState extends State<DocumentWalletScreen> {
       await OpenFilex.open(path);
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Belge açılamadı.')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('Belge açılamadı.')));
       }
     } finally {
       if (mounted) setState(() => _busyId = null);
@@ -189,10 +207,18 @@ class _DocumentWalletScreenState extends State<DocumentWalletScreen> {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: const Text('Belgeyi Sil'),
-        content: Text('"${doc['name']}" kalıcı olarak silinecek. Emin misiniz?'),
+        content: Text(
+          '"${doc['name']}" kalıcı olarak silinecek. Emin misiniz?',
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
-          TextButton(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('Sil', style: TextStyle(color: AppColors.navy))),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Vazgeç'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Sil', style: TextStyle(color: AppColors.navy)),
+          ),
         ],
       ),
     );
@@ -223,109 +249,206 @@ class _DocumentWalletScreenState extends State<DocumentWalletScreen> {
           ),
           child: Text(
             '${_documents.length}',
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.primary),
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              color: AppColors.primary,
+            ),
           ),
         ),
       ),
       backgroundColor: const Color(0xFFFFFFFF),
-      floatingActionButton: StandardFab(label: 'Belge Ekle', onPressed: _addDocument),
+      floatingActionButton: StandardFab(
+        label: 'Belge Ekle',
+        onPressed: _addDocument,
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: SafeArea(
         child: Column(
           children: [
             Expanded(
               child: _loading
-                ? const Center(child: CircularProgressIndicator())
-                : _documents.isEmpty
-                    ? RefreshIndicator(
-                        onRefresh: _load,
-                        child: ListView(
-                          children: [
-                            const SizedBox(height: 72),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-                              child: StandardCard(
-                                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
-                                child: const AppEmptyState(
-                                  icon: Icons.folder_open_outlined,
-                                  title: 'Henüz bir belgeniz yok',
-                                  description: 'İSG evrakları, sertifikalar, yetki belgeleriniz gibi evraklarınızı burada saklayabilirsiniz.',
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    : RefreshIndicator(
-                        onRefresh: _load,
-                        child: ListView(
-                          padding: const EdgeInsets.all(AppSpacing.md),
-                          children: [
-                      ..._kCategoryLabels.entries.where((e) => grouped.containsKey(e.key)).map((entry) {
-                      final docs = grouped[entry.key]!;
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                  ? const Center(child: CircularProgressIndicator())
+                  : _documents.isEmpty
+                  ? RefreshIndicator(
+                      onRefresh: _load,
+                      child: ListView(
                         children: [
+                          const SizedBox(height: 72),
                           Padding(
-                            padding: const EdgeInsets.only(left: 4, bottom: 8, top: 8),
-                            child: Text(
-                              entry.value.toUpperCase(),
-                              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.grey.shade400, letterSpacing: 0.6),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppSpacing.md,
+                            ),
+                            child: StandardCard(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: AppSpacing.lg,
+                                vertical: AppSpacing.xl,
+                              ),
+                              child: const AppEmptyState(
+                                icon: Icons.folder_open_outlined,
+                                title: 'Henüz bir belgeniz yok',
+                                description: 'İSG evrakları, sertifikalar, yetki belgeleriniz gibi evraklarınızı burada saklayabilirsiniz.',
+                              ),
                             ),
                           ),
-                          ...docs.map((doc) {
-                            final isBusy = _busyId == doc['id'];
-                            return Container(
-                              margin: const EdgeInsets.only(bottom: AppSpacing.xs),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(18),
-                                border: Border.all(color: AppColors.divider),
-                                boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 3))],
-                              ),
-                              child: ListTile(
-                                contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 4),
-                                leading: Container(
-                                  width: 44,
-                                  height: 44,
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [AppColors.navy.withValues(alpha: 0.10), AppColors.brand.withValues(alpha: 0.10)],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                    ),
-                                    borderRadius: BorderRadius.circular(13),
-                                  ),
-                                  child: const Icon(Icons.description_outlined, color: AppColors.navy, size: 20),
-                                ),
-                                title: Text(doc['name'] ?? '', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14.5, color: AppColors.navy, letterSpacing: -0.1)),
-                                trailing: isBusy
-                                    ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2))
-                                    : PopupMenuButton<String>(
-                                        icon: const Icon(Icons.more_vert, color: Colors.grey),
-                                        onSelected: (v) {
-                                          if (v == 'view') _viewDocument(doc);
-                                          if (v == 'edit') _editMeta(doc);
-                                          if (v == 'share') _shareDocument(doc);
-                                          if (v == 'delete') _delete(doc);
-                                        },
-                                        itemBuilder: (context) => [
-                                          const PopupMenuItem(value: 'view', child: Text('Görüntüle')),
-                                          const PopupMenuItem(value: 'edit', child: Text('Adı/Türü Düzenle')),
-                                          const PopupMenuItem(value: 'share', child: Text('Paylaş')),
-                                          const PopupMenuItem(value: 'delete', child: Text('Sil', style: TextStyle(color: AppColors.navy))),
-                                        ],
-                                      ),
-                                onTap: isBusy ? null : () => _viewDocument(doc),
-                              ),
-                            );
-                          }),
                         ],
-                      );
-                    }).toList(),
-                          ],
-                        ),
                       ),
+                    )
+                  : RefreshIndicator(
+                      onRefresh: _load,
+                      child: ListView(
+                        padding: const EdgeInsets.all(AppSpacing.md),
+                        children: [
+                          ..._kCategoryLabels.entries
+                              .where((e) => grouped.containsKey(e.key))
+                              .map((entry) {
+                                final docs = grouped[entry.key]!;
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                        left: 4,
+                                        bottom: 8,
+                                        top: 8,
+                                      ),
+                                      child: Text(
+                                        entry.value.toUpperCase(),
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w700,
+                                          color: Colors.grey.shade400,
+                                          letterSpacing: 0.6,
+                                        ),
+                                      ),
+                                    ),
+                                    ...docs.map((doc) {
+                                      final isBusy = _busyId == doc['id'];
+                                      return Container(
+                                        margin: const EdgeInsets.only(
+                                          bottom: AppSpacing.xs,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(
+                                            18,
+                                          ),
+                                          border: Border.all(
+                                            color: AppColors.divider,
+                                          ),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black.withValues(
+                                                alpha: 0.03,
+                                              ),
+                                              blurRadius: 10,
+                                              offset: const Offset(0, 3),
+                                            ),
+                                          ],
+                                        ),
+                                        child: ListTile(
+                                          contentPadding:
+                                              const EdgeInsets.symmetric(
+                                                horizontal: AppSpacing.sm,
+                                                vertical: 4,
+                                              ),
+                                          leading: Container(
+                                            width: 44,
+                                            height: 44,
+                                            decoration: BoxDecoration(
+                                              gradient: LinearGradient(
+                                                colors: [
+                                                  AppColors.navy.withValues(
+                                                    alpha: 0.10,
+                                                  ),
+                                                  AppColors.brand.withValues(
+                                                    alpha: 0.10,
+                                                  ),
+                                                ],
+                                                begin: Alignment.topLeft,
+                                                end: Alignment.bottomRight,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(13),
+                                            ),
+                                            child: const Icon(
+                                              Icons.description_outlined,
+                                              color: AppColors.navy,
+                                              size: 20,
+                                            ),
+                                          ),
+                                          title: Text(
+                                            doc['name'] ?? '',
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w800,
+                                              fontSize: 14.5,
+                                              color: AppColors.navy,
+                                              letterSpacing: -0.1,
+                                            ),
+                                          ),
+                                          trailing: isBusy
+                                              ? const SizedBox(
+                                                  height: 18,
+                                                  width: 18,
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                        strokeWidth: 2,
+                                                      ),
+                                                )
+                                              : PopupMenuButton<String>(
+                                                  icon: const Icon(
+                                                    Icons.more_vert,
+                                                    color: Colors.grey,
+                                                  ),
+                                                  onSelected: (v) {
+                                                    if (v == 'view')
+                                                      _viewDocument(doc);
+                                                    if (v == 'edit')
+                                                      _editMeta(doc);
+                                                    if (v == 'share')
+                                                      _shareDocument(doc);
+                                                    if (v == 'delete')
+                                                      _delete(doc);
+                                                  },
+                                                  itemBuilder: (context) => [
+                                                    const PopupMenuItem(
+                                                      value: 'view',
+                                                      child: Text('Görüntüle'),
+                                                    ),
+                                                    const PopupMenuItem(
+                                                      value: 'edit',
+                                                      child: Text(
+                                                        'Adı/Türü Düzenle',
+                                                      ),
+                                                    ),
+                                                    const PopupMenuItem(
+                                                      value: 'share',
+                                                      child: Text('Paylaş'),
+                                                    ),
+                                                    const PopupMenuItem(
+                                                      value: 'delete',
+                                                      child: Text(
+                                                        'Sil',
+                                                        style: TextStyle(
+                                                          color: AppColors.navy,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                          onTap: isBusy
+                                              ? null
+                                              : () => _viewDocument(doc),
+                                        ),
+                                      );
+                                    }),
+                                  ],
+                                );
+                              })
+                              .toList(),
+                        ],
+                      ),
+                    ),
             ),
           ],
         ),
@@ -344,7 +467,9 @@ class _DocumentMetaSheet extends StatefulWidget {
 }
 
 class _DocumentMetaSheetState extends State<_DocumentMetaSheet> {
-  late final _nameController = TextEditingController(text: widget.initialName ?? '');
+  late final _nameController = TextEditingController(
+    text: widget.initialName ?? '',
+  );
   late String _category = widget.initialCategory ?? 'OTHER';
 
   @override
@@ -358,7 +483,8 @@ class _DocumentMetaSheetState extends State<_DocumentMetaSheet> {
         // sadece klavye yüksekliği (viewInsets.bottom) hesaba
         // katılıyordu, klavye kapalıyken sistem gezinme çubuğunun
         // kendi boşluğu (padding.bottom) unutuluyordu.
-        bottom: MediaQuery.of(context).viewInsets.bottom +
+        bottom:
+            MediaQuery.of(context).viewInsets.bottom +
             MediaQuery.of(context).padding.bottom +
             AppSpacing.md,
       ),
@@ -366,28 +492,49 @@ class _DocumentMetaSheetState extends State<_DocumentMetaSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(widget.initialName == null ? 'Belge Bilgileri' : 'Belgeyi Düzenle', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+          Text(
+            widget.initialName == null ? 'Belge Bilgileri' : 'Belgeyi Düzenle',
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+          ),
           const SizedBox(height: AppSpacing.sm),
-          TextField(controller: _nameController, decoration: const InputDecoration(labelText: 'Belge Adı', hintText: 'Örn: İSG Eğitim Sertifikası')),
+          TextField(
+            controller: _nameController,
+            decoration: const InputDecoration(
+              labelText: 'Belge Adı',
+              hintText: 'Örn: İSG Eğitim Sertifikası',
+            ),
+          ),
           const SizedBox(height: AppSpacing.sm),
-          const Text('Kategori', style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AppColors.navy)),
+          const Text(
+            'Kategori',
+            style: TextStyle(
+              fontSize: 12.5,
+              fontWeight: FontWeight.w600,
+              color: AppColors.navy,
+            ),
+          ),
           const SizedBox(height: 6),
           Wrap(
             spacing: 8,
             runSpacing: 8,
             children: _kCategoryLabels.entries
-                .map((e) => ChoiceChip(
-                      label: Text(e.value),
-                      selected: _category == e.key,
-                      onSelected: (_) => setState(() => _category = e.key),
-                    ))
+                .map(
+                  (e) => ChoiceChip(
+                    label: Text(e.value),
+                    selected: _category == e.key,
+                    onSelected: (_) => setState(() => _category = e.key),
+                  ),
+                )
                 .toList(),
           ),
           const SizedBox(height: AppSpacing.md),
           ElevatedButton(
             onPressed: () {
               if (_nameController.text.trim().isEmpty) return;
-              Navigator.pop(context, {'name': _nameController.text.trim(), 'category': _category});
+              Navigator.pop(context, {
+                'name': _nameController.text.trim(),
+                'category': _category,
+              });
             },
             child: const Text('Kaydet'),
           ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:dio/dio.dart';
+
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/design_system.dart';
@@ -151,12 +152,20 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: const Text('Tüm Bildirimleri Sil'),
-        content: const Text('Tüm bildirimleriniz kalıcı olarak silinecek. Emin misiniz?'),
+        content: const Text(
+          'Tüm bildirimleriniz kalıcı olarak silinecek. Emin misiniz?',
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Vazgeç'),
+          ),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Tümünü Sil', style: TextStyle(color: AppColors.navy)),
+            child: const Text(
+              'Tümünü Sil',
+              style: TextStyle(color: AppColors.navy),
+            ),
           ),
         ],
       ),
@@ -173,150 +182,224 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       backgroundColor: const Color(0xFFFFFFFF),
       body: SafeArea(
         child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, 0),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Text(
-                    'Bildirimler',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: AppColors.navy, letterSpacing: -0.6, height: 1.1),
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.md,
+                AppSpacing.md,
+                AppSpacing.md,
+                0,
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Bildirimler',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w900,
+                        color: AppColors.navy,
+                        letterSpacing: -0.6,
+                        height: 1.1,
+                      ),
+                    ),
                   ),
-                ),
-                if (_notifications.any((n) => n['readAt'] == null))
-                  TextButton(
-                    onPressed: _markAllRead,
-                    child: const Text('Tümünü Okundu İşaretle', style: TextStyle(color: AppColors.brand, fontSize: 12.5)),
-                  ),
-                if (_notifications.isNotEmpty)
-                  PopupMenuButton<String>(
-                    onSelected: (v) {
-                      if (v == 'clear-all') _clearAll();
-                    },
-                    itemBuilder: (context) => [
-                      const PopupMenuItem(value: 'clear-all', child: Text('Tümünü Sil')),
-                    ],
-                  ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: _loading
-                ? const Center(child: CircularProgressIndicator())
-                : _notifications.isEmpty
-                    ? RefreshIndicator(
-                        onRefresh: _load,
-                        child: ListView(
-                          children: [
-                            const SizedBox(height: 60),
-                            const AppEmptyState(icon: Icons.notifications_none, title: 'Henüz bir bildiriminiz yok'),
-                    ],
-                  ),
-                )
-              : RefreshIndicator(
-                  onRefresh: _load,
-                  child: ListView.separated(
-                    padding: const EdgeInsets.all(AppSpacing.md),
-                    itemCount: _notifications.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.xs),
-                    itemBuilder: (context, index) {
-                      final n = _notifications[index];
-                      final isUnread = n['readAt'] == null;
-                      return Dismissible(
-                        key: ValueKey(n['id']),
-                        direction: DismissDirection.endToStart,
-                        onDismissed: (_) => _deleteNotification(n['id']),
-                        background: Container(
-                          decoration: BoxDecoration(color: AppColors.navy, borderRadius: BorderRadius.circular(16)),
-                          alignment: Alignment.centerRight,
-                          padding: const EdgeInsets.only(right: 20),
-                          child: const Icon(Icons.delete_outline, color: Colors.white),
+                  if (_notifications.any((n) => n['readAt'] == null))
+                    TextButton(
+                      onPressed: _markAllRead,
+                      child: const Text(
+                        'Tümünü Okundu İşaretle',
+                        style: TextStyle(
+                          color: AppColors.brand,
+                          fontSize: 12.5,
                         ),
-                        child: Material(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(16),
-                          onTap: () => _handleTap(n),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16),
-                              boxShadow: [
-                                BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 2)),
-                              ],
-                              border: isUnread ? Border.all(color: AppColors.brand.withValues(alpha: 0.15)) : null,
+                      ),
+                    ),
+                  if (_notifications.isNotEmpty)
+                    PopupMenuButton<String>(
+                      onSelected: (v) {
+                        if (v == 'clear-all') _clearAll();
+                      },
+                      itemBuilder: (context) => [
+                        const PopupMenuItem(
+                          value: 'clear-all',
+                          child: Text('Tümünü Sil'),
+                        ),
+                      ],
+                    ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: _loading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _notifications.isEmpty
+                  ? RefreshIndicator(
+                      onRefresh: _load,
+                      child: ListView(
+                        children: [
+                          const SizedBox(height: 60),
+                          const AppEmptyState(
+                            icon: Icons.notifications_none,
+                            title: 'Henüz bir bildiriminiz yok',
+                          ),
+                        ],
+                      ),
+                    )
+                  : RefreshIndicator(
+                      onRefresh: _load,
+                      child: ListView.separated(
+                        padding: const EdgeInsets.all(AppSpacing.md),
+                        itemCount: _notifications.length,
+                        separatorBuilder: (_, __) =>
+                            const SizedBox(height: AppSpacing.xs),
+                        itemBuilder: (context, index) {
+                          final n = _notifications[index];
+                          final isUnread = n['readAt'] == null;
+                          return Dismissible(
+                            key: ValueKey(n['id']),
+                            direction: DismissDirection.endToStart,
+                            onDismissed: (_) => _deleteNotification(n['id']),
+                            background: Container(
+                              decoration: BoxDecoration(
+                                color: AppColors.navy,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              alignment: Alignment.centerRight,
+                              padding: const EdgeInsets.only(right: 20),
+                              child: const Icon(
+                                Icons.delete_outline,
+                                color: Colors.white,
+                              ),
                             ),
-                            padding: const EdgeInsets.all(AppSpacing.sm),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  width: 40,
-                                  height: 40,
+                            child: Material(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(16),
+                                onTap: () => _handleTap(n),
+                                child: Container(
                                   decoration: BoxDecoration(
-                                    gradient: isUnread
-                                        ? LinearGradient(colors: [AppColors.brand.withValues(alpha: 0.14), AppColors.navy.withValues(alpha: 0.10)])
+                                    borderRadius: BorderRadius.circular(16),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withValues(
+                                          alpha: 0.03,
+                                        ),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                    border: isUnread
+                                        ? Border.all(
+                                            color: AppColors.brand.withValues(
+                                              alpha: 0.15,
+                                            ),
+                                          )
                                         : null,
-                                    color: isUnread ? null : const Color(0xFFF0F2F5),
-                                    borderRadius: BorderRadius.circular(12),
                                   ),
-                                  child: Icon(
-                                    _iconFor(n['type'] ?? ''),
-                                    color: isUnread ? AppColors.brand : Colors.grey.shade500,
-                                    size: 19,
-                                  ),
-                                ),
-                                const SizedBox(width: AppSpacing.sm),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                  padding: const EdgeInsets.all(AppSpacing.sm),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                        n['title'] ?? '',
-                                        style: TextStyle(
-                                          fontWeight: isUnread ? FontWeight.w700 : FontWeight.w600,
-                                          fontSize: 14,
-                                          color: const Color(0xFF1C1C1E),
+                                      Container(
+                                        width: 40,
+                                        height: 40,
+                                        decoration: BoxDecoration(
+                                          gradient: isUnread
+                                              ? LinearGradient(
+                                                  colors: [
+                                                    AppColors.brand.withValues(
+                                                      alpha: 0.14,
+                                                    ),
+                                                    AppColors.navy.withValues(
+                                                      alpha: 0.10,
+                                                    ),
+                                                  ],
+                                                )
+                                              : null,
+                                          color: isUnread
+                                              ? null
+                                              : const Color(0xFFF0F2F5),
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                        ),
+                                        child: Icon(
+                                          _iconFor(n['type'] ?? ''),
+                                          color: isUnread
+                                              ? AppColors.brand
+                                              : Colors.grey.shade500,
+                                          size: 19,
                                         ),
                                       ),
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        n['body'] ?? '',
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(fontSize: 12.5, color: Colors.grey.shade500, height: 1.3),
-                                      ),
-                                      if (n['createdAt'] != null) ...[
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          _timeAgo(n['createdAt']),
-                                          style: TextStyle(fontSize: 11, color: Colors.grey.shade400),
+                                      const SizedBox(width: AppSpacing.sm),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              n['title'] ?? '',
+                                              style: TextStyle(
+                                                fontWeight: isUnread
+                                                    ? FontWeight.w700
+                                                    : FontWeight.w600,
+                                                fontSize: 14,
+                                                color: const Color(0xFF1C1C1E),
+                                              ),
+                                            ),
+                                            const SizedBox(height: 2),
+                                            Text(
+                                              n['body'] ?? '',
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                fontSize: 12.5,
+                                                color: Colors.grey.shade500,
+                                                height: 1.3,
+                                              ),
+                                            ),
+                                            if (n['createdAt'] != null) ...[
+                                              const SizedBox(height: 4),
+                                              Text(
+                                                _timeAgo(n['createdAt']),
+                                                style: TextStyle(
+                                                  fontSize: 11,
+                                                  color: Colors.grey.shade400,
+                                                ),
+                                              ),
+                                            ],
+                                          ],
                                         ),
-                                      ],
+                                      ),
+                                      if (isUnread)
+                                        Container(
+                                          margin: const EdgeInsets.only(
+                                            top: 4,
+                                            left: 4,
+                                          ),
+                                          width: 8,
+                                          height: 8,
+                                          decoration: const BoxDecoration(
+                                            color: AppColors.brand,
+                                            shape: BoxShape.circle,
+                                          ),
+                                        ),
                                     ],
                                   ),
                                 ),
-                                if (isUnread)
-                                  Container(
-                                    margin: const EdgeInsets.only(top: 4, left: 4),
-                                    width: 8,
-                                    height: 8,
-                                    decoration: const BoxDecoration(color: AppColors.brand, shape: BoxShape.circle),
-                                  ),
-                              ],
+                              ),
                             ),
-                          ),
-                        ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-          ),
-        ],
-      ),
+                          );
+                        },
+                      ),
+                    ),
+            ),
+          ],
+        ),
       ),
     );
   }

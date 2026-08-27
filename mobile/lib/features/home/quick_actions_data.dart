@@ -10,7 +10,12 @@ class QuickActionDef {
   final String label;
   final String route;
 
-  const QuickActionDef({required this.id, required this.icon, required this.label, required this.route});
+  const QuickActionDef({
+    required this.id,
+    required this.icon,
+    required this.label,
+    required this.route,
+  });
 }
 
 const List<QuickActionDef> kAllQuickActions = [
@@ -19,35 +24,130 @@ const List<QuickActionDef> kAllQuickActions = [
   // Sistemleri" ise hiç var olmayan bir özelliği varmış gibi gösteren
   // yanıltıcı bir etiketti. Alt menüdeki "AI" sekmesi zaten tek, doğru
   // giriş noktası.
-  QuickActionDef(id: 'search', icon: Icons.search, label: 'Ara', route: '/search'),
-  QuickActionDef(id: 'messages', icon: Icons.chat_bubble_outline, label: 'Mesajlar', route: '/messages'),
+  QuickActionDef(
+    id: 'search',
+    icon: Icons.search,
+    label: 'Ara',
+    route: '/search',
+  ),
+  QuickActionDef(
+    id: 'messages',
+    icon: Icons.chat_bubble_outline,
+    label: 'Mesajlar',
+    route: '/messages',
+  ),
   // "Fotoğraf Gönder" kaldırıldı — kullanıcı isteği. Fotoğraf/galeri
   // seçimi artık doğrudan AI Sor ekranının içinde (kamera + galeri
   // seçenekleriyle birlikte).
-  QuickActionDef(id: 'community', icon: Icons.forum_outlined, label: 'Bayilere Sor', route: '/community'),
-  QuickActionDef(id: 'appointments', icon: Icons.calendar_month_outlined, label: 'Randevu Al', route: '/appointments'),
-  QuickActionDef(id: 'groups', icon: Icons.groups_2_outlined, label: 'Gruplar', route: '/groups'),
-  QuickActionDef(id: 'favorites', icon: Icons.bookmark_border, label: 'Favorilerim', route: '/favorites'),
+  QuickActionDef(
+    id: 'community',
+    icon: Icons.forum_outlined,
+    label: 'Bayilere Sor',
+    route: '/community',
+  ),
+  QuickActionDef(
+    id: 'appointments',
+    icon: Icons.calendar_month_outlined,
+    label: 'Randevu Al',
+    route: '/appointments',
+  ),
+  QuickActionDef(
+    id: 'groups',
+    icon: Icons.groups_2_outlined,
+    label: 'Gruplar',
+    route: '/groups',
+  ),
+  QuickActionDef(
+    id: 'favorites',
+    icon: Icons.bookmark_border,
+    label: 'Favorilerim',
+    route: '/favorites',
+  ),
   // "Hesaplamalar" kullanıcı isteğiyle Ana Sayfa'dan gizlendi — kod silinmedi,
   // istenirse bu satır tekrar aktif edilerek geri getirilebilir.
   // QuickActionDef(id: 'calculators', icon: Icons.calculate_outlined, label: 'Hesaplamalar', route: '/calculators'),
-  QuickActionDef(id: 'announcements', icon: Icons.campaign_outlined, label: 'Duyurular', route: '/announcements'),
-  QuickActionDef(id: 'offline_docs', icon: Icons.download_outlined, label: 'İndirilenlerim', route: '/offline-documents'),
-  QuickActionDef(id: 'barcode', icon: Icons.qr_code_scanner, label: 'Barkod Tara', route: '/barcode-scanner'),
-  QuickActionDef(id: 'commissioning', icon: Icons.checklist_outlined, label: 'Devreye Alma', route: '/commissioning'),
+  QuickActionDef(
+    id: 'announcements',
+    icon: Icons.campaign_outlined,
+    label: 'Duyurular',
+    route: '/announcements',
+  ),
+  QuickActionDef(
+    id: 'offline_docs',
+    icon: Icons.download_outlined,
+    label: 'İndirilenlerim',
+    route: '/offline-documents',
+  ),
+  QuickActionDef(
+    id: 'barcode',
+    icon: Icons.qr_code_scanner,
+    label: 'Barkod Tara',
+    route: '/barcode-scanner',
+  ),
+  QuickActionDef(
+    id: 'commissioning',
+    icon: Icons.checklist_outlined,
+    label: 'Devreye Alma',
+    route: '/commissioning',
+  ),
   // "Yangın Sistemleri" kısayolu kaldırıldı — yukarıdaki notta açıklandığı
   // gibi, gerçek bir işlevi yoktu.
-  QuickActionDef(id: 'maintenance', icon: Icons.build_outlined, label: 'Bakım Geçmişi', route: '/maintenance'),
-  QuickActionDef(id: 'bom', icon: Icons.list_alt_outlined, label: 'Malzeme Listesi', route: '/bom-builder'),
-  QuickActionDef(id: 'specialty', icon: Icons.workspace_premium_outlined, label: 'Uzmanlık/Sertifika', route: '/specialty'),
-  QuickActionDef(id: 'sales_consultant', icon: Icons.support_agent_outlined, label: 'Satış Danışmanına Sor', route: '/sales-consultants'),
-  QuickActionDef(id: 'training', icon: Icons.school_outlined, label: 'Eğitim Merkezi', route: '/training'),
-  QuickActionDef(id: 'wallet', icon: Icons.folder_open_outlined, label: 'Evrak Çantası', route: '/wallet'),
-  QuickActionDef(id: 'support_tickets', icon: Icons.support_outlined, label: 'Teknik Destek', route: '/support-tickets'),
-  QuickActionDef(id: 'quotes', icon: Icons.request_quote_outlined, label: 'Teklif Al', route: '/quotes'),
+  QuickActionDef(
+    id: 'maintenance',
+    icon: Icons.build_outlined,
+    label: 'Bakım Geçmişi',
+    route: '/maintenance',
+  ),
+  QuickActionDef(
+    id: 'bom',
+    icon: Icons.list_alt_outlined,
+    label: 'Malzeme Listesi',
+    route: '/bom-builder',
+  ),
+  QuickActionDef(
+    id: 'specialty',
+    icon: Icons.workspace_premium_outlined,
+    label: 'Uzmanlık/Sertifika',
+    route: '/specialty',
+  ),
+  QuickActionDef(
+    id: 'sales_consultant',
+    icon: Icons.support_agent_outlined,
+    label: 'Satış Danışmanına Sor',
+    route: '/sales-consultants',
+  ),
+  QuickActionDef(
+    id: 'training',
+    icon: Icons.school_outlined,
+    label: 'Eğitim Merkezi',
+    route: '/training',
+  ),
+  QuickActionDef(
+    id: 'wallet',
+    icon: Icons.folder_open_outlined,
+    label: 'Evrak Çantası',
+    route: '/wallet',
+  ),
+  QuickActionDef(
+    id: 'support_tickets',
+    icon: Icons.support_outlined,
+    label: 'Teknik Destek',
+    route: '/support-tickets',
+  ),
+  QuickActionDef(
+    id: 'quotes',
+    icon: Icons.request_quote_outlined,
+    label: 'Teklif Al',
+    route: '/quotes',
+  ),
   // Sadece SALES (satış danışmanı) rolündeki kullanıcılara gösterilir —
   // bkz. home_screen.dart'taki rol filtresi.
-  QuickActionDef(id: 'dealer_visits', icon: Icons.location_on_outlined, label: 'Bayi Ziyaretleri', route: '/dealer-visits'),
+  QuickActionDef(
+    id: 'dealer_visits',
+    icon: Icons.location_on_outlined,
+    label: 'Bayi Ziyaretleri',
+    route: '/dealer-visits',
+  ),
 ];
 
 const _kOrderKey = 'quick_actions_order';

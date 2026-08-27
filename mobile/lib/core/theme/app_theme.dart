@@ -109,13 +109,25 @@ class AppRadius {
 /// gölgeler geri getirildi.
 class AppShadows {
   static List<BoxShadow> subtle = [
-    BoxShadow(color: Colors.black.withValues(alpha: 0.035), blurRadius: 8, offset: const Offset(0, 2)),
+    BoxShadow(
+      color: Colors.black.withValues(alpha: 0.035),
+      blurRadius: 8,
+      offset: const Offset(0, 2),
+    ),
   ];
   static List<BoxShadow> card = [
-    BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 14, offset: const Offset(0, 4)),
+    BoxShadow(
+      color: Colors.black.withValues(alpha: 0.05),
+      blurRadius: 14,
+      offset: const Offset(0, 4),
+    ),
   ];
   static List<BoxShadow> elevated = [
-    BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 22, offset: const Offset(0, 8)),
+    BoxShadow(
+      color: Colors.black.withValues(alpha: 0.08),
+      blurRadius: 22,
+      offset: const Offset(0, 8),
+    ),
   ];
 }
 
@@ -234,8 +246,15 @@ class AppTheme {
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
-          textStyle: TextStyle(fontFamily: _platformFontFamily, fontWeight: FontWeight.w700, letterSpacing: 0.3, fontSize: 15),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppRadius.md),
+          ),
+          textStyle: TextStyle(
+            fontFamily: _platformFontFamily,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.3,
+            fontSize: 15,
+          ),
           elevation: 1,
           minimumSize: const Size(0, 48),
           tapTargetSize: MaterialTapTargetSize.padded,
@@ -248,7 +267,9 @@ class AppTheme {
           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
           minimumSize: const Size(0, 48),
           tapTargetSize: MaterialTapTargetSize.padded,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -266,7 +287,10 @@ class AppTheme {
           borderRadius: BorderRadius.circular(AppSpacing.radius),
           borderSide: const BorderSide(color: AppColors.brand, width: 1.6),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
         floatingLabelBehavior: FloatingLabelBehavior.auto,
       ),
       cardTheme: CardThemeData(
@@ -291,25 +315,38 @@ class AppTheme {
           (states) => TextStyle(
             fontFamily: _platformFontFamily,
             fontSize: 11,
-            fontWeight: states.contains(WidgetState.selected) ? FontWeight.w700 : FontWeight.w600,
+            fontWeight: states.contains(WidgetState.selected)
+                ? FontWeight.w700
+                : FontWeight.w600,
             letterSpacing: 0.1,
-            color: states.contains(WidgetState.selected) ? AppColors.primary : AppColors.textMuted,
+            color: states.contains(WidgetState.selected)
+                ? AppColors.primary
+                : AppColors.textMuted,
           ),
         ),
         iconTheme: WidgetStateProperty.resolveWith(
           (states) => IconThemeData(
-            color: states.contains(WidgetState.selected) ? AppColors.primary : AppColors.textMuted,
+            color: states.contains(WidgetState.selected)
+                ? AppColors.primary
+                : AppColors.textMuted,
           ),
         ),
       ),
-      dividerTheme: const DividerThemeData(color: AppColors.divider, thickness: 1),
+      dividerTheme: const DividerThemeData(
+        color: AppColors.divider,
+        thickness: 1,
+      ),
       // Kullanıcı isteği: "tüm o küçük onay pencereleri için değiştir" —
       // AlertDialog/showDialog kullanan HER yer (silme onayları, çıkış
       // onayı, randevu/rapor sil vb.) bu merkezi ayarı otomatik alır.
       searchBarTheme: SearchBarThemeData(
         elevation: WidgetStateProperty.all(0),
-        shape: WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
-        padding: WidgetStateProperty.all(const EdgeInsets.symmetric(horizontal: 16)),
+        shape: WidgetStateProperty.all(
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        ),
+        padding: WidgetStateProperty.all(
+          const EdgeInsets.symmetric(horizontal: 16),
+        ),
       ),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
@@ -326,7 +363,9 @@ class AppTheme {
       listTileTheme: const ListTileThemeData(
         minVerticalPadding: 8,
         contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(12)),
+        ),
       ),
       dialogTheme: DialogThemeData(
         backgroundColor: Colors.white,
@@ -354,21 +393,34 @@ class AppTheme {
       scrollbarTheme: ScrollbarThemeData(
         radius: const Radius.circular(10),
         thickness: WidgetStateProperty.all(5),
-        thumbColor: WidgetStateProperty.all(AppColors.primary.withValues(alpha: 0.35)),
+        thumbColor: WidgetStateProperty.all(
+          AppColors.primary.withValues(alpha: 0.35),
+        ),
       ),
       segmentedButtonTheme: SegmentedButtonThemeData(
         style: ButtonStyle(
           minimumSize: WidgetStateProperty.all(const Size(0, 44)),
-          padding: WidgetStateProperty.all(const EdgeInsets.symmetric(horizontal: 16, vertical: 10)),
-          shape: WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+          padding: WidgetStateProperty.all(
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          ),
+          shape: WidgetStateProperty.all(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
         ),
       ),
       switchTheme: SwitchThemeData(
-        thumbIcon: WidgetStateProperty.resolveWith((states) => states.contains(WidgetState.selected) ? const Icon(Icons.check, size: 16) : null),
+        thumbIcon: WidgetStateProperty.resolveWith(
+          (states) => states.contains(WidgetState.selected)
+              ? const Icon(Icons.check, size: 16)
+              : null,
+        ),
       ),
       progressIndicatorTheme: const ProgressIndicatorThemeData(strokeWidth: 3),
       tooltipTheme: TooltipThemeData(
-        decoration: BoxDecoration(color: AppColors.ink, borderRadius: BorderRadius.circular(8)),
+        decoration: BoxDecoration(
+          color: AppColors.ink,
+          borderRadius: BorderRadius.circular(8),
+        ),
         textStyle: const TextStyle(color: Colors.white, fontSize: 12),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       ),
@@ -397,15 +449,22 @@ class AppTheme {
         surfaceTintColor: Colors.white,
         headerBackgroundColor: AppColors.navy,
         headerForegroundColor: Colors.white,
-        todayBackgroundColor: WidgetStateProperty.all(AppColors.brand.withValues(alpha: 0.1)),
+        todayBackgroundColor: WidgetStateProperty.all(
+          AppColors.brand.withValues(alpha: 0.1),
+        ),
         todayForegroundColor: WidgetStateProperty.all(AppColors.brand),
         dayForegroundColor: WidgetStateProperty.resolveWith(
-          (states) => states.contains(WidgetState.selected) ? Colors.white : AppColors.ink,
+          (states) => states.contains(WidgetState.selected)
+              ? Colors.white
+              : AppColors.ink,
         ),
         dayBackgroundColor: WidgetStateProperty.resolveWith(
-          (states) => states.contains(WidgetState.selected) ? AppColors.brand : null,
+          (states) =>
+              states.contains(WidgetState.selected) ? AppColors.brand : null,
         ),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSpacing.radiusLg)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        ),
       ),
       timePickerTheme: TimePickerThemeData(
         backgroundColor: Colors.white,
@@ -414,7 +473,9 @@ class AppTheme {
         hourMinuteColor: Colors.grey.shade50,
         hourMinuteTextColor: AppColors.navy,
         dayPeriodColor: Colors.grey.shade50,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSpacing.radiusLg)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        ),
       ),
       // Kullanıcı isteği: "bu seçim penceresini de uyumlu yap, arka plan
       // beyaz olsun" — showModalBottomSheet kullanan HER yer (Kamera/
@@ -426,7 +487,9 @@ class AppTheme {
         modalBackgroundColor: Colors.white,
         elevation: 4,
         shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(AppSpacing.radiusLg)),
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(AppSpacing.radiusLg),
+          ),
         ),
       ),
       // Kullanıcı isteği: "Font boyutları, ağırlıkları ve satır aralıkları
@@ -435,21 +498,100 @@ class AppTheme {
       // tanımlı; renkler öncekiyle birebir aynı, sadece boyut/ağırlık/
       // satır aralığı ve font ailesi düzenlendi.
       textTheme: TextTheme(
-        displayLarge: const TextStyle(fontSize: 34, fontWeight: FontWeight.w700, color: AppColors.navy, height: 1.15, letterSpacing: 0.2),
-        displayMedium: const TextStyle(fontSize: 28, fontWeight: FontWeight.w700, color: AppColors.navy, height: 1.18),
-        displaySmall: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700, color: AppColors.navy, height: 1.2),
-        headlineLarge: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: AppColors.navy, height: 1.2),
-        headlineMedium: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: AppColors.navy, height: 1.22),
-        headlineSmall: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.navy, height: 1.25, letterSpacing: 0.1),
-        titleLarge: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: AppColors.navy, height: 1.25),
-        titleMedium: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.ink, height: 1.3),
-        titleSmall: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600, color: AppColors.ink, height: 1.3),
-        bodyLarge: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColors.ink, height: 1.45),
-        bodyMedium: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w400, color: AppColors.ink, height: 1.4),
-        bodySmall: TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: AppColors.ink.withValues(alpha: 0.72), height: 1.35),
-        labelLarge: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColors.ink, height: 1.3, letterSpacing: 0.1),
-        labelMedium: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w500, color: AppColors.ink, height: 1.3),
-        labelSmall: TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: AppColors.ink.withValues(alpha: 0.65), height: 1.3, letterSpacing: 0.2),
+        displayLarge: const TextStyle(
+          fontSize: 34,
+          fontWeight: FontWeight.w700,
+          color: AppColors.navy,
+          height: 1.15,
+          letterSpacing: 0.2,
+        ),
+        displayMedium: const TextStyle(
+          fontSize: 28,
+          fontWeight: FontWeight.w700,
+          color: AppColors.navy,
+          height: 1.18,
+        ),
+        displaySmall: const TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.w700,
+          color: AppColors.navy,
+          height: 1.2,
+        ),
+        headlineLarge: const TextStyle(
+          fontSize: 22,
+          fontWeight: FontWeight.w700,
+          color: AppColors.navy,
+          height: 1.2,
+        ),
+        headlineMedium: const TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+          color: AppColors.navy,
+          height: 1.22,
+        ),
+        headlineSmall: const TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+          color: AppColors.navy,
+          height: 1.25,
+          letterSpacing: 0.1,
+        ),
+        titleLarge: const TextStyle(
+          fontSize: 17,
+          fontWeight: FontWeight.w600,
+          color: AppColors.navy,
+          height: 1.25,
+        ),
+        titleMedium: const TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.w600,
+          color: AppColors.ink,
+          height: 1.3,
+        ),
+        titleSmall: const TextStyle(
+          fontSize: 13.5,
+          fontWeight: FontWeight.w600,
+          color: AppColors.ink,
+          height: 1.3,
+        ),
+        bodyLarge: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w400,
+          color: AppColors.ink,
+          height: 1.45,
+        ),
+        bodyMedium: const TextStyle(
+          fontSize: 14.5,
+          fontWeight: FontWeight.w400,
+          color: AppColors.ink,
+          height: 1.4,
+        ),
+        bodySmall: TextStyle(
+          fontSize: 13,
+          fontWeight: FontWeight.w400,
+          color: AppColors.ink.withValues(alpha: 0.72),
+          height: 1.35,
+        ),
+        labelLarge: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          color: AppColors.ink,
+          height: 1.3,
+          letterSpacing: 0.1,
+        ),
+        labelMedium: const TextStyle(
+          fontSize: 12.5,
+          fontWeight: FontWeight.w500,
+          color: AppColors.ink,
+          height: 1.3,
+        ),
+        labelSmall: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w500,
+          color: AppColors.ink.withValues(alpha: 0.65),
+          height: 1.3,
+          letterSpacing: 0.2,
+        ),
       ),
     );
   }
@@ -479,7 +621,12 @@ class AppTheme {
         toolbarHeight: 64,
         scrolledUnderElevation: 1,
         surfaceTintColor: const Color(0xFFFF8A55).withValues(alpha: 0.08),
-        titleTextStyle: TextStyle(fontFamily: _platformFontFamily, color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700),
+        titleTextStyle: TextStyle(
+          fontFamily: _platformFontFamily,
+          color: Colors.white,
+          fontSize: 18,
+          fontWeight: FontWeight.w700,
+        ),
       ),
       cardTheme: CardThemeData(
         color: darkCard,
@@ -495,8 +642,14 @@ class AppTheme {
           backgroundColor: const Color(0xFFFF8A55),
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSpacing.radius)),
-          textStyle: TextStyle(fontFamily: _platformFontFamily, fontWeight: FontWeight.w700, fontSize: 15),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppSpacing.radius),
+          ),
+          textStyle: TextStyle(
+            fontFamily: _platformFontFamily,
+            fontWeight: FontWeight.w700,
+            fontSize: 15,
+          ),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -506,21 +659,36 @@ class AppTheme {
           borderRadius: BorderRadius.circular(AppSpacing.radius),
           borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 18,
+          vertical: 16,
+        ),
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: darkCard,
         elevation: 0,
         indicatorColor: Colors.white.withValues(alpha: 0.08),
         labelTextStyle: WidgetStateProperty.all(
-          TextStyle(fontFamily: _platformFontFamily, fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 0.1),
+          TextStyle(
+            fontFamily: _platformFontFamily,
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.1,
+          ),
         ),
       ),
-      dividerTheme: DividerThemeData(color: Colors.white.withValues(alpha: 0.08), thickness: 1),
+      dividerTheme: DividerThemeData(
+        color: Colors.white.withValues(alpha: 0.08),
+        thickness: 1,
+      ),
       searchBarTheme: SearchBarThemeData(
         elevation: WidgetStateProperty.all(0),
-        shape: WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
-        padding: WidgetStateProperty.all(const EdgeInsets.symmetric(horizontal: 16)),
+        shape: WidgetStateProperty.all(
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        ),
+        padding: WidgetStateProperty.all(
+          const EdgeInsets.symmetric(horizontal: 16),
+        ),
       ),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
@@ -538,7 +706,9 @@ class AppTheme {
       listTileTheme: const ListTileThemeData(
         minVerticalPadding: 8,
         contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(12)),
+        ),
       ),
       dialogTheme: DialogThemeData(
         backgroundColor: darkCard,
@@ -563,21 +733,34 @@ class AppTheme {
       scrollbarTheme: ScrollbarThemeData(
         radius: const Radius.circular(10),
         thickness: WidgetStateProperty.all(5),
-        thumbColor: WidgetStateProperty.all(const Color(0xFFFF8A55).withValues(alpha: 0.45)),
+        thumbColor: WidgetStateProperty.all(
+          const Color(0xFFFF8A55).withValues(alpha: 0.45),
+        ),
       ),
       segmentedButtonTheme: SegmentedButtonThemeData(
         style: ButtonStyle(
           minimumSize: WidgetStateProperty.all(const Size(0, 44)),
-          padding: WidgetStateProperty.all(const EdgeInsets.symmetric(horizontal: 16, vertical: 10)),
-          shape: WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+          padding: WidgetStateProperty.all(
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          ),
+          shape: WidgetStateProperty.all(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
         ),
       ),
       switchTheme: SwitchThemeData(
-        thumbIcon: WidgetStateProperty.resolveWith((states) => states.contains(WidgetState.selected) ? const Icon(Icons.check, size: 16) : null),
+        thumbIcon: WidgetStateProperty.resolveWith(
+          (states) => states.contains(WidgetState.selected)
+              ? const Icon(Icons.check, size: 16)
+              : null,
+        ),
       ),
       progressIndicatorTheme: const ProgressIndicatorThemeData(strokeWidth: 3),
       tooltipTheme: TooltipThemeData(
-        decoration: BoxDecoration(color: Colors.black87, borderRadius: BorderRadius.circular(8)),
+        decoration: BoxDecoration(
+          color: Colors.black87,
+          borderRadius: BorderRadius.circular(8),
+        ),
         textStyle: const TextStyle(color: Colors.white, fontSize: 12),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       ),
@@ -597,21 +780,100 @@ class AppTheme {
         ),
       ),
       textTheme: TextTheme(
-        displayLarge: const TextStyle(fontSize: 34, fontWeight: FontWeight.w700, color: Colors.white, height: 1.15, letterSpacing: 0.2),
-        displayMedium: const TextStyle(fontSize: 28, fontWeight: FontWeight.w700, color: Colors.white, height: 1.18),
-        displaySmall: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700, color: Colors.white, height: 1.2),
-        headlineLarge: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: Colors.white, height: 1.2),
-        headlineMedium: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.white, height: 1.22),
-        headlineSmall: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white, height: 1.25, letterSpacing: 0.1),
-        titleLarge: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: Colors.white, height: 1.25),
-        titleMedium: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.white.withValues(alpha: 0.92), height: 1.3),
-        titleSmall: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600, color: Colors.white.withValues(alpha: 0.92), height: 1.3),
-        bodyLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.white.withValues(alpha: 0.87), height: 1.45),
-        bodyMedium: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w400, color: Colors.white.withValues(alpha: 0.87), height: 1.4),
-        bodySmall: TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: Colors.white.withValues(alpha: 0.65), height: 1.35),
-        labelLarge: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.white.withValues(alpha: 0.87), height: 1.3, letterSpacing: 0.1),
-        labelMedium: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w500, color: Colors.white.withValues(alpha: 0.87), height: 1.3),
-        labelSmall: TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: Colors.white.withValues(alpha: 0.6), height: 1.3, letterSpacing: 0.2),
+        displayLarge: const TextStyle(
+          fontSize: 34,
+          fontWeight: FontWeight.w700,
+          color: Colors.white,
+          height: 1.15,
+          letterSpacing: 0.2,
+        ),
+        displayMedium: const TextStyle(
+          fontSize: 28,
+          fontWeight: FontWeight.w700,
+          color: Colors.white,
+          height: 1.18,
+        ),
+        displaySmall: const TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.w700,
+          color: Colors.white,
+          height: 1.2,
+        ),
+        headlineLarge: const TextStyle(
+          fontSize: 22,
+          fontWeight: FontWeight.w700,
+          color: Colors.white,
+          height: 1.2,
+        ),
+        headlineMedium: const TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+          color: Colors.white,
+          height: 1.22,
+        ),
+        headlineSmall: const TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+          color: Colors.white,
+          height: 1.25,
+          letterSpacing: 0.1,
+        ),
+        titleLarge: const TextStyle(
+          fontSize: 17,
+          fontWeight: FontWeight.w600,
+          color: Colors.white,
+          height: 1.25,
+        ),
+        titleMedium: TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.w600,
+          color: Colors.white.withValues(alpha: 0.92),
+          height: 1.3,
+        ),
+        titleSmall: TextStyle(
+          fontSize: 13.5,
+          fontWeight: FontWeight.w600,
+          color: Colors.white.withValues(alpha: 0.92),
+          height: 1.3,
+        ),
+        bodyLarge: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w400,
+          color: Colors.white.withValues(alpha: 0.87),
+          height: 1.45,
+        ),
+        bodyMedium: TextStyle(
+          fontSize: 14.5,
+          fontWeight: FontWeight.w400,
+          color: Colors.white.withValues(alpha: 0.87),
+          height: 1.4,
+        ),
+        bodySmall: TextStyle(
+          fontSize: 13,
+          fontWeight: FontWeight.w400,
+          color: Colors.white.withValues(alpha: 0.65),
+          height: 1.35,
+        ),
+        labelLarge: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          color: Colors.white.withValues(alpha: 0.87),
+          height: 1.3,
+          letterSpacing: 0.1,
+        ),
+        labelMedium: TextStyle(
+          fontSize: 12.5,
+          fontWeight: FontWeight.w500,
+          color: Colors.white.withValues(alpha: 0.87),
+          height: 1.3,
+        ),
+        labelSmall: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w500,
+          color: Colors.white.withValues(alpha: 0.6),
+          height: 1.3,
+          letterSpacing: 0.2,
+        ),
       ),
     );
   }

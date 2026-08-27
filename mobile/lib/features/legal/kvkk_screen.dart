@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../core/widgets/design_system.dart';
 
 /// ENTPA Bayi Teknik Destek uygulaması için çalışma taslağıdır.
@@ -15,7 +16,9 @@ class KvkkScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: const [
-          _Heading('Kişisel Verilerin Korunması ve İşlenmesine İlişkin Aydınlatma Metni'),
+          _Heading(
+            'Kişisel Verilerin Korunması ve İşlenmesine İlişkin Aydınlatma Metni',
+          ),
           _Body(
             'Bu aydınlatma metni, 6698 sayılı Kişisel Verilerin Korunması Kanunu’nun '
             '10. maddesi kapsamında, Bayi Teknik Destek mobil uygulamasının kullanıcılarını '
@@ -105,7 +108,10 @@ class _Heading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(text, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700));
+    return Text(
+      text,
+      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+    );
   }
 }
 

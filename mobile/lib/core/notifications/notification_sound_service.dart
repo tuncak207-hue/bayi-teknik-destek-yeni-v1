@@ -5,7 +5,8 @@ import 'package:audioplayers/audioplayers.dart';
 /// bildirimlerinin kendi sesini çalıyor — bu servis sadece uygulama
 /// AÇIKKEN, push bildiriminin sesi çalınmayan durumlar için var.
 class NotificationSoundService {
-  static final NotificationSoundService _instance = NotificationSoundService._internal();
+  static final NotificationSoundService _instance =
+      NotificationSoundService._internal();
   factory NotificationSoundService() => _instance;
   NotificationSoundService._internal();
 

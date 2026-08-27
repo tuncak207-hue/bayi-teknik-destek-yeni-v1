@@ -1,23 +1,36 @@
 import 'dart:io';
+
 import 'package:dio/dio.dart';
+
 import '../../../core/api/api_client.dart';
 import '../domain/chat_message.dart';
 
 class AiRepository {
   final Dio _dio = ApiClient().dio;
 
-  Future<({String conversationId, ChatMessage message, bool fromMemory, String? memoryId})> ask({
+  Future<
+    ({
+      String conversationId,
+      ChatMessage message,
+      bool fromMemory,
+      String? memoryId,
+    })
+  >
+  ask({
     required String question,
     String? conversationId,
     String? brand,
     String? model,
   }) async {
-    final res = await _dio.post('/ai/ask', data: {
-      'question': question,
-      if (conversationId != null) 'conversationId': conversationId,
-      if (brand != null) 'brand': brand,
-      if (model != null) 'model': model,
-    });
+    final res = await _dio.post(
+      '/ai/ask',
+      data: {
+        'question': question,
+        if (conversationId != null) 'conversationId': conversationId,
+        if (brand != null) 'brand': brand,
+        if (model != null) 'model': model,
+      },
+    );
     return (
       conversationId: res.data['conversationId'] as String,
       message: ChatMessage.fromJson(res.data['message']),
@@ -26,7 +39,15 @@ class AiRepository {
     );
   }
 
-  Future<({String conversationId, ChatMessage message, bool fromMemory, String? memoryId})> askWithImage({
+  Future<
+    ({
+      String conversationId,
+      ChatMessage message,
+      bool fromMemory,
+      String? memoryId,
+    })
+  >
+  askWithImage({
     required File image,
     String? question,
     String? conversationId,
@@ -62,11 +83,13 @@ class AiRepository {
     return res.data['id'] as String;
   }
 
-  Future<void> toggleFavorite(String messageId) => _dio.post('/chat/messages/$messageId/favorite');
+  Future<void> toggleFavorite(String messageId) =>
+      _dio.post('/chat/messages/$messageId/favorite');
 
   /// Kullanıcı isteği: "aı cevaba doğrulama ikonu koy, cevap doğruysa
   /// mühendislik hafızası çalışsın" — herhangi bir bayi bu cevabın
   /// doğru olduğunu onaylayabilir, bu AI Teknik Hafıza kaydını
   /// "doğrulanmış" yapar (gelecekte aynı soruda doküman taraması atlanır).
-  Future<void> verifyMemory(String memoryId) => _dio.patch('/ai/technical-memory/$memoryId/verify');
+  Future<void> verifyMemory(String memoryId) =>
+      _dio.patch('/ai/technical-memory/$memoryId/verify');
 }

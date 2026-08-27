@@ -1,9 +1,11 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:image_picker/image_picker.dart';
+
 import '../../core/api/api_client.dart';
 import '../../core/api/socket_service.dart';
 import '../../core/auth/current_user.dart';
@@ -84,7 +86,10 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
     // "Okundu" tiklerinin, karşı taraf mesajı okuduğunda makul bir sürede
     // güncellenmesi için periyodik olarak katılımcı bilgisini tazeliyoruz
     // (bu ekran açıkken).
-    _readReceiptTimer = Timer.periodic(const Duration(seconds: 5), (_) => _loadParticipants());
+    _readReceiptTimer = Timer.periodic(
+      const Duration(seconds: 5),
+      (_) => _loadParticipants(),
+    );
   }
 
   Timer? _readReceiptTimer;
@@ -139,8 +144,10 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
     final d = DateTime.tryParse(iso ?? '');
     if (d == null) return '';
     final now = DateTime.now();
-    final isToday = d.year == now.year && d.month == now.month && d.day == now.day;
-    final time = '${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
+    final isToday =
+        d.year == now.year && d.month == now.month && d.day == now.day;
+    final time =
+        '${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
     if (isToday) return time;
     return '${d.day.toString().padLeft(2, '0')}.${d.month.toString().padLeft(2, '0')} $time';
   }
@@ -150,7 +157,8 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
     _socket.joinConversation(widget.conversationId);
     _messageSub = _socket.onMessage.listen((data) {
       if (data['conversationId'] != widget.conversationId) return;
-      if (_messages.any((m) => m['id'] == data['id'])) return; // optimistic olarak zaten eklenmişse tekrar ekleme
+      if (_messages.any((m) => m['id'] == data['id']))
+        return; // optimistic olarak zaten eklenmişse tekrar ekleme
       setState(() => _messages = [..._messages, data]);
       _scrollToBottom();
       // Karşı taraf mesaj yazdıysa muhtemelen sohbeti de görüyordur —
@@ -192,7 +200,9 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
   }
 
   Future<void> _load() async {
-    final res = await _dio.get('/chat/conversations/${widget.conversationId}/messages');
+    final res = await _dio.get(
+      '/chat/conversations/${widget.conversationId}/messages',
+    );
     setState(() {
       _messages = (res.data as List).reversed.toList();
       _loading = false;
@@ -209,7 +219,10 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
     try {
       final res = await _dio.post(
         '/chat/conversations/${widget.conversationId}/messages',
-        data: {'content': content, if (replyToId != null) 'replyToId': replyToId},
+        data: {
+          'content': content,
+          if (replyToId != null) 'replyToId': replyToId,
+        },
       );
       if (!_messages.any((m) => m['id'] == res.data['id'])) {
         setState(() => _messages = [..._messages, res.data]);
@@ -222,7 +235,11 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
       _inputController.text = content;
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.response?.data?['message'] ?? 'Mesaj gönderilemedi.')),
+          SnackBar(
+            content: Text(
+              e.response?.data?['message'] ?? 'Mesaj gönderilemedi.',
+            ),
+          ),
         );
       }
     }
@@ -271,7 +288,10 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
         title: const Text('Mesajı Sil'),
         content: const Text('Bu mesajı silmek istediğinize emin misiniz?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Vazgeç'),
+          ),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
             child: const Text('Sil', style: TextStyle(color: AppColors.navy)),
@@ -286,7 +306,9 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
     } on DioException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.response?.data?['message'] ?? 'Mesaj silinemedi.')),
+          SnackBar(
+            content: Text(e.response?.data?['message'] ?? 'Mesaj silinemedi.'),
+          ),
         );
       }
     }
@@ -300,9 +322,14 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: const Text('Mesajı Sil'),
-        content: const Text('Bu mesaj sadece sizin sohbetinizden kaldırılacak, karşı tarafta silinmeyecek. Onaylıyor musunuz?'),
+        content: const Text(
+          'Bu mesaj sadece sizin sohbetinizden kaldırılacak, karşı tarafta silinmeyecek. Onaylıyor musunuz?',
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Vazgeç'),
+          ),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
             child: const Text('Sil', style: TextStyle(color: AppColors.navy)),
@@ -316,7 +343,9 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
       setState(() => _messages.removeWhere((m) => m['id'] == messageId));
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Mesaj kaldırılamadı, tekrar deneyin.')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Mesaj kaldırılamadı, tekrar deneyin.')),
+        );
       }
     }
   }
@@ -330,19 +359,33 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: const Text('Mesajı Düzenle'),
-        content: TextField(controller: controller, maxLines: 4, autofocus: true),
+        content: TextField(
+          controller: controller,
+          maxLines: 4,
+          autofocus: true,
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Vazgeç')),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Vazgeç'),
+          ),
           ElevatedButton(
-            onPressed: () => Navigator.pop(dialogContext, controller.text.trim()),
+            onPressed: () =>
+                Navigator.pop(dialogContext, controller.text.trim()),
             child: const Text('Kaydet'),
           ),
         ],
       ),
     );
-    if (newContent == null || newContent.isEmpty || newContent == message['content']) return;
+    if (newContent == null ||
+        newContent.isEmpty ||
+        newContent == message['content'])
+      return;
     try {
-      final res = await _dio.patch('/chat/messages/${message['id']}', data: {'content': newContent});
+      final res = await _dio.patch(
+        '/chat/messages/${message['id']}',
+        data: {'content': newContent},
+      );
       setState(() {
         final index = _messages.indexWhere((m) => m['id'] == message['id']);
         if (index != -1) _messages[index] = res.data;
@@ -350,7 +393,11 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
     } on DioException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.response?.data?['message'] ?? 'Mesaj düzenlenemedi.')),
+          SnackBar(
+            content: Text(
+              e.response?.data?['message'] ?? 'Mesaj düzenlenemedi.',
+            ),
+          ),
         );
       }
     }
@@ -369,17 +416,22 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: _kQuickReactions
-                    .map((emoji) => InkWell(
-                          borderRadius: BorderRadius.circular(24),
-                          onTap: () {
-                            Navigator.pop(context);
-                            _toggleReaction(message['id'], emoji);
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(8),
-                            child: Text(emoji, style: const TextStyle(fontSize: 26)),
+                    .map(
+                      (emoji) => InkWell(
+                        borderRadius: BorderRadius.circular(24),
+                        onTap: () {
+                          Navigator.pop(context);
+                          _toggleReaction(message['id'], emoji);
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Text(
+                            emoji,
+                            style: const TextStyle(fontSize: 26),
                           ),
-                        ))
+                        ),
+                      ),
+                    )
                     .toList(),
               ),
             ),
@@ -402,8 +454,14 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.delete_outline, color: AppColors.navy),
-                title: const Text('Sil', style: TextStyle(color: AppColors.navy)),
+                leading: const Icon(
+                  Icons.delete_outline,
+                  color: AppColors.navy,
+                ),
+                title: const Text(
+                  'Sil',
+                  style: TextStyle(color: AppColors.navy),
+                ),
                 onTap: () {
                   Navigator.pop(context);
                   _deleteMessage(message['id']);
@@ -411,8 +469,14 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
               ),
             ] else
               ListTile(
-                leading: const Icon(Icons.delete_outline, color: AppColors.navy),
-                title: const Text('Sil (sadece benden)', style: TextStyle(color: AppColors.navy)),
+                leading: const Icon(
+                  Icons.delete_outline,
+                  color: AppColors.navy,
+                ),
+                title: const Text(
+                  'Sil (sadece benden)',
+                  style: TextStyle(color: AppColors.navy),
+                ),
                 onTap: () {
                   Navigator.pop(context);
                   _hideMessageForMe(message['id']);
@@ -453,24 +517,33 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
     );
     if (source == null) return;
 
-    final picked = await ImagePicker().pickImage(source: source, imageQuality: 80);
+    final picked = await ImagePicker().pickImage(
+      source: source,
+      imageQuality: 80,
+    );
     if (picked == null) return;
 
     setState(() => _sendingAttachment = true);
     try {
       final formData = FormData.fromMap({
-        'file': await MultipartFile.fromFile(picked.path, filename: picked.name),
+        'file': await MultipartFile.fromFile(
+          picked.path,
+          filename: picked.name,
+        ),
       });
-      final res = await _dio.post('/chat/conversations/${widget.conversationId}/attachments', data: formData);
+      final res = await _dio.post(
+        '/chat/conversations/${widget.conversationId}/attachments',
+        data: formData,
+      );
       if (!_messages.any((m) => m['id'] == res.data['id'])) {
         setState(() => _messages = [..._messages, res.data]);
       }
       _scrollToBottom();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Dosya gönderilemedi.')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Dosya gönderilemedi.')));
       }
     } finally {
       if (mounted) setState(() => _sendingAttachment = false);
@@ -520,7 +593,14 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
                 decoration: InputDecoration(
                   hintText: 'Bu sohbette ara...',
                   prefixIcon: _searching
-                      ? const Padding(padding: EdgeInsets.all(12), child: SizedBox(height: 16, width: 16, child: CircularProgressIndicator(strokeWidth: 2)))
+                      ? const Padding(
+                          padding: EdgeInsets.all(12),
+                          child: SizedBox(
+                            height: 16,
+                            width: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                        )
                       : const Icon(Icons.search),
                 ),
                 onChanged: _search,
@@ -529,14 +609,26 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
           if (_searchMode && _searchResults != null)
             Expanded(
               child: _searchResults!.isEmpty
-                  ? Center(child: Text('Sonuç bulunamadı.', style: TextStyle(color: Colors.grey.shade500)))
+                  ? Center(
+                      child: Text(
+                        'Sonuç bulunamadı.',
+                        style: TextStyle(color: Colors.grey.shade500),
+                      ),
+                    )
                   : ListView.builder(
                       itemCount: _searchResults!.length,
                       itemBuilder: (context, index) {
                         final m = _searchResults![index];
                         return ListTile(
-                          leading: const Icon(Icons.chat_bubble_outline, size: 18),
-                          title: Text(m['content'] ?? '', maxLines: 2, overflow: TextOverflow.ellipsis),
+                          leading: const Icon(
+                            Icons.chat_bubble_outline,
+                            size: 18,
+                          ),
+                          title: Text(
+                            m['content'] ?? '',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                           subtitle: Text(_senderLabel(m)),
                           onTap: () {
                             // Basit bir sonuç görünümü — mesaja atlamak yerine
@@ -551,152 +643,247 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
                     ),
             )
           else
-          Expanded(
-            child: _loading
-                ? const Center(child: CircularProgressIndicator())
-                : ListView.builder(
-                    controller: _scrollController,
-                    padding: const EdgeInsets.all(16),
-                    itemCount: _messages.length,
-                    itemBuilder: (context, index) {
-                      final m = _messages[index];
-                      final isMine = _isMine(m);
-                      final replyTo = m['replyTo'];
-                      return Align(
-                        alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
-                        child: GestureDetector(
-                          onLongPress: () => _showMessageActions(m),
-                          child: Column(
-                            crossAxisAlignment: isMine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 4),
-                                child: Text(
-                                  _senderLabel(m),
-                                  style: TextStyle(fontSize: 11, color: Colors.grey.shade600, fontWeight: FontWeight.w500),
-                                ),
-                              ),
-                              Container(
-                                margin: const EdgeInsets.only(top: 2, bottom: 4),
-                                padding: const EdgeInsets.all(12),
-                                constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
-                                decoration: BoxDecoration(
-                                  color: isMine ? AppColors.brand : Colors.grey.shade200,
-                                  borderRadius: BorderRadius.circular(14),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    if (replyTo != null)
-                                      Container(
-                                        margin: const EdgeInsets.only(bottom: 6),
-                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                                        decoration: BoxDecoration(
-                                          color: (isMine ? Colors.white : Colors.black).withValues(alpha: 0.08),
-                                          borderRadius: BorderRadius.circular(8),
-                                          border: Border(
-                                            left: BorderSide(color: isMine ? Colors.white : AppColors.navy, width: 2.5),
-                                          ),
-                                        ),
-                                        child: Text(
-                                          replyTo['content'] ?? '',
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: isMine ? Colors.white.withValues(alpha: 0.85) : Colors.black54,
-                                          ),
-                                        ),
-                                      ),
-                                    if (m['attachmentUrl'] != null && m['attachmentType'] == 'image')
-                                      _AttachmentImage(storageKey: m['attachmentUrl'])
-                                    else if (m['attachmentUrl'] != null)
-                                      // Önceden PDF/dosya ekleri sadece düz metin (dosya adı) olarak
-                                      // görünüyordu, tıklanamıyordu. Artık gerçek bir dosya "çipi".
-                                      _AttachmentFileChip(
-                                        storageKey: m['attachmentUrl'],
-                                        fileName: m['content'] ?? 'Dosya',
-                                        isMine: isMine,
-                                      )
-                                    else
-                                      RichText(
-                                        text: TextSpan(
-                                          children: [
-                                            TextSpan(
-                                              text: m['content'] ?? '',
-                                              style: TextStyle(color: isMine ? Colors.white : Colors.black87),
-                                            ),
-                                            if (m['editedAt'] != null)
-                                              TextSpan(
-                                                text: '  (düzenlendi)',
-                                                style: TextStyle(
-                                                  fontSize: 10.5,
-                                                  fontStyle: FontStyle.italic,
-                                                  color: (isMine ? Colors.white : Colors.black87).withValues(alpha: 0.6),
-                                                ),
-                                              ),
-                                          ],
-                                        ),
-                                      ),
-                                    // Tarih/saat + (gönderen bendeysem) okundu tiki —
-                                    // önceden mesajlarda hiç zaman gösterilmiyordu.
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 3),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Text(
-                                            _formatMessageTime(m['createdAt']),
-                                            style: TextStyle(
-                                              fontSize: 10,
-                                              color: (isMine ? Colors.white : Colors.black87).withValues(alpha: 0.55),
-                                            ),
-                                          ),
-                                          if (isMine) ...[
-                                            const SizedBox(width: 3),
-                                            Builder(builder: (context) {
-                                              final createdAt = DateTime.tryParse(m['createdAt'] ?? '');
-                                              final read = createdAt != null && _isReadByOther(createdAt);
-                                              return Icon(
-                                                read ? Icons.done_all : Icons.done,
-                                                size: 13,
-                                                color: read ? Colors.lightBlueAccent : Colors.white.withValues(alpha: 0.6),
-                                              );
-                                            }),
-                                          ],
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              if ((m['reactions'] as List?)?.isNotEmpty == true)
+            Expanded(
+              child: _loading
+                  ? const Center(child: CircularProgressIndicator())
+                  : ListView.builder(
+                      controller: _scrollController,
+                      padding: const EdgeInsets.all(16),
+                      itemCount: _messages.length,
+                      itemBuilder: (context, index) {
+                        final m = _messages[index];
+                        final isMine = _isMine(m);
+                        final replyTo = m['replyTo'];
+                        return Align(
+                          alignment: isMine
+                              ? Alignment.centerRight
+                              : Alignment.centerLeft,
+                          child: GestureDetector(
+                            onLongPress: () => _showMessageActions(m),
+                            child: Column(
+                              crossAxisAlignment: isMine
+                                  ? CrossAxisAlignment.end
+                                  : CrossAxisAlignment.start,
+                              children: [
                                 Padding(
-                                  padding: const EdgeInsets.only(top: 2),
-                                  child: Wrap(
-                                    spacing: 4,
-                                    children: _groupedReactions(m['reactions'] as List)
-                                        .entries
-                                        .map((e) => Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                              decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                borderRadius: BorderRadius.circular(10),
-                                                border: Border.all(color: AppColors.divider),
-                                              ),
-                                              child: Text('${e.key} ${e.value}', style: const TextStyle(fontSize: 11)),
-                                            ))
-                                        .toList(),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 4,
+                                  ),
+                                  child: Text(
+                                    _senderLabel(m),
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: Colors.grey.shade600,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
                                 ),
-                            ],
+                                Container(
+                                  margin: const EdgeInsets.only(
+                                    top: 2,
+                                    bottom: 4,
+                                  ),
+                                  padding: const EdgeInsets.all(12),
+                                  constraints: BoxConstraints(
+                                    maxWidth:
+                                        MediaQuery.of(context).size.width *
+                                        0.75,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: isMine
+                                        ? AppColors.brand
+                                        : Colors.grey.shade200,
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      if (replyTo != null)
+                                        Container(
+                                          margin: const EdgeInsets.only(
+                                            bottom: 6,
+                                          ),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                            vertical: 6,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color:
+                                                (isMine
+                                                        ? Colors.white
+                                                        : Colors.black)
+                                                    .withValues(alpha: 0.08),
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                            border: Border(
+                                              left: BorderSide(
+                                                color: isMine
+                                                    ? Colors.white
+                                                    : AppColors.navy,
+                                                width: 2.5,
+                                              ),
+                                            ),
+                                          ),
+                                          child: Text(
+                                            replyTo['content'] ?? '',
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: isMine
+                                                  ? Colors.white.withValues(
+                                                      alpha: 0.85,
+                                                    )
+                                                  : Colors.black54,
+                                            ),
+                                          ),
+                                        ),
+                                      if (m['attachmentUrl'] != null &&
+                                          m['attachmentType'] == 'image')
+                                        _AttachmentImage(
+                                          storageKey: m['attachmentUrl'],
+                                        )
+                                      else if (m['attachmentUrl'] != null)
+                                        // Önceden PDF/dosya ekleri sadece düz metin (dosya adı) olarak
+                                        // görünüyordu, tıklanamıyordu. Artık gerçek bir dosya "çipi".
+                                        _AttachmentFileChip(
+                                          storageKey: m['attachmentUrl'],
+                                          fileName: m['content'] ?? 'Dosya',
+                                          isMine: isMine,
+                                        )
+                                      else
+                                        RichText(
+                                          text: TextSpan(
+                                            children: [
+                                              TextSpan(
+                                                text: m['content'] ?? '',
+                                                style: TextStyle(
+                                                  color: isMine
+                                                      ? Colors.white
+                                                      : Colors.black87,
+                                                ),
+                                              ),
+                                              if (m['editedAt'] != null)
+                                                TextSpan(
+                                                  text: '  (düzenlendi)',
+                                                  style: TextStyle(
+                                                    fontSize: 10.5,
+                                                    fontStyle: FontStyle.italic,
+                                                    color:
+                                                        (isMine
+                                                                ? Colors.white
+                                                                : Colors
+                                                                      .black87)
+                                                            .withValues(
+                                                              alpha: 0.6,
+                                                            ),
+                                                  ),
+                                                ),
+                                            ],
+                                          ),
+                                        ),
+                                      // Tarih/saat + (gönderen bendeysem) okundu tiki —
+                                      // önceden mesajlarda hiç zaman gösterilmiyordu.
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 3),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(
+                                              _formatMessageTime(
+                                                m['createdAt'],
+                                              ),
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                color:
+                                                    (isMine
+                                                            ? Colors.white
+                                                            : Colors.black87)
+                                                        .withValues(
+                                                          alpha: 0.55,
+                                                        ),
+                                              ),
+                                            ),
+                                            if (isMine) ...[
+                                              const SizedBox(width: 3),
+                                              Builder(
+                                                builder: (context) {
+                                                  final createdAt =
+                                                      DateTime.tryParse(
+                                                        m['createdAt'] ?? '',
+                                                      );
+                                                  final read =
+                                                      createdAt != null &&
+                                                      _isReadByOther(createdAt);
+                                                  return Icon(
+                                                    read
+                                                        ? Icons.done_all
+                                                        : Icons.done,
+                                                    size: 13,
+                                                    color: read
+                                                        ? Colors.lightBlueAccent
+                                                        : Colors.white
+                                                              .withValues(
+                                                                alpha: 0.6,
+                                                              ),
+                                                  );
+                                                },
+                                              ),
+                                            ],
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                if ((m['reactions'] as List?)?.isNotEmpty ==
+                                    true)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 2),
+                                    child: Wrap(
+                                      spacing: 4,
+                                      children:
+                                          _groupedReactions(
+                                                m['reactions'] as List,
+                                              ).entries
+                                              .map(
+                                                (e) => Container(
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        horizontal: 6,
+                                                        vertical: 2,
+                                                      ),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.white,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          10,
+                                                        ),
+                                                    border: Border.all(
+                                                      color: AppColors.divider,
+                                                    ),
+                                                  ),
+                                                  child: Text(
+                                                    '${e.key} ${e.value}',
+                                                    style: const TextStyle(
+                                                      fontSize: 11,
+                                                    ),
+                                                  ),
+                                                ),
+                                              )
+                                              .toList(),
+                                    ),
+                                  ),
+                              ],
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                  ),
-          ),
+                        );
+                      },
+                    ),
+            ),
           if (_typingUserId != null)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -704,7 +891,11 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   '${_participantNames[_typingUserId] ?? 'Karşı taraf'} yazıyor...',
-                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600, fontStyle: FontStyle.italic),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey.shade600,
+                    fontStyle: FontStyle.italic,
+                  ),
                 ),
               ),
             ),
@@ -720,12 +911,22 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Yanıtlanıyor', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.navy)),
+                        const Text(
+                          'Yanıtlanıyor',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.navy,
+                          ),
+                        ),
                         Text(
                           _replyingTo!['content'] ?? '',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(fontSize: 12.5, color: Colors.grey.shade700),
+                          style: TextStyle(
+                            fontSize: 12.5,
+                            color: Colors.grey.shade700,
+                          ),
                         ),
                       ],
                     ),
@@ -744,19 +945,31 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
                 children: [
                   IconButton(
                     icon: _sendingAttachment
-                        ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                        ? const SizedBox(
+                            height: 18,
+                            width: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
                         : const Icon(Icons.attach_file),
-                    onPressed: _sendingAttachment ? null : _pickAndSendAttachment,
+                    onPressed: _sendingAttachment
+                        ? null
+                        : _pickAndSendAttachment,
                   ),
                   Expanded(
                     child: TextField(
                       controller: _inputController,
-                      decoration: const InputDecoration(hintText: 'Mesaj yazın...'),
-                      onChanged: (_) => _socket.sendTyping(widget.conversationId),
+                      decoration: const InputDecoration(
+                        hintText: 'Mesaj yazın...',
+                      ),
+                      onChanged: (_) =>
+                          _socket.sendTyping(widget.conversationId),
                       onSubmitted: (_) => _send(),
                     ),
                   ),
-                  IconButton.filled(onPressed: _send, icon: const Icon(Icons.send)),
+                  IconButton.filled(
+                    onPressed: _send,
+                    icon: const Icon(Icons.send),
+                  ),
                 ],
               ),
             ),
@@ -775,7 +988,10 @@ class _AttachmentImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Response>(
-      future: ApiClient().dio.get('/chat/attachments/signed-url', queryParameters: {'key': storageKey}),
+      future: ApiClient().dio.get(
+        '/chat/attachments/signed-url',
+        queryParameters: {'key': storageKey},
+      ),
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return const SizedBox(
@@ -785,7 +1001,11 @@ class _AttachmentImage extends StatelessWidget {
           );
         }
         if (snapshot.hasError || snapshot.data == null) {
-          return const SizedBox(width: 160, height: 80, child: Center(child: Icon(Icons.broken_image_outlined)));
+          return const SizedBox(
+            width: 160,
+            height: 80,
+            child: Center(child: Icon(Icons.broken_image_outlined)),
+          );
         }
         final url = snapshot.data!.data as String;
         return ClipRRect(
@@ -814,7 +1034,11 @@ class _AttachmentFileChip extends StatefulWidget {
   final String fileName;
   final bool isMine;
 
-  const _AttachmentFileChip({required this.storageKey, required this.fileName, required this.isMine});
+  const _AttachmentFileChip({
+    required this.storageKey,
+    required this.fileName,
+    required this.isMine,
+  });
 
   @override
   State<_AttachmentFileChip> createState() => _AttachmentFileChipState();
@@ -826,7 +1050,10 @@ class _AttachmentFileChipState extends State<_AttachmentFileChip> {
   Future<void> _open() async {
     setState(() => _opening = true);
     try {
-      final signed = await ApiClient().dio.get('/chat/attachments/signed-url', queryParameters: {'key': widget.storageKey});
+      final signed = await ApiClient().dio.get(
+        '/chat/attachments/signed-url',
+        queryParameters: {'key': widget.storageKey},
+      );
       final url = signed.data as String;
       final tempDir = await getTemporaryDirectory();
       final safeName = widget.fileName.replaceAll(RegExp(r'[^\w\s.-]'), '');
@@ -835,9 +1062,8 @@ class _AttachmentFileChipState extends State<_AttachmentFileChip> {
       await OpenFilex.open(path);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Dosya açılamadı.')),
-        );
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('Dosya açılamadı.')));
       }
     } finally {
       if (mounted) setState(() => _opening = false);
@@ -854,13 +1080,23 @@ class _AttachmentFileChipState extends State<_AttachmentFileChip> {
         mainAxisSize: MainAxisSize.min,
         children: [
           _opening
-              ? SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2, color: color))
+              ? SizedBox(
+                  height: 18,
+                  width: 18,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: color,
+                  ),
+                )
               : Icon(Icons.insert_drive_file_outlined, color: color, size: 20),
           const SizedBox(width: 6),
           Flexible(
             child: Text(
               widget.fileName,
-              style: TextStyle(color: color, decoration: TextDecoration.underline),
+              style: TextStyle(
+                color: color,
+                decoration: TextDecoration.underline,
+              ),
               overflow: TextOverflow.ellipsis,
             ),
           ),

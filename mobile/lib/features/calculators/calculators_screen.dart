@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/design_system.dart';
@@ -13,7 +14,8 @@ class CalculatorsScreen extends StatefulWidget {
   State<CalculatorsScreen> createState() => _CalculatorsScreenState();
 }
 
-class _CalculatorsScreenState extends State<CalculatorsScreen> with SingleTickerProviderStateMixin {
+class _CalculatorsScreenState extends State<CalculatorsScreen>
+    with SingleTickerProviderStateMixin {
   late final TabController _tabController;
 
   static const _tabs = [
@@ -41,34 +43,68 @@ class _CalculatorsScreenState extends State<CalculatorsScreen> with SingleTicker
       backgroundColor: const Color(0xFFFFFFFF),
       body: SafeArea(
         child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, 0),
-            child: Text(
-              'Teknik Hesaplamalar',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: AppColors.navy, letterSpacing: -0.6, height: 1.1),
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.md,
+                AppSpacing.md,
+                AppSpacing.md,
+                0,
+              ),
+              child: Text(
+                'Teknik Hesaplamalar',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w900,
+                  color: AppColors.navy,
+                  letterSpacing: -0.6,
+                  height: 1.1,
+                ),
+              ),
             ),
-          ),
-          // Standart alt çizgili TabBar yerine, daha "premium" duran
-          // ikonlu bir segment kontrolü.
-          Padding(
-            padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.sm, AppSpacing.md, 0),
-            child: Container(
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(color: const Color(0xFFEFF1F4), borderRadius: BorderRadius.circular(14)),
-              child: TabBar(
-                controller: _tabController,
-                indicator: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(11), boxShadow: [
-                  BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 6, offset: const Offset(0, 1)),
-                ]),
-                indicatorSize: TabBarIndicatorSize.tab,
-                dividerColor: Colors.transparent,
-                labelColor: AppColors.navy,
-                unselectedLabelColor: Colors.grey.shade500,
-                labelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
-                unselectedLabelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-                tabs: _tabs
-                    .map((t) => Tab(
+            // Standart alt çizgili TabBar yerine, daha "premium" duran
+            // ikonlu bir segment kontrolü.
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.md,
+                AppSpacing.sm,
+                AppSpacing.md,
+                0,
+              ),
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEFF1F4),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: TabBar(
+                  controller: _tabController,
+                  indicator: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(11),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.06),
+                        blurRadius: 6,
+                        offset: const Offset(0, 1),
+                      ),
+                    ],
+                  ),
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  dividerColor: Colors.transparent,
+                  labelColor: AppColors.navy,
+                  unselectedLabelColor: Colors.grey.shade500,
+                  labelStyle: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                  ),
+                  unselectedLabelStyle: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  tabs: _tabs
+                      .map(
+                        (t) => Tab(
                           height: 44,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -78,23 +114,24 @@ class _CalculatorsScreenState extends State<CalculatorsScreen> with SingleTicker
                               Text(t.label),
                             ],
                           ),
-                        ))
-                    .toList(),
+                        ),
+                      )
+                      .toList(),
+                ),
               ),
             ),
-          ),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: const [
-                _BatteryCalculator(),
-                _CameraStorageCalculator(),
-                _PoeBudgetCalculator(),
-              ],
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: const [
+                  _BatteryCalculator(),
+                  _CameraStorageCalculator(),
+                  _PoeBudgetCalculator(),
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
       ),
     );
   }
@@ -139,25 +176,43 @@ class _ResultCard extends StatelessWidget {
     if (error != null) {
       return Container(
         padding: const EdgeInsets.all(AppSpacing.sm),
-        decoration: BoxDecoration(color: AppColors.navy.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(AppSpacing.radius)),
+        decoration: BoxDecoration(
+          color: AppColors.navy.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(AppSpacing.radius),
+        ),
         child: Row(
           children: [
             Icon(Icons.error_outline, color: AppColors.navy, size: 18),
             const SizedBox(width: 8),
-            Expanded(child: Text(error!, style: const TextStyle(color: AppColors.navy))),
+            Expanded(
+              child: Text(
+                error!,
+                style: const TextStyle(color: AppColors.navy),
+              ),
+            ),
           ],
         ),
       );
     }
     if (result == null) return const SizedBox.shrink();
 
-    final otherEntries = result!.entries.where((e) => e.key != 'note' && e.key != headlineKey && e.key != statusKey).toList();
+    final otherEntries = result!.entries
+        .where(
+          (e) => e.key != 'note' && e.key != headlineKey && e.key != statusKey,
+        )
+        .toList();
 
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 12, offset: const Offset(0, 3))],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 12,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       padding: const EdgeInsets.all(AppSpacing.md),
       child: Column(
@@ -168,11 +223,27 @@ class _ResultCard extends StatelessWidget {
               Container(
                 width: 34,
                 height: 34,
-                decoration: BoxDecoration(color: AppColors.brand.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
-                child: const Icon(Icons.check_circle_outline, color: AppColors.brand, size: 18),
+                decoration: BoxDecoration(
+                  color: AppColors.brand.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(
+                  Icons.check_circle_outline,
+                  color: AppColors.brand,
+                  size: 18,
+                ),
               ),
               const SizedBox(width: 10),
-              Expanded(child: Text(title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: AppColors.navy))),
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 14,
+                    color: AppColors.navy,
+                  ),
+                ),
+              ),
             ],
           ),
           const SizedBox(height: AppSpacing.sm),
@@ -182,14 +253,28 @@ class _ResultCard extends StatelessWidget {
             Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
-              decoration: BoxDecoration(color: const Color(0xFFFAFAFB), borderRadius: BorderRadius.circular(14)),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFAFAFB),
+                borderRadius: BorderRadius.circular(14),
+              ),
               child: Column(
                 children: [
-                  Text(_kLabels[headlineKey] ?? headlineKey!, style: TextStyle(fontSize: 11.5, color: Colors.grey.shade500, fontWeight: FontWeight.w600)),
+                  Text(
+                    _kLabels[headlineKey] ?? headlineKey!,
+                    style: TextStyle(
+                      fontSize: 11.5,
+                      color: Colors.grey.shade500,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                   const SizedBox(height: 4),
                   Text(
                     '${result![headlineKey]}${headlineSuffix ?? ''}',
-                    style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w800, color: AppColors.navy),
+                    style: const TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.navy,
+                    ),
                   ),
                 ],
               ),
@@ -201,24 +286,34 @@ class _ResultCard extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 10),
               decoration: BoxDecoration(
-                color: result![statusKey] == true ? Colors.green.withValues(alpha: 0.08) : AppColors.navy.withValues(alpha: 0.08),
+                color: result![statusKey] == true
+                    ? Colors.green.withValues(alpha: 0.08)
+                    : AppColors.navy.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
-                    result![statusKey] == true ? Icons.check_circle : Icons.warning_amber_rounded,
+                    result![statusKey] == true
+                        ? Icons.check_circle
+                        : Icons.warning_amber_rounded,
                     size: 16,
-                    color: result![statusKey] == true ? Colors.green.shade700 : AppColors.navy,
+                    color: result![statusKey] == true
+                        ? Colors.green.shade700
+                        : AppColors.navy,
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    result![statusKey] == true ? 'Bütçe İçinde' : 'Bütçe Aşıldı',
+                    result![statusKey] == true
+                        ? 'Bütçe İçinde'
+                        : 'Bütçe Aşıldı',
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 13,
-                      color: result![statusKey] == true ? Colors.green.shade700 : AppColors.navy,
+                      color: result![statusKey] == true
+                          ? Colors.green.shade700
+                          : AppColors.navy,
                     ),
                   ),
                 ],
@@ -234,8 +329,21 @@ class _ResultCard extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(_kLabels[e.key] ?? e.key, style: TextStyle(color: Colors.grey.shade600, fontSize: 13)),
-                    Text('${e.value}', style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.navy, fontSize: 13)),
+                    Text(
+                      _kLabels[e.key] ?? e.key,
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: 13,
+                      ),
+                    ),
+                    Text(
+                      '${e.value}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.navy,
+                        fontSize: 13,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -247,7 +355,11 @@ class _ResultCard extends StatelessWidget {
               padding: const EdgeInsets.only(top: 8),
               child: Text(
                 result!['note'],
-                style: TextStyle(fontSize: 12, color: Colors.grey.shade500, fontStyle: FontStyle.italic),
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey.shade500,
+                  fontStyle: FontStyle.italic,
+                ),
               ),
             ),
 
@@ -255,7 +367,12 @@ class _ResultCard extends StatelessWidget {
           Align(
             alignment: Alignment.centerRight,
             child: TextButton.icon(
-              onPressed: () => CalculatorPdfExporter.export(context: context, title: title, result: result!, labels: _kLabels),
+              onPressed: () => CalculatorPdfExporter.export(
+                context: context,
+                title: title,
+                result: result!,
+                labels: _kLabels,
+              ),
               icon: const Icon(Icons.picture_as_pdf_outlined, size: 16),
               label: const Text('PDF Rapor Al'),
             ),
@@ -290,15 +407,21 @@ class _BatteryCalculatorState extends State<_BatteryCalculator> {
       _calculating = true;
     });
     try {
-      final res = await _dio.post('/calculators/battery', data: {
-        'standbyCurrentMa': double.tryParse(_standbyController.text) ?? 0,
-        'alarmCurrentMa': double.tryParse(_alarmController.text) ?? 0,
-        'standbyHours': double.tryParse(_standbyHoursController.text) ?? 0,
-        'alarmMinutes': double.tryParse(_alarmMinutesController.text) ?? 0,
-      });
+      final res = await _dio.post(
+        '/calculators/battery',
+        data: {
+          'standbyCurrentMa': double.tryParse(_standbyController.text) ?? 0,
+          'alarmCurrentMa': double.tryParse(_alarmController.text) ?? 0,
+          'standbyHours': double.tryParse(_standbyHoursController.text) ?? 0,
+          'alarmMinutes': double.tryParse(_alarmMinutesController.text) ?? 0,
+        },
+      );
       setState(() => _result = res.data);
     } on DioException catch (e) {
-      setState(() => _error = e.response?.data?['message']?.toString() ?? 'Hesaplama başarısız.');
+      setState(
+        () => _error =
+            e.response?.data?['message']?.toString() ?? 'Hesaplama başarısız.',
+      );
     } finally {
       if (mounted) setState(() => _calculating = false);
     }
@@ -317,10 +440,31 @@ class _BatteryCalculatorState extends State<_BatteryCalculator> {
         PremiumFormSection(
           title: 'Sistem Bilgileri',
           children: [
-            _UnitField(controller: _standbyController, label: 'Bekleme akımı', unit: 'mA', icon: Icons.bedtime_outlined),
-            _UnitField(controller: _alarmController, label: 'Alarm akımı', unit: 'mA', icon: Icons.notifications_active_outlined),
-            _UnitField(controller: _standbyHoursController, label: 'Bekleme süresi', unit: 'saat', icon: Icons.schedule_outlined),
-            _UnitField(controller: _alarmMinutesController, label: 'Alarm süresi', unit: 'dk', icon: Icons.timer_outlined, isLast: true),
+            _UnitField(
+              controller: _standbyController,
+              label: 'Bekleme akımı',
+              unit: 'mA',
+              icon: Icons.bedtime_outlined,
+            ),
+            _UnitField(
+              controller: _alarmController,
+              label: 'Alarm akımı',
+              unit: 'mA',
+              icon: Icons.notifications_active_outlined,
+            ),
+            _UnitField(
+              controller: _standbyHoursController,
+              label: 'Bekleme süresi',
+              unit: 'saat',
+              icon: Icons.schedule_outlined,
+            ),
+            _UnitField(
+              controller: _alarmMinutesController,
+              label: 'Alarm süresi',
+              unit: 'dk',
+              icon: Icons.timer_outlined,
+              isLast: true,
+            ),
           ],
         ),
         const SizedBox(height: AppSpacing.md),
@@ -328,10 +472,22 @@ class _BatteryCalculatorState extends State<_BatteryCalculator> {
           width: double.infinity,
           child: ElevatedButton(
             onPressed: _calculating ? null : _calculate,
-            style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 14),
+            ),
             child: _calculating
-                ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                : const Text('Hesapla', style: TextStyle(fontWeight: FontWeight.w700)),
+                ? const SizedBox(
+                    height: 18,
+                    width: 18,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                : const Text(
+                    'Hesapla',
+                    style: TextStyle(fontWeight: FontWeight.w700),
+                  ),
           ),
         ),
         const SizedBox(height: AppSpacing.md),
@@ -351,7 +507,8 @@ class _CameraStorageCalculator extends StatefulWidget {
   const _CameraStorageCalculator();
 
   @override
-  State<_CameraStorageCalculator> createState() => _CameraStorageCalculatorState();
+  State<_CameraStorageCalculator> createState() =>
+      _CameraStorageCalculatorState();
 }
 
 class _CameraStorageCalculatorState extends State<_CameraStorageCalculator> {
@@ -370,14 +527,20 @@ class _CameraStorageCalculatorState extends State<_CameraStorageCalculator> {
       _calculating = true;
     });
     try {
-      final res = await _dio.post('/calculators/camera-storage', data: {
-        'cameraCount': int.tryParse(_cameraCountController.text) ?? 0,
-        'bitrateMbps': double.tryParse(_bitrateController.text) ?? 0,
-        'retentionDays': int.tryParse(_retentionController.text) ?? 0,
-      });
+      final res = await _dio.post(
+        '/calculators/camera-storage',
+        data: {
+          'cameraCount': int.tryParse(_cameraCountController.text) ?? 0,
+          'bitrateMbps': double.tryParse(_bitrateController.text) ?? 0,
+          'retentionDays': int.tryParse(_retentionController.text) ?? 0,
+        },
+      );
       setState(() => _result = res.data);
     } on DioException catch (e) {
-      setState(() => _error = e.response?.data?['message']?.toString() ?? 'Hesaplama başarısız.');
+      setState(
+        () => _error =
+            e.response?.data?['message']?.toString() ?? 'Hesaplama başarısız.',
+      );
     } finally {
       if (mounted) setState(() => _calculating = false);
     }
@@ -396,9 +559,25 @@ class _CameraStorageCalculatorState extends State<_CameraStorageCalculator> {
         PremiumFormSection(
           title: 'Sistem Bilgileri',
           children: [
-            _UnitField(controller: _cameraCountController, label: 'Kamera sayısı', unit: 'adet', icon: Icons.videocam_outlined),
-            _UnitField(controller: _bitrateController, label: 'Kamera başına bitrate', unit: 'Mbps', icon: Icons.speed_outlined),
-            _UnitField(controller: _retentionController, label: 'Saklama süresi', unit: 'gün', icon: Icons.calendar_month_outlined, isLast: true),
+            _UnitField(
+              controller: _cameraCountController,
+              label: 'Kamera sayısı',
+              unit: 'adet',
+              icon: Icons.videocam_outlined,
+            ),
+            _UnitField(
+              controller: _bitrateController,
+              label: 'Kamera başına bitrate',
+              unit: 'Mbps',
+              icon: Icons.speed_outlined,
+            ),
+            _UnitField(
+              controller: _retentionController,
+              label: 'Saklama süresi',
+              unit: 'gün',
+              icon: Icons.calendar_month_outlined,
+              isLast: true,
+            ),
           ],
         ),
         const SizedBox(height: AppSpacing.md),
@@ -406,10 +585,22 @@ class _CameraStorageCalculatorState extends State<_CameraStorageCalculator> {
           width: double.infinity,
           child: ElevatedButton(
             onPressed: _calculating ? null : _calculate,
-            style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 14),
+            ),
             child: _calculating
-                ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                : const Text('Hesapla', style: TextStyle(fontWeight: FontWeight.w700)),
+                ? const SizedBox(
+                    height: 18,
+                    width: 18,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                : const Text(
+                    'Hesapla',
+                    style: TextStyle(fontWeight: FontWeight.w700),
+                  ),
           ),
         ),
         const SizedBox(height: AppSpacing.md),
@@ -448,19 +639,25 @@ class _PoeBudgetCalculatorState extends State<_PoeBudgetCalculator> {
       _calculating = true;
     });
     try {
-      final res = await _dio.post('/calculators/poe-budget', data: {
-        'devices': [
-          {
-            'name': 'Kamera',
-            'wattage': double.tryParse(_wattageController.text) ?? 0,
-            'count': int.tryParse(_countController.text) ?? 0,
-          },
-        ],
-        'switchBudgetW': double.tryParse(_budgetController.text) ?? 0,
-      });
+      final res = await _dio.post(
+        '/calculators/poe-budget',
+        data: {
+          'devices': [
+            {
+              'name': 'Kamera',
+              'wattage': double.tryParse(_wattageController.text) ?? 0,
+              'count': int.tryParse(_countController.text) ?? 0,
+            },
+          ],
+          'switchBudgetW': double.tryParse(_budgetController.text) ?? 0,
+        },
+      );
       setState(() => _result = res.data);
     } on DioException catch (e) {
-      setState(() => _error = e.response?.data?['message']?.toString() ?? 'Hesaplama başarısız.');
+      setState(
+        () => _error =
+            e.response?.data?['message']?.toString() ?? 'Hesaplama başarısız.',
+      );
     } finally {
       if (mounted) setState(() => _calculating = false);
     }
@@ -479,9 +676,25 @@ class _PoeBudgetCalculatorState extends State<_PoeBudgetCalculator> {
         PremiumFormSection(
           title: 'Cihaz Bilgileri',
           children: [
-            _UnitField(controller: _wattageController, label: 'Cihaz başına güç', unit: 'W', icon: Icons.bolt_outlined),
-            _UnitField(controller: _countController, label: 'Cihaz sayısı', unit: 'adet', icon: Icons.videocam_outlined),
-            _UnitField(controller: _budgetController, label: 'Switch güç bütçesi', unit: 'W', icon: Icons.dns_outlined, isLast: true),
+            _UnitField(
+              controller: _wattageController,
+              label: 'Cihaz başına güç',
+              unit: 'W',
+              icon: Icons.bolt_outlined,
+            ),
+            _UnitField(
+              controller: _countController,
+              label: 'Cihaz sayısı',
+              unit: 'adet',
+              icon: Icons.videocam_outlined,
+            ),
+            _UnitField(
+              controller: _budgetController,
+              label: 'Switch güç bütçesi',
+              unit: 'W',
+              icon: Icons.dns_outlined,
+              isLast: true,
+            ),
           ],
         ),
         const SizedBox(height: AppSpacing.md),
@@ -489,10 +702,22 @@ class _PoeBudgetCalculatorState extends State<_PoeBudgetCalculator> {
           width: double.infinity,
           child: ElevatedButton(
             onPressed: _calculating ? null : _calculate,
-            style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 14),
+            ),
             child: _calculating
-                ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                : const Text('Hesapla', style: TextStyle(fontWeight: FontWeight.w700)),
+                ? const SizedBox(
+                    height: 18,
+                    width: 18,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                : const Text(
+                    'Hesapla',
+                    style: TextStyle(fontWeight: FontWeight.w700),
+                  ),
           ),
         ),
         const SizedBox(height: AppSpacing.md),
@@ -522,13 +747,25 @@ class _CalculatorIntro extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.sm),
-      decoration: BoxDecoration(color: AppColors.navy.withValues(alpha: 0.04), borderRadius: BorderRadius.circular(14)),
+      decoration: BoxDecoration(
+        color: AppColors.navy.withValues(alpha: 0.04),
+        borderRadius: BorderRadius.circular(14),
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(icon, size: 18, color: AppColors.navy),
           const SizedBox(width: 10),
-          Expanded(child: Text(text, style: TextStyle(fontSize: 12.5, color: Colors.grey.shade700, height: 1.4))),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: 12.5,
+                color: Colors.grey.shade700,
+                height: 1.4,
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -556,7 +793,10 @@ class _UnitField extends StatelessWidget {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 6),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: 6,
+          ),
           child: Row(
             children: [
               Icon(icon, size: 18, color: Colors.grey.shade400),
@@ -565,15 +805,27 @@ class _UnitField extends StatelessWidget {
                 child: TextField(
                   controller: controller,
                   keyboardType: TextInputType.number,
-                  decoration: InputDecoration(labelText: label, border: InputBorder.none, isDense: true),
+                  decoration: InputDecoration(
+                    labelText: label,
+                    border: InputBorder.none,
+                    isDense: true,
+                  ),
                 ),
               ),
               const SizedBox(width: 8),
-              Text(unit, style: TextStyle(fontSize: 12.5, color: Colors.grey.shade400, fontWeight: FontWeight.w600)),
+              Text(
+                unit,
+                style: TextStyle(
+                  fontSize: 12.5,
+                  color: Colors.grey.shade400,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ],
           ),
         ),
-        if (!isLast) Divider(height: 1, indent: 46, color: Colors.grey.shade100),
+        if (!isLast)
+          Divider(height: 1, indent: 46, color: Colors.grey.shade100),
       ],
     );
   }

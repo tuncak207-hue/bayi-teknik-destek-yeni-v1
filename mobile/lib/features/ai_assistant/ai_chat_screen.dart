@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
+
 import '../../core/api/socket_service.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/design_system.dart';
@@ -78,9 +80,12 @@ class _AiChatScreenState extends State<AiChatScreen> {
     if (_conversationId != null) _socket.joinConversation(_conversationId!);
     _messageSub = _socket.onMessage.listen((data) {
       // Backend'in gönderdiği mesaj bu konuşmaya ait mi kontrol edelim.
-      if (data['conversationId'] != null && data['conversationId'] != _conversationId) return;
+      if (data['conversationId'] != null &&
+          data['conversationId'] != _conversationId)
+        return;
       final incoming = ChatMessage.fromJson(data);
-      if (_messages.any((m) => m.id == incoming.id)) return; // zaten optimistic olarak eklenmiş olabilir
+      if (_messages.any((m) => m.id == incoming.id))
+        return; // zaten optimistic olarak eklenmiş olabilir
       setState(() => _messages = [..._messages, incoming]);
       _scrollToBottom();
     });
@@ -110,13 +115,20 @@ class _AiChatScreenState extends State<AiChatScreen> {
       await _repository.verifyMemory(msg.memoryId!);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Cevap doğrulandı — bundan sonra bu soru için AI daha hızlı cevap verecek.')),
+        const SnackBar(
+          content: Text(
+            'Cevap doğrulandı — bundan sonra bu soru için AI daha hızlı cevap verecek.',
+          ),
+        ),
       );
     } catch (_) {
       if (!mounted) return;
       setState(() => _messages[index] = msg.copyWith(memoryIsVerified: false));
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Doğrulama başarısız oldu, tekrar deneyin.'), backgroundColor: AppColors.navy),
+        const SnackBar(
+          content: Text('Doğrulama başarısız oldu, tekrar deneyin.'),
+          backgroundColor: AppColors.navy,
+        ),
       );
     }
   }
@@ -139,7 +151,8 @@ class _AiChatScreenState extends State<AiChatScreen> {
         final conversations = await _repository.listConversations();
         if (conversations.isNotEmpty) {
           _conversationId = conversations.first['id'] as String;
-          if (_conversationId != null) _socket.joinConversation(_conversationId!);
+          if (_conversationId != null)
+            _socket.joinConversation(_conversationId!);
         }
       } catch (_) {
         // Sessizce geç — kullanıcı yine de yeni bir soru sorabilir.
@@ -152,7 +165,8 @@ class _AiChatScreenState extends State<AiChatScreen> {
     try {
       final messages = await _repository.listMessages(_conversationId!);
       setState(() {
-        _messages = messages.reversed.toList(); // API en yeniden en eskiye döner
+        _messages = messages.reversed
+            .toList(); // API en yeniden en eskiye döner
         _loading = false;
       });
       _scrollToBottom();
@@ -169,7 +183,8 @@ class _AiChatScreenState extends State<AiChatScreen> {
   Future<void> _startNewConversation() async {
     try {
       final oldConversationId = _conversationId;
-      if (oldConversationId != null) _socket.leaveConversation(oldConversationId);
+      if (oldConversationId != null)
+        _socket.leaveConversation(oldConversationId);
       final newId = await _repository.createNewConversation();
       if (!mounted) return;
       setState(() {
@@ -183,7 +198,10 @@ class _AiChatScreenState extends State<AiChatScreen> {
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Yeni sohbet başlatılamadı, tekrar deneyin.'), backgroundColor: AppColors.navy),
+        const SnackBar(
+          content: Text('Yeni sohbet başlatılamadı, tekrar deneyin.'),
+          backgroundColor: AppColors.navy,
+        ),
       );
     }
   }
@@ -198,7 +216,10 @@ class _AiChatScreenState extends State<AiChatScreen> {
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Geçmiş yüklenemedi.'), backgroundColor: AppColors.navy),
+        const SnackBar(
+          content: Text('Geçmiş yüklenemedi.'),
+          backgroundColor: AppColors.navy,
+        ),
       );
       return;
     }
@@ -215,7 +236,10 @@ class _AiChatScreenState extends State<AiChatScreen> {
           children: [
             const Padding(
               padding: EdgeInsets.all(16),
-              child: Text('Sohbet Geçmişiniz', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+              child: Text(
+                'Sohbet Geçmişiniz',
+                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+              ),
             ),
             Expanded(
               child: conversations.isEmpty
@@ -226,18 +250,36 @@ class _AiChatScreenState extends State<AiChatScreen> {
                       itemBuilder: (context, index) {
                         final c = conversations[index];
                         final msgs = (c['messages'] as List);
-                        final lastMsg = msgs.isNotEmpty ? msgs[0]['content'] as String? : null;
+                        final lastMsg = msgs.isNotEmpty
+                            ? msgs[0]['content'] as String?
+                            : null;
                         final isActive = c['id'] == _conversationId;
                         return ListTile(
-                          leading: Icon(Icons.chat_bubble_outline, color: isActive ? Colors.green : Colors.grey),
+                          leading: Icon(
+                            Icons.chat_bubble_outline,
+                            color: isActive ? Colors.green : Colors.grey,
+                          ),
                           title: Text(
                             lastMsg ?? 'Yeni sohbet',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(fontWeight: isActive ? FontWeight.w800 : FontWeight.w500),
+                            style: TextStyle(
+                              fontWeight: isActive
+                                  ? FontWeight.w800
+                                  : FontWeight.w500,
+                            ),
                           ),
-                          trailing: isActive ? const Text('Şu an burada', style: TextStyle(fontSize: 11, color: Colors.green)) : null,
-                          onTap: () => Navigator.pop(sheetContext, c['id'] as String),
+                          trailing: isActive
+                              ? const Text(
+                                  'Şu an burada',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: Colors.green,
+                                  ),
+                                )
+                              : null,
+                          onTap: () =>
+                              Navigator.pop(sheetContext, c['id'] as String),
                         );
                       },
                     ),
@@ -298,8 +340,15 @@ class _AiChatScreenState extends State<AiChatScreen> {
     try {
       final wasNew = _conversationId == null;
       final result = imageToSend != null
-          ? await _repository.askWithImage(image: imageToSend, question: question, conversationId: _conversationId)
-          : await _repository.ask(question: question, conversationId: _conversationId);
+          ? await _repository.askWithImage(
+              image: imageToSend,
+              question: question,
+              conversationId: _conversationId,
+            )
+          : await _repository.ask(
+              question: question,
+              conversationId: _conversationId,
+            );
       _conversationId = result.conversationId;
       if (wasNew) _socket.joinConversation(_conversationId!);
       // AI cevabı Socket.IO üzerinden de yayınlanıyor; aynı mesajın iki kez
@@ -325,7 +374,8 @@ class _AiChatScreenState extends State<AiChatScreen> {
         if (serverMessage is String && serverMessage.isNotEmpty) {
           message = serverMessage;
         } else if (e.response?.statusCode == 500) {
-          message = 'Sunucu şu an cevap veremiyor. Lütfen daha sonra tekrar deneyin.';
+          message =
+              'Sunucu şu an cevap veremiyor. Lütfen daha sonra tekrar deneyin.';
         }
       }
       ScaffoldMessenger.of(context).showSnackBar(
@@ -433,8 +483,11 @@ class _AiChatScreenState extends State<AiChatScreen> {
                       }
                       return MessageBubble(
                         message: _messages[index],
-                        onFavorite: () => _repository.toggleFavorite(_messages[index].id),
-                        fromMemory: _fromMemoryMessageIds.contains(_messages[index].id),
+                        onFavorite: () =>
+                            _repository.toggleFavorite(_messages[index].id),
+                        fromMemory: _fromMemoryMessageIds.contains(
+                          _messages[index].id,
+                        ),
                         canVerify: _messages[index].memoryId != null,
                         isVerified: _messages[index].memoryIsVerified,
                         onVerify: () => _verifyAnswer(index),
@@ -451,11 +504,19 @@ class _AiChatScreenState extends State<AiChatScreen> {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(10),
-                    child: Image.file(_pendingImage!, width: 56, height: 56, fit: BoxFit.cover),
+                    child: Image.file(
+                      _pendingImage!,
+                      width: 56,
+                      height: 56,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                   const SizedBox(width: 10),
                   const Expanded(
-                    child: Text('Fotoğraf eklendi — isterseniz bir soru yazıp gönderin.', style: TextStyle(fontSize: 12.5)),
+                    child: Text(
+                      'Fotoğraf eklendi — isterseniz bir soru yazıp gönderin.',
+                      style: TextStyle(fontSize: 12.5),
+                    ),
                   ),
                   IconButton(
                     icon: const Icon(Icons.close, size: 18),
@@ -475,14 +536,19 @@ class _AiChatScreenState extends State<AiChatScreen> {
                     tooltip: 'Fotoğraf çek / galeriden seç',
                   ),
                   IconButton(
-                    icon: Icon(_listening ? Icons.mic : Icons.mic_none_outlined, color: _listening ? AppColors.navy : null),
+                    icon: Icon(
+                      _listening ? Icons.mic : Icons.mic_none_outlined,
+                      color: _listening ? AppColors.navy : null,
+                    ),
                     onPressed: _toggleListening,
                     tooltip: 'Sesli soru',
                   ),
                   Expanded(
                     child: TextField(
                       controller: _inputController,
-                      decoration: const InputDecoration(hintText: 'Mesajınızı yazın...'),
+                      decoration: const InputDecoration(
+                        hintText: 'Mesajınızı yazın...',
+                      ),
                       onSubmitted: (_) => _send(),
                     ),
                   ),
@@ -528,7 +594,11 @@ class _ThinkingBubble extends StatelessWidget {
             const SizedBox(width: 10),
             Text(
               'ENTPA AI düşünüyor...',
-              style: TextStyle(fontSize: 13, color: Colors.grey.shade600, fontWeight: FontWeight.w500),
+              style: TextStyle(
+                fontSize: 13,
+                color: Colors.grey.shade600,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ],
         ),

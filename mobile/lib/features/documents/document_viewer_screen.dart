@@ -1,9 +1,11 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:share_plus/share_plus.dart';
+
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/design_system.dart';
@@ -64,7 +66,10 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
     final content = _noteController.text.trim();
     if (content.isEmpty) return;
     _noteController.clear();
-    await _dio.post('/documents/${widget.documentId}/notes', data: {'content': content});
+    await _dio.post(
+      '/documents/${widget.documentId}/notes',
+      data: {'content': content},
+    );
     _loadNotes();
   }
 
@@ -163,7 +168,10 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
       final offlineDir = Directory('${docsDir.path}/offline_documents');
       if (!await offlineDir.exists()) await offlineDir.create(recursive: true);
 
-      final fileName = (_document?['title'] ?? 'dokuman').toString().replaceAll(RegExp(r'[^\w\s-]'), '');
+      final fileName = (_document?['title'] ?? 'dokuman').toString().replaceAll(
+        RegExp(r'[^\w\s-]'),
+        '',
+      );
       final path = '${offlineDir.path}/${widget.documentId}_$fileName.pdf';
 
       await _fileDownloader.download(_signedUrl!, path);
@@ -178,7 +186,9 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
       setState(() => _localPath = path);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Doküman indirildi, artık internetsiz açılabilir.')),
+          const SnackBar(
+            content: Text('Doküman indirildi, artık internetsiz açılabilir.'),
+          ),
         );
       }
     } catch (e) {
@@ -219,7 +229,14 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Geçmiş Versiyonlar', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.navy)),
+              const Text(
+                'Geçmiş Versiyonlar',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.navy,
+                ),
+              ),
               const SizedBox(height: AppSpacing.sm),
               ...versions.map((v) {
                 final isCurrent = v['isCurrent'] == true;
@@ -229,8 +246,12 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                     isCurrent ? Icons.check_circle : Icons.history,
                     color: isCurrent ? Colors.green : Colors.grey.shade500,
                   ),
-                  title: Text('Versiyon ${v['version'] ?? '?'}${isCurrent ? ' (Güncel)' : ''}'),
-                  subtitle: v['createdAt'] != null ? Text(v['createdAt'].toString().substring(0, 10)) : null,
+                  title: Text(
+                    'Versiyon ${v['version'] ?? '?'}${isCurrent ? ' (Güncel)' : ''}',
+                  ),
+                  subtitle: v['createdAt'] != null
+                      ? Text(v['createdAt'].toString().substring(0, 10))
+                      : null,
                   trailing: const Icon(Icons.open_in_new, size: 18),
                   onTap: () async {
                     Navigator.pop(context);
@@ -247,7 +268,9 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
 
   Future<void> _openSpecificVersion(String versionId) async {
     try {
-      final res = await _dio.get('/documents/${widget.documentId}/versions/$versionId/signed-url');
+      final res = await _dio.get(
+        '/documents/${widget.documentId}/versions/$versionId/signed-url',
+      );
       final url = res.data as String;
       final tempDir = await getTemporaryDirectory();
       final path = '${tempDir.path}/versiyon_$versionId.pdf';
@@ -255,9 +278,9 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
       await OpenFilex.open(path);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Bu versiyon açılamadı.')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Bu versiyon açılamadı.')));
       }
     }
   }
@@ -267,7 +290,9 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
       appBar: AppPageHeader(
-        title: widget.page != null ? 'Doküman — Sayfa ${widget.page}' : 'Doküman',
+        title: widget.page != null
+            ? 'Doküman — Sayfa ${widget.page}'
+            : 'Doküman',
         actions: [
           if (!_loading && _error == null) ...[
             IconButton(
@@ -277,7 +302,9 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                 final title = _document?['title'] ?? 'Doküman';
                 final brand = _document?['brand'] ?? '';
                 final model = _document?['model'] ?? '';
-                Share.share('$title\n$brand / $model\n\n(Bayi Teknik Destek uygulamasından paylaşıldı)');
+                Share.share(
+                  '$title\n$brand / $model\n\n(Bayi Teknik Destek uygulamasından paylaşıldı)',
+                );
               },
             ),
             IconButton(
@@ -291,127 +318,166 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-              ? Center(child: Text(_error!))
-              : ListView(
-                  padding: const EdgeInsets.all(AppSpacing.md),
-                  children: [
-                    if (_isOffline)
-                      Container(
-                        margin: const EdgeInsets.only(bottom: AppSpacing.sm),
-                        padding: const EdgeInsets.all(AppSpacing.sm),
-                        decoration: BoxDecoration(
-                          color: Colors.blue.shade50,
-                          borderRadius: BorderRadius.circular(AppSpacing.radius),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(Icons.cloud_off_outlined, size: 18, color: Colors.blue.shade700),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                'İnternet bağlantısı yok — indirilmiş kopya gösteriliyor.',
-                                style: TextStyle(fontSize: 12.5, color: Colors.blue.shade700),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(AppSpacing.md),
-                        child: Column(
-                          children: [
-                            Container(
-                              width: 72,
-                              height: 72,
-                              decoration: BoxDecoration(
-                                color: AppColors.navy.withValues(alpha: 0.06),
-                                borderRadius: BorderRadius.circular(AppSpacing.radius),
-                              ),
-                              child: const Icon(Icons.picture_as_pdf_outlined, size: 36, color: AppColors.navy),
-                            ),
-                            const SizedBox(height: AppSpacing.sm),
-                            Text(
-                              _document?['title'] ?? 'Doküman',
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.navy),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              '${_document?['brand'] ?? ''} / ${_document?['model'] ?? ''}',
-                              style: TextStyle(color: Colors.grey.shade600),
-                            ),
-                            if (widget.page != null) ...[
-                              const SizedBox(height: AppSpacing.sm),
-                              Chip(label: Text('İlgili sayfa: ${widget.page}')),
-                            ],
-                            const SizedBox(height: AppSpacing.md),
-                            SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton.icon(
-                                onPressed: _opening ? null : _openDocument,
-                                icon: _opening
-                                    ? const SizedBox(
-                                        height: 16,
-                                        width: 16,
-                                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                                      )
-                                    : const Icon(Icons.open_in_new),
-                                label: Text(_opening ? 'Açılıyor...' : 'Dokümanı Aç'),
-                              ),
-                            ),
-                            if (!_isOffline) ...[
-                              const SizedBox(height: AppSpacing.xs),
-                              SizedBox(
-                                width: double.infinity,
-                                child: OutlinedButton.icon(
-                                  onPressed: _downloading
-                                      ? null
-                                      : (_localPath != null ? _removeOfflineCopy : _downloadForOffline),
-                                  icon: _downloading
-                                      ? const SizedBox(
-                                          height: 16,
-                                          width: 16,
-                                          child: CircularProgressIndicator(strokeWidth: 2),
-                                        )
-                                      : Icon(_localPath != null ? Icons.offline_pin : Icons.download_outlined),
-                                  label: Text(
-                                    _downloading
-                                        ? 'İndiriliyor...'
-                                        : (_localPath != null ? 'İndirildi (Kaldır)' : 'Çevrimdışı İndir'),
-                                  ),
-                                ),
-                              ),
-                            ],
-                            if (!_isOffline && (_document?['versions'] as List?)?.length != null && (_document!['versions'] as List).length > 1) ...[
-                              const SizedBox(height: AppSpacing.xs),
-                              SizedBox(
-                                width: double.infinity,
-                                child: TextButton.icon(
-                                  onPressed: _showVersionHistory,
-                                  icon: const Icon(Icons.history, size: 18),
-                                  label: Text('Geçmiş Versiyonlar (${(_document!['versions'] as List).length})'),
-                                ),
-                              ),
-                            ],
-                            if (widget.page != null) ...[
-                              const SizedBox(height: AppSpacing.xs),
-                              Text(
-                                'Not: Doküman cihazınızın kendi PDF uygulamasıyla açılır, '
-                                'otomatik olarak ${widget.page}. sayfaya gidilmez — sayfa numarasını yukarıda '
-                                'belirttik, dokümanı açtıktan sonra elle o sayfaya gidebilirsiniz.',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 11.5, color: Colors.grey.shade500),
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
+          ? Center(child: Text(_error!))
+          : ListView(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              children: [
+                if (_isOffline)
+                  Container(
+                    margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+                    padding: const EdgeInsets.all(AppSpacing.sm),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.shade50,
+                      borderRadius: BorderRadius.circular(AppSpacing.radius),
                     ),
-                    const SizedBox(height: AppSpacing.md),
-                    _buildNotesSection(),
-                  ],
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.cloud_off_outlined,
+                          size: 18,
+                          color: Colors.blue.shade700,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'İnternet bağlantısı yok — indirilmiş kopya gösteriliyor.',
+                            style: TextStyle(
+                              fontSize: 12.5,
+                              color: Colors.blue.shade700,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(AppSpacing.md),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 72,
+                          height: 72,
+                          decoration: BoxDecoration(
+                            color: AppColors.navy.withValues(alpha: 0.06),
+                            borderRadius: BorderRadius.circular(
+                              AppSpacing.radius,
+                            ),
+                          ),
+                          child: const Icon(
+                            Icons.picture_as_pdf_outlined,
+                            size: 36,
+                            color: AppColors.navy,
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        Text(
+                          _document?['title'] ?? 'Doküman',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.navy,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '${_document?['brand'] ?? ''} / ${_document?['model'] ?? ''}',
+                          style: TextStyle(color: Colors.grey.shade600),
+                        ),
+                        if (widget.page != null) ...[
+                          const SizedBox(height: AppSpacing.sm),
+                          Chip(label: Text('İlgili sayfa: ${widget.page}')),
+                        ],
+                        const SizedBox(height: AppSpacing.md),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            onPressed: _opening ? null : _openDocument,
+                            icon: _opening
+                                ? const SizedBox(
+                                    height: 16,
+                                    width: 16,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : const Icon(Icons.open_in_new),
+                            label: Text(
+                              _opening ? 'Açılıyor...' : 'Dokümanı Aç',
+                            ),
+                          ),
+                        ),
+                        if (!_isOffline) ...[
+                          const SizedBox(height: AppSpacing.xs),
+                          SizedBox(
+                            width: double.infinity,
+                            child: OutlinedButton.icon(
+                              onPressed: _downloading
+                                  ? null
+                                  : (_localPath != null
+                                        ? _removeOfflineCopy
+                                        : _downloadForOffline),
+                              icon: _downloading
+                                  ? const SizedBox(
+                                      height: 16,
+                                      width: 16,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    )
+                                  : Icon(
+                                      _localPath != null
+                                          ? Icons.offline_pin
+                                          : Icons.download_outlined,
+                                    ),
+                              label: Text(
+                                _downloading
+                                    ? 'İndiriliyor...'
+                                    : (_localPath != null
+                                          ? 'İndirildi (Kaldır)'
+                                          : 'Çevrimdışı İndir'),
+                              ),
+                            ),
+                          ),
+                        ],
+                        if (!_isOffline &&
+                            (_document?['versions'] as List?)?.length != null &&
+                            (_document!['versions'] as List).length > 1) ...[
+                          const SizedBox(height: AppSpacing.xs),
+                          SizedBox(
+                            width: double.infinity,
+                            child: TextButton.icon(
+                              onPressed: _showVersionHistory,
+                              icon: const Icon(Icons.history, size: 18),
+                              label: Text(
+                                'Geçmiş Versiyonlar (${(_document!['versions'] as List).length})',
+                              ),
+                            ),
+                          ),
+                        ],
+                        if (widget.page != null) ...[
+                          const SizedBox(height: AppSpacing.xs),
+                          Text(
+                            'Not: Doküman cihazınızın kendi PDF uygulamasıyla açılır, '
+                            'otomatik olarak ${widget.page}. sayfaya gidilmez — sayfa numarasını yukarıda '
+                            'belirttik, dokümanı açtıktan sonra elle o sayfaya gidebilirsiniz.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 11.5,
+                              color: Colors.grey.shade500,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
                 ),
+                const SizedBox(height: AppSpacing.md),
+                _buildNotesSection(),
+              ],
+            ),
     );
   }
 
@@ -425,25 +491,38 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Notlar', style: TextStyle(fontWeight: FontWeight.w700, color: AppColors.navy)),
+            const Text(
+              'Notlar',
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                color: AppColors.navy,
+              ),
+            ),
             const SizedBox(height: AppSpacing.xs),
             Row(
               children: [
                 Expanded(
                   child: TextField(
                     controller: _noteController,
-                    decoration: const InputDecoration(hintText: 'Bir not ekleyin...', isDense: true),
+                    decoration: const InputDecoration(
+                      hintText: 'Bir not ekleyin...',
+                      isDense: true,
+                    ),
                     onSubmitted: (_) => _addNote(),
                   ),
                 ),
-                IconButton(icon: const Icon(Icons.send, size: 20), onPressed: _addNote),
+                IconButton(
+                  icon: const Icon(Icons.send, size: 20),
+                  onPressed: _addNote,
+                ),
               ],
             ),
             if (_notes.isNotEmpty) ...[
               const Divider(),
               ..._notes.map((n) {
                 final author = n['user'];
-                final isMine = author != null && author['id'] == CurrentUser().id;
+                final isMine =
+                    author != null && author['id'] == CurrentUser().id;
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4),
                   child: Row(
@@ -453,10 +532,16 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(n['content'] ?? '', style: const TextStyle(fontSize: 13.5)),
+                            Text(
+                              n['content'] ?? '',
+                              style: const TextStyle(fontSize: 13.5),
+                            ),
                             Text(
                               '${author?['company'] ?? 'Bayi'} · ${author?['firstName'] ?? ''}',
-                              style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: Colors.grey.shade500,
+                              ),
                             ),
                           ],
                         ),
@@ -464,7 +549,11 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                       if (isMine)
                         InkWell(
                           onTap: () => _deleteNote(n['id']),
-                          child: Icon(Icons.close, size: 16, color: Colors.grey.shade400),
+                          child: Icon(
+                            Icons.close,
+                            size: 16,
+                            color: Colors.grey.shade400,
+                          ),
                         ),
                     ],
                   ),

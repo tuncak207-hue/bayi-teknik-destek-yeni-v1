@@ -1,10 +1,12 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dio/dio.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart';
+
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_components.dart';
@@ -45,7 +47,9 @@ class _QuotesScreenState extends State<QuotesScreen> {
   Future<void> _openBuilder({dynamic existingQuote}) async {
     final created = await Navigator.push<bool>(
       context,
-      MaterialPageRoute(builder: (_) => _QuoteBuilderScreen(existingQuote: existingQuote)),
+      MaterialPageRoute(
+        builder: (_) => _QuoteBuilderScreen(existingQuote: existingQuote),
+      ),
     );
     if (created == true) _load();
   }
@@ -57,7 +61,9 @@ class _QuotesScreenState extends State<QuotesScreen> {
       if (url == null) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Henüz bir fiyat listesi PDF\'i yüklenmedi.')),
+            const SnackBar(
+              content: Text('Henüz bir fiyat listesi PDF\'i yüklenmedi.'),
+            ),
           );
         }
         return;
@@ -68,7 +74,9 @@ class _QuotesScreenState extends State<QuotesScreen> {
       await DocumentPdfExporter.view(File(path));
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Fiyat listesi açılamadı.')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Fiyat listesi açılamadı.')),
+        );
       }
     }
   }
@@ -80,8 +88,14 @@ class _QuotesScreenState extends State<QuotesScreen> {
         title: const Text('Teklifi Sil'),
         content: Text('"${quote['title']}" silinecek. Emin misiniz?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
-          TextButton(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('Sil', style: TextStyle(color: AppColors.navy))),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Vazgeç'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Sil', style: TextStyle(color: AppColors.navy)),
+          ),
         ],
       ),
     );
@@ -100,13 +114,21 @@ class _QuotesScreenState extends State<QuotesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      floatingActionButton: StandardFab(label: 'Yeni Teklif', onPressed: () => _openBuilder()),
+      floatingActionButton: StandardFab(
+        label: 'Yeni Teklif',
+        onPressed: () => _openBuilder(),
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: SafeArea(
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.sm, AppSpacing.md, AppSpacing.md, AppSpacing.sm),
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.sm,
+                AppSpacing.md,
+                AppSpacing.md,
+                AppSpacing.sm,
+              ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -114,20 +136,24 @@ class _QuotesScreenState extends State<QuotesScreen> {
                     icon: const Icon(Icons.arrow_back, color: AppColors.navy),
                     onPressed: () => Navigator.pop(context),
                   ),
-                  const Text(
-                    'Teklif Al',
-                    style: AppText.screenTitle,
-                  ),
+                  const Text('Teklif Al', style: AppText.screenTitle),
                   const SizedBox(width: AppSpacing.xs),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.primarySoft,
                       borderRadius: BorderRadius.circular(AppRadius.pill),
                     ),
                     child: Text(
                       '${_quotes.length}',
-                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.primary),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.primary,
+                      ),
                     ),
                   ),
                   const Spacer(),
@@ -141,97 +167,148 @@ class _QuotesScreenState extends State<QuotesScreen> {
             ),
             Expanded(
               child: _loading
-                ? const Center(child: CircularProgressIndicator())
-                : _quotes.isEmpty
-                    ? RefreshIndicator(
-                        onRefresh: _load,
-                        child: ListView(
-                          children: [
-                            const SizedBox(height: 72),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-                              child: StandardCard(
-                                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
-                                child: const AppEmptyState(
-                                  icon: Icons.request_quote_outlined,
-                                  title: 'Henüz bir teklifiniz yok',
-                                  description: 'Sağ alttaki butondan müşteriniz için yangın sistemi teklifi oluşturabilirsiniz.',
-                                ),
+                  ? const Center(child: CircularProgressIndicator())
+                  : _quotes.isEmpty
+                  ? RefreshIndicator(
+                      onRefresh: _load,
+                      child: ListView(
+                        children: [
+                          const SizedBox(height: 72),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppSpacing.md,
+                            ),
+                            child: StandardCard(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: AppSpacing.lg,
+                                vertical: AppSpacing.xl,
+                              ),
+                              child: const AppEmptyState(
+                                icon: Icons.request_quote_outlined,
+                                title: 'Henüz bir teklifiniz yok',
+                                description: 'Sağ alttaki butondan müşteriniz için yangın sistemi teklifi oluşturabilirsiniz.',
                               ),
                             ),
-                          ],
-                        ),
-                      )
-                    : RefreshIndicator(
-                        onRefresh: _load,
-                        child: ListView.separated(
-                          padding: const EdgeInsets.all(AppSpacing.md),
-                          itemCount: _quotes.length,
-                          separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.xs),
-                          itemBuilder: (context, index) {
-                      final q = _quotes[index];
-                      final items = (q['items'] as List?) ?? [];
-                      return StandardCard(
-                        padding: const EdgeInsets.all(AppSpacing.sm),
-                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => _QuoteDetailScreen(quote: q))),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 44,
-                              height: 44,
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(colors: [AppColors.navy, AppColors.navyLight]),
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                              child: const Icon(Icons.request_quote_outlined, color: Colors.white, size: 20),
-                            ),
-                            const SizedBox(width: AppSpacing.sm),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(q['title'] ?? '', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14.5, color: AppColors.navy)),
-                                  const SizedBox(height: 4),
-                                  CardFooterMeta(
-                                    icon: Icons.person_outline,
-                                    label: '${q['customerName'] ?? 'Müşteri belirtilmedi'} · ${items.length} kalem · ${_formatDate(q['createdAt'])}',
-                                  ),
-                                ],
+                          ),
+                        ],
+                      ),
+                    )
+                  : RefreshIndicator(
+                      onRefresh: _load,
+                      child: ListView.separated(
+                        padding: const EdgeInsets.all(AppSpacing.md),
+                        itemCount: _quotes.length,
+                        separatorBuilder: (_, __) =>
+                            const SizedBox(height: AppSpacing.xs),
+                        itemBuilder: (context, index) {
+                          final q = _quotes[index];
+                          final items = (q['items'] as List?) ?? [];
+                          return StandardCard(
+                            padding: const EdgeInsets.all(AppSpacing.sm),
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => _QuoteDetailScreen(quote: q),
                               ),
                             ),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.end,
+                            child: Row(
                               children: [
-                                Text('${(q['totalAmount'] as num).toStringAsFixed(0)} €', style: const TextStyle(fontWeight: FontWeight.w800, color: AppColors.brand, fontSize: 14)),
-                                const SizedBox(height: 2),
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    IconButton(
-                                      icon: const Icon(Icons.edit_outlined, size: 18, color: Colors.grey),
-                                      onPressed: () => _openBuilder(existingQuote: q),
-                                      padding: EdgeInsets.zero,
-                                      constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-                                      tooltip: 'Düzenle',
+                                Container(
+                                  width: 44,
+                                  height: 44,
+                                  decoration: BoxDecoration(
+                                    gradient: const LinearGradient(
+                                      colors: [
+                                        AppColors.navy,
+                                        AppColors.navyLight,
+                                      ],
                                     ),
-                                    IconButton(
-                                      icon: const Icon(Icons.delete_outline, size: 18, color: Colors.grey),
-                                      onPressed: () => _delete(q),
-                                      padding: EdgeInsets.zero,
-                                      constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-                                      tooltip: 'Sil',
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
+                                  child: const Icon(
+                                    Icons.request_quote_outlined,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                ),
+                                const SizedBox(width: AppSpacing.sm),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        q['title'] ?? '',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w800,
+                                          fontSize: 14.5,
+                                          color: AppColors.navy,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      CardFooterMeta(
+                                        icon: Icons.person_outline,
+                                        label:
+                                            '${q['customerName'] ?? 'Müşteri belirtilmedi'} · ${items.length} kalem · ${_formatDate(q['createdAt'])}',
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      '${(q['totalAmount'] as num).toStringAsFixed(0)} €',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w800,
+                                        color: AppColors.brand,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        IconButton(
+                                          icon: const Icon(
+                                            Icons.edit_outlined,
+                                            size: 18,
+                                            color: Colors.grey,
+                                          ),
+                                          onPressed: () =>
+                                              _openBuilder(existingQuote: q),
+                                          padding: EdgeInsets.zero,
+                                          constraints: const BoxConstraints(
+                                            minWidth: 28,
+                                            minHeight: 28,
+                                          ),
+                                          tooltip: 'Düzenle',
+                                        ),
+                                        IconButton(
+                                          icon: const Icon(
+                                            Icons.delete_outline,
+                                            size: 18,
+                                            color: Colors.grey,
+                                          ),
+                                          onPressed: () => _delete(q),
+                                          padding: EdgeInsets.zero,
+                                          constraints: const BoxConstraints(
+                                            minWidth: 28,
+                                            minHeight: 28,
+                                          ),
+                                          tooltip: 'Sil',
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
                               ],
                             ),
-                          ],
-                        ),
-                      );
-                          },
-                        ),
+                          );
+                        },
                       ),
+                    ),
             ),
           ],
         ),
@@ -248,15 +325,25 @@ class _CartItem {
   int quantity;
   // Miktarın elle girilebilmesi için — kullanıcı isteği: "adet sayısı
   // elle girilebilmeli + ve - ile azaltılıp arttırılabilmeli".
-  late final TextEditingController quantityController = TextEditingController(text: quantity.toString());
+  late final TextEditingController quantityController = TextEditingController(
+    text: quantity.toString(),
+  );
 
-  _CartItem({required this.priceListItemId, required this.name, required this.unit, required this.unitPrice, this.quantity = 1});
+  _CartItem({
+    required this.priceListItemId,
+    required this.name,
+    required this.unit,
+    required this.unitPrice,
+    this.quantity = 1,
+  });
 
   double get subtotal => unitPrice * quantity;
 
   void syncControllerText() {
     quantityController.text = quantity.toString();
-    quantityController.selection = TextSelection.collapsed(offset: quantityController.text.length);
+    quantityController.selection = TextSelection.collapsed(
+      offset: quantityController.text.length,
+    );
   }
 }
 
@@ -270,9 +357,15 @@ class _QuoteBuilderScreen extends StatefulWidget {
 
 class _QuoteBuilderScreenState extends State<_QuoteBuilderScreen> {
   final Dio _dio = ApiClient().dio;
-  late final _titleController = TextEditingController(text: widget.existingQuote?['title'] ?? 'Yangın Sistemi Teklifi');
-  late final _customerNameController = TextEditingController(text: widget.existingQuote?['customerName'] ?? '');
-  late final _customerPhoneController = TextEditingController(text: widget.existingQuote?['customerPhone'] ?? '');
+  late final _titleController = TextEditingController(
+    text: widget.existingQuote?['title'] ?? 'Yangın Sistemi Teklifi',
+  );
+  late final _customerNameController = TextEditingController(
+    text: widget.existingQuote?['customerName'] ?? '',
+  );
+  late final _customerPhoneController = TextEditingController(
+    text: widget.existingQuote?['customerPhone'] ?? '',
+  );
   String? _district;
   String? _province;
   List<dynamic> _catalog = [];
@@ -311,7 +404,8 @@ class _QuoteBuilderScreenState extends State<_QuoteBuilderScreen> {
         final existingItems = (widget.existingQuote['items'] as List?) ?? [];
         for (final existing in existingItems) {
           final match = _catalog.firstWhere(
-            (c) => c['name'] == existing['name'] && c['unit'] == existing['unit'],
+            (c) =>
+                c['name'] == existing['name'] && c['unit'] == existing['unit'],
             orElse: () => null,
           );
           if (match != null) {
@@ -325,7 +419,8 @@ class _QuoteBuilderScreenState extends State<_QuoteBuilderScreen> {
           }
         }
         final existingProvince = widget.existingQuote['province'];
-        if (existingProvince != null && kTurkeyProvinceDistricts.containsKey(existingProvince)) {
+        if (existingProvince != null &&
+            kTurkeyProvinceDistricts.containsKey(existingProvince)) {
           _province = existingProvince;
         }
       }
@@ -352,7 +447,9 @@ class _QuoteBuilderScreenState extends State<_QuoteBuilderScreen> {
 
   Future<void> _submit() async {
     if (_cart.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Lütfen en az bir kalem seçin.')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Lütfen en az bir kalem seçin.')),
+      );
       return;
     }
     setState(() => _submitting = true);
@@ -363,7 +460,14 @@ class _QuoteBuilderScreenState extends State<_QuoteBuilderScreen> {
         'customerPhone': _customerPhoneController.text.trim(),
         'province': _province,
         'district': _district,
-        'items': _cart.values.map((i) => {'priceListItemId': i.priceListItemId, 'quantity': i.quantity}).toList(),
+        'items': _cart.values
+            .map(
+              (i) => {
+                'priceListItemId': i.priceListItemId,
+                'quantity': i.quantity,
+              },
+            )
+            .toList(),
       };
       if (_isEditing) {
         await _dio.put('/quotes/${widget.existingQuote['id']}', data: payload);
@@ -386,7 +490,9 @@ class _QuoteBuilderScreenState extends State<_QuoteBuilderScreen> {
             final name = (item['name'] ?? '').toString().toLowerCase();
             final code = (item['code'] ?? '').toString().toLowerCase();
             final brand = (item['brand'] ?? '').toString().toLowerCase();
-            return name.contains(query) || code.contains(query) || brand.contains(query);
+            return name.contains(query) ||
+                code.contains(query) ||
+                brand.contains(query);
           }).toList();
 
     final map = <String, List<dynamic>>{};
@@ -406,14 +512,19 @@ class _QuoteBuilderScreenState extends State<_QuoteBuilderScreen> {
         navigationBar: CupertinoNavigationBar(
           backgroundColor: const Color(0xFFFFFFFF),
           border: null,
-          middle: Text(_isEditing ? 'Teklifi Düzenle' : 'Yeni Teklif', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+          middle: Text(
+            _isEditing ? 'Teklifi Düzenle' : 'Yeni Teklif',
+            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+          ),
         ),
         child: SafeArea(child: _buildBody()),
       );
     }
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppPageHeader(title: _isEditing ? 'Teklifi Düzenle' : 'Yeni Teklif'),
+      appBar: AppPageHeader(
+        title: _isEditing ? 'Teklifi Düzenle' : 'Yeni Teklif',
+      ),
       // ÖNEMLİ DÜZELTME: "Toplam kısmı sayfanın altında kalıyor,
       // görünmüyor" — Android tarafında SafeArea hiç yoktu (sadece iOS
       // tarafında vardı), edge-to-edge modu açıkken içerik sistem
@@ -424,214 +535,383 @@ class _QuoteBuilderScreenState extends State<_QuoteBuilderScreen> {
 
   Widget _buildBody() {
     return _loading
-          ? const Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                Expanded(
-                  child: ListView(
-                    padding: const EdgeInsets.all(AppSpacing.md),
-                    children: [
+        ? const Center(child: CircularProgressIndicator())
+        : Column(
+            children: [
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.all(AppSpacing.md),
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(AppSpacing.sm),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(18),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.03),
+                            blurRadius: 10,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        children: [
+                          TextField(
+                            controller: _titleController,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 15,
+                              color: AppColors.navy,
+                            ),
+                            decoration: const InputDecoration(
+                              labelText: 'Teklif Başlığı',
+                              border: InputBorder.none,
+                              isDense: true,
+                            ),
+                          ),
+                          const Divider(height: 16),
+                          TextField(
+                            controller: _customerNameController,
+                            decoration: const InputDecoration(
+                              labelText: 'Müşteri Adı',
+                              border: InputBorder.none,
+                              isDense: true,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          TextField(
+                            controller: _customerPhoneController,
+                            keyboardType: TextInputType.phone,
+                            decoration: const InputDecoration(
+                              labelText: 'Müşteri Telefonu (opsiyonel)',
+                              border: InputBorder.none,
+                              isDense: true,
+                            ),
+                          ),
+                          const Divider(height: 16),
+                          ProvinceDistrictPicker(
+                            province: _province,
+                            district: _district,
+                            onProvinceChanged: (v) =>
+                                setState(() => _province = v),
+                            onDistrictChanged: (v) =>
+                                setState(() => _district = v),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    if (_catalog.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 40),
+                        child: Text(
+                          'Admin panelden henüz fiyat listesi tanımlanmadı.',
+                          style: TextStyle(color: Colors.grey.shade500),
+                          textAlign: TextAlign.center,
+                        ),
+                      )
+                    else ...[
                       Container(
-                        padding: const EdgeInsets.all(AppSpacing.sm),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(18),
-                          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 3))],
-                        ),
-                        child: Column(
-                          children: [
-                            TextField(
-                              controller: _titleController,
-                              style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: AppColors.navy),
-                              decoration: const InputDecoration(labelText: 'Teklif Başlığı', border: InputBorder.none, isDense: true),
-                            ),
-                            const Divider(height: 16),
-                            TextField(
-                              controller: _customerNameController,
-                              decoration: const InputDecoration(labelText: 'Müşteri Adı', border: InputBorder.none, isDense: true),
-                            ),
-                            const SizedBox(height: 8),
-                            TextField(
-                              controller: _customerPhoneController,
-                              keyboardType: TextInputType.phone,
-                              decoration: const InputDecoration(labelText: 'Müşteri Telefonu (opsiyonel)', border: InputBorder.none, isDense: true),
-                            ),
-                            const Divider(height: 16),
-                            ProvinceDistrictPicker(
-                              province: _province,
-                              district: _district,
-                              onProvinceChanged: (v) => setState(() => _province = v),
-                              onDistrictChanged: (v) => setState(() => _district = v),
+                          borderRadius: BorderRadius.circular(14),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.03),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
                             ),
                           ],
                         ),
-                      ),
-                      const SizedBox(height: AppSpacing.md),
-                      if (_catalog.isEmpty)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 40),
-                          child: Text('Admin panelden henüz fiyat listesi tanımlanmadı.', style: TextStyle(color: Colors.grey.shade500), textAlign: TextAlign.center),
-                        )
-                      else ...[
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(14),
-                            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 8, offset: const Offset(0, 2))],
-                          ),
-                          child: TextField(
-                            controller: _searchController,
-                            onChanged: (_) => setState(() {}),
-                            decoration: InputDecoration(
-                              hintText: 'Ürün adı, kodu veya marka ile ara...',
-                              prefixIcon: const Icon(Icons.search, size: 20),
-                              suffixIcon: _searchController.text.isNotEmpty
-                                  ? IconButton(
-                                      icon: const Icon(Icons.close, size: 18),
-                                      onPressed: () => setState(() => _searchController.clear()),
-                                    )
-                                  : null,
-                              border: InputBorder.none,
-                              isDense: true,
-                              contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+                        child: TextField(
+                          controller: _searchController,
+                          onChanged: (_) => setState(() {}),
+                          decoration: InputDecoration(
+                            hintText: 'Ürün adı, kodu veya marka ile ara...',
+                            prefixIcon: const Icon(Icons.search, size: 20),
+                            suffixIcon: _searchController.text.isNotEmpty
+                                ? IconButton(
+                                    icon: const Icon(Icons.close, size: 18),
+                                    onPressed: () => setState(
+                                      () => _searchController.clear(),
+                                    ),
+                                  )
+                                : null,
+                            border: InputBorder.none,
+                            isDense: true,
+                            contentPadding: const EdgeInsets.symmetric(
+                              vertical: 14,
+                              horizontal: 12,
                             ),
                           ),
                         ),
-                        const SizedBox(height: AppSpacing.sm),
-                        if (_groupedCatalog.isEmpty)
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 40),
-                            child: Text('"${_searchController.text}" ile eşleşen ürün bulunamadı.', style: TextStyle(color: Colors.grey.shade500), textAlign: TextAlign.center),
+                      ),
+                      const SizedBox(height: AppSpacing.sm),
+                      if (_groupedCatalog.isEmpty)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 40),
+                          child: Text(
+                            '"${_searchController.text}" ile eşleşen ürün bulunamadı.',
+                            style: TextStyle(color: Colors.grey.shade500),
+                            textAlign: TextAlign.center,
                           ),
-                        ..._groupedCatalog.entries.map((entry) => Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 4, bottom: 8, top: 8),
-                                  child: Text(entry.key.toUpperCase(), style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700, color: Colors.grey.shade400, letterSpacing: 0.4)),
+                        ),
+                      ..._groupedCatalog.entries.map(
+                        (entry) => Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                left: 4,
+                                bottom: 8,
+                                top: 8,
+                              ),
+                              child: Text(
+                                entry.key.toUpperCase(),
+                                style: TextStyle(
+                                  fontSize: 10.5,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.grey.shade400,
+                                  letterSpacing: 0.4,
                                 ),
-                                ...entry.value.map((item) {
-                                  final selected = _cart.containsKey(item['id']);
-                                  return Container(
-                                    margin: const EdgeInsets.only(bottom: 8),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(16),
-                                      border: selected ? Border.all(color: AppColors.brand.withValues(alpha: 0.4), width: 1.5) : null,
-                                      boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 8, offset: const Offset(0, 2))],
-                                    ),
-                                    child: Material(
-                                      color: Colors.transparent,
-                                      child: InkWell(
-                                        borderRadius: BorderRadius.circular(16),
-                                        onTap: () => _toggleItem(item),
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 10),
-                                          child: Row(
-                                            children: [
-                                              Icon(selected ? Icons.check_circle : Icons.circle_outlined, color: selected ? AppColors.brand : Colors.grey.shade300, size: 20),
-                                              const SizedBox(width: 10),
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(item['name'], style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5)),
-                                                    Text('${(item['unitPrice'] as num).toStringAsFixed(2)} € / ${item['unit']}', style: TextStyle(fontSize: 11.5, color: Colors.grey.shade500)),
-                                                  ],
-                                                ),
-                                              ),
-                                              if (selected)
-                                                Row(
-                                                  children: [
-                                                    IconButton(
-                                                      icon: const Icon(Icons.remove_circle_outline, size: 20),
-                                                      onPressed: () => setState(() {
-                                                        if (_cart[item['id']]!.quantity > 1) {
-                                                          _cart[item['id']]!.quantity--;
-                                                          _cart[item['id']]!.syncControllerText();
-                                                        }
-                                                      }),
-                                                    ),
-                                                    SizedBox(
-                                                      width: 40,
-                                                      child: TextField(
-                                                        controller: _cart[item['id']]!.quantityController,
-                                                        keyboardType: TextInputType.number,
-                                                        textAlign: TextAlign.center,
-                                                        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
-                                                        decoration: const InputDecoration(
-                                                          isDense: true,
-                                                          contentPadding: EdgeInsets.symmetric(vertical: 6),
-                                                          border: OutlineInputBorder(),
-                                                        ),
-                                                        onChanged: (value) {
-                                                          final parsed = int.tryParse(value);
-                                                          if (parsed != null && parsed >= 1) {
-                                                            setState(() => _cart[item['id']]!.quantity = parsed);
-                                                          }
-                                                        },
-                                                        onSubmitted: (value) {
-                                                          // Boş bırakılır ya da geçersiz girilirse 1'e sıfırlanır.
-                                                          final parsed = int.tryParse(value);
-                                                          if (parsed == null || parsed < 1) {
-                                                            setState(() {
-                                                              _cart[item['id']]!.quantity = 1;
-                                                              _cart[item['id']]!.syncControllerText();
-                                                            });
-                                                          }
-                                                        },
-                                                      ),
-                                                    ),
-                                                    IconButton(
-                                                      icon: const Icon(Icons.add_circle_outline, size: 20),
-                                                      onPressed: () => setState(() {
-                                                        _cart[item['id']]!.quantity++;
-                                                        _cart[item['id']]!.syncControllerText();
-                                                      }),
-                                                    ),
-                                                  ],
-                                                ),
-                                            ],
+                              ),
+                            ),
+                            ...entry.value.map((item) {
+                              final selected = _cart.containsKey(item['id']);
+                              return Container(
+                                margin: const EdgeInsets.only(bottom: 8),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: selected
+                                      ? Border.all(
+                                          color: AppColors.brand.withValues(
+                                            alpha: 0.4,
                                           ),
-                                        ),
+                                          width: 1.5,
+                                        )
+                                      : null,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withValues(
+                                        alpha: 0.03,
+                                      ),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: Material(
+                                  color: Colors.transparent,
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(16),
+                                    onTap: () => _toggleItem(item),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: AppSpacing.sm,
+                                        vertical: 10,
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            selected
+                                                ? Icons.check_circle
+                                                : Icons.circle_outlined,
+                                            color: selected
+                                                ? AppColors.brand
+                                                : Colors.grey.shade300,
+                                            size: 20,
+                                          ),
+                                          const SizedBox(width: 10),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  item['name'],
+                                                  style: const TextStyle(
+                                                    fontWeight: FontWeight.w700,
+                                                    fontSize: 13.5,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  '${(item['unitPrice'] as num).toStringAsFixed(2)} € / ${item['unit']}',
+                                                  style: TextStyle(
+                                                    fontSize: 11.5,
+                                                    color: Colors.grey.shade500,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          if (selected)
+                                            Row(
+                                              children: [
+                                                IconButton(
+                                                  icon: const Icon(
+                                                    Icons.remove_circle_outline,
+                                                    size: 20,
+                                                  ),
+                                                  onPressed: () => setState(() {
+                                                    if (_cart[item['id']]!
+                                                            .quantity >
+                                                        1) {
+                                                      _cart[item['id']]!
+                                                          .quantity--;
+                                                      _cart[item['id']]!
+                                                          .syncControllerText();
+                                                    }
+                                                  }),
+                                                ),
+                                                SizedBox(
+                                                  width: 40,
+                                                  child: TextField(
+                                                    controller:
+                                                        _cart[item['id']]!
+                                                            .quantityController,
+                                                    keyboardType:
+                                                        TextInputType.number,
+                                                    textAlign: TextAlign.center,
+                                                    style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      fontSize: 14,
+                                                    ),
+                                                    decoration: const InputDecoration(
+                                                      isDense: true,
+                                                      contentPadding:
+                                                          EdgeInsets.symmetric(
+                                                            vertical: 6,
+                                                          ),
+                                                      border:
+                                                          OutlineInputBorder(),
+                                                    ),
+                                                    onChanged: (value) {
+                                                      final parsed =
+                                                          int.tryParse(value);
+                                                      if (parsed != null &&
+                                                          parsed >= 1) {
+                                                        setState(
+                                                          () =>
+                                                              _cart[item['id']]!
+                                                                      .quantity =
+                                                                  parsed,
+                                                        );
+                                                      }
+                                                    },
+                                                    onSubmitted: (value) {
+                                                      // Boş bırakılır ya da geçersiz girilirse 1'e sıfırlanır.
+                                                      final parsed =
+                                                          int.tryParse(value);
+                                                      if (parsed == null ||
+                                                          parsed < 1) {
+                                                        setState(() {
+                                                          _cart[item['id']]!
+                                                                  .quantity =
+                                                              1;
+                                                          _cart[item['id']]!
+                                                              .syncControllerText();
+                                                        });
+                                                      }
+                                                    },
+                                                  ),
+                                                ),
+                                                IconButton(
+                                                  icon: const Icon(
+                                                    Icons.add_circle_outline,
+                                                    size: 20,
+                                                  ),
+                                                  onPressed: () => setState(() {
+                                                    _cart[item['id']]!
+                                                        .quantity++;
+                                                    _cart[item['id']]!
+                                                        .syncControllerText();
+                                                  }),
+                                                ),
+                                              ],
+                                            ),
+                                        ],
                                       ),
                                     ),
-                                  );
-                                }),
-                              ],
-                            )),
-                      ],
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(AppSpacing.md),
-                  decoration: BoxDecoration(color: Colors.white, boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, -2))]),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text('Toplam', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
-                          Text('${_total.toStringAsFixed(2)} €', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 20, color: AppColors.brand)),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: _submitting ? null : _submit,
-                          style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
-                          child: _submitting
-                              ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                              : Text(_isEditing ? 'Değişiklikleri Kaydet' : 'Teklifi Oluştur', style: const TextStyle(fontWeight: FontWeight.w700)),
+                                  ),
+                                ),
+                              );
+                            }),
+                          ],
                         ),
                       ),
                     ],
-                  ),
+                  ],
                 ),
-              ],
-            );
+              ),
+              Container(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, -2),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Toplam',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14,
+                          ),
+                        ),
+                        Text(
+                          '${_total.toStringAsFixed(2)} €',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w900,
+                            fontSize: 20,
+                            color: AppColors.brand,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: _submitting ? null : _submit,
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                        ),
+                        child: _submitting
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : Text(
+                                _isEditing
+                                    ? 'Değişiklikleri Kaydet'
+                                    : 'Teklifi Oluştur',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          );
   }
 }
 
@@ -653,7 +933,10 @@ class _QuoteDetailScreenState extends State<_QuoteDetailScreen> {
       final doc = pw.Document(theme: TurkishPdfFonts.theme());
       final q = widget.quote;
       final items = (q['items'] as List);
-      final location = [q['district'], q['province']].where((s) => s != null && s.toString().isNotEmpty).join(', ');
+      final location = [
+        q['district'],
+        q['province'],
+      ].where((s) => s != null && s.toString().isNotEmpty).join(', ');
 
       doc.addPage(
         pw.Page(
@@ -664,43 +947,130 @@ class _QuoteDetailScreenState extends State<_QuoteDetailScreen> {
               child: pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
-                  pw.Text('ENTPA Mühendislik Hizmeti', style: pw.TextStyle(fontSize: 12, color: PdfColors.grey600)),
+                  pw.Text(
+                    'ENTPA Mühendislik Hizmeti',
+                    style: pw.TextStyle(fontSize: 12, color: PdfColors.grey600),
+                  ),
                   pw.SizedBox(height: 4),
-                  pw.Text(q['title'] ?? 'Teklif', style: pw.TextStyle(fontSize: 22, fontWeight: pw.FontWeight.bold)),
+                  pw.Text(
+                    q['title'] ?? 'Teklif',
+                    style: pw.TextStyle(
+                      fontSize: 22,
+                      fontWeight: pw.FontWeight.bold,
+                    ),
+                  ),
                   pw.SizedBox(height: 4),
-                  pw.Text(DateTime.now().toString().substring(0, 16), style: pw.TextStyle(fontSize: 10, color: PdfColors.grey500)),
+                  pw.Text(
+                    DateTime.now().toString().substring(0, 16),
+                    style: pw.TextStyle(fontSize: 10, color: PdfColors.grey500),
+                  ),
                   pw.SizedBox(height: 12),
                   if ((q['customerName'] ?? '').toString().isNotEmpty)
-                    pw.Text('Müşteri: ${q['customerName']}', style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold)),
-                  if (location.isNotEmpty) pw.Text('Konum: $location', style: const pw.TextStyle(fontSize: 10.5)),
+                    pw.Text(
+                      'Müşteri: ${q['customerName']}',
+                      style: pw.TextStyle(
+                        fontSize: 11,
+                        fontWeight: pw.FontWeight.bold,
+                      ),
+                    ),
+                  if (location.isNotEmpty)
+                    pw.Text(
+                      'Konum: $location',
+                      style: const pw.TextStyle(fontSize: 10.5),
+                    ),
                   pw.SizedBox(height: 20),
                   pw.Table(
                     border: pw.TableBorder.all(color: PdfColors.grey300),
-                    columnWidths: {0: const pw.FlexColumnWidth(4), 1: const pw.FlexColumnWidth(1.5), 2: const pw.FlexColumnWidth(1.5), 3: const pw.FlexColumnWidth(2)},
+                    columnWidths: {
+                      0: const pw.FlexColumnWidth(4),
+                      1: const pw.FlexColumnWidth(1.5),
+                      2: const pw.FlexColumnWidth(1.5),
+                      3: const pw.FlexColumnWidth(2),
+                    },
                     children: [
                       pw.TableRow(
-                        decoration: const pw.BoxDecoration(color: PdfColors.grey100),
+                        decoration: const pw.BoxDecoration(
+                          color: PdfColors.grey100,
+                        ),
                         children: [
-                          pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text('Malzeme', style: pw.TextStyle(fontWeight: pw.FontWeight.bold))),
-                          pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text('Miktar', style: pw.TextStyle(fontWeight: pw.FontWeight.bold))),
-                          pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text('Birim Fiyat', style: pw.TextStyle(fontWeight: pw.FontWeight.bold))),
-                          pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text('Tutar', style: pw.TextStyle(fontWeight: pw.FontWeight.bold))),
+                          pw.Padding(
+                            padding: const pw.EdgeInsets.all(8),
+                            child: pw.Text(
+                              'Malzeme',
+                              style: pw.TextStyle(
+                                fontWeight: pw.FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          pw.Padding(
+                            padding: const pw.EdgeInsets.all(8),
+                            child: pw.Text(
+                              'Miktar',
+                              style: pw.TextStyle(
+                                fontWeight: pw.FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          pw.Padding(
+                            padding: const pw.EdgeInsets.all(8),
+                            child: pw.Text(
+                              'Birim Fiyat',
+                              style: pw.TextStyle(
+                                fontWeight: pw.FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          pw.Padding(
+                            padding: const pw.EdgeInsets.all(8),
+                            child: pw.Text(
+                              'Tutar',
+                              style: pw.TextStyle(
+                                fontWeight: pw.FontWeight.bold,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
-                      ...items.map((item) => pw.TableRow(
-                            children: [
-                              pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text('${item['name']}')),
-                              pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text('${item['quantity']} ${item['unit']}')),
-                              pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text('${(item['unitPrice'] as num).toStringAsFixed(2)} €')),
-                              pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text('${(item['subtotal'] as num).toStringAsFixed(2)} €')),
-                            ],
-                          )),
+                      ...items.map(
+                        (item) => pw.TableRow(
+                          children: [
+                            pw.Padding(
+                              padding: const pw.EdgeInsets.all(8),
+                              child: pw.Text('${item['name']}'),
+                            ),
+                            pw.Padding(
+                              padding: const pw.EdgeInsets.all(8),
+                              child: pw.Text(
+                                '${item['quantity']} ${item['unit']}',
+                              ),
+                            ),
+                            pw.Padding(
+                              padding: const pw.EdgeInsets.all(8),
+                              child: pw.Text(
+                                '${(item['unitPrice'] as num).toStringAsFixed(2)} €',
+                              ),
+                            ),
+                            pw.Padding(
+                              padding: const pw.EdgeInsets.all(8),
+                              child: pw.Text(
+                                '${(item['subtotal'] as num).toStringAsFixed(2)} €',
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                   pw.SizedBox(height: 16),
                   pw.Align(
                     alignment: pw.Alignment.centerRight,
-                    child: pw.Text('GENEL TOPLAM: ${(q['totalAmount'] as num).toStringAsFixed(2)} €', style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
+                    child: pw.Text(
+                      'GENEL TOPLAM: ${(q['totalAmount'] as num).toStringAsFixed(2)} €',
+                      style: pw.TextStyle(
+                        fontSize: 14,
+                        fontWeight: pw.FontWeight.bold,
+                      ),
+                    ),
                   ),
                   pw.SizedBox(height: 32),
                   pw.Divider(color: PdfColors.grey300),
@@ -717,8 +1087,13 @@ class _QuoteDetailScreenState extends State<_QuoteDetailScreen> {
 
       final bytes = await doc.save();
       final dir = await getTemporaryDirectory();
-      final safeTitle = (q['title'] ?? 'Teklif').toString().replaceAll(RegExp(r'[^\w\s-]'), '');
-      final file = File('${dir.path}/$safeTitle-${DateTime.now().millisecondsSinceEpoch}.pdf');
+      final safeTitle = (q['title'] ?? 'Teklif').toString().replaceAll(
+        RegExp(r'[^\w\s-]'),
+        '',
+      );
+      final file = File(
+        '${dir.path}/$safeTitle-${DateTime.now().millisecondsSinceEpoch}.pdf',
+      );
       await file.writeAsBytes(bytes);
 
       if (andShare) {
@@ -741,7 +1116,14 @@ class _QuoteDetailScreenState extends State<_QuoteDetailScreen> {
         title: 'Teklif Detayı',
         actions: [
           if (_exporting)
-            const Padding(padding: EdgeInsets.all(16), child: SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2)))
+            const Padding(
+              padding: EdgeInsets.all(16),
+              child: SizedBox(
+                height: 18,
+                width: 18,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            )
           else
             PopupMenuButton<String>(
               onSelected: (v) {
@@ -749,7 +1131,10 @@ class _QuoteDetailScreenState extends State<_QuoteDetailScreen> {
                 if (v == 'share') _exportPdf(andShare: true);
               },
               itemBuilder: (context) => [
-                const PopupMenuItem(value: 'view', child: Text('PDF Görüntüle')),
+                const PopupMenuItem(
+                  value: 'view',
+                  child: Text('PDF Görüntüle'),
+                ),
                 const PopupMenuItem(value: 'share', child: Text('PDF Paylaş')),
               ],
               icon: const Icon(Icons.picture_as_pdf_outlined),
@@ -761,31 +1146,77 @@ class _QuoteDetailScreenState extends State<_QuoteDetailScreen> {
         children: [
           Container(
             padding: const EdgeInsets.all(AppSpacing.md),
-            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18), boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 2))]),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(18),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.03),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(q['title'] ?? '', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: AppColors.navy)),
+                Text(
+                  q['title'] ?? '',
+                  style: const TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.navy,
+                  ),
+                ),
                 if ((q['customerName'] ?? '').toString().isNotEmpty) ...[
                   const SizedBox(height: 4),
-                  Text('Müşteri: ${q['customerName']}', style: TextStyle(fontSize: 12.5, color: Colors.grey.shade600)),
+                  Text(
+                    'Müşteri: ${q['customerName']}',
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
                 ],
                 const Divider(height: 20),
-                ...items.map((item) => Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
-                      child: Row(
-                        children: [
-                          Expanded(child: Text('${item['name']} (${item['quantity']} ${item['unit']})', style: const TextStyle(fontSize: 12.5))),
-                          Text('${(item['subtotal'] as num).toStringAsFixed(2)} €', style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700)),
-                        ],
-                      ),
-                    )),
+                ...items.map(
+                  (item) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            '${item['name']} (${item['quantity']} ${item['unit']})',
+                            style: const TextStyle(fontSize: 12.5),
+                          ),
+                        ),
+                        Text(
+                          '${(item['subtotal'] as num).toStringAsFixed(2)} €',
+                          style: const TextStyle(
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
                 const Divider(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('Genel Toplam', style: TextStyle(fontWeight: FontWeight.w800)),
-                    Text('${(q['totalAmount'] as num).toStringAsFixed(2)} €', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: AppColors.brand)),
+                    const Text(
+                      'Genel Toplam',
+                      style: TextStyle(fontWeight: FontWeight.w800),
+                    ),
+                    Text(
+                      '${(q['totalAmount'] as num).toStringAsFixed(2)} €',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 16,
+                        color: AppColors.brand,
+                      ),
+                    ),
                   ],
                 ),
               ],

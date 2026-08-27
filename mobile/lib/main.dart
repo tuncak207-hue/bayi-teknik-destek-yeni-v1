@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
+
 import 'app/app.dart';
 import 'core/theme/theme_controller.dart';
 
@@ -24,7 +25,9 @@ Future<void> main() async {
       // Release’te Firebase olmadan devam etmek push/auth özelliklerini sessizce
       // bozacağı için yapılandırma hatasını build/runtime health-check olarak açığa çıkar.
       Error.throwWithStackTrace(
-        StateError('Firebase release yapılandırması başlatılamadı. Android için google-services.json, iOS için GoogleService-Info.plist ve APNs ayarlarını kontrol edin.'),
+        StateError(
+          'Firebase release yapılandırması başlatılamadı. Android için google-services.json, iOS için GoogleService-Info.plist ve APNs ayarlarını kontrol edin.',
+        ),
         stackTrace,
       );
     }

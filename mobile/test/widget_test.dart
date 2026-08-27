@@ -5,12 +5,12 @@ import 'package:bayi_teknik_destek/core/widgets/app_components.dart';
 import 'package:bayi_teknik_destek/core/widgets/design_system.dart';
 
 void main() {
-  testWidgets('Ortak mobil sayfa başlığı oluşturuluyor', (WidgetTester tester) async {
+  testWidgets('Ortak mobil sayfa başlığı oluşturuluyor', (
+    WidgetTester tester,
+  ) async {
     await tester.pumpWidget(
       const MaterialApp(
-        home: Scaffold(
-          appBar: AppPageHeader(title: 'Test ekranı'),
-        ),
+        home: Scaffold(appBar: AppPageHeader(title: 'Test ekranı')),
       ),
     );
 
@@ -18,7 +18,9 @@ void main() {
     expect(find.byTooltip('Geri'), findsOneWidget);
   });
 
-  testWidgets('Ortak durum bileşenleri erişilebilir etiketler sunuyor', (WidgetTester tester) async {
+  testWidgets('Ortak durum bileşenleri erişilebilir etiketler sunuyor', (
+    WidgetTester tester,
+  ) async {
     final semanticsHandle = tester.ensureSemantics();
     await tester.pumpWidget(
       MaterialApp(
@@ -49,7 +51,9 @@ void main() {
     semanticsHandle.dispose();
   });
 
-  testWidgets('Başlık rozeti başlığın yanında render ediliyor', (WidgetTester tester) async {
+  testWidgets('Başlık rozeti başlığın yanında render ediliyor', (
+    WidgetTester tester,
+  ) async {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
@@ -69,7 +73,9 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Ortak input dark temada render ediliyor', (WidgetTester tester) async {
+  testWidgets('Ortak input dark temada render ediliyor', (
+    WidgetTester tester,
+  ) async {
     final controller = TextEditingController();
     addTearDown(controller.dispose);
 

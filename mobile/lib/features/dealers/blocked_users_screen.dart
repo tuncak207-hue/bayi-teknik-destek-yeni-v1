@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/design_system.dart';
@@ -50,45 +51,73 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
       backgroundColor: const Color(0xFFFFFFFF),
       body: SafeArea(
         child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, 0),
-            child: Text(
-              'Engellenen Bayiler',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: AppColors.navy, letterSpacing: -0.6, height: 1.1),
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.md,
+                AppSpacing.md,
+                AppSpacing.md,
+                0,
+              ),
+              child: Text(
+                'Engellenen Bayiler',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w900,
+                  color: AppColors.navy,
+                  letterSpacing: -0.6,
+                  height: 1.1,
+                ),
+              ),
             ),
-          ),
-          Expanded(
-            child: _loading
-                ? const Center(child: CircularProgressIndicator())
-                : _blocked.isEmpty
-                    ? const AppEmptyState(icon: Icons.block, title: 'Engellediğiniz bir bayi yok')
-                    : ListView.separated(
-                        padding: const EdgeInsets.all(AppSpacing.md),
-                        itemCount: _blocked.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.xs),
-                        itemBuilder: (context, index) {
-                          final u = _blocked[index];
-                          return Card(
-                            child: ListTile(
-                              contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 4),
-                              leading: IconAvatar(
-                                initial: (u['company'] as String? ?? '?').characters.first.toUpperCase(),
-                                color: Colors.grey.shade600,
-                              ),
-                              title: Text(u['company'] ?? '', style: const TextStyle(fontWeight: FontWeight.w700)),
-                              subtitle: Text('${u['firstName']} ${u['lastName']}'),
-                              trailing: OutlinedButton(
-                                onPressed: () => _unblock(u['id']),
-                                child: const Text('Engeli Kaldır'),
+            Expanded(
+              child: _loading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _blocked.isEmpty
+                  ? const AppEmptyState(
+                      icon: Icons.block,
+                      title: 'Engellediğiniz bir bayi yok',
+                    )
+                  : ListView.separated(
+                      padding: const EdgeInsets.all(AppSpacing.md),
+                      itemCount: _blocked.length,
+                      separatorBuilder: (_, __) =>
+                          const SizedBox(height: AppSpacing.xs),
+                      itemBuilder: (context, index) {
+                        final u = _blocked[index];
+                        return Card(
+                          child: ListTile(
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: AppSpacing.sm,
+                              vertical: 4,
+                            ),
+                            leading: IconAvatar(
+                              initial: (u['company'] as String? ?? '?')
+                                  .characters
+                                  .first
+                                  .toUpperCase(),
+                              color: Colors.grey.shade600,
+                            ),
+                            title: Text(
+                              u['company'] ?? '',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
-                          );
-                        },
-                      ),
-          ),
-        ],
-      ),
+                            subtitle: Text(
+                              '${u['firstName']} ${u['lastName']}',
+                            ),
+                            trailing: OutlinedButton(
+                              onPressed: () => _unblock(u['id']),
+                              child: const Text('Engeli Kaldır'),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ),
       ),
     );
   }

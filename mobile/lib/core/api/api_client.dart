@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+
 import 'api_config.dart';
 import '../auth/token_storage.dart';
 
@@ -16,45 +17,52 @@ class ApiClient {
     if (bool.fromEnvironment('dart.vm.product')) {
       final configError = ApiConfig.releaseValidationError;
       if (configError != null) {
-        throw StateError('Güvenli release yapılandırması geçersiz: $configError');
+        throw StateError(
+          'Güvenli release yapılandırması geçersiz: $configError',
+        );
       }
     }
 
-    final dio = Dio(BaseOptions(
-      baseUrl: ApiConfig.baseUrl,
-      connectTimeout: const Duration(seconds: 15),
-      receiveTimeout: const Duration(seconds: 30),
-    ));
+    final dio = Dio(
+      BaseOptions(
+        baseUrl: ApiConfig.baseUrl,
+        connectTimeout: const Duration(seconds: 15),
+        receiveTimeout: const Duration(seconds: 30),
+      ),
+    );
 
     final client = ApiClient._internal(dio);
 
-    dio.interceptors.add(InterceptorsWrapper(
-      onRequest: (options, handler) async {
-        final token = await client._tokenStorage.getAccessToken();
-        if (token != null) {
-          options.headers['Authorization'] = 'Bearer $token';
-        }
-        handler.next(options);
-      },
-      onError: (error, handler) async {
-        if (error.response?.statusCode == 401 && error.requestOptions.extra['retried'] != true) {
-          final refreshed = await client._tryRefresh();
-          if (refreshed) {
-            final opts = error.requestOptions;
-            opts.extra['retried'] = true;
-            final token = await client._tokenStorage.getAccessToken();
-            opts.headers['Authorization'] = 'Bearer $token';
-            try {
-              final response = await client.dio.fetch(opts);
-              return handler.resolve(response);
-            } catch (e) {
-              return handler.next(error);
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) async {
+          final token = await client._tokenStorage.getAccessToken();
+          if (token != null) {
+            options.headers['Authorization'] = 'Bearer $token';
+          }
+          handler.next(options);
+        },
+        onError: (error, handler) async {
+          if (error.response?.statusCode == 401 &&
+              error.requestOptions.extra['retried'] != true) {
+            final refreshed = await client._tryRefresh();
+            if (refreshed) {
+              final opts = error.requestOptions;
+              opts.extra['retried'] = true;
+              final token = await client._tokenStorage.getAccessToken();
+              opts.headers['Authorization'] = 'Bearer $token';
+              try {
+                final response = await client.dio.fetch(opts);
+                return handler.resolve(response);
+              } catch (e) {
+                return handler.next(error);
+              }
             }
           }
-        }
-        handler.next(error);
-      },
-    ));
+          handler.next(error);
+        },
+      ),
+    );
 
     _instance = client;
     return client;

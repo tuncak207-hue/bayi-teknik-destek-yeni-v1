@@ -19,8 +19,12 @@ class BiometricService {
   Future<bool> authenticate() async {
     try {
       return await _auth.authenticate(
-        localizedReason: 'Hesabınıza giriş yapmak için parmak izinizi doğrulayın',
-        options: const AuthenticationOptions(biometricOnly: true, stickyAuth: true),
+        localizedReason:
+            'Hesabınıza giriş yapmak için parmak izinizi doğrulayın',
+        options: const AuthenticationOptions(
+          biometricOnly: true,
+          stickyAuth: true,
+        ),
       );
     } catch (_) {
       return false;

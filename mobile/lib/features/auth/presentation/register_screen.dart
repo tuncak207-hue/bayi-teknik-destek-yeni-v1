@@ -3,6 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:dio/dio.dart';
+
 import '../data/auth_providers.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/design_system.dart';
@@ -26,7 +27,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   bool _loading = false;
   bool _obscurePassword = true;
   bool _kvkkAccepted = false;
-  bool _kvkkTouched = false; // "onaylanmadı" hatasını sadece denemeden sonra göster
+  bool _kvkkTouched =
+      false; // "onaylanmadı" hatasını sadece denemeden sonra göster
   String? _error;
 
   late final TapGestureRecognizer _kvkkTapRecognizer;
@@ -34,7 +36,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   @override
   void initState() {
     super.initState();
-    _kvkkTapRecognizer = TapGestureRecognizer()..onTap = () => context.push('/kvkk');
+    _kvkkTapRecognizer = TapGestureRecognizer()
+      ..onTap = () => context.push('/kvkk');
   }
 
   @override
@@ -48,7 +51,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     if (!_formKey.currentState!.validate()) return;
     if (_email == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Lütfen e-posta kullanıcı adı ve uzantı alanlarının ikisini de doldurun.')),
+        const SnackBar(
+          content: Text(
+            'Lütfen e-posta kullanıcı adı ve uzantı alanlarının ikisini de doldurun.',
+          ),
+        ),
       );
       return;
     }
@@ -56,7 +63,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       // Önceden burada sessizce çıkıyorduk — kullanıcı "hiçbir şey olmuyor"
       // sanıyordu. Artık net bir uyarı gösteriyoruz.
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Devam etmek için KVKK Aydınlatma Metni\'ni onaylamanız gerekiyor.')),
+        const SnackBar(
+          content: Text(
+            'Devam etmek için KVKK Aydınlatma Metni\'ni onaylamanız gerekiyor.',
+          ),
+        ),
       );
       return;
     }
@@ -65,7 +76,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       _error = null;
     });
     try {
-      final message = await ref.read(authRepositoryProvider).register(
+      final message = await ref
+          .read(authRepositoryProvider)
+          .register(
             firstName: _firstName.text.trim(),
             lastName: _lastName.text.trim(),
             company: _company.text.trim(),
@@ -92,10 +105,16 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         ),
       );
     } on DioException catch (e) {
-      setState(() => _error = e.response?.data?['message'] ?? 'Kayıt başarısız. İnternet bağlantınızı kontrol edin.');
+      setState(
+        () => _error =
+            e.response?.data?['message'] ??
+            'Kayıt başarısız. İnternet bağlantınızı kontrol edin.',
+      );
     } catch (e) {
       // Beklenmeyen herhangi bir hata da artık sessizce yutulmuyor.
-      setState(() => _error = 'Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.');
+      setState(
+        () => _error = 'Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.',
+      );
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -111,7 +130,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.lg),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.lg,
+            vertical: AppSpacing.lg,
+          ),
           child: Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 460),
@@ -133,7 +155,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         child: Image.asset(
                           'assets/images/entpa_logo.png',
                           errorBuilder: (context, error, stackTrace) =>
-                              const Icon(Icons.local_fire_department, color: AppColors.brand, size: 36),
+                              const Icon(
+                                Icons.local_fire_department,
+                                color: AppColors.brand,
+                                size: 36,
+                              ),
                         ),
                       ),
                     ),
@@ -141,13 +167,20 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     const Text(
                       'Yeni Bayi Hesabı',
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: AppColors.navy),
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.navy,
+                      ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       'Kaydınız oluşturulduktan sonra admin onayı bekler.',
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey.shade600,
+                      ),
                     ),
                     const SizedBox(height: AppSpacing.lg),
 
@@ -157,13 +190,24 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         padding: const EdgeInsets.all(AppSpacing.sm),
                         decoration: BoxDecoration(
                           color: AppColors.brandLight,
-                          borderRadius: BorderRadius.circular(AppSpacing.radius),
+                          borderRadius: BorderRadius.circular(
+                            AppSpacing.radius,
+                          ),
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.error_outline, color: AppColors.brand, size: 18),
+                            const Icon(
+                              Icons.error_outline,
+                              color: AppColors.brand,
+                              size: 18,
+                            ),
                             const SizedBox(width: 8),
-                            Expanded(child: Text(_error!, style: const TextStyle(color: AppColors.brand))),
+                            Expanded(
+                              child: Text(
+                                _error!,
+                                style: const TextStyle(color: AppColors.brand),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -173,22 +217,41 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     const SizedBox(height: AppSpacing.xs),
                     Row(
                       children: [
-                        Expanded(child: _field(_firstName, 'Ad', icon: Icons.person_outline)),
+                        Expanded(
+                          child: _field(
+                            _firstName,
+                            'Ad',
+                            icon: Icons.person_outline,
+                          ),
+                        ),
                         const SizedBox(width: AppSpacing.xs),
-                        Expanded(child: _field(_lastName, 'Soyad', icon: Icons.person_outline)),
+                        Expanded(
+                          child: _field(
+                            _lastName,
+                            'Soyad',
+                            icon: Icons.person_outline,
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: AppSpacing.xs),
                     _field(_company, 'Firma', icon: Icons.business_outlined),
                     const SizedBox(height: AppSpacing.xs),
-                    _field(_phone, 'Telefon', icon: Icons.phone_outlined, keyboardType: TextInputType.phone),
+                    _field(
+                      _phone,
+                      'Telefon',
+                      icon: Icons.phone_outlined,
+                      keyboardType: TextInputType.phone,
+                    ),
 
                     const SizedBox(height: AppSpacing.md),
 
                     // ---- Bölüm: Hesap Bilgileri ----
                     const _SectionLabel(text: 'Hesap Bilgileri'),
                     const SizedBox(height: AppSpacing.xs),
-                    EmailSplitField(onChanged: (value) => setState(() => _email = value)),
+                    EmailSplitField(
+                      onChanged: (value) => setState(() => _email = value),
+                    ),
                     const SizedBox(height: AppSpacing.xs),
                     TextFormField(
                       controller: _password,
@@ -197,11 +260,19 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         labelText: 'Şifre',
                         prefixIcon: const Icon(Icons.lock_outline),
                         suffixIcon: IconButton(
-                          icon: Icon(_obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined),
-                          onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_outlined
+                                : Icons.visibility_off_outlined,
+                          ),
+                          onPressed: () => setState(
+                            () => _obscurePassword = !_obscurePassword,
+                          ),
                         ),
                       ),
-                      validator: (v) => (v == null || v.trim().isEmpty) ? 'Şifre zorunludur' : null,
+                      validator: (v) => (v == null || v.trim().isEmpty)
+                          ? 'Şifre zorunludur'
+                          : null,
                     ),
 
                     const SizedBox(height: AppSpacing.md),
@@ -213,7 +284,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(AppSpacing.radius),
                         border: Border.all(
-                          color: (_kvkkTouched && !_kvkkAccepted) ? AppColors.brand : AppColors.divider,
+                          color: (_kvkkTouched && !_kvkkAccepted)
+                              ? AppColors.brand
+                              : AppColors.divider,
                         ),
                       ),
                       child: Row(
@@ -221,18 +294,25 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         children: [
                           Checkbox(
                             value: _kvkkAccepted,
-                            onChanged: (v) => setState(() => _kvkkAccepted = v ?? false),
+                            onChanged: (v) =>
+                                setState(() => _kvkkAccepted = v ?? false),
                           ),
                           Expanded(
                             child: Padding(
                               padding: const EdgeInsets.only(top: 12),
                               child: RichText(
                                 text: TextSpan(
-                                  style: const TextStyle(fontSize: 13.5, color: AppColors.ink),
+                                  style: const TextStyle(
+                                    fontSize: 13.5,
+                                    color: AppColors.ink,
+                                  ),
                                   children: [
                                     TextSpan(
                                       text: 'KVKK Aydınlatma Metni\'ni okudum ve kabul ediyorum.',
-                                      style: const TextStyle(fontWeight: FontWeight.w600, color: AppColors.navy),
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.navy,
+                                      ),
                                       recognizer: _kvkkTapRecognizer,
                                     ),
                                   ],
@@ -248,7 +328,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         padding: EdgeInsets.only(left: 12, top: 6),
                         child: Text(
                           'Devam etmek için KVKK Aydınlatma Metni\'ni onaylamanız gerekiyor.',
-                          style: TextStyle(color: AppColors.brand, fontSize: 12.5),
+                          style: TextStyle(
+                            color: AppColors.brand,
+                            fontSize: 12.5,
+                          ),
                         ),
                       ),
 
@@ -259,7 +342,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           ? const SizedBox(
                               height: 20,
                               width: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
                             )
                           : const Text('Kayıt Ol'),
                     ),
@@ -278,14 +364,20 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     );
   }
 
-  Widget _field(TextEditingController controller, String label,
-      {required IconData icon, TextInputType? keyboardType, bool obscure = false}) {
+  Widget _field(
+    TextEditingController controller,
+    String label, {
+    required IconData icon,
+    TextInputType? keyboardType,
+    bool obscure = false,
+  }) {
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
       obscureText: obscure,
       decoration: InputDecoration(labelText: label, prefixIcon: Icon(icon)),
-      validator: (v) => (v == null || v.trim().isEmpty) ? '$label zorunludur' : null,
+      validator: (v) =>
+          (v == null || v.trim().isEmpty) ? '$label zorunludur' : null,
     );
   }
 }
@@ -298,7 +390,12 @@ class _SectionLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.navy, letterSpacing: 0.3),
+      style: const TextStyle(
+        fontSize: 12.5,
+        fontWeight: FontWeight.w700,
+        color: AppColors.navy,
+        letterSpacing: 0.3,
+      ),
     );
   }
 }

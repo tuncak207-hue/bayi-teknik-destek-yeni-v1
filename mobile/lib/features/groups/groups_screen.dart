@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:dio/dio.dart';
+
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/design_system.dart';
@@ -29,7 +30,9 @@ class _GroupsScreenState extends State<GroupsScreen> {
     setState(() => _loading = true);
     final res = await _dio.get('/groups');
     setState(() {
-      _groups = (res.data as List).where((g) => g['name'] != 'Genel Sohbet').toList();
+      _groups = (res.data as List)
+          .where((g) => g['name'] != 'Genel Sohbet')
+          .toList();
       _loading = false;
     });
   }
@@ -49,9 +52,14 @@ class _GroupsScreenState extends State<GroupsScreen> {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: const Text('Gruptan Ayrıl'),
-        content: Text('"$groupName" grubundan ayrılmak istediğinize emin misiniz?'),
+        content: Text(
+          '"$groupName" grubundan ayrılmak istediğinize emin misiniz?',
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Vazgeç'),
+          ),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
             child: const Text('Ayrıl', style: TextStyle(color: AppColors.navy)),
@@ -80,7 +88,11 @@ class _GroupsScreenState extends State<GroupsScreen> {
       if (!mounted) return;
       if (conversationId == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Bu grubun sohbeti açılamadı, lütfen tekrar deneyin.')),
+          const SnackBar(
+            content: Text(
+              'Bu grubun sohbeti açılamadı, lütfen tekrar deneyin.',
+            ),
+          ),
         );
         return;
       }
@@ -88,7 +100,11 @@ class _GroupsScreenState extends State<GroupsScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Sohbet açılamadı, internet bağlantınızı kontrol edin.')),
+          const SnackBar(
+            content: Text(
+              'Sohbet açılamadı, internet bağlantınızı kontrol edin.',
+            ),
+          ),
         );
       }
     } finally {
@@ -114,121 +130,218 @@ class _GroupsScreenState extends State<GroupsScreen> {
           children: [
             Expanded(
               child: _loading
-                ? const Center(child: CircularProgressIndicator())
-                : _groups.isEmpty
-                    ? AppEmptyState(icon: Icons.groups_2_outlined, title: 'Henüz oluşturulmuş bir grup yok')
-                    : RefreshIndicator(
-                        onRefresh: _load,
-                        child: CustomScrollView(
-                          slivers: [
-                      SliverPadding(
-                        padding: const EdgeInsets.all(AppSpacing.md),
-                        sliver: SliverGrid(
-                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            mainAxisSpacing: AppSpacing.sm,
-                            crossAxisSpacing: AppSpacing.sm,
-                            childAspectRatio: 0.95,
-                          ),
-                          delegate: SliverChildBuilderDelegate(
-                            (context, index) {
-                      final g = _groups[index];
-                      final isMember = _isMember(g);
-                      final memberCount = g['_count']?['members'] ?? 0;
-                      final isOpening = _opening.contains(g['id']);
-
-                      return InkWell(
-                        borderRadius: BorderRadius.circular(18),
-                        onTap: isMember ? () => _openGroupChat(g) : () => _join(g['id']),
-                        child: Container(
-                          padding: const EdgeInsets.all(AppSpacing.sm),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(18),
-                            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 2))],
-                            border: isMember ? Border.all(color: AppColors.brand.withValues(alpha: 0.15)) : null,
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Container(
-                                    width: 40,
-                                    height: 40,
-                                    decoration: BoxDecoration(
-                                      color: (isMember ? AppColors.brand : AppColors.infoColor).withValues(alpha: 0.08),
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: isOpening
-                                        ? const Padding(
-                                            padding: EdgeInsets.all(10),
-                                            child: CircularProgressIndicator(strokeWidth: 2),
-                                          )
-                                        : Icon(_iconFor(g['name'] ?? ''), color: isMember ? AppColors.brand : AppColors.infoColor, size: 19),
+                  ? const Center(child: CircularProgressIndicator())
+                  : _groups.isEmpty
+                  ? AppEmptyState(
+                      icon: Icons.groups_2_outlined,
+                      title: 'Henüz oluşturulmuş bir grup yok',
+                    )
+                  : RefreshIndicator(
+                      onRefresh: _load,
+                      child: CustomScrollView(
+                        slivers: [
+                          SliverPadding(
+                            padding: const EdgeInsets.all(AppSpacing.md),
+                            sliver: SliverGrid(
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 2,
+                                    mainAxisSpacing: AppSpacing.sm,
+                                    crossAxisSpacing: AppSpacing.sm,
+                                    childAspectRatio: 0.95,
                                   ),
-                                  if (isMember)
-                                    PopupMenuButton<String>(
-                                      icon: Icon(Icons.more_vert, size: 18, color: Colors.grey.shade400),
-                                      onSelected: (value) {
-                                        if (value == 'leave') _leave(g['id'], g['name'] ?? '');
-                                      },
-                                      itemBuilder: (context) => [
-                                        const PopupMenuItem(value: 'leave', child: Text('Ayrıl', style: TextStyle(color: AppColors.navy))),
+                              delegate: SliverChildBuilderDelegate((
+                                context,
+                                index,
+                              ) {
+                                final g = _groups[index];
+                                final isMember = _isMember(g);
+                                final memberCount =
+                                    g['_count']?['members'] ?? 0;
+                                final isOpening = _opening.contains(g['id']);
+
+                                return InkWell(
+                                  borderRadius: BorderRadius.circular(18),
+                                  onTap: isMember
+                                      ? () => _openGroupChat(g)
+                                      : () => _join(g['id']),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(
+                                      AppSpacing.sm,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(18),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withValues(
+                                            alpha: 0.03,
+                                          ),
+                                          blurRadius: 10,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
+                                      border: isMember
+                                          ? Border.all(
+                                              color: AppColors.brand.withValues(
+                                                alpha: 0.15,
+                                              ),
+                                            )
+                                          : null,
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Container(
+                                              width: 40,
+                                              height: 40,
+                                              decoration: BoxDecoration(
+                                                color:
+                                                    (isMember
+                                                            ? AppColors.brand
+                                                            : AppColors
+                                                                  .infoColor)
+                                                        .withValues(
+                                                          alpha: 0.08,
+                                                        ),
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                              ),
+                                              child: isOpening
+                                                  ? const Padding(
+                                                      padding: EdgeInsets.all(
+                                                        10,
+                                                      ),
+                                                      child:
+                                                          CircularProgressIndicator(
+                                                            strokeWidth: 2,
+                                                          ),
+                                                    )
+                                                  : Icon(
+                                                      _iconFor(g['name'] ?? ''),
+                                                      color: isMember
+                                                          ? AppColors.brand
+                                                          : AppColors.infoColor,
+                                                      size: 19,
+                                                    ),
+                                            ),
+                                            if (isMember)
+                                              PopupMenuButton<String>(
+                                                icon: Icon(
+                                                  Icons.more_vert,
+                                                  size: 18,
+                                                  color: Colors.grey.shade400,
+                                                ),
+                                                onSelected: (value) {
+                                                  if (value == 'leave')
+                                                    _leave(
+                                                      g['id'],
+                                                      g['name'] ?? '',
+                                                    );
+                                                },
+                                                itemBuilder: (context) => [
+                                                  const PopupMenuItem(
+                                                    value: 'leave',
+                                                    child: Text(
+                                                      'Ayrıl',
+                                                      style: TextStyle(
+                                                        color: AppColors.navy,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                          ],
+                                        ),
+                                        const Spacer(),
+                                        Text(
+                                          g['name'] ?? '',
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w800,
+                                            fontSize: 14.5,
+                                            color: AppColors.navy,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Row(
+                                          children: [
+                                            Icon(
+                                              Icons.people_outline,
+                                              size: 12,
+                                              color: Colors.grey.shade400,
+                                            ),
+                                            const SizedBox(width: 3),
+                                            Text(
+                                              '$memberCount üye',
+                                              style: TextStyle(
+                                                fontSize: 11.5,
+                                                color: Colors.grey.shade500,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 8),
+                                        if (!isMember)
+                                          Container(
+                                            width: double.infinity,
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 7,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: AppColors.infoColor,
+                                              borderRadius:
+                                                  BorderRadius.circular(9),
+                                            ),
+                                            child: const Text(
+                                              'Katıl',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                          )
+                                        else
+                                          Container(
+                                            width: double.infinity,
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 7,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: AppColors.brand.withValues(
+                                                alpha: 0.08,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(9),
+                                            ),
+                                            child: Text(
+                                              'Sohbete Gir',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                color: AppColors.brand,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                          ),
                                       ],
                                     ),
-                                ],
-                              ),
-                              const Spacer(),
-                              Text(
-                                g['name'] ?? '',
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14.5, color: AppColors.navy),
-                              ),
-                              const SizedBox(height: 4),
-                              Row(
-                                children: [
-                                  Icon(Icons.people_outline, size: 12, color: Colors.grey.shade400),
-                                  const SizedBox(width: 3),
-                                  Text('$memberCount üye', style: TextStyle(fontSize: 11.5, color: Colors.grey.shade500)),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              if (!isMember)
-                                Container(
-                                  width: double.infinity,
-                                  padding: const EdgeInsets.symmetric(vertical: 7),
-                                  decoration: BoxDecoration(color: AppColors.infoColor, borderRadius: BorderRadius.circular(9)),
-                                  child: const Text('Katıl', textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w700)),
-                                )
-                              else
-                                Container(
-                                  width: double.infinity,
-                                  padding: const EdgeInsets.symmetric(vertical: 7),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.brand.withValues(alpha: 0.08),
-                                    borderRadius: BorderRadius.circular(9),
                                   ),
-                                  child: Text(
-                                    'Sohbete Gir',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(color: AppColors.brand, fontSize: 12, fontWeight: FontWeight.w700),
-                                  ),
-                                ),
-                            ],
+                                );
+                              }, childCount: _groups.length),
+                            ),
                           ),
-                        ),
-                      );
-                            },
-                            childCount: _groups.length,
-                          ),
-                        ),
+                        ],
                       ),
-                          ],
-                        ),
-                      ),
+                    ),
             ),
           ],
         ),

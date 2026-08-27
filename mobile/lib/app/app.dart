@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 import '../core/theme/app_theme.dart';
 import '../core/theme/theme_controller.dart';
 import 'router.dart';
@@ -27,7 +28,8 @@ class BayiTeknikDestekApp extends StatelessWidget {
                 // tüm uygulamaya uyguluyoruz — sahada güneş altında/uzaktan
                 // okurken büyük yazı tercih edenler için.
                 final scaled = MediaQuery(
-                  data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(fontScale)),
+                  data: MediaQuery.of(context)
+                      .copyWith(textScaler: TextScaler.linear(fontScale)),
                   child: child!,
                 );
 
@@ -40,19 +42,29 @@ class BayiTeknikDestekApp extends StatelessWidget {
                 // formlar, detay ekranları — hepsi) otomatik uygulanıyor;
                 // ayrıca açık/koyu tema değişse bile (isDark kontrolü ile)
                 // doğru kontrastı koruyor — kalıcı, merkezi bir çözüm.
-                final isDark = themeMode == ThemeMode.dark ||
+                final isDark =
+                    themeMode == ThemeMode.dark ||
                     (themeMode == ThemeMode.system &&
-                        MediaQuery.platformBrightnessOf(context) == Brightness.dark);
+                        MediaQuery.platformBrightnessOf(context) ==
+                            Brightness.dark);
                 return AnnotatedRegion<SystemUiOverlayStyle>(
                   value: SystemUiOverlayStyle(
                     // Durum çubuğunu şeffaf yapıp, uygulamanın kendi
                     // (beyaz/koyu) arka planının altından görünmesini
                     // sağlıyoruz — bu, "gri şerit" sorununu kökten çözüyor.
                     statusBarColor: Colors.transparent,
-                    statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
-                    statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
-                    systemNavigationBarColor: isDark ? AppColors.ink : Colors.white,
-                    systemNavigationBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+                    statusBarIconBrightness: isDark
+                        ? Brightness.light
+                        : Brightness.dark,
+                    statusBarBrightness: isDark
+                        ? Brightness.dark
+                        : Brightness.light,
+                    systemNavigationBarColor: isDark
+                        ? AppColors.ink
+                        : Colors.white,
+                    systemNavigationBarIconBrightness: isDark
+                        ? Brightness.light
+                        : Brightness.dark,
                     systemNavigationBarDividerColor: Colors.transparent,
                   ),
                   child: scaled,

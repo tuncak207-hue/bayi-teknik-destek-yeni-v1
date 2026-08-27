@@ -22,7 +22,8 @@ class ThemeController {
 
   Future<void> loadBiometricPreference() async {
     final prefs = await SharedPreferences.getInstance();
-    biometricLockEnabled.value = prefs.getBool('biometric_lock_enabled') ?? false;
+    biometricLockEnabled.value =
+        prefs.getBool('biometric_lock_enabled') ?? false;
   }
 
   Future<void> setBiometricLockEnabled(bool value) async {

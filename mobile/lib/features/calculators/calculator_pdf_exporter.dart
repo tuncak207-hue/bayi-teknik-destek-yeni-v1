@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -33,7 +34,10 @@ class CalculatorPdfExporter {
                 pw.SizedBox(height: 4),
                 pw.Text(
                   title,
-                  style: pw.TextStyle(fontSize: 22, fontWeight: pw.FontWeight.bold),
+                  style: pw.TextStyle(
+                    fontSize: 22,
+                    fontWeight: pw.FontWeight.bold,
+                  ),
                 ),
                 pw.SizedBox(height: 4),
                 pw.Text(
@@ -43,7 +47,9 @@ class CalculatorPdfExporter {
                 pw.SizedBox(height: 24),
                 pw.Table(
                   border: pw.TableBorder.all(color: PdfColors.grey300),
-                  children: result.entries.where((e) => e.key != 'note').map((e) {
+                  children: result.entries.where((e) => e.key != 'note').map((
+                    e,
+                  ) {
                     return pw.TableRow(
                       children: [
                         pw.Padding(
@@ -52,7 +58,10 @@ class CalculatorPdfExporter {
                         ),
                         pw.Padding(
                           padding: const pw.EdgeInsets.all(8),
-                          child: pw.Text('${e.value}', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                          child: pw.Text(
+                            '${e.value}',
+                            style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                          ),
                         ),
                       ],
                     );
@@ -62,7 +71,11 @@ class CalculatorPdfExporter {
                   pw.SizedBox(height: 16),
                   pw.Text(
                     result['note'].toString(),
-                    style: pw.TextStyle(fontSize: 10, fontStyle: pw.FontStyle.italic, color: PdfColors.grey600),
+                    style: pw.TextStyle(
+                      fontSize: 10,
+                      fontStyle: pw.FontStyle.italic,
+                      color: PdfColors.grey600,
+                    ),
                   ),
                 ],
                 pw.SizedBox(height: 32),

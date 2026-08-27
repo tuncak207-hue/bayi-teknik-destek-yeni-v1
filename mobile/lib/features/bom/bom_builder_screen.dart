@@ -1,10 +1,12 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dio/dio.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart';
+
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_components.dart';
@@ -13,16 +15,87 @@ import '../../core/widgets/province_district_picker.dart';
 import '../../core/pdf/document_pdf_exporter.dart';
 
 const List<String> kTurkishProvinces = [
-  'Adana', 'Adıyaman', 'Afyonkarahisar', 'Ağrı', 'Amasya', 'Ankara', 'Antalya', 'Artvin',
-  'Aydın', 'Balıkesir', 'Bilecik', 'Bingöl', 'Bitlis', 'Bolu', 'Burdur', 'Bursa',
-  'Çanakkale', 'Çankırı', 'Çorum', 'Denizli', 'Diyarbakır', 'Edirne', 'Elazığ', 'Erzincan',
-  'Erzurum', 'Eskişehir', 'Gaziantep', 'Giresun', 'Gümüşhane', 'Hakkari', 'Hatay', 'Isparta',
-  'Mersin', 'İstanbul', 'İzmir', 'Kars', 'Kastamonu', 'Kayseri', 'Kırklareli', 'Kırşehir',
-  'Kocaeli', 'Konya', 'Kütahya', 'Malatya', 'Manisa', 'Kahramanmaraş', 'Mardin', 'Muğla',
-  'Muş', 'Nevşehir', 'Niğde', 'Ordu', 'Rize', 'Sakarya', 'Samsun', 'Siirt',
-  'Sinop', 'Sivas', 'Tekirdağ', 'Tokat', 'Trabzon', 'Tunceli', 'Şanlıurfa', 'Uşak',
-  'Van', 'Yozgat', 'Zonguldak', 'Aksaray', 'Bayburt', 'Karaman', 'Kırıkkale', 'Batman',
-  'Şırnak', 'Bartın', 'Ardahan', 'Iğdır', 'Yalova', 'Karabük', 'Kilis', 'Osmaniye', 'Düzce',
+  'Adana',
+  'Adıyaman',
+  'Afyonkarahisar',
+  'Ağrı',
+  'Amasya',
+  'Ankara',
+  'Antalya',
+  'Artvin',
+  'Aydın',
+  'Balıkesir',
+  'Bilecik',
+  'Bingöl',
+  'Bitlis',
+  'Bolu',
+  'Burdur',
+  'Bursa',
+  'Çanakkale',
+  'Çankırı',
+  'Çorum',
+  'Denizli',
+  'Diyarbakır',
+  'Edirne',
+  'Elazığ',
+  'Erzincan',
+  'Erzurum',
+  'Eskişehir',
+  'Gaziantep',
+  'Giresun',
+  'Gümüşhane',
+  'Hakkari',
+  'Hatay',
+  'Isparta',
+  'Mersin',
+  'İstanbul',
+  'İzmir',
+  'Kars',
+  'Kastamonu',
+  'Kayseri',
+  'Kırklareli',
+  'Kırşehir',
+  'Kocaeli',
+  'Konya',
+  'Kütahya',
+  'Malatya',
+  'Manisa',
+  'Kahramanmaraş',
+  'Mardin',
+  'Muğla',
+  'Muş',
+  'Nevşehir',
+  'Niğde',
+  'Ordu',
+  'Rize',
+  'Sakarya',
+  'Samsun',
+  'Siirt',
+  'Sinop',
+  'Sivas',
+  'Tekirdağ',
+  'Tokat',
+  'Trabzon',
+  'Tunceli',
+  'Şanlıurfa',
+  'Uşak',
+  'Van',
+  'Yozgat',
+  'Zonguldak',
+  'Aksaray',
+  'Bayburt',
+  'Karaman',
+  'Kırıkkale',
+  'Batman',
+  'Şırnak',
+  'Bartın',
+  'Ardahan',
+  'Iğdır',
+  'Yalova',
+  'Karabük',
+  'Kilis',
+  'Osmaniye',
+  'Düzce',
 ];
 
 /// Malzeme listesi geçmişi — sunucuya kaydediliyor, geçmiş listeler
@@ -57,7 +130,9 @@ class _BomListScreenState extends State<BomListScreen> {
   Future<void> _openBuilder({dynamic existingList}) async {
     final saved = await Navigator.push<bool>(
       context,
-      MaterialPageRoute(builder: (_) => BomBuilderScreen(existingList: existingList)),
+      MaterialPageRoute(
+        builder: (_) => BomBuilderScreen(existingList: existingList),
+      ),
     );
     if (saved == true) _load();
   }
@@ -67,9 +142,14 @@ class _BomListScreenState extends State<BomListScreen> {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: const Text('Listeyi Sil'),
-        content: Text('"${list['title']}" kalıcı olarak silinecek. Emin misiniz?'),
+        content: Text(
+          '"${list['title']}" kalıcı olarak silinecek. Emin misiniz?',
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Vazgeç'),
+          ),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
             child: const Text('Sil', style: TextStyle(color: AppColors.navy)),
@@ -92,120 +172,177 @@ class _BomListScreenState extends State<BomListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      floatingActionButton: StandardFab(label: 'Yeni Liste', onPressed: () => _openBuilder()),
+      floatingActionButton: StandardFab(
+        label: 'Yeni Liste',
+        onPressed: () => _openBuilder(),
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: SafeArea(
         child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(AppSpacing.sm, AppSpacing.md, AppSpacing.md, AppSpacing.sm),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.arrow_back, color: AppColors.navy),
-                  onPressed: () => Navigator.pop(context),
-                ),
-                const Text(
-                  'Malzeme Listeleri',
-                  style: AppText.screenTitle,
-                ),
-                const SizedBox(width: AppSpacing.xs),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: AppColors.primarySoft,
-                    borderRadius: BorderRadius.circular(AppRadius.pill),
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.sm,
+                AppSpacing.md,
+                AppSpacing.md,
+                AppSpacing.sm,
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back, color: AppColors.navy),
+                    onPressed: () => Navigator.pop(context),
                   ),
-                  child: Text(
-                    '${_lists.length}',
-                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.primary),
+                  const Text('Malzeme Listeleri', style: AppText.screenTitle),
+                  const SizedBox(width: AppSpacing.xs),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.primarySoft,
+                      borderRadius: BorderRadius.circular(AppRadius.pill),
+                    ),
+                    child: Text(
+                      '${_lists.length}',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.primary,
+                      ),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          Expanded(
-            child: _loading
-                ? const Center(child: CircularProgressIndicator())
-                : _lists.isEmpty
-                    ? RefreshIndicator(
-                        onRefresh: _load,
-                        child: ListView(
-                          children: [
-                            const SizedBox(height: 72),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-                              child: StandardCard(
-                                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
-                                child: const AppEmptyState(
-                                  icon: Icons.inventory_2_outlined,
-                                  title: 'Henüz bir malzeme listeniz yok',
-                                  description: 'Sağ alttaki butondan yeni bir liste oluşturabilirsiniz.',
+            Expanded(
+              child: _loading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _lists.isEmpty
+                  ? RefreshIndicator(
+                      onRefresh: _load,
+                      child: ListView(
+                        children: [
+                          const SizedBox(height: 72),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppSpacing.md,
+                            ),
+                            child: StandardCard(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: AppSpacing.lg,
+                                vertical: AppSpacing.xl,
+                              ),
+                              child: const AppEmptyState(
+                                icon: Icons.inventory_2_outlined,
+                                title: 'Henüz bir malzeme listeniz yok',
+                                description: 'Sağ alttaki butondan yeni bir liste oluşturabilirsiniz.',
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : RefreshIndicator(
+                      onRefresh: _load,
+                      child: ListView.separated(
+                        padding: const EdgeInsets.all(AppSpacing.md),
+                        itemCount: _lists.length,
+                        separatorBuilder: (_, __) =>
+                            const SizedBox(height: AppSpacing.xs),
+                        itemBuilder: (context, index) {
+                          final l = _lists[index];
+                          final items = (l['items'] as List?) ?? [];
+                          final location = [l['district'], l['province']]
+                              .where(
+                                (s) => s != null && s.toString().isNotEmpty,
+                              )
+                              .join(', ');
+                          return StandardCard(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppSpacing.sm,
+                              vertical: AppSpacing.xs,
+                            ),
+                            onTap: () => _openBuilder(existingList: l),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 44,
+                                  height: 44,
+                                  decoration: BoxDecoration(
+                                    gradient: const LinearGradient(
+                                      colors: [AppColors.navy, AppColors.brand],
+                                    ),
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
+                                  child: const Icon(
+                                    Icons.receipt_long_outlined,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
                                 ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    : RefreshIndicator(
-                        onRefresh: _load,
-                        child: ListView.separated(
-                          padding: const EdgeInsets.all(AppSpacing.md),
-                          itemCount: _lists.length,
-                          separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.xs),
-                          itemBuilder: (context, index) {
-                            final l = _lists[index];
-                            final items = (l['items'] as List?) ?? [];
-                      final location = [l['district'], l['province']].where((s) => s != null && s.toString().isNotEmpty).join(', ');
-                      return StandardCard(
-                        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
-                        onTap: () => _openBuilder(existingList: l),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 44,
-                              height: 44,
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(colors: [AppColors.navy, AppColors.brand]),
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                              child: const Icon(Icons.receipt_long_outlined, color: Colors.white, size: 20),
-                            ),
-                            const SizedBox(width: AppSpacing.sm),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(l['title'] ?? '', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14.5, color: AppColors.navy)),
-                                  const SizedBox(height: 4),
-                                  Row(
+                                const SizedBox(width: AppSpacing.sm),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      CardFooterMeta(icon: Icons.inventory_2_outlined, label: '${items.length} kalem'),
-                                      if (location.isNotEmpty) ...[
-                                        const SizedBox(width: 10),
-                                        Expanded(child: CardFooterMeta(icon: Icons.location_on_outlined, label: location)),
-                                      ],
+                                      Text(
+                                        l['title'] ?? '',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w800,
+                                          fontSize: 14.5,
+                                          color: AppColors.navy,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Row(
+                                        children: [
+                                          CardFooterMeta(
+                                            icon: Icons.inventory_2_outlined,
+                                            label: '${items.length} kalem',
+                                          ),
+                                          if (location.isNotEmpty) ...[
+                                            const SizedBox(width: 10),
+                                            Expanded(
+                                              child: CardFooterMeta(
+                                                icon:
+                                                    Icons.location_on_outlined,
+                                                label: location,
+                                              ),
+                                            ),
+                                          ],
+                                        ],
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        _formatDate(l['updatedAt']),
+                                        style: TextStyle(
+                                          fontSize: 10.5,
+                                          color: Colors.grey.shade400,
+                                        ),
+                                      ),
                                     ],
                                   ),
-                                  const SizedBox(height: 2),
-                                  Text(_formatDate(l['updatedAt']), style: TextStyle(fontSize: 10.5, color: Colors.grey.shade400)),
-                                ],
-                              ),
+                                ),
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.delete_outline,
+                                    color: Colors.grey,
+                                  ),
+                                  onPressed: () => _delete(l),
+                                ),
+                              ],
                             ),
-                            IconButton(
-                              icon: const Icon(Icons.delete_outline, color: Colors.grey),
-                              onPressed: () => _delete(l),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                ),
-          ),
-        ],
-      ),
+                          );
+                        },
+                      ),
+                    ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -226,10 +363,10 @@ class _BomItem {
   }
 
   Map<String, dynamic> toJson() => {
-        'name': nameController.text,
-        'quantity': quantityController.text,
-        'unit': unitController.text,
-      };
+    'name': nameController.text,
+    'quantity': quantityController.text,
+    'unit': unitController.text,
+  };
 
   void dispose() {
     nameController.dispose();
@@ -254,8 +391,12 @@ class _BomBuilderScreenState extends State<BomBuilderScreen> {
   // mevcut bir listeyi DÜZENLERKEN başlık geliyor, yeni listede alan
   // boş başlıyor ve "Liste Başlığı" bir İPUCU (hint) olarak görünüp
   // ilk harfle birlikte kendiliğinden kayboluyor.
-  late final _titleController = TextEditingController(text: widget.existingList?['title'] ?? '');
-  late final _descriptionController = TextEditingController(text: widget.existingList?['description'] ?? '');
+  late final _titleController = TextEditingController(
+    text: widget.existingList?['title'] ?? '',
+  );
+  late final _descriptionController = TextEditingController(
+    text: widget.existingList?['description'] ?? '',
+  );
   String? _district;
   // ÖNEMLİ: Bu alan önceden doğrudan sınıf düzeyinde ilklendiriliyordu
   // (`String? _province = ...widget...`) — Dart'ta "widget", State
@@ -264,7 +405,9 @@ class _BomBuilderScreenState extends State<BomBuilderScreen> {
   // initState() içinde atanıyor.
   String? _province;
   late final List<_BomItem> _items = widget.existingList != null
-      ? (widget.existingList['items'] as List).map((i) => _BomItem.fromJson(i)).toList()
+      ? (widget.existingList['items'] as List)
+            .map((i) => _BomItem.fromJson(i))
+            .toList()
       : [];
   bool _saving = false;
   bool _exporting = false;
@@ -275,7 +418,8 @@ class _BomBuilderScreenState extends State<BomBuilderScreen> {
   void initState() {
     super.initState();
     final existingProvince = widget.existingList?['province'];
-    if (existingProvince != null && kTurkishProvinces.contains(existingProvince)) {
+    if (existingProvince != null &&
+        kTurkishProvinces.contains(existingProvince)) {
       _province = existingProvince;
     }
     _district = widget.existingList?['district'];
@@ -311,7 +455,10 @@ class _BomBuilderScreenState extends State<BomBuilderScreen> {
     // önceden uyarılıyor hem de gerçek hata mesajı gösteriliyor.
     if (title.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Lütfen bir liste başlığı yazın.'), backgroundColor: AppColors.navy),
+        const SnackBar(
+          content: Text('Lütfen bir liste başlığı yazın.'),
+          backgroundColor: AppColors.navy,
+        ),
       );
       return;
     }
@@ -325,7 +472,10 @@ class _BomBuilderScreenState extends State<BomBuilderScreen> {
         'district': _district,
       };
       if (_isEditing) {
-        await _dio.patch('/bom-lists/${widget.existingList['id']}', data: payload);
+        await _dio.patch(
+          '/bom-lists/${widget.existingList['id']}',
+          data: payload,
+        );
       } else {
         await _dio.post('/bom-lists', data: payload);
       }
@@ -339,7 +489,8 @@ class _BomBuilderScreenState extends State<BomBuilderScreen> {
           message = serverMessage;
         } else if (serverMessage is List && serverMessage.isNotEmpty) {
           message = serverMessage.join(', ');
-        } else if (e.type == DioExceptionType.connectionTimeout || e.type == DioExceptionType.receiveTimeout) {
+        } else if (e.type == DioExceptionType.connectionTimeout ||
+            e.type == DioExceptionType.receiveTimeout) {
           message = 'Bağlantı zaman aşımına uğradı, tekrar deneyin.';
         } else if (e.response == null) {
           message = 'Sunucuya ulaşılamadı. İnternet bağlantınızı kontrol edin.';
@@ -362,7 +513,10 @@ class _BomBuilderScreenState extends State<BomBuilderScreen> {
       // destekli) kullanılıyor.
       await TurkishPdfFonts.ensureLoaded();
       final doc = pw.Document(theme: TurkishPdfFonts.theme());
-      final location = [_district, _province].where((s) => s != null && s.isNotEmpty).join(', ');
+      final location = [
+        _district,
+        _province,
+      ].where((s) => s != null && s.isNotEmpty).join(', ');
 
       doc.addPage(
         pw.Page(
@@ -373,42 +527,112 @@ class _BomBuilderScreenState extends State<BomBuilderScreen> {
               child: pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
-                  pw.Text('ENTPA Mühendislik Hizmeti', style: pw.TextStyle(fontSize: 12, color: PdfColors.grey600)),
+                  pw.Text(
+                    'ENTPA Mühendislik Hizmeti',
+                    style: pw.TextStyle(fontSize: 12, color: PdfColors.grey600),
+                  ),
                   pw.SizedBox(height: 4),
-                  pw.Text(_titleController.text, style: pw.TextStyle(fontSize: 22, fontWeight: pw.FontWeight.bold)),
+                  pw.Text(
+                    _titleController.text,
+                    style: pw.TextStyle(
+                      fontSize: 22,
+                      fontWeight: pw.FontWeight.bold,
+                    ),
+                  ),
                   pw.SizedBox(height: 4),
-                  pw.Text(DateTime.now().toString().substring(0, 16), style: pw.TextStyle(fontSize: 10, color: PdfColors.grey500)),
+                  pw.Text(
+                    DateTime.now().toString().substring(0, 16),
+                    style: pw.TextStyle(fontSize: 10, color: PdfColors.grey500),
+                  ),
                   if (location.isNotEmpty) ...[
                     pw.SizedBox(height: 4),
-                    pw.Row(children: [
-                      pw.Text('Konum: ', style: pw.TextStyle(fontSize: 10, color: PdfColors.grey600)),
-                      pw.Text(location, style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold)),
-                    ]),
+                    pw.Row(
+                      children: [
+                        pw.Text(
+                          'Konum: ',
+                          style: pw.TextStyle(
+                            fontSize: 10,
+                            color: PdfColors.grey600,
+                          ),
+                        ),
+                        pw.Text(
+                          location,
+                          style: pw.TextStyle(
+                            fontSize: 10,
+                            fontWeight: pw.FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                   if (_descriptionController.text.isNotEmpty) ...[
                     pw.SizedBox(height: 8),
-                    pw.Text(_descriptionController.text, style: const pw.TextStyle(fontSize: 10.5)),
+                    pw.Text(
+                      _descriptionController.text,
+                      style: const pw.TextStyle(fontSize: 10.5),
+                    ),
                   ],
                   pw.SizedBox(height: 24),
                   pw.Table(
                     border: pw.TableBorder.all(color: PdfColors.grey300),
-                    columnWidths: {0: const pw.FlexColumnWidth(4), 1: const pw.FlexColumnWidth(1.5), 2: const pw.FlexColumnWidth(1.5)},
+                    columnWidths: {
+                      0: const pw.FlexColumnWidth(4),
+                      1: const pw.FlexColumnWidth(1.5),
+                      2: const pw.FlexColumnWidth(1.5),
+                    },
                     children: [
                       pw.TableRow(
-                        decoration: const pw.BoxDecoration(color: PdfColors.grey100),
+                        decoration: const pw.BoxDecoration(
+                          color: PdfColors.grey100,
+                        ),
                         children: [
-                          pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text('Malzeme', style: pw.TextStyle(fontWeight: pw.FontWeight.bold))),
-                          pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text('Miktar', style: pw.TextStyle(fontWeight: pw.FontWeight.bold))),
-                          pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text('Birim', style: pw.TextStyle(fontWeight: pw.FontWeight.bold))),
+                          pw.Padding(
+                            padding: const pw.EdgeInsets.all(8),
+                            child: pw.Text(
+                              'Malzeme',
+                              style: pw.TextStyle(
+                                fontWeight: pw.FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          pw.Padding(
+                            padding: const pw.EdgeInsets.all(8),
+                            child: pw.Text(
+                              'Miktar',
+                              style: pw.TextStyle(
+                                fontWeight: pw.FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          pw.Padding(
+                            padding: const pw.EdgeInsets.all(8),
+                            child: pw.Text(
+                              'Birim',
+                              style: pw.TextStyle(
+                                fontWeight: pw.FontWeight.bold,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
-                      ..._items.map((item) => pw.TableRow(
-                            children: [
-                              pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text(item.nameController.text)),
-                              pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text(item.quantityController.text)),
-                              pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text(item.unitController.text)),
-                            ],
-                          )),
+                      ..._items.map(
+                        (item) => pw.TableRow(
+                          children: [
+                            pw.Padding(
+                              padding: const pw.EdgeInsets.all(8),
+                              child: pw.Text(item.nameController.text),
+                            ),
+                            pw.Padding(
+                              padding: const pw.EdgeInsets.all(8),
+                              child: pw.Text(item.quantityController.text),
+                            ),
+                            pw.Padding(
+                              padding: const pw.EdgeInsets.all(8),
+                              child: pw.Text(item.unitController.text),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                   pw.SizedBox(height: 32),
@@ -426,8 +650,13 @@ class _BomBuilderScreenState extends State<BomBuilderScreen> {
 
       final bytes = await doc.save();
       final dir = await getTemporaryDirectory();
-      final safeTitle = _titleController.text.replaceAll(RegExp(r'[^\w\s-]'), '');
-      final file = File('${dir.path}/$safeTitle-${DateTime.now().millisecondsSinceEpoch}.pdf');
+      final safeTitle = _titleController.text.replaceAll(
+        RegExp(r'[^\w\s-]'),
+        '',
+      );
+      final file = File(
+        '${dir.path}/$safeTitle-${DateTime.now().millisecondsSinceEpoch}.pdf',
+      );
       await file.writeAsBytes(bytes);
 
       if (andShare) {
@@ -445,7 +674,11 @@ class _BomBuilderScreenState extends State<BomBuilderScreen> {
     final pdfMenu = _exporting
         ? const Padding(
             padding: EdgeInsets.all(16),
-            child: SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2)),
+            child: SizedBox(
+              height: 18,
+              width: 18,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
           )
         : PopupMenuButton<String>(
             onSelected: (v) {
@@ -465,7 +698,10 @@ class _BomBuilderScreenState extends State<BomBuilderScreen> {
         navigationBar: CupertinoNavigationBar(
           backgroundColor: const Color(0xFFFFFFFF),
           border: null,
-          middle: Text(_isEditing ? 'Malzeme Listesi' : 'Yeni Malzeme Listesi', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
+          middle: Text(
+            _isEditing ? 'Malzeme Listesi' : 'Yeni Malzeme Listesi',
+            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+          ),
           trailing: _items.isNotEmpty ? pdfMenu : null,
         ),
         child: SafeArea(child: _buildBody()),
@@ -524,26 +760,44 @@ class _BomBuilderScreenState extends State<BomBuilderScreen> {
                   children: [
                     TextField(
                       controller: _titleController,
-                      style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: AppColors.navy),
-                      decoration: const InputDecoration(labelText: 'Liste Başlığı', border: InputBorder.none, isDense: true),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 16,
+                        color: AppColors.navy,
+                      ),
+                      decoration: const InputDecoration(
+                        labelText: 'Liste Başlığı',
+                        border: InputBorder.none,
+                        isDense: true,
+                      ),
                     ),
                     const SizedBox(height: 4),
                     TextField(
                       controller: _descriptionController,
                       style: const TextStyle(fontSize: 12.5),
-                      decoration: const InputDecoration(labelText: 'Açıklama (opsiyonel)', border: InputBorder.none, isDense: true),
+                      decoration: const InputDecoration(
+                        labelText: 'Açıklama (opsiyonel)',
+                        border: InputBorder.none,
+                        isDense: true,
+                      ),
                     ),
                     const Divider(height: 20),
                     Row(
                       children: [
-                        Icon(Icons.location_on_outlined, size: 18, color: Colors.grey.shade400),
+                        Icon(
+                          Icons.location_on_outlined,
+                          size: 18,
+                          color: Colors.grey.shade400,
+                        ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: ProvinceDistrictPicker(
                             province: _province,
                             district: _district,
-                            onProvinceChanged: (v) => setState(() => _province = v),
-                            onDistrictChanged: (v) => setState(() => _district = v),
+                            onProvinceChanged: (v) =>
+                                setState(() => _province = v),
+                            onDistrictChanged: (v) =>
+                                setState(() => _district = v),
                           ),
                         ),
                       ],
@@ -555,7 +809,15 @@ class _BomBuilderScreenState extends State<BomBuilderScreen> {
                 const SizedBox(height: AppSpacing.sm),
                 Padding(
                   padding: const EdgeInsets.only(left: 4),
-                  child: Text('${_items.length} MALZEME', style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700, color: Colors.grey.shade400, letterSpacing: 0.4)),
+                  child: Text(
+                    '${_items.length} MALZEME',
+                    style: TextStyle(
+                      fontSize: 10.5,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.grey.shade400,
+                      letterSpacing: 0.4,
+                    ),
+                  ),
                 ),
               ],
               const SizedBox(height: AppSpacing.xs),
@@ -565,16 +827,34 @@ class _BomBuilderScreenState extends State<BomBuilderScreen> {
                   key: ValueKey(item.id),
                   margin: const EdgeInsets.only(bottom: AppSpacing.xs),
                   child: StandardCard(
-                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.sm,
+                      vertical: AppSpacing.xs,
+                    ),
                     child: Row(
                       children: [
-                        Text('${index + 1}', style: TextStyle(fontSize: 12, color: Colors.grey.shade400, fontWeight: FontWeight.w700)),
+                        Text(
+                          '${index + 1}',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey.shade400,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                         const SizedBox(width: AppSpacing.sm),
                         Expanded(
                           child: TextField(
                             controller: item.nameController,
-                            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: AppColors.navy),
-                            decoration: const InputDecoration(hintText: 'Malzeme adı', isDense: true, border: InputBorder.none),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                              color: AppColors.navy,
+                            ),
+                            decoration: const InputDecoration(
+                              hintText: 'Malzeme adı',
+                              isDense: true,
+                              border: InputBorder.none,
+                            ),
                           ),
                         ),
                         // Kullanıcı isteği: "adet sayı çıkmıyor... + ve -
@@ -587,10 +867,17 @@ class _BomBuilderScreenState extends State<BomBuilderScreen> {
                         // seçim menüsü.
                         _UnitPicker(controller: item.unitController),
                         IconButton(
-                          icon: const Icon(Icons.close, size: 16, color: Colors.grey),
+                          icon: const Icon(
+                            Icons.close,
+                            size: 16,
+                            color: Colors.grey,
+                          ),
                           onPressed: () => _removeItem(index),
                           padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+                          constraints: const BoxConstraints(
+                            minWidth: 28,
+                            minHeight: 28,
+                          ),
                         ),
                       ],
                     ),
@@ -601,7 +888,13 @@ class _BomBuilderScreenState extends State<BomBuilderScreen> {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 30),
                   child: Center(
-                    child: Text('Henüz malzeme eklenmedi.', style: TextStyle(color: Colors.grey.shade400, fontSize: 13)),
+                    child: Text(
+                      'Henüz malzeme eklenmedi.',
+                      style: TextStyle(
+                        color: Colors.grey.shade400,
+                        fontSize: 13,
+                      ),
+                    ),
                   ),
                 ),
             ],
@@ -611,7 +904,13 @@ class _BomBuilderScreenState extends State<BomBuilderScreen> {
           padding: const EdgeInsets.all(AppSpacing.md),
           decoration: BoxDecoration(
             color: Colors.white,
-            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 12, offset: const Offset(0, -3))],
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 12,
+                offset: const Offset(0, -3),
+              ),
+            ],
           ),
           child: Column(
             children: [
@@ -619,7 +918,9 @@ class _BomBuilderScreenState extends State<BomBuilderScreen> {
                 width: double.infinity,
                 child: OutlinedButton.icon(
                   onPressed: _addItem,
-                  style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 13)),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 13),
+                  ),
                   icon: const Icon(Icons.add, size: 18),
                   label: const Text('Malzeme Ekle'),
                 ),
@@ -631,8 +932,20 @@ class _BomBuilderScreenState extends State<BomBuilderScreen> {
                 child: ElevatedButton(
                   onPressed: _saving ? null : _save,
                   child: _saving
-                      ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                      : Text(_isEditing ? 'Değişiklikleri Kaydet' : 'Listeyi Kaydet', style: const TextStyle(fontWeight: FontWeight.w700)),
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : Text(
+                          _isEditing
+                              ? 'Değişiklikleri Kaydet'
+                              : 'Listeyi Kaydet',
+                          style: const TextStyle(fontWeight: FontWeight.w700),
+                        ),
                 ),
               ),
             ],
@@ -662,14 +975,22 @@ class _QuantityStepperState extends State<_QuantityStepper> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(color: Colors.grey.shade100, borderRadius: BorderRadius.circular(10)),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(10),
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           InkWell(
-            borderRadius: const BorderRadius.horizontal(left: Radius.circular(10)),
+            borderRadius: const BorderRadius.horizontal(
+              left: Radius.circular(10),
+            ),
             onTap: () => _change(-1),
-            child: const Padding(padding: EdgeInsets.all(7), child: Icon(Icons.remove, size: 15, color: Colors.black87)),
+            child: const Padding(
+              padding: EdgeInsets.all(7),
+              child: Icon(Icons.remove, size: 15, color: Colors.black87),
+            ),
           ),
           // Kullanıcı isteği: "buraya sayı yazılmalı" — artık +/- ile
           // değiştirilebildiği gibi doğrudan da yazılabiliyor.
@@ -679,14 +1000,27 @@ class _QuantityStepperState extends State<_QuantityStepper> {
               controller: widget.controller,
               textAlign: TextAlign.center,
               keyboardType: TextInputType.number,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Colors.black),
-              decoration: const InputDecoration(isDense: true, border: InputBorder.none, contentPadding: EdgeInsets.symmetric(vertical: 8)),
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                color: Colors.black,
+              ),
+              decoration: const InputDecoration(
+                isDense: true,
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.symmetric(vertical: 8),
+              ),
             ),
           ),
           InkWell(
-            borderRadius: const BorderRadius.horizontal(right: Radius.circular(10)),
+            borderRadius: const BorderRadius.horizontal(
+              right: Radius.circular(10),
+            ),
             onTap: () => _change(1),
-            child: const Padding(padding: EdgeInsets.all(7), child: Icon(Icons.add, size: 15, color: Colors.black87)),
+            child: const Padding(
+              padding: EdgeInsets.all(7),
+              child: Icon(Icons.add, size: 15, color: Colors.black87),
+            ),
           ),
         ],
       ),
@@ -705,7 +1039,16 @@ class _UnitPicker extends StatefulWidget {
 }
 
 class _UnitPickerState extends State<_UnitPicker> {
-  static const _units = ['adet', 'mt', 'kg', 'm²', 'paket', 'kutu', 'rulo', 'takım'];
+  static const _units = [
+    'adet',
+    'mt',
+    'kg',
+    'm²',
+    'paket',
+    'kutu',
+    'rulo',
+    'takım',
+  ];
 
   Future<void> _pick() async {
     final selected = await showModalBottomSheet<String>(
@@ -713,11 +1056,19 @@ class _UnitPickerState extends State<_UnitPicker> {
       builder: (context) => SafeArea(
         child: Wrap(
           children: _units
-              .map((u) => ListTile(
-                    title: Text(u),
-                    trailing: widget.controller.text == u ? const Icon(Icons.check, size: 18, color: AppColors.brand) : null,
-                    onTap: () => Navigator.pop(context, u),
-                  ))
+              .map(
+                (u) => ListTile(
+                  title: Text(u),
+                  trailing: widget.controller.text == u
+                      ? const Icon(
+                          Icons.check,
+                          size: 18,
+                          color: AppColors.brand,
+                        )
+                      : null,
+                  onTap: () => Navigator.pop(context, u),
+                ),
+              )
               .toList(),
         ),
       ),
@@ -739,7 +1090,11 @@ class _UnitPickerState extends State<_UnitPicker> {
               valueListenable: widget.controller,
               builder: (context, value, _) => Text(
                 value.text.isEmpty ? 'adet' : value.text,
-                style: TextStyle(fontSize: 11.5, color: Colors.grey.shade600, fontWeight: FontWeight.w600),
+                style: TextStyle(
+                  fontSize: 11.5,
+                  color: Colors.grey.shade600,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
             const SizedBox(width: 2),

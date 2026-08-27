@@ -1,7 +1,9 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:audioplayers/audioplayers.dart';
+
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/theme_controller.dart';
 import '../../core/auth/token_storage.dart';
@@ -21,7 +23,8 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
   final AudioPlayer _audioPlayer = AudioPlayer();
   late final AnimationController _fadeController;
   late final Animation<double> _fadeAnimation;
@@ -33,8 +36,14 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   void initState() {
     super.initState();
 
-    _fadeController = AnimationController(vsync: this, duration: const Duration(milliseconds: 900));
-    _fadeAnimation = CurvedAnimation(parent: _fadeController, curve: Curves.easeOut);
+    _fadeController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    );
+    _fadeAnimation = CurvedAnimation(
+      parent: _fadeController,
+      curve: Curves.easeOut,
+    );
     _fadeController.forward();
 
     _playAlarmSound();
@@ -71,7 +80,9 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
         token = await TokenStorage().getAccessToken();
       } catch (e) {
         // ignore: avoid_print
-        print('[splash] Kayıtlı oturum okunamadı (bozuk/eski veri olabilir): $e');
+        print(
+          '[splash] Kayıtlı oturum okunamadı (bozuk/eski veri olabilir): $e',
+        );
         token = null;
       }
       if (token != null) {
@@ -133,7 +144,11 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                   borderRadius: BorderRadius.circular(28),
                   border: Border.all(color: Colors.grey.shade100),
                   boxShadow: [
-                    BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 24, offset: const Offset(0, 10)),
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.06),
+                      blurRadius: 24,
+                      offset: const Offset(0, 10),
+                    ),
                   ],
                 ),
                 padding: const EdgeInsets.all(20),
@@ -145,10 +160,18 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                           WidgetsBinding.instance.addPostFrameCallback((_) {
                             if (mounted) setState(() => _logoAvailable = false);
                           });
-                          return const Icon(Icons.local_fire_department, size: 80, color: AppColors.brand);
+                          return const Icon(
+                            Icons.local_fire_department,
+                            size: 80,
+                            color: AppColors.brand,
+                          );
                         },
                       )
-                    : const Icon(Icons.local_fire_department, size: 80, color: AppColors.brand),
+                    : const Icon(
+                        Icons.local_fire_department,
+                        size: 80,
+                        color: AppColors.brand,
+                      ),
               ),
               const SizedBox(height: 32),
               const Text(

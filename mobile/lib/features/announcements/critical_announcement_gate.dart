@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
 
@@ -20,7 +21,10 @@ class CriticalAnnouncementGate {
     }
   }
 
-  static Future<void> _showBlockingDialog(BuildContext context, dynamic announcement) async {
+  static Future<void> _showBlockingDialog(
+    BuildContext context,
+    dynamic announcement,
+  ) async {
     final dio = ApiClient().dio;
     await showDialog(
       context: context,
@@ -31,10 +35,20 @@ class CriticalAnnouncementGate {
           backgroundColor: Colors.white,
           title: Row(
             children: [
-              const Icon(Icons.warning_amber_rounded, color: AppColors.brand, size: 26),
+              const Icon(
+                Icons.warning_amber_rounded,
+                color: AppColors.brand,
+                size: 26,
+              ),
               const SizedBox(width: 8),
               const Expanded(
-                child: Text('Kritik Duyuru', style: TextStyle(color: AppColors.brand, fontWeight: FontWeight.w800)),
+                child: Text(
+                  'Kritik Duyuru',
+                  style: TextStyle(
+                    color: AppColors.brand,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
               ),
             ],
           ),
@@ -45,7 +59,10 @@ class CriticalAnnouncementGate {
               children: [
                 Text(
                   announcement['title'] ?? '',
-                  style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15.5),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15.5,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Text(announcement['body'] ?? ''),
@@ -57,7 +74,9 @@ class CriticalAnnouncementGate {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () async {
-                  await dio.post('/announcements/${announcement['id']}/acknowledge');
+                  await dio.post(
+                    '/announcements/${announcement['id']}/acknowledge',
+                  );
                   if (dialogContext.mounted) Navigator.pop(dialogContext);
                 },
                 child: const Text('Okudum, Anladım'),

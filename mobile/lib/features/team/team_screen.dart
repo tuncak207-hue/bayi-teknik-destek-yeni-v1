@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+
 import '../../core/widgets/design_system.dart';
+
 import 'package:dio/dio.dart';
+
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_components.dart';
@@ -38,7 +41,11 @@ class _TeamScreenState extends State<TeamScreen> {
       setState(() => _loading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.response?.data?['message'] ?? 'Ekip listesi alınamadı.')),
+          SnackBar(
+            content: Text(
+              e.response?.data?['message'] ?? 'Ekip listesi alınamadı.',
+            ),
+          ),
         );
       }
     }
@@ -49,12 +56,20 @@ class _TeamScreenState extends State<TeamScreen> {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: const Text('Ekip Üyesini Kaldır'),
-        content: const Text('Bu kullanıcı hesabı kalıcı olarak silinecek. Emin misiniz?'),
+        content: const Text(
+          'Bu kullanıcı hesabı kalıcı olarak silinecek. Emin misiniz?',
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Vazgeç'),
+          ),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Kaldır', style: TextStyle(color: AppColors.navy)),
+            child: const Text(
+              'Kaldır',
+              style: TextStyle(color: AppColors.navy),
+            ),
           ),
         ],
       ),
@@ -86,58 +101,93 @@ class _TeamScreenState extends State<TeamScreen> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _members.isEmpty
-              ? AppEmptyState(
-                  icon: Icons.groups_outlined,
-                  title: 'Henüz ekip üyeniz yok',
-                  description: 'Firmanızdaki teknisyenler için ayrı hesaplar oluşturup uygulamayı birlikte kullanabilirsiniz.',
-                )
-              : ListView.separated(
-                  padding: const EdgeInsets.all(AppSpacing.md),
-                  itemCount: _members.length + 1,
-                  separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.xs),
-                  itemBuilder: (context, index) {
-                    if (index == 0) {
-                      return const Padding(
-                        padding: EdgeInsets.only(bottom: AppSpacing.sm, left: 2),
-                        child: Text(
-                          'Ekip Üyelerim',
-                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: AppColors.navy, letterSpacing: -0.6, height: 1.1),
-                        ),
-                      );
-                    }
-                    final m = _members[index - 1];
-                    return Container(
+          ? AppEmptyState(
+              icon: Icons.groups_outlined,
+              title: 'Henüz ekip üyeniz yok',
+              description: 'Firmanızdaki teknisyenler için ayrı hesaplar oluşturup uygulamayı birlikte kullanabilirsiniz.',
+            )
+          : ListView.separated(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              itemCount: _members.length + 1,
+              separatorBuilder: (_, __) =>
+                  const SizedBox(height: AppSpacing.xs),
+              itemBuilder: (context, index) {
+                if (index == 0) {
+                  return const Padding(
+                    padding: EdgeInsets.only(bottom: AppSpacing.sm, left: 2),
+                    child: Text(
+                      'Ekip Üyelerim',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w900,
+                        color: AppColors.navy,
+                        letterSpacing: -0.6,
+                        height: 1.1,
+                      ),
+                    ),
+                  );
+                }
+                final m = _members[index - 1];
+                return Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(color: AppColors.divider),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.03),
+                        blurRadius: 10,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: ListTile(
+                    leading: Container(
+                      width: 44,
+                      height: 44,
                       decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(18),
-                        border: Border.all(color: AppColors.divider),
-                        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 3))],
+                        gradient: const LinearGradient(
+                          colors: [AppColors.navy, AppColors.navyLight],
+                        ),
+                        shape: BoxShape.circle,
                       ),
-                      child: ListTile(
-                        leading: Container(
-                          width: 44,
-                          height: 44,
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(colors: [AppColors.navy, AppColors.navyLight]),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Center(
-                            child: Text(
-                              (m['firstName'] as String? ?? '?').characters.first.toUpperCase(),
-                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800),
-                            ),
+                      child: Center(
+                        child: Text(
+                          (m['firstName'] as String? ?? '?').characters.first
+                              .toUpperCase(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
-                        title: Text('${m['firstName']} ${m['lastName']}', style: const TextStyle(fontWeight: FontWeight.w800, color: AppColors.navy, letterSpacing: -0.1)),
-                        subtitle: Text(m['email'] ?? '', style: TextStyle(color: Colors.grey.shade500, fontWeight: FontWeight.w500)),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.delete_outline, color: AppColors.navy),
-                          onPressed: () => _remove(m['id']),
-                        ),
                       ),
-                    );
-                  },
-                ),
+                    ),
+                    title: Text(
+                      '${m['firstName']} ${m['lastName']}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.navy,
+                        letterSpacing: -0.1,
+                      ),
+                    ),
+                    subtitle: Text(
+                      m['email'] ?? '',
+                      style: TextStyle(
+                        color: Colors.grey.shade500,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    trailing: IconButton(
+                      icon: const Icon(
+                        Icons.delete_outline,
+                        color: AppColors.navy,
+                      ),
+                      onPressed: () => _remove(m['id']),
+                    ),
+                  ),
+                );
+              },
+            ),
     );
   }
 }
@@ -159,7 +209,12 @@ class _AddTeamMemberSheetState extends State<_AddTeamMemberSheet> {
   String? _error;
 
   Future<void> _submit() async {
-    if ([_firstName, _lastName, _email, _password].any((c) => c.text.trim().isEmpty)) {
+    if ([
+      _firstName,
+      _lastName,
+      _email,
+      _password,
+    ].any((c) => c.text.trim().isEmpty)) {
       setState(() => _error = 'Tüm alanları doldurun.');
       return;
     }
@@ -168,15 +223,20 @@ class _AddTeamMemberSheetState extends State<_AddTeamMemberSheet> {
       _error = null;
     });
     try {
-      await _dio.post('/users/me/team', data: {
-        'firstName': _firstName.text.trim(),
-        'lastName': _lastName.text.trim(),
-        'email': _email.text.trim(),
-        'password': _password.text,
-      });
+      await _dio.post(
+        '/users/me/team',
+        data: {
+          'firstName': _firstName.text.trim(),
+          'lastName': _lastName.text.trim(),
+          'email': _email.text.trim(),
+          'password': _password.text,
+        },
+      );
       if (mounted) Navigator.pop(context, true);
     } on DioException catch (e) {
-      setState(() => _error = e.response?.data?['message'] ?? 'Üye eklenemedi.');
+      setState(
+        () => _error = e.response?.data?['message'] ?? 'Üye eklenemedi.',
+      );
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
@@ -195,25 +255,51 @@ class _AddTeamMemberSheetState extends State<_AddTeamMemberSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text('Yeni Ekip Üyesi', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+          const Text(
+            'Yeni Ekip Üyesi',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+          ),
           const SizedBox(height: AppSpacing.sm),
           if (_error != null)
             Padding(
               padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-              child: Text(_error!, style: const TextStyle(color: AppColors.brand)),
+              child: Text(
+                _error!,
+                style: const TextStyle(color: AppColors.brand),
+              ),
             ),
-          TextField(controller: _firstName, decoration: const InputDecoration(labelText: 'Ad')),
+          TextField(
+            controller: _firstName,
+            decoration: const InputDecoration(labelText: 'Ad'),
+          ),
           const SizedBox(height: AppSpacing.xs),
-          TextField(controller: _lastName, decoration: const InputDecoration(labelText: 'Soyad')),
+          TextField(
+            controller: _lastName,
+            decoration: const InputDecoration(labelText: 'Soyad'),
+          ),
           const SizedBox(height: AppSpacing.xs),
-          TextField(controller: _email, decoration: const InputDecoration(labelText: 'E-posta')),
+          TextField(
+            controller: _email,
+            decoration: const InputDecoration(labelText: 'E-posta'),
+          ),
           const SizedBox(height: AppSpacing.xs),
-          TextField(controller: _password, obscureText: true, decoration: const InputDecoration(labelText: 'Şifre')),
+          TextField(
+            controller: _password,
+            obscureText: true,
+            decoration: const InputDecoration(labelText: 'Şifre'),
+          ),
           const SizedBox(height: AppSpacing.md),
           ElevatedButton(
             onPressed: _submitting ? null : _submit,
             child: _submitting
-                ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
                 : const Text('Ekle'),
           ),
         ],

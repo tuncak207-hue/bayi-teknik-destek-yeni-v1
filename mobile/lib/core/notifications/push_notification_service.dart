@@ -1,9 +1,12 @@
 import 'dart:io';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
+
 import 'dart:async';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:dio/dio.dart';
+
 import '../api/api_client.dart';
 import '../../app/router.dart';
 import 'notification_sound_service.dart';
@@ -14,11 +17,13 @@ import 'notification_sound_service.dart';
 /// 3. Backend'e kaydeder (POST /notifications/register-token)
 /// 4. Uygulama açıkken gelen bildirimleri küçük bir sistem bildirimi olarak gösterir
 class PushNotificationService {
-  static final PushNotificationService _instance = PushNotificationService._internal();
+  static final PushNotificationService _instance =
+      PushNotificationService._internal();
   factory PushNotificationService() => _instance;
   PushNotificationService._internal();
 
-  final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _localNotifications =
+      FlutterLocalNotificationsPlugin();
   bool _initialized = false;
   bool _listenersRegistered = false;
 
@@ -26,24 +31,35 @@ class PushNotificationService {
     try {
       final messaging = FirebaseMessaging.instance;
 
-      final settings = await messaging.requestPermission(alert: true, badge: true, sound: true);
+      final settings = await messaging.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
       if (settings.authorizationStatus == AuthorizationStatus.denied) {
         // Kullanıcı reddetti; sessizce devam et, push olmadan uygulama çalışmaya devam eder.
         return;
       }
 
       if (!_initialized) {
-        const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
+        const androidInit = AndroidInitializationSettings(
+          '@mipmap/ic_launcher',
+        );
         const darwinInit = DarwinInitializationSettings(
           requestAlertPermission: false,
           requestBadgePermission: false,
           requestSoundPermission: false,
         );
-        const initSettings = InitializationSettings(android: androidInit, iOS: darwinInit);
+        const initSettings = InitializationSettings(
+          android: androidInit,
+          iOS: darwinInit,
+        );
         await _localNotifications.initialize(initSettings);
         if (Platform.isAndroid) {
           await _localNotifications
-              .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+              .resolvePlatformSpecificImplementation<
+                AndroidFlutterLocalNotificationsPlugin
+              >()
               ?.requestNotificationsPermission();
         }
         _initialized = true;

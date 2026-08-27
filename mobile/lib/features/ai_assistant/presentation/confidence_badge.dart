@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../domain/chat_message.dart';
 
 class ConfidenceBadge extends StatelessWidget {
@@ -21,7 +22,11 @@ class ConfidenceBadge extends StatelessWidget {
       ),
       child: Text(
         '$emoji $label',
-        style: TextStyle(color: color.shade700, fontSize: 12, fontWeight: FontWeight.w600),
+        style: TextStyle(
+          color: color.shade700,
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }

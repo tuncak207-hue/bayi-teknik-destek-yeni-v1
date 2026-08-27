@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+
 import '../../../core/widgets/design_system.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
 import '../../../core/theme/app_theme.dart';
 import '../data/auth_providers.dart';
 
@@ -73,11 +76,15 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
 
   Future<void> _finishWithCredential(PhoneAuthCredential credential) async {
     try {
-      final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+      final userCredential = await FirebaseAuth.instance.signInWithCredential(
+        credential,
+      );
       final idToken = await userCredential.user?.getIdToken();
       if (idToken == null) throw Exception('Kimlik doğrulama tamamlanamadı.');
 
-      final pendingMessage = await ref.read(authRepositoryProvider).completePhoneLogin(idToken);
+      final pendingMessage = await ref
+          .read(authRepositoryProvider)
+          .completePhoneLogin(idToken);
       if (!mounted) return;
 
       if (pendingMessage != null) {
@@ -131,7 +138,10 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
                         color: AppColors.brandLight,
                         borderRadius: BorderRadius.circular(AppSpacing.radius),
                       ),
-                      child: Text(_error!, style: const TextStyle(color: AppColors.brand)),
+                      child: Text(
+                        _error!,
+                        style: const TextStyle(color: AppColors.brand),
+                      ),
                     ),
                   if (!_codeSent) ...[
                     Text(
@@ -152,7 +162,14 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
                     ElevatedButton(
                       onPressed: _loading ? null : _sendCode,
                       child: _loading
-                          ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
                           : const Text('Kod Gönder'),
                     ),
                   ] else ...[
@@ -164,18 +181,30 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
                     TextField(
                       controller: _codeController,
                       keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(labelText: 'Doğrulama Kodu', prefixIcon: Icon(Icons.sms_outlined)),
+                      decoration: const InputDecoration(
+                        labelText: 'Doğrulama Kodu',
+                        prefixIcon: Icon(Icons.sms_outlined),
+                      ),
                     ),
                     const SizedBox(height: AppSpacing.md),
                     ElevatedButton(
                       onPressed: _loading ? null : _verifyCode,
                       child: _loading
-                          ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
                           : const Text('Doğrula ve Giriş Yap'),
                     ),
                     const SizedBox(height: AppSpacing.xs),
                     TextButton(
-                      onPressed: _loading ? null : () => setState(() => _verificationId = null),
+                      onPressed: _loading
+                          ? null
+                          : () => setState(() => _verificationId = null),
                       child: const Text('Numarayı Değiştir'),
                     ),
                   ],

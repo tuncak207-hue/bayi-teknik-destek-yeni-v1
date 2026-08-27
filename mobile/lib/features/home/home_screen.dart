@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:dio/dio.dart';
+
 import 'dart:async';
+
 import '../../app/top_nav_bar.dart';
 import 'home_slideshow.dart';
 import '../../core/api/api_client.dart';
@@ -36,7 +38,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _scrollToTop() {
     if (_scrollController.hasClients) {
-      _scrollController.animateTo(0, duration: const Duration(milliseconds: 350), curve: Curves.easeOut);
+      _scrollController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 350),
+        curve: Curves.easeOut,
+      );
     }
   }
 
@@ -95,17 +101,19 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       final res = await _dio.get('/notifications/unread-counts-by-category');
       if (mounted) {
-        setState(() => _categoryBadges = {
-              'messages': res.data['messages'] ?? 0,
-              'community': res.data['community'] ?? 0,
-              'groups': res.data['groups'] ?? 0,
-              'appointments': res.data['appointments'] ?? 0,
-              'training': res.data['training'] ?? 0,
-              'specialty': res.data['certification'] ?? 0,
-              'announcements': res.data['announcements'] ?? 0,
-              'sales_consultant': res.data['salesConsultant'] ?? 0,
-              'support_tickets': res.data['supportTickets'] ?? 0,
-            });
+        setState(
+          () => _categoryBadges = {
+            'messages': res.data['messages'] ?? 0,
+            'community': res.data['community'] ?? 0,
+            'groups': res.data['groups'] ?? 0,
+            'appointments': res.data['appointments'] ?? 0,
+            'training': res.data['training'] ?? 0,
+            'specialty': res.data['certification'] ?? 0,
+            'announcements': res.data['announcements'] ?? 0,
+            'sales_consultant': res.data['salesConsultant'] ?? 0,
+            'support_tickets': res.data['supportTickets'] ?? 0,
+          },
+        );
       }
     } catch (_) {
       // Rozetler ikincil bir bilgi, sessizce yut.
@@ -160,7 +168,11 @@ class _HomeScreenState extends State<HomeScreen> {
       // Her istatistik için, sunucudan gelen sayı daha önce görülenden
       // büyükse "yeni" rozetini yak.
       final badges = <String, bool>{};
-      for (final key in ['questionsThisMonth', 'favoritesCount', 'supportTicketsCount']) {
+      for (final key in [
+        'questionsThisMonth',
+        'favoritesCount',
+        'supportTicketsCount',
+      ]) {
         final value = (data[key] ?? 0) as int;
         badges[key] = await _badgeTracker.hasNewValue(key, value);
       }
@@ -216,12 +228,12 @@ class _HomeScreenState extends State<HomeScreen> {
           SliverPadding(
             padding: const EdgeInsets.only(top: 8),
             sliver: TopNavSliverAppBar(
-            selectedDestination: navData.selectedDestination,
-            unreadMessages: navData.unreadMessages,
-            unreadNotifications: navData.unreadNotifications,
-            onTap: navData.onTap,
-            onNotificationsTap: navData.onNotificationsTap,
-          ),
+              selectedDestination: navData.selectedDestination,
+              unreadMessages: navData.unreadMessages,
+              unreadNotifications: navData.unreadNotifications,
+              onTap: navData.onTap,
+              onNotificationsTap: navData.onNotificationsTap,
+            ),
           ),
           SliverSafeArea(
             top: false,
@@ -229,244 +241,319 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.all(AppSpacing.md),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
-            // Kullanıcı isteği: "tüm menüler için uygulayalım" — diğer
-            // liste ekranlarındaki (Bayiler, Gruplar vb.) büyük başlık
-            // dili, ortak üst menüye geçen bu ekranda da tutarlılık için
-            // geri eklendi.
-            const Padding(
-              padding: EdgeInsets.only(bottom: AppSpacing.sm, left: 2),
-              child: Text(
-                'Ana Sayfa',
-                style: TextStyle(fontSize: 21, fontWeight: FontWeight.w700, color: AppColors.navy, letterSpacing: -0.35, height: 1.15),
-              ),
-            ),
-            // Kullanıcı isteği: "uygulama açılırken ekranda slayt
-            // dönsün" — admin panelden yönetilen, otomatik dönen
-            // tanıtım slaytları, Ana Sayfa'nın en üstünde.
-            const HomeSlideshow(),
-            const SizedBox(height: AppSpacing.sm),
-            // AI'a Sor — kullanıcı isteği: "hiçbir yerde gölge olmayacak,
-            // arka fon bembeyaz." Eski gradyanlı/gölgeli lacivert kart
-            // tamamen kaldırıldı, düz turuncu (marka rengi), gölgesiz,
-            // sade bir kart ile değiştirildi.
-            InkWell(
-              onTap: () => context.push('/ai-quick'),
-              borderRadius: BorderRadius.circular(AppRadius.xl),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: 16),
-                decoration: BoxDecoration(
-                  color: AppColors.primary,
-                  borderRadius: BorderRadius.circular(AppRadius.xl),
-                  // Kullanıcı isteği: "Kontrollü radius, çok hafif
-                  // elevation... Premium ve kurumsal görünmeli." — aşırı
-                  // efekt yok, sadece çok ince bir gölge ile bannerın
-                  // sayfadan hafifçe ayrılması sağlandı.
-                  boxShadow: [
-                    BoxShadow(color: AppColors.primary.withValues(alpha: 0.20), blurRadius: 16, offset: const Offset(0, 6)),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.18), borderRadius: BorderRadius.circular(AppRadius.sm)),
-                      child: const Icon(Icons.auto_awesome, color: Colors.white, size: 24),
+                  // Kullanıcı isteği: "tüm menüler için uygulayalım" — diğer
+                  // liste ekranlarındaki (Bayiler, Gruplar vb.) büyük başlık
+                  // dili, ortak üst menüye geçen bu ekranda da tutarlılık için
+                  // geri eklendi.
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: AppSpacing.sm, left: 2),
+                    child: Text(
+                      'Ana Sayfa',
+                      style: TextStyle(
+                        fontSize: 21,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.navy,
+                        letterSpacing: -0.35,
+                        height: 1.15,
+                      ),
                     ),
-                    const SizedBox(width: AppSpacing.sm + 2),
-                    const Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'AI Teknik Asistan',
-                            style: TextStyle(fontSize: 19, fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: -0.25),
-                          ),
-                          SizedBox(height: 3),
-                          Text(
-                            'Saniyeler içinde teknik cevap alın',
-                            style: TextStyle(fontSize: 13, color: Colors.white70, fontWeight: FontWeight.w500, height: 1.2),
+                  ),
+                  // Kullanıcı isteği: "uygulama açılırken ekranda slayt
+                  // dönsün" — admin panelden yönetilen, otomatik dönen
+                  // tanıtım slaytları, Ana Sayfa'nın en üstünde.
+                  const HomeSlideshow(),
+                  const SizedBox(height: AppSpacing.sm),
+                  // AI'a Sor — kullanıcı isteği: "hiçbir yerde gölge olmayacak,
+                  // arka fon bembeyaz." Eski gradyanlı/gölgeli lacivert kart
+                  // tamamen kaldırıldı, düz turuncu (marka rengi), gölgesiz,
+                  // sade bir kart ile değiştirildi.
+                  InkWell(
+                    onTap: () => context.push('/ai-quick'),
+                    borderRadius: BorderRadius.circular(AppRadius.xl),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.lg,
+                        vertical: 16,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        borderRadius: BorderRadius.circular(AppRadius.xl),
+                        // Kullanıcı isteği: "Kontrollü radius, çok hafif
+                        // elevation... Premium ve kurumsal görünmeli." — aşırı
+                        // efekt yok, sadece çok ince bir gölge ile bannerın
+                        // sayfadan hafifçe ayrılması sağlandı.
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.primary.withValues(alpha: 0.20),
+                            blurRadius: 16,
+                            offset: const Offset(0, 6),
                           ),
                         ],
                       ),
-                    ),
-                    Icon(Icons.arrow_forward_ios, size: 14, color: Colors.white.withValues(alpha: 0.85)),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            // İstatistikler — kullanıcı isteği üzerine (dashboard tarzı)
-            // en üste, göze ilk çarpan yere taşındı.
-            const Text('BU AY', style: AppText.eyebrow),
-            const SizedBox(height: AppSpacing.xs),
-            _stats == null
-                ? (_statsError
-                    ? AppErrorState(
-                        message: 'İstatistikler yüklenemedi.',
-                        onRetry: _loadStats,
-                      )
-                    : const AppLoadingState(lines: 1))
-                : Row(
-                    children: [
-                      Expanded(
-                        child: _StatCard(
-                          icon: Icons.smart_toy_outlined,
-                          value: '${_stats!['questionsThisMonth'] ?? 0}',
-                          label: 'AI Sorusu',
-                          showBadge: _hasNewBadge['questionsThisMonth'] == true,
-                          onTap: () async {
-                            await _markStatSeen('questionsThisMonth');
-                            if (mounted) context.push('/ai-quick');
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: AppSpacing.sm),
-                      Expanded(
-                        child: _StatCard(
-                          icon: Icons.bookmark_border,
-                          value: '${_stats!['favoritesCount'] ?? 0}',
-                          label: 'Favori',
-                          showBadge: _hasNewBadge['favoritesCount'] == true,
-                          onTap: () async {
-                            await _markStatSeen('favoritesCount');
-                            await context.push('/favorites');
-                            _loadStats();
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: AppSpacing.sm),
-                      Expanded(
-                        child: _StatCard(
-                          icon: Icons.support_agent_outlined,
-                          value: '${_stats!['supportTicketsCount'] ?? 0}',
-                          label: 'Teknik Destek Talebi',
-                          showBadge: _hasNewBadge['supportTicketsCount'] == true,
-                          onTap: () async {
-                            await _markStatSeen('supportTicketsCount');
-                            if (mounted) context.push('/support-tickets');
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-            const SizedBox(height: 4),
-            // Hızlı İşlemler — daha sıkı dashboard ritmi.
-            // kaldırıldı, "Düzenle" yazısı yerine sadece ikon konuldu,
-            // ve AI butonunun hemen altına (yukarı) taşındı.
-            // Kullanıcı isteği: "Filtre ikonu havada duruyorsa, ilgili
-            // section başlığı ya da hızlı işlemler alanıyla görsel
-            // olarak hizala." — küçük bir bağlam etiketi eklenip ikonla
-            // aynı satıra alındı, artık tek başına havada değil.
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text('HIZLI İŞLEMLER', style: AppText.eyebrow),
-                SizedBox(
-                  width: 28,
-                  height: 28,
-                  child: IconButton(
-                    onPressed: () async {
-                      await context.push('/reorder-quick-actions');
-                      _loadQuickActionsOrder();
-                    },
-                    icon: const Icon(Icons.tune, size: 18, color: AppColors.textSecondary),
-                    tooltip: 'Sıralamayı Düzenle',
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints.tightFor(width: 28, height: 28),
-                    visualDensity: VisualDensity.standard,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 0),
-            Transform.translate(
-              offset: const Offset(0, 4),
-              child: GridView.count(
-              crossAxisCount: 3,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              mainAxisSpacing: AppSpacing.sm,
-              crossAxisSpacing: AppSpacing.sm,
-              childAspectRatio: 1.08,
-              padding: EdgeInsets.zero,
-              children: _quickActionsOrder
-                  // "Bayi Ziyaretleri" sadece SALES (satış danışmanı)
-                  // rolündeki hesaplara gösterilir — bayilerin bu
-                  // özellikle bir ilgisi yok.
-                  .where((action) => action.id != 'dealer_visits' || CurrentUser().role == 'SALES' || CurrentUser().role == 'ADMIN')
-                  .map((action) => _QuickAction(
-                        icon: action.icon,
-                        label: action.label,
-                        badgeCount: _categoryBadges[action.id] ?? 0,
-                        onTap: () {
-                          if (_categoryBadges.containsKey(action.id) && (_categoryBadges[action.id] ?? 0) > 0) {
-                            setState(() => _categoryBadges[action.id] = 0);
-                          }
-                          _handleQuickActionTap(action);
-                        },
-                      ))
-                  .toList(),
-              ),
-            ),
-            const SizedBox(height: AppSpacing.xs),
-            if (_pinnedDocuments.isNotEmpty) ...[
-              const Text('Sabitlenmiş Dokümanlar', style: AppText.sectionTitle),
-              const SizedBox(height: AppSpacing.sm),
-              SizedBox(
-                height: 88,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: _pinnedDocuments.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.sm),
-                  itemBuilder: (context, index) {
-                    final doc = _pinnedDocuments[index]['document'];
-                    if (doc == null) return const SizedBox.shrink();
-                    return InkWell(
-                      onTap: () => context.push('/documents/${doc['id']}'),
-                      borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-                      child: Container(
-                        width: 150,
-                        padding: const EdgeInsets.all(AppSpacing.sm),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-                          boxShadow: AppShadows.subtle,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Row(
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.18),
+                              borderRadius: BorderRadius.circular(AppRadius.sm),
+                            ),
+                            child: const Icon(
+                              Icons.auto_awesome,
+                              color: Colors.white,
+                              size: 24,
+                            ),
+                          ),
+                          const SizedBox(width: AppSpacing.sm + 2),
+                          const Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Icon(Icons.push_pin, size: 14, color: AppColors.brand),
-                                const SizedBox(width: 4),
-                                Expanded(
-                                  child: Text(
-                                    '${doc['brand']}',
-                                    style: TextStyle(fontSize: 10.5, color: Colors.grey.shade500, fontWeight: FontWeight.w600),
-                                    overflow: TextOverflow.ellipsis,
+                                Text(
+                                  'AI Teknik Asistan',
+                                  style: TextStyle(
+                                    fontSize: 19,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white,
+                                    letterSpacing: -0.25,
+                                  ),
+                                ),
+                                SizedBox(height: 3),
+                                Text(
+                                  'Saniyeler içinde teknik cevap alın',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.white70,
+                                    fontWeight: FontWeight.w500,
+                                    height: 1.2,
                                   ),
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 4),
-                            Text(
-                              doc['title'] ?? '',
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.navy),
+                          ),
+                          Icon(
+                            Icons.arrow_forward_ios,
+                            size: 14,
+                            color: Colors.white.withValues(alpha: 0.85),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  // İstatistikler — kullanıcı isteği üzerine (dashboard tarzı)
+                  // en üste, göze ilk çarpan yere taşındı.
+                  const Text('BU AY', style: AppText.eyebrow),
+                  const SizedBox(height: AppSpacing.xs),
+                  _stats == null
+                      ? (_statsError
+                            ? AppErrorState(
+                                message: 'İstatistikler yüklenemedi.',
+                                onRetry: _loadStats,
+                              )
+                            : const AppLoadingState(lines: 1))
+                      : Row(
+                          children: [
+                            Expanded(
+                              child: _StatCard(
+                                icon: Icons.smart_toy_outlined,
+                                value: '${_stats!['questionsThisMonth'] ?? 0}',
+                                label: 'AI Sorusu',
+                                showBadge:
+                                    _hasNewBadge['questionsThisMonth'] == true,
+                                onTap: () async {
+                                  await _markStatSeen('questionsThisMonth');
+                                  if (mounted) context.push('/ai-quick');
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: AppSpacing.sm),
+                            Expanded(
+                              child: _StatCard(
+                                icon: Icons.bookmark_border,
+                                value: '${_stats!['favoritesCount'] ?? 0}',
+                                label: 'Favori',
+                                showBadge:
+                                    _hasNewBadge['favoritesCount'] == true,
+                                onTap: () async {
+                                  await _markStatSeen('favoritesCount');
+                                  await context.push('/favorites');
+                                  _loadStats();
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: AppSpacing.sm),
+                            Expanded(
+                              child: _StatCard(
+                                icon: Icons.support_agent_outlined,
+                                value: '${_stats!['supportTicketsCount'] ?? 0}',
+                                label: 'Teknik Destek Talebi',
+                                showBadge:
+                                    _hasNewBadge['supportTicketsCount'] == true,
+                                onTap: () async {
+                                  await _markStatSeen('supportTicketsCount');
+                                  if (mounted) context.push('/support-tickets');
+                                },
+                              ),
                             ),
                           ],
                         ),
+                  const SizedBox(height: 4),
+                  // Hızlı İşlemler — daha sıkı dashboard ritmi.
+                  // kaldırıldı, "Düzenle" yazısı yerine sadece ikon konuldu,
+                  // ve AI butonunun hemen altına (yukarı) taşındı.
+                  // Kullanıcı isteği: "Filtre ikonu havada duruyorsa, ilgili
+                  // section başlığı ya da hızlı işlemler alanıyla görsel
+                  // olarak hizala." — küçük bir bağlam etiketi eklenip ikonla
+                  // aynı satıra alındı, artık tek başına havada değil.
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('HIZLI İŞLEMLER', style: AppText.eyebrow),
+                      SizedBox(
+                        width: 28,
+                        height: 28,
+                        child: IconButton(
+                          onPressed: () async {
+                            await context.push('/reorder-quick-actions');
+                            _loadQuickActionsOrder();
+                          },
+                          icon: const Icon(
+                            Icons.tune,
+                            size: 18,
+                            color: AppColors.textSecondary,
+                          ),
+                          tooltip: 'Sıralamayı Düzenle',
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints.tightFor(
+                            width: 28,
+                            height: 28,
+                          ),
+                          visualDensity: VisualDensity.standard,
+                        ),
                       ),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: AppSpacing.xs),
-            ],
-            // "Bugün Benim İçin" özeti.
-            const _TodayForMeSection(),
+                    ],
+                  ),
+                  const SizedBox(height: 0),
+                  Transform.translate(
+                    offset: const Offset(0, 4),
+                    child: GridView.count(
+                      crossAxisCount: 3,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      mainAxisSpacing: AppSpacing.sm,
+                      crossAxisSpacing: AppSpacing.sm,
+                      childAspectRatio: 1.08,
+                      padding: EdgeInsets.zero,
+                      children: _quickActionsOrder
+                          // "Bayi Ziyaretleri" sadece SALES (satış danışmanı)
+                          // rolündeki hesaplara gösterilir — bayilerin bu
+                          // özellikle bir ilgisi yok.
+                          .where(
+                            (action) =>
+                                action.id != 'dealer_visits' ||
+                                CurrentUser().role == 'SALES' ||
+                                CurrentUser().role == 'ADMIN',
+                          )
+                          .map(
+                            (action) => _QuickAction(
+                              icon: action.icon,
+                              label: action.label,
+                              badgeCount: _categoryBadges[action.id] ?? 0,
+                              onTap: () {
+                                if (_categoryBadges.containsKey(action.id) &&
+                                    (_categoryBadges[action.id] ?? 0) > 0) {
+                                  setState(
+                                    () => _categoryBadges[action.id] = 0,
+                                  );
+                                }
+                                _handleQuickActionTap(action);
+                              },
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                  if (_pinnedDocuments.isNotEmpty) ...[
+                    const Text(
+                      'Sabitlenmiş Dokümanlar',
+                      style: AppText.sectionTitle,
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    SizedBox(
+                      height: 88,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: _pinnedDocuments.length,
+                        separatorBuilder: (_, __) =>
+                            const SizedBox(width: AppSpacing.sm),
+                        itemBuilder: (context, index) {
+                          final doc = _pinnedDocuments[index]['document'];
+                          if (doc == null) return const SizedBox.shrink();
+                          return InkWell(
+                            onTap: () =>
+                                context.push('/documents/${doc['id']}'),
+                            borderRadius: BorderRadius.circular(
+                              AppSpacing.radiusLg,
+                            ),
+                            child: Container(
+                              width: 150,
+                              padding: const EdgeInsets.all(AppSpacing.sm),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(
+                                  AppSpacing.radiusLg,
+                                ),
+                                boxShadow: AppShadows.subtle,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.push_pin,
+                                        size: 14,
+                                        color: AppColors.brand,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Expanded(
+                                        child: Text(
+                                          '${doc['brand']}',
+                                          style: TextStyle(
+                                            fontSize: 10.5,
+                                            color: Colors.grey.shade500,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    doc['title'] ?? '',
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 12.5,
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.navy,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                  ],
+                  // "Bugün Benim İçin" özeti.
+                  const _TodayForMeSection(),
                 ]),
               ),
             ),
@@ -484,7 +571,13 @@ class _StatCard extends StatelessWidget {
   final VoidCallback? onTap;
   final bool showBadge;
 
-  const _StatCard({required this.icon, required this.value, required this.label, this.onTap, this.showBadge = false});
+  const _StatCard({
+    required this.icon,
+    required this.value,
+    required this.label,
+    this.onTap,
+    this.showBadge = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -502,10 +595,21 @@ class _StatCard extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppRadius.lg),
-            border: Border.all(color: AppColors.outline.withValues(alpha: 0.72)),
-            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.035), blurRadius: 10, offset: const Offset(0, 3))],
+            border: Border.all(
+              color: AppColors.outline.withValues(alpha: 0.72),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.035),
+                blurRadius: 10,
+                offset: const Offset(0, 3),
+              ),
+            ],
           ),
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.lg),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.lg,
+            vertical: AppSpacing.lg,
+          ),
           child: Stack(
             clipBehavior: Clip.none,
             children: [
@@ -515,9 +619,19 @@ class _StatCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Center(child: Icon(icon, color: AppColors.textMuted, size: 14)),
+                    Center(
+                      child: Icon(icon, color: AppColors.textMuted, size: 14),
+                    ),
                     const SizedBox(height: 4),
-                    Center(child: Text(value, style: AppText.statValue.copyWith(fontSize: 20, fontWeight: FontWeight.w800))),
+                    Center(
+                      child: Text(
+                        value,
+                        style: AppText.statValue.copyWith(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
                     const SizedBox(height: 1),
                     Text(
                       label,
@@ -536,7 +650,10 @@ class _StatCard extends StatelessWidget {
                   child: Container(
                     width: 9,
                     height: 9,
-                    decoration: const BoxDecoration(color: AppColors.brand, shape: BoxShape.circle),
+                    decoration: const BoxDecoration(
+                      color: AppColors.brand,
+                      shape: BoxShape.circle,
+                    ),
                   ),
                 ),
             ],
@@ -572,7 +689,9 @@ class _QuickAction extends StatelessWidget {
           decoration: BoxDecoration(
             color: const Color(0xFFF8F7FC),
             borderRadius: BorderRadius.circular(AppRadius.lg),
-            border: Border.all(color: AppColors.outline.withValues(alpha: 0.72)),
+            border: Border.all(
+              color: AppColors.outline.withValues(alpha: 0.72),
+            ),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.035),
@@ -581,7 +700,10 @@ class _QuickAction extends StatelessWidget {
               ),
             ],
           ),
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.sm),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.sm,
+            vertical: AppSpacing.sm,
+          ),
           child: Stack(
             clipBehavior: Clip.none,
             children: [
@@ -596,11 +718,7 @@ class _QuickAction extends StatelessWidget {
                         color: AppColors.primarySoft,
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(
-                        icon,
-                        color: AppColors.primary,
-                        size: 21,
-                      ),
+                      child: Icon(icon, color: AppColors.primary, size: 21),
                     ),
                     const SizedBox(height: 6),
                     // ÖNEMLİ DÜZELTME: Etiketler tek satır ("Ara", "Gruplar")
@@ -637,7 +755,10 @@ class _QuickAction extends StatelessWidget {
                   top: -5,
                   right: -5,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 5,
+                      vertical: 2,
+                    ),
                     constraints: const BoxConstraints(minWidth: 18),
                     decoration: BoxDecoration(
                       color: AppColors.brand,
@@ -700,7 +821,8 @@ class _TodayForMeSectionState extends State<_TodayForMeSection> {
     final openTickets = _summary!['openTicketsCount'] ?? 0;
     final slaRisk = _summary!['slaRiskTicketsCount'] ?? 0;
 
-    if (appointments.isEmpty && openTickets == 0 && slaRisk == 0) return const SizedBox.shrink();
+    if (appointments.isEmpty && openTickets == 0 && slaRisk == 0)
+      return const SizedBox.shrink();
 
     return Container(
       margin: const EdgeInsets.only(bottom: AppSpacing.md),
@@ -715,7 +837,11 @@ class _TodayForMeSectionState extends State<_TodayForMeSection> {
         children: [
           Row(
             children: [
-              const Icon(Icons.today_outlined, size: 16, color: AppColors.brand),
+              const Icon(
+                Icons.today_outlined,
+                size: 16,
+                color: AppColors.brand,
+              ),
               const SizedBox(width: 6),
               const Text('Bugün Benim İçin', style: AppText.eyebrow),
             ],
@@ -725,9 +851,24 @@ class _TodayForMeSectionState extends State<_TodayForMeSection> {
             spacing: 8,
             runSpacing: 8,
             children: [
-              if (appointments.isNotEmpty) _summaryChip(Icons.event_outlined, '${appointments.length} bugünkü randevu', AppColors.navy),
-              if (openTickets > 0) _summaryChip(Icons.build_outlined, '$openTickets açık teknik destek', AppColors.brand),
-              if (slaRisk > 0) _summaryChip(Icons.warning_amber_rounded, '$slaRisk kayıtta SLA riski', AppColors.navy),
+              if (appointments.isNotEmpty)
+                _summaryChip(
+                  Icons.event_outlined,
+                  '${appointments.length} bugünkü randevu',
+                  AppColors.navy,
+                ),
+              if (openTickets > 0)
+                _summaryChip(
+                  Icons.build_outlined,
+                  '$openTickets açık teknik destek',
+                  AppColors.brand,
+                ),
+              if (slaRisk > 0)
+                _summaryChip(
+                  Icons.warning_amber_rounded,
+                  '$slaRisk kayıtta SLA riski',
+                  AppColors.navy,
+                ),
             ],
           ),
         ],
@@ -738,18 +879,25 @@ class _TodayForMeSectionState extends State<_TodayForMeSection> {
   Widget _summaryChip(IconData icon, String label, Color color) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(color: color.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(20)),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(20),
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, size: 13, color: color),
           const SizedBox(width: 5),
-          Text(label, style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: color)),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11.5,
+              fontWeight: FontWeight.w700,
+              color: color,
+            ),
+          ),
         ],
       ),
     );
   }
 }
-
-
-

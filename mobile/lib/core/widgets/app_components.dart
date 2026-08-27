@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
+
 import '../theme/app_theme.dart';
 
 /// Kullanıcı isteği: "UI tarafında tekrar eden yapıları reusable
@@ -67,7 +68,9 @@ class AppButton extends StatelessWidget {
             width: 18,
             child: CircularProgressIndicator(
               strokeWidth: 2,
-              color: variant == AppButtonVariant.primary || variant == AppButtonVariant.destructive
+              color:
+                  variant == AppButtonVariant.primary ||
+                      variant == AppButtonVariant.destructive
                   ? Colors.white
                   : AppColors.textPrimary,
             ),
@@ -75,7 +78,10 @@ class AppButton extends StatelessWidget {
         : Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (icon != null) ...[Icon(icon, size: 18), const SizedBox(width: AppSpacing.xs)],
+              if (icon != null) ...[
+                Icon(icon, size: 18),
+                const SizedBox(width: AppSpacing.xs),
+              ],
               Text(label),
             ],
           );
@@ -93,8 +99,14 @@ class AppButton extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
             minimumSize: const Size(0, 48),
             tapTargetSize: MaterialTapTargetSize.padded,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15, letterSpacing: -0.1),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            textStyle: const TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 15,
+              letterSpacing: -0.1,
+            ),
           ),
           child: child,
         );
@@ -108,8 +120,14 @@ class AppButton extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
             minimumSize: const Size(0, 48),
             tapTargetSize: MaterialTapTargetSize.padded,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15, letterSpacing: -0.1),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            textStyle: const TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 15,
+              letterSpacing: -0.1,
+            ),
           ),
           child: child,
         );
@@ -122,7 +140,10 @@ class AppButton extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
             minimumSize: const Size(0, 44),
             tapTargetSize: MaterialTapTargetSize.padded,
-            textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14.5),
+            textStyle: const TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 14.5,
+            ),
           ),
           child: child,
         );
@@ -137,8 +158,13 @@ class AppButton extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
             minimumSize: const Size(0, 48),
             tapTargetSize: MaterialTapTargetSize.padded,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            textStyle: const TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 15,
+            ),
           ),
           child: child,
         );
@@ -152,7 +178,9 @@ class AppButton extends StatelessWidget {
       label: loading ? '$label, yükleniyor' : label,
       child: button,
     );
-    return fullWidth ? SizedBox(width: double.infinity, child: accessibleButton) : accessibleButton;
+    return fullWidth
+        ? SizedBox(width: double.infinity, child: accessibleButton)
+        : accessibleButton;
   }
 }
 
@@ -204,10 +232,10 @@ class _AppTextFieldState extends State<AppTextField> {
     final borderColor = !widget.enabled
         ? scheme.outline
         : hasError
-            ? scheme.error
-            : _focused
-                ? scheme.primary
-                : scheme.outline;
+        ? scheme.error
+        : _focused
+        ? scheme.primary
+        : scheme.outline;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -217,18 +245,35 @@ class _AppTextFieldState extends State<AppTextField> {
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 140),
             decoration: BoxDecoration(
-              color: widget.enabled ? scheme.surfaceContainerHighest : scheme.surfaceContainer,
+              color: widget.enabled
+                  ? scheme.surfaceContainerHighest
+                  : scheme.surfaceContainer,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: borderColor, width: (_focused || hasError) ? 2 : 1),
+              border: Border.all(
+                color: borderColor,
+                width: (_focused || hasError) ? 2 : 1,
+              ),
             ),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
             child: Row(
-              crossAxisAlignment: (widget.maxLines ?? 1) > 1 ? CrossAxisAlignment.start : CrossAxisAlignment.center,
+              crossAxisAlignment: (widget.maxLines ?? 1) > 1
+                  ? CrossAxisAlignment.start
+                  : CrossAxisAlignment.center,
               children: [
                 if (widget.icon != null) ...[
                   Padding(
-                    padding: EdgeInsets.only(top: (widget.maxLines ?? 1) > 1 ? 14 : 0),
-                    child: Icon(widget.icon, size: 18, color: hasError ? scheme.error : (_focused ? scheme.primary : scheme.onSurfaceVariant)),
+                    padding: EdgeInsets.only(
+                      top: (widget.maxLines ?? 1) > 1 ? 14 : 0,
+                    ),
+                    child: Icon(
+                      widget.icon,
+                      size: 18,
+                      color: hasError
+                          ? scheme.error
+                          : (_focused
+                                ? scheme.primary
+                                : scheme.onSurfaceVariant),
+                    ),
                   ),
                   const SizedBox(width: AppSpacing.xs),
                 ],
@@ -242,10 +287,14 @@ class _AppTextFieldState extends State<AppTextField> {
                     maxLines: widget.obscureText ? 1 : widget.maxLines,
                     onChanged: widget.onChanged,
                     onSubmitted: (_) => widget.onSubmitted?.call(),
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: scheme.onSurface, fontSize: 15),
+                    style: Theme.of(context).textTheme.bodyLarge
+                        ?.copyWith(color: scheme.onSurface, fontSize: 15),
                     decoration: InputDecoration(
                       labelText: widget.label,
-                      labelStyle: TextStyle(color: scheme.onSurfaceVariant, fontSize: 14.5),
+                      labelStyle: TextStyle(
+                        color: scheme.onSurfaceVariant,
+                        fontSize: 14.5,
+                      ),
                       border: InputBorder.none,
                       isDense: true,
                       contentPadding: const EdgeInsets.symmetric(vertical: 14),
@@ -262,7 +311,10 @@ class _AppTextFieldState extends State<AppTextField> {
             padding: const EdgeInsets.only(top: AppSpacing.xxs, left: 4),
             child: Text(
               hasError ? widget.errorText! : widget.helperText!,
-              style: TextStyle(fontSize: 12, color: hasError ? scheme.error : scheme.onSurfaceVariant),
+              style: TextStyle(
+                fontSize: 12,
+                color: hasError ? scheme.error : scheme.onSurfaceVariant,
+              ),
             ),
           ),
       ],
@@ -283,7 +335,10 @@ class AppCard extends StatelessWidget {
   const AppCard({
     super.key,
     required this.child,
-    this.padding = const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.md),
+    this.padding = const EdgeInsets.symmetric(
+      horizontal: AppSpacing.md,
+      vertical: AppSpacing.md,
+    ),
     this.onTap,
     this.elevated = false,
   });
@@ -297,11 +352,18 @@ class AppCard extends StatelessWidget {
     // kartlar artık çizgiyle çevrelenmiş kutular gibi değil, arka
     // plandan hafifçe "yükselerek" ayrışıyor.
     final content = Container(
-      padding: padding ?? const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.md),
+      padding:
+          padding ??
+          const EdgeInsets.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: AppSpacing.md,
+          ),
       decoration: BoxDecoration(
         color: scheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: scheme.outlineVariant.withValues(alpha: 0.72)),
+        border: Border.all(
+          color: scheme.outlineVariant.withValues(alpha: 0.72),
+        ),
         boxShadow: [
           BoxShadow(
             color: scheme.shadow.withValues(alpha: elevated ? 0.08 : 0.035),
@@ -338,28 +400,52 @@ class AppBadge extends StatelessWidget {
   final AppBadgeTone tone;
   final IconData? icon;
 
-  const AppBadge({super.key, required this.label, this.tone = AppBadgeTone.neutral, this.icon});
+  const AppBadge({
+    super.key,
+    required this.label,
+    this.tone = AppBadgeTone.neutral,
+    this.icon,
+  });
 
   (Color, Color) get _colors => switch (tone) {
-        AppBadgeTone.success => (AppColors.successContainer, AppColors.successColor),
-        AppBadgeTone.warning => (AppColors.warningContainer, AppColors.warningColor),
-        AppBadgeTone.error => (AppColors.errorContainer, AppColors.errorColor),
-        AppBadgeTone.info => (AppColors.infoContainer, AppColors.infoColor),
-        AppBadgeTone.brand => (AppColors.primaryContainer, AppColors.primary),
-        AppBadgeTone.neutral => (AppColors.surfaceVariant, AppColors.textSecondary),
-      };
+    AppBadgeTone.success => (
+      AppColors.successContainer,
+      AppColors.successColor,
+    ),
+    AppBadgeTone.warning => (
+      AppColors.warningContainer,
+      AppColors.warningColor,
+    ),
+    AppBadgeTone.error => (AppColors.errorContainer, AppColors.errorColor),
+    AppBadgeTone.info => (AppColors.infoContainer, AppColors.infoColor),
+    AppBadgeTone.brand => (AppColors.primaryContainer, AppColors.primary),
+    AppBadgeTone.neutral => (AppColors.surfaceVariant, AppColors.textSecondary),
+  };
 
   @override
   Widget build(BuildContext context) {
     final (bg, fg) = _colors;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(AppRadius.pill)),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(AppRadius.pill),
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (icon != null) ...[Icon(icon, size: 12, color: fg), const SizedBox(width: 4)],
-          Text(label, style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: fg)),
+          if (icon != null) ...[
+            Icon(icon, size: 12, color: fg),
+            const SizedBox(width: 4),
+          ],
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11.5,
+              fontWeight: FontWeight.w700,
+              color: fg,
+            ),
+          ),
         ],
       ),
     );
@@ -392,38 +478,59 @@ class AppEmptyState extends StatelessWidget {
     return Semantics(
       container: true,
       liveRegion: true,
-      label: [title, if (description != null) description].whereType<String>().join('. '),
+      label: [
+        title,
+        if (description != null) description,
+      ].whereType<String>().join('. '),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: AppSpacing.xl, horizontal: AppSpacing.lg),
+        padding: const EdgeInsets.symmetric(
+          vertical: AppSpacing.xl,
+          horizontal: AppSpacing.lg,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
               width: 64,
               height: 64,
-              decoration: BoxDecoration(color: scheme.surfaceContainerHighest, shape: BoxShape.circle),
-            child: Icon(icon, size: 28, color: scheme.onSurfaceVariant),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: scheme.onSurface),
-          ),
-          if (description != null) ...[
-            const SizedBox(height: AppSpacing.xxs),
-            Text(
-              description!,
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 13.5, color: scheme.onSurfaceVariant, height: 1.4),
+              decoration: BoxDecoration(
+                color: scheme.surfaceContainerHighest,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, size: 28, color: scheme.onSurfaceVariant),
             ),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: scheme.onSurface,
+              ),
+            ),
+            if (description != null) ...[
+              const SizedBox(height: AppSpacing.xxs),
+              Text(
+                description!,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 13.5,
+                  color: scheme.onSurfaceVariant,
+                  height: 1.4,
+                ),
+              ),
+            ],
+            if (actionLabel != null && onAction != null) ...[
+              const SizedBox(height: AppSpacing.md),
+              AppButton.secondary(
+                label: actionLabel!,
+                onPressed: onAction,
+                fullWidth: false,
+              ),
+            ],
           ],
-          if (actionLabel != null && onAction != null) ...[
-            const SizedBox(height: AppSpacing.md),
-            AppButton.secondary(label: actionLabel!, onPressed: onAction, fullWidth: false),
-          ],
-        ],
-      ),
+        ),
       ),
     );
   }
@@ -447,20 +554,20 @@ class AppLoadingState extends StatelessWidget {
       label: '\u0059\u00FCkleniyor',
       child: Shimmer.fromColors(
         baseColor: scheme.surfaceContainerHighest,
-      highlightColor: scheme.surfaceContainer,
-      child: Column(
-        children: List.generate(
-          lines,
-          (i) => Container(
-            margin: const EdgeInsets.only(bottom: AppSpacing.xs),
-            height: 72,
-            decoration: BoxDecoration(
-              color: scheme.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(AppRadius.lg),
+        highlightColor: scheme.surfaceContainer,
+        child: Column(
+          children: List.generate(
+            lines,
+            (i) => Container(
+              margin: const EdgeInsets.only(bottom: AppSpacing.xs),
+              height: 72,
+              decoration: BoxDecoration(
+                color: scheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(AppRadius.lg),
+              ),
             ),
           ),
         ),
-      ),
       ),
     );
   }
@@ -484,29 +591,52 @@ class AppErrorState extends StatelessWidget {
       liveRegion: true,
       label: message ?? 'Bir şeyler ters gitti. Veriler yüklenemedi.',
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: AppSpacing.xl, horizontal: AppSpacing.lg),
+        padding: const EdgeInsets.symmetric(
+          vertical: AppSpacing.xl,
+          horizontal: AppSpacing.lg,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
               width: 64,
               height: 64,
-              decoration: BoxDecoration(color: scheme.errorContainer, shape: BoxShape.circle),
-            child: Icon(Icons.wifi_off_rounded, size: 28, color: scheme.error),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            'Bir şeyler ters gitti',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: scheme.onSurface),
-          ),
-          const SizedBox(height: AppSpacing.xxs),
-          Text(
-            message ?? 'Veriler yüklenemedi. İnternet bağlantınızı kontrol edip tekrar deneyin.',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 13.5, color: scheme.onSurfaceVariant, height: 1.4),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          AppButton.secondary(label: 'Tekrar Dene', onPressed: onRetry, icon: Icons.refresh, fullWidth: false),
+              decoration: BoxDecoration(
+                color: scheme.errorContainer,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.wifi_off_rounded,
+                size: 28,
+                color: scheme.error,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              'Bir şeyler ters gitti',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: scheme.onSurface,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.xxs),
+            Text(
+              message ?? 'Veriler yüklenemedi. İnternet bağlantınızı kontrol edip tekrar deneyin.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 13.5,
+                color: scheme.onSurfaceVariant,
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            AppButton.secondary(
+              label: 'Tekrar Dene',
+              onPressed: onRetry,
+              icon: Icons.refresh,
+              fullWidth: false,
+            ),
           ],
         ),
       ),

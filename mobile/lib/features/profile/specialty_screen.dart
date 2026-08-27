@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+
 import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_filex/open_filex.dart';
+
 import '../../core/api/api_client.dart';
 import '../../core/auth/current_user.dart';
 import '../../core/events/notification_badge_bus.dart';
@@ -12,7 +15,15 @@ import '../../core/widgets/design_system.dart';
 import '../../core/widgets/app_components.dart';
 import '../../core/pdf/document_pdf_exporter.dart';
 
-const _kAvailableTags = ['Yangın Alarm', 'Kamera', 'Honeywell', 'Hanwha', 'Teknik Destek', 'Erişim Kontrol', 'Yangın Söndürme'];
+const _kAvailableTags = [
+  'Yangın Alarm',
+  'Kamera',
+  'Honeywell',
+  'Hanwha',
+  'Teknik Destek',
+  'Erişim Kontrol',
+  'Yangın Söndürme',
+];
 
 /// Uzmanlık etiketleri + sertifika/yetkinlik takibi — tek ekranda, çünkü
 /// ikisi de "bayinin hangi konuda deneyimli/yetkili olduğu" bilgisini
@@ -34,7 +45,9 @@ class _SpecialtyScreenState extends State<SpecialtyScreen> {
   void initState() {
     super.initState();
     _load();
-    _dio.post('/notifications/mark-category-read/certification').then((_) => NotificationBadgeBus.bump());
+    _dio
+        .post('/notifications/mark-category-read/certification')
+        .then((_) => NotificationBadgeBus.bump());
   }
 
   Future<void> _load() async {
@@ -84,9 +97,8 @@ class _SpecialtyScreenState extends State<SpecialtyScreen> {
       await OpenFilex.open(path);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Belge açılamadı.')),
-        );
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('Belge açılamadı.')));
       }
     }
   }
@@ -104,10 +116,16 @@ class _SpecialtyScreenState extends State<SpecialtyScreen> {
     return '';
   }
 
-  Future<void> _exportCertificatePdf(dynamic cert, {required bool andShare}) async {
+  Future<void> _exportCertificatePdf(
+    dynamic cert, {
+    required bool andShare,
+  }) async {
     Uint8List? photoBytes;
     if (cert['documentUrl'] != null) {
-      photoBytes = await DocumentPdfExporter.downloadSignature(_dio, '/certifications/${cert['id']}/document-url');
+      photoBytes = await DocumentPdfExporter.downloadSignature(
+        _dio,
+        '/certifications/${cert['id']}/document-url',
+      );
     }
     final file = await DocumentPdfExporter.build(
       documentTitle: 'Sertifika — ${cert['brand']} ${cert['title']}',
@@ -116,7 +134,11 @@ class _SpecialtyScreenState extends State<SpecialtyScreen> {
       infoRows: [
         (label: 'Marka', value: cert['brand'] ?? ''),
         (label: 'Sertifika', value: cert['title'] ?? ''),
-        if (cert['expiresAt'] != null) (label: 'Son Geçerlilik', value: (cert['expiresAt'] as String).substring(0, 10)),
+        if (cert['expiresAt'] != null)
+          (
+            label: 'Son Geçerlilik',
+            value: (cert['expiresAt'] as String).substring(0, 10),
+          ),
       ],
       signatureBytes: photoBytes,
     );
@@ -146,7 +168,11 @@ class _SpecialtyScreenState extends State<SpecialtyScreen> {
           ),
           child: Text(
             '${_certifications.length}',
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.primary),
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              color: AppColors.primary,
+            ),
           ),
         ),
       ),
@@ -154,108 +180,165 @@ class _SpecialtyScreenState extends State<SpecialtyScreen> {
       // ÖNEMLİ DÜZELTME: "sayfanın altında kalıyor" — SafeArea hiç yoktu.
       body: SafeArea(
         child: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : ListView(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              children: [
-                const Text('Uzmanlık Alanları', style: TextStyle(fontWeight: FontWeight.w700, color: AppColors.navy)),
-                const SizedBox(height: 4),
-                Text(
-                  'Bayiler listesinde sizinle ilgili gösterilir.',
-                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: _kAvailableTags
-                      .map((tag) => FilterChip(
+            ? const Center(child: CircularProgressIndicator())
+            : ListView(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                children: [
+                  const Text(
+                    'Uzmanlık Alanları',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.navy,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Bayiler listesinde sizinle ilgili gösterilir.',
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: _kAvailableTags
+                        .map(
+                          (tag) => FilterChip(
                             label: Text(tag),
                             selected: _selectedTags.contains(tag),
                             onSelected: (_) => _toggleTag(tag),
-                            selectedColor: AppColors.navy.withValues(alpha: 0.15),
+                            selectedColor: AppColors.navy.withValues(
+                              alpha: 0.15,
+                            ),
                             checkmarkColor: AppColors.navy,
-                          ))
-                      .toList(),
-                ),
-                const SizedBox(height: AppSpacing.lg),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        const Text('Sertifikalar', style: TextStyle(fontWeight: FontWeight.w700, color: AppColors.navy)),
-                        const SizedBox(width: AppSpacing.xs),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: AppColors.primarySoft,
-                            borderRadius: BorderRadius.circular(AppRadius.pill),
                           ),
-                          child: Text(
-                            '${_certifications.length}',
-                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.primary),
+                        )
+                        .toList(),
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          const Text(
+                            'Sertifikalar',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.navy,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    TextButton.icon(
-                      onPressed: _openAddCertSheet,
-                      icon: const Icon(Icons.add, size: 16),
-                      label: const Text('Ekle'),
-                    ),
-                  ],
-                ),
-                if (_certifications.isEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(top: AppSpacing.md),
-                    child: StandardCard(
-                      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
-                      child: const AppEmptyState(
-                        icon: Icons.verified_outlined,
-                        title: 'Henüz sertifika eklenmedi',
-                        description: 'Yukarıdaki "Ekle" butonundan yeni bir sertifika ekleyebilirsiniz.',
+                          const SizedBox(width: AppSpacing.xs),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.primarySoft,
+                              borderRadius: BorderRadius.circular(
+                                AppRadius.pill,
+                              ),
+                            ),
+                            child: Text(
+                              '${_certifications.length}',
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.primary,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  )
-                else
-                  ..._certifications.map((c) {
-                    final expiringSoon = _isExpiringSoon(c['expiresAt']);
-                    return Card(
-                      color: expiringSoon ? Colors.amber.shade50 : null,
-                      child: ListTile(
-                        leading: Icon(
-                          expiringSoon ? Icons.warning_amber_outlined : Icons.verified_outlined,
-                          color: expiringSoon ? Colors.amber.shade800 : AppColors.navy,
+                      TextButton.icon(
+                        onPressed: _openAddCertSheet,
+                        icon: const Icon(Icons.add, size: 16),
+                        label: const Text('Ekle'),
+                      ),
+                    ],
+                  ),
+                  if (_certifications.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: AppSpacing.md),
+                      child: StandardCard(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.lg,
+                          vertical: AppSpacing.xl,
                         ),
-                        title: Text('${c['brand']} — ${c['title']}'),
-                        subtitle: Text(
-                          c['expiresAt'] != null
-                              ? 'Son geçerlilik: ${(c['expiresAt'] as String).substring(0, 10)}'
-                              : 'Süresiz',
-                          style: expiringSoon ? TextStyle(color: Colors.amber.shade900, fontWeight: FontWeight.w600) : null,
-                        ),
-                        trailing: PopupMenuButton<String>(
-                          icon: const Icon(Icons.more_vert, color: Colors.grey),
-                          onSelected: (v) {
-                            if (v == 'document') _viewDocument(c['id']);
-                            if (v == 'pdf-view') _exportCertificatePdf(c, andShare: false);
-                            if (v == 'pdf-share') _exportCertificatePdf(c, andShare: true);
-                            if (v == 'delete') _deleteCert(c['id']);
-                          },
-                          itemBuilder: (context) => [
-                            if (c['documentUrl'] != null)
-                              const PopupMenuItem(value: 'document', child: Text('Fotoğrafı Görüntüle')),
-                            const PopupMenuItem(value: 'pdf-view', child: Text('PDF Görüntüle')),
-                            const PopupMenuItem(value: 'pdf-share', child: Text('PDF Paylaş')),
-                            const PopupMenuItem(value: 'delete', child: Text('Sil', style: TextStyle(color: AppColors.navy))),
-                          ],
+                        child: const AppEmptyState(
+                          icon: Icons.verified_outlined,
+                          title: 'Henüz sertifika eklenmedi',
+                          description: 'Yukarıdaki "Ekle" butonundan yeni bir sertifika ekleyebilirsiniz.',
                         ),
                       ),
-                    );
-                  }),
-              ],
-            ),
+                    )
+                  else
+                    ..._certifications.map((c) {
+                      final expiringSoon = _isExpiringSoon(c['expiresAt']);
+                      return Card(
+                        color: expiringSoon ? Colors.amber.shade50 : null,
+                        child: ListTile(
+                          leading: Icon(
+                            expiringSoon
+                                ? Icons.warning_amber_outlined
+                                : Icons.verified_outlined,
+                            color: expiringSoon
+                                ? Colors.amber.shade800
+                                : AppColors.navy,
+                          ),
+                          title: Text('${c['brand']} — ${c['title']}'),
+                          subtitle: Text(
+                            c['expiresAt'] != null
+                                ? 'Son geçerlilik: ${(c['expiresAt'] as String).substring(0, 10)}'
+                                : 'Süresiz',
+                            style: expiringSoon
+                                ? TextStyle(
+                                    color: Colors.amber.shade900,
+                                    fontWeight: FontWeight.w600,
+                                  )
+                                : null,
+                          ),
+                          trailing: PopupMenuButton<String>(
+                            icon: const Icon(
+                              Icons.more_vert,
+                              color: Colors.grey,
+                            ),
+                            onSelected: (v) {
+                              if (v == 'document') _viewDocument(c['id']);
+                              if (v == 'pdf-view')
+                                _exportCertificatePdf(c, andShare: false);
+                              if (v == 'pdf-share')
+                                _exportCertificatePdf(c, andShare: true);
+                              if (v == 'delete') _deleteCert(c['id']);
+                            },
+                            itemBuilder: (context) => [
+                              if (c['documentUrl'] != null)
+                                const PopupMenuItem(
+                                  value: 'document',
+                                  child: Text('Fotoğrafı Görüntüle'),
+                                ),
+                              const PopupMenuItem(
+                                value: 'pdf-view',
+                                child: Text('PDF Görüntüle'),
+                              ),
+                              const PopupMenuItem(
+                                value: 'pdf-share',
+                                child: Text('PDF Paylaş'),
+                              ),
+                              const PopupMenuItem(
+                                value: 'delete',
+                                child: Text(
+                                  'Sil',
+                                  style: TextStyle(color: AppColors.navy),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }),
+                ],
+              ),
       ),
     );
   }
@@ -308,8 +391,13 @@ class _AddCertificationSheetState extends State<_AddCertificationSheet> {
     );
     if (choice == null) return;
 
-    final source = choice == 'camera' ? ImageSource.camera : ImageSource.gallery;
-    final picked = await ImagePicker().pickImage(source: source, imageQuality: 80);
+    final source = choice == 'camera'
+        ? ImageSource.camera
+        : ImageSource.gallery;
+    final picked = await ImagePicker().pickImage(
+      source: source,
+      imageQuality: 80,
+    );
     if (picked != null) {
       setState(() {
         _pickedFilePath = picked.path;
@@ -319,24 +407,34 @@ class _AddCertificationSheetState extends State<_AddCertificationSheet> {
   }
 
   Future<void> _submit() async {
-    if (_brandController.text.trim().isEmpty || _titleController.text.trim().isEmpty) {
+    if (_brandController.text.trim().isEmpty ||
+        _titleController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Lütfen marka ve unvan alanlarını doldurun.'), backgroundColor: AppColors.navy),
+        const SnackBar(
+          content: Text('Lütfen marka ve unvan alanlarını doldurun.'),
+          backgroundColor: AppColors.navy,
+        ),
       );
       return;
     }
     setState(() => _submitting = true);
     try {
-      final res = await _dio.post('/certifications', data: {
-        'brand': _brandController.text.trim(),
-        'title': _titleController.text.trim(),
-        if (_expiresAt != null) 'expiresAt': _expiresAt!.toIso8601String(),
-      });
+      final res = await _dio.post(
+        '/certifications',
+        data: {
+          'brand': _brandController.text.trim(),
+          'title': _titleController.text.trim(),
+          if (_expiresAt != null) 'expiresAt': _expiresAt!.toIso8601String(),
+        },
+      );
 
       if (_pickedFilePath != null) {
         final certId = res.data['id'];
         final formData = FormData.fromMap({
-          'file': await MultipartFile.fromFile(_pickedFilePath!, filename: _pickedFileName),
+          'file': await MultipartFile.fromFile(
+            _pickedFilePath!,
+            filename: _pickedFileName,
+          ),
         });
         await _dio.post('/certifications/$certId/document', data: formData);
       }
@@ -348,10 +446,14 @@ class _AddCertificationSheetState extends State<_AddCertificationSheet> {
       String message = 'Kaydedilemedi, tekrar deneyin.';
       if (e is DioException) {
         final serverMessage = e.response?.data?['message'];
-        if (serverMessage is String && serverMessage.isNotEmpty) message = serverMessage;
-        if (e.response == null) message = 'Sunucuya ulaşılamadı. İnternet bağlantınızı kontrol edin.';
+        if (serverMessage is String && serverMessage.isNotEmpty)
+          message = serverMessage;
+        if (e.response == null)
+          message = 'Sunucuya ulaşılamadı. İnternet bağlantınızı kontrol edin.';
       }
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: AppColors.navy));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message), backgroundColor: AppColors.navy),
+      );
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
@@ -370,15 +472,30 @@ class _AddCertificationSheetState extends State<_AddCertificationSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text('Yeni Sertifika', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+          const Text(
+            'Yeni Sertifika',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+          ),
           const SizedBox(height: AppSpacing.sm),
-          TextField(controller: _brandController, decoration: const InputDecoration(labelText: 'Marka (örn. Honeywell)')),
+          TextField(
+            controller: _brandController,
+            decoration: const InputDecoration(
+              labelText: 'Marka (örn. Honeywell)',
+            ),
+          ),
           const SizedBox(height: AppSpacing.xs),
-          TextField(controller: _titleController, decoration: const InputDecoration(labelText: 'Sertifika Adı')),
+          TextField(
+            controller: _titleController,
+            decoration: const InputDecoration(labelText: 'Sertifika Adı'),
+          ),
           const SizedBox(height: AppSpacing.xs),
           ListTile(
             contentPadding: EdgeInsets.zero,
-            title: Text(_expiresAt == null ? 'Son geçerlilik tarihi (opsiyonel)' : _expiresAt!.toString().substring(0, 10)),
+            title: Text(
+              _expiresAt == null
+                  ? 'Son geçerlilik tarihi (opsiyonel)'
+                  : _expiresAt!.toString().substring(0, 10),
+            ),
             trailing: const Icon(Icons.calendar_month_outlined),
             onTap: () async {
               final picked = await showDatePicker(
@@ -393,14 +510,29 @@ class _AddCertificationSheetState extends State<_AddCertificationSheet> {
           const SizedBox(height: AppSpacing.xs),
           OutlinedButton.icon(
             onPressed: _pickPhoto,
-            icon: Icon(_pickedFilePath != null ? Icons.check_circle_outline : Icons.attach_file),
-            label: Text(_pickedFilePath != null ? 'Belge Eklendi: $_pickedFileName' : 'Sertifika Belgesi Ekle (opsiyonel)'),
+            icon: Icon(
+              _pickedFilePath != null
+                  ? Icons.check_circle_outline
+                  : Icons.attach_file,
+            ),
+            label: Text(
+              _pickedFilePath != null
+                  ? 'Belge Eklendi: $_pickedFileName'
+                  : 'Sertifika Belgesi Ekle (opsiyonel)',
+            ),
           ),
           const SizedBox(height: AppSpacing.md),
           ElevatedButton(
             onPressed: _submitting ? null : _submit,
             child: _submitting
-                ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
                 : const Text('Kaydet'),
           ),
         ],

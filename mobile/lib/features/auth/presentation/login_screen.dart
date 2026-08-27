@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:dio/dio.dart';
+
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_components.dart';
 import '../../../core/widgets/email_split_field.dart';
@@ -30,7 +31,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (!_formKey.currentState!.validate()) return;
     if (_email == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Lütfen e-posta kullanıcı adı ve uzantı alanlarının ikisini de doldurun.')),
+        const SnackBar(
+          content: Text(
+            'Lütfen e-posta kullanıcı adı ve uzantı alanlarının ikisini de doldurun.',
+          ),
+        ),
       );
       return;
     }
@@ -39,13 +44,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       _error = null;
     });
     try {
-      await ref.read(authRepositoryProvider).login(
-            email: _email!,
-            password: _passwordController.text,
-          );
+      await ref
+          .read(authRepositoryProvider)
+          .login(email: _email!, password: _passwordController.text);
       if (mounted) context.go('/home');
     } on DioException catch (e) {
-      setState(() => _error = e.response?.data?['message'] ?? 'Giriş başarısız.');
+      setState(
+        () => _error = e.response?.data?['message'] ?? 'Giriş başarısız.',
+      );
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -69,7 +75,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Future<void> _checkBiometricAvailability() async {
     final hasToken = await TokenStorage().getAccessToken() != null;
     final deviceSupports = await _biometricService.isAvailable();
-    if (mounted) setState(() => _biometricAvailable = hasToken && deviceSupports);
+    if (mounted)
+      setState(() => _biometricAvailable = hasToken && deviceSupports);
   }
 
   Future<void> _submitBiometric() async {
@@ -85,7 +92,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (mounted) context.go('/home');
     } catch (e) {
       if (mounted) {
-        setState(() => _error = 'Parmak izi doğrulaması başarısız oldu, lütfen e-posta/şifre ile giriş yapın.');
+        setState(
+          () => _error = 'Parmak izi doğrulaması başarısız oldu, lütfen e-posta/şifre ile giriş yapın.',
+        );
       }
     } finally {
       if (mounted) setState(() => _biometricLoading = false);
@@ -98,7 +107,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       _error = null;
     });
     try {
-      final pendingMessage = await ref.read(authRepositoryProvider).loginWithGoogle();
+      final pendingMessage = await ref
+          .read(authRepositoryProvider)
+          .loginWithGoogle();
       if (!mounted) return;
       if (pendingMessage != null) {
         showDialog(
@@ -107,7 +118,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           builder: (_) => AlertDialog(
             title: const Text('Kayıt Alındı'),
             content: Text(pendingMessage),
-            actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Tamam'))],
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Tamam'),
+              ),
+            ],
           ),
         );
       } else {
@@ -136,7 +152,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.lg,
+              vertical: AppSpacing.xl,
+            ),
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 420),
               child: Form(
@@ -156,7 +175,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         child: Image.asset(
                           'assets/images/entpa_logo.png',
                           errorBuilder: (context, error, stackTrace) =>
-                              const Icon(Icons.local_fire_department, color: AppColors.primary, size: 44),
+                              const Icon(
+                                Icons.local_fire_department,
+                                color: AppColors.primary,
+                                size: 44,
+                              ),
                         ),
                       ),
                     ),
@@ -164,13 +187,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     const Text(
                       'ENTPA Mühendislik Hizmeti',
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.textPrimary, letterSpacing: 0.2),
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.textPrimary,
+                        letterSpacing: 0.2,
+                      ),
                     ),
                     const SizedBox(height: 6),
                     Text(
                       'Bayi Teknik Destek Platformu',
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 13.5, color: AppColors.textMuted, fontWeight: FontWeight.w500),
+                      style: TextStyle(
+                        fontSize: 13.5,
+                        color: AppColors.textMuted,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                     const SizedBox(height: AppSpacing.xl),
                     if (_error != null)
@@ -181,9 +213,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           color: AppColors.errorContainer,
                           borderRadius: BorderRadius.circular(AppRadius.md),
                         ),
-                        child: Text(_error!, style: const TextStyle(color: AppColors.errorColor), textAlign: TextAlign.center),
+                        child: Text(
+                          _error!,
+                          style: const TextStyle(color: AppColors.errorColor),
+                          textAlign: TextAlign.center,
+                        ),
                       ),
-                    EmailSplitField(onChanged: (value) => setState(() => _email = value)),
+                    EmailSplitField(
+                      onChanged: (value) => setState(() => _email = value),
+                    ),
                     const SizedBox(height: AppSpacing.sm),
                     // ÖNEMLİ: TextFormField olarak kalıyor (AppTextField'a
                     // geçmiyor) çünkü Form'un validate() kontrolü buna
@@ -197,14 +235,32 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         prefixIcon: const Icon(Icons.lock_outline),
                         filled: true,
                         fillColor: AppColors.surfaceBase,
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.md), borderSide: BorderSide(color: AppColors.outline)),
-                        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.md), borderSide: BorderSide(color: AppColors.outline)),
-                        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.md), borderSide: const BorderSide(color: AppColors.primary, width: 1.4)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(AppRadius.md),
+                          borderSide: BorderSide(color: AppColors.outline),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(AppRadius.md),
+                          borderSide: BorderSide(color: AppColors.outline),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(AppRadius.md),
+                          borderSide: const BorderSide(
+                            color: AppColors.primary,
+                            width: 1.4,
+                          ),
+                        ),
                       ),
-                      validator: (v) => (v == null || v.length < 6) ? 'Şifre en az 6 karakter olmalı' : null,
+                      validator: (v) => (v == null || v.length < 6)
+                          ? 'Şifre en az 6 karakter olmalı'
+                          : null,
                     ),
                     const SizedBox(height: AppSpacing.lg),
-                    AppButton(label: 'Giriş Yap', onPressed: _submit, loading: _loading),
+                    AppButton(
+                      label: 'Giriş Yap',
+                      onPressed: _submit,
+                      loading: _loading,
+                    ),
                     const SizedBox(height: AppSpacing.sm),
                     TextButton(
                       onPressed: () => context.push('/register'),
@@ -216,7 +272,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         Expanded(child: Divider(color: AppColors.outline)),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Text('veya', style: TextStyle(color: AppColors.textMuted, fontSize: 12)),
+                          child: Text(
+                            'veya',
+                            style: TextStyle(
+                              color: AppColors.textMuted,
+                              fontSize: 12,
+                            ),
+                          ),
                         ),
                         Expanded(child: Divider(color: AppColors.outline)),
                       ],

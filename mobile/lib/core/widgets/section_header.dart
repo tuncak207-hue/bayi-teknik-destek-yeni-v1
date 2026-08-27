@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../theme/app_theme.dart';
 
 /// Bir listenin/bölümün üstünde kullanılan, ikonlu tutarlı başlık.
@@ -7,7 +8,12 @@ class SectionHeader extends StatelessWidget {
   final IconData? icon;
   final Widget? trailing;
 
-  const SectionHeader({super.key, required this.title, this.icon, this.trailing});
+  const SectionHeader({
+    super.key,
+    required this.title,
+    this.icon,
+    this.trailing,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +28,12 @@ class SectionHeader extends StatelessWidget {
           Expanded(
             child: Text(
               title,
-              style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15.5, color: AppColors.navy, letterSpacing: 0.1),
+              style: const TextStyle(
+                fontWeight: FontWeight.w800,
+                fontSize: 15.5,
+                color: AppColors.navy,
+                letterSpacing: 0.1,
+              ),
             ),
           ),
           if (trailing != null) trailing!,
@@ -39,7 +50,12 @@ class StatusPill extends StatelessWidget {
   final Color color;
   final IconData? icon;
 
-  const StatusPill({super.key, required this.label, required this.color, this.icon});
+  const StatusPill({
+    super.key,
+    required this.label,
+    required this.color,
+    this.icon,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +72,14 @@ class StatusPill extends StatelessWidget {
             Icon(icon, size: 12, color: color),
             const SizedBox(width: 4),
           ],
-          Text(label, style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.w700)),
+          Text(
+            label,
+            style: TextStyle(
+              color: color,
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
         ],
       ),
     );
@@ -81,7 +104,11 @@ class IconAvatar extends StatelessWidget {
           ? Icon(icon, color: color, size: 20)
           : Text(
               initial ?? '?',
-              style: TextStyle(color: color, fontWeight: FontWeight.w800, fontSize: 15),
+              style: TextStyle(
+                color: color,
+                fontWeight: FontWeight.w800,
+                fontSize: 15,
+              ),
             ),
     );
   }

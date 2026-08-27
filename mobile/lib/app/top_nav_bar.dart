@@ -63,10 +63,8 @@ class TopNavSliverAppBar extends StatelessWidget {
           Expanded(
             child: Text(
               'Bayi Teknik Destek',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -0.2,
-                  ),
+              style: Theme.of(context).textTheme.titleLarge
+                  ?.copyWith(fontWeight: FontWeight.w700, letterSpacing: -0.2),
             ),
           ),
           IconButton(
@@ -74,8 +72,13 @@ class TopNavSliverAppBar extends StatelessWidget {
             onPressed: onNotificationsTap,
             icon: Badge(
               isLabelVisible: unreadNotifications > 0,
-              label: Text(unreadNotifications > 9 ? '9+' : '$unreadNotifications'),
-              child: Icon(Icons.notifications_outlined, color: scheme.onSurfaceVariant),
+              label: Text(
+                unreadNotifications > 9 ? '9+' : '$unreadNotifications',
+              ),
+              child: Icon(
+                Icons.notifications_outlined,
+                color: scheme.onSurfaceVariant,
+              ),
             ),
           ),
         ],

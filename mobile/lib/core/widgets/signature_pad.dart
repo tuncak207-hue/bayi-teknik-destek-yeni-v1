@@ -1,12 +1,15 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
+
 import '../theme/app_theme.dart';
 
 /// Paylaşılan imza alanı — Bakım ve Devreye Alma formlarının ikisi de
 /// aynı bileşeni kullanıyor (kod tekrarını önlemek ve tutarlı görünüm için).
 class SignaturePad extends StatefulWidget {
   final ValueChanged<List<Offset?>> onChanged;
+
   /// Parmak imza alanına değdiğinde true, kalktığında false ile çağrılır.
   /// "Ekranda çizgi oluşuyor" hatasının kök nedeni buydu: bu alan bir
   /// kaydırılabilir ListView'ın içindeydi ve sayfayı kaydırmak için yapılan
@@ -17,7 +20,11 @@ class SignaturePad extends StatefulWidget {
   /// olarak yorumlanır, kayma ile karışmaz.
   final ValueChanged<bool>? onDrawingChanged;
 
-  const SignaturePad({super.key, required this.onChanged, this.onDrawingChanged});
+  const SignaturePad({
+    super.key,
+    required this.onChanged,
+    this.onDrawingChanged,
+  });
 
   @override
   State<SignaturePad> createState() => SignaturePadState();
@@ -38,7 +45,10 @@ class SignaturePadState extends State<SignaturePad> {
     final recorder = ui.PictureRecorder();
     final canvas = Canvas(recorder);
     const size = Size(320, 200);
-    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), Paint()..color = Colors.white);
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, size.width, size.height),
+      Paint()..color = Colors.white,
+    );
     final paint = Paint()
       ..color = Colors.black
       ..strokeWidth = 3
@@ -81,7 +91,8 @@ class SignaturePadState extends State<SignaturePad> {
     if (!_isDrawing) return;
     final local = box?.globalToLocal(event.position);
     final size = box?.size;
-    final withinBounds = local != null &&
+    final withinBounds =
+        local != null &&
         size != null &&
         local.dx >= 0 &&
         local.dy >= 0 &&
@@ -122,7 +133,11 @@ class SignaturePadState extends State<SignaturePad> {
       decoration: BoxDecoration(
         color: const Color(0xFFFAFAFB),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: hasSignature ? AppColors.brand.withValues(alpha: 0.3) : Colors.grey.shade200),
+        border: Border.all(
+          color: hasSignature
+              ? AppColors.brand.withValues(alpha: 0.3)
+              : Colors.grey.shade200,
+        ),
       ),
       child: Stack(
         children: [
@@ -135,11 +150,16 @@ class SignaturePadState extends State<SignaturePad> {
           // çizilmiyordu. Listener ile HAM dokunma olayları dinleniyor
           // — bu, üst kaydırma widget'ıyla YARIŞMIYOR, kesin çalışıyor.
           Listener(
-            onPointerDown: (event) => _handleDown(event, context.findRenderObject() as RenderBox?),
-            onPointerMove: (event) => _handleMove(event, context.findRenderObject() as RenderBox?),
+            onPointerDown: (event) =>
+                _handleDown(event, context.findRenderObject() as RenderBox?),
+            onPointerMove: (event) =>
+                _handleMove(event, context.findRenderObject() as RenderBox?),
             onPointerUp: (_) => _handleUp(),
             onPointerCancel: (_) => _handleCancel(),
-            child: CustomPaint(painter: _SignaturePainter(_points), size: Size.infinite),
+            child: CustomPaint(
+              painter: _SignaturePainter(_points),
+              size: Size.infinite,
+            ),
           ),
           if (_points.isEmpty)
             Center(

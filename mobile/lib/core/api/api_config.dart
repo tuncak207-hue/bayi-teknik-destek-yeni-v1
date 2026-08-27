@@ -34,7 +34,10 @@ class ApiConfig {
       return '$name HTTPS ve geçerli bir host kullanmalıdır.';
     }
     final host = uri.host.toLowerCase();
-    if (host == 'localhost' || host == '127.0.0.1' || host == '10.0.2.2' || host == '0.0.0.0') {
+    if (host == 'localhost' ||
+        host == '127.0.0.1' ||
+        host == '10.0.2.2' ||
+        host == '0.0.0.0') {
       return '$name production’da yerel/emulator host’u kullanamaz.';
     }
     return null;

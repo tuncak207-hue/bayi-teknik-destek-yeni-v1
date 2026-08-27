@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
 import '../domain/chat_message.dart';
 
 class CitationCard extends StatelessWidget {
@@ -26,7 +27,9 @@ class CitationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       borderRadius: BorderRadius.circular(10),
-      onTap: () => context.push('/documents/${citation.documentId}?page=${citation.page}'),
+      onTap: () => context.push(
+        '/documents/${citation.documentId}?page=${citation.page}',
+      ),
       child: Container(
         margin: const EdgeInsets.only(top: 6),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -36,7 +39,11 @@ class CitationCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            const Icon(Icons.description_outlined, size: 18, color: Colors.grey),
+            const Icon(
+              Icons.description_outlined,
+              size: 18,
+              color: Colors.grey,
+            ),
             const SizedBox(width: 8),
             Expanded(
               child: Column(
@@ -47,13 +54,20 @@ class CitationCard extends StatelessWidget {
                     _shortTitle,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: Colors.black87),
+                    style: const TextStyle(
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black87,
+                    ),
                   ),
                   Text(
                     'Sayfa ${citation.page} · ${citation.brand} ${citation.model}',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 10.5, color: Colors.grey.shade500),
+                    style: TextStyle(
+                      fontSize: 10.5,
+                      color: Colors.grey.shade500,
+                    ),
                   ),
                 ],
               ),

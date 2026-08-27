@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/theme_controller.dart';
@@ -49,13 +50,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _setPref(String type, bool value) async {
-    final prefs = Map<String, dynamic>.from((_profile?['notificationPreferences'] as Map?) ?? {});
+    final prefs = Map<String, dynamic>.from(
+      (_profile?['notificationPreferences'] as Map?) ?? {},
+    );
     prefs[type] = value;
     setState(() => _profile!['notificationPreferences'] = prefs);
     await _dio.patch('/users/me/notification-preferences', data: prefs);
   }
 
-  Future<void> _setQuietHours({bool? enabled, String? start, String? end}) async {
+  Future<void> _setQuietHours({
+    bool? enabled,
+    String? start,
+    String? end,
+  }) async {
     final newEnabled = enabled ?? _profile?['quietHoursEnabled'] == true;
     final newStart = start ?? _profile?['quietHoursStart'] ?? '22:00';
     final newEnd = end ?? _profile?['quietHoursEnd'] ?? '07:00';
@@ -64,18 +71,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _profile!['quietHoursStart'] = newStart;
       _profile!['quietHoursEnd'] = newEnd;
     });
-    await _dio.patch('/users/me/quiet-hours', data: {'enabled': newEnabled, 'start': newStart, 'end': newEnd});
+    await _dio.patch(
+      '/users/me/quiet-hours',
+      data: {'enabled': newEnabled, 'start': newStart, 'end': newEnd},
+    );
   }
 
   Future<void> _pickTime(bool isStart) async {
-    final current = isStart ? (_profile?['quietHoursStart'] ?? '22:00') : (_profile?['quietHoursEnd'] ?? '07:00');
+    final current = isStart
+        ? (_profile?['quietHoursStart'] ?? '22:00')
+        : (_profile?['quietHoursEnd'] ?? '07:00');
     final parts = (current as String).split(':');
     final picked = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1])),
+      initialTime: TimeOfDay(
+        hour: int.parse(parts[0]),
+        minute: int.parse(parts[1]),
+      ),
     );
     if (picked == null) return;
-    final formatted = '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
+    final formatted =
+        '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
     if (isStart) {
       _setQuietHours(start: formatted);
     } else {
@@ -99,22 +115,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     valueListenable: ThemeController().biometricLockEnabled,
                     builder: (context, enabled, _) => SwitchListTile(
                       title: const Text('Parmak İzi ile Açılış Kilidi'),
-                      subtitle: const Text('Uygulama her açıldığında biyometrik onay istenir'),
+                      subtitle: const Text(
+                        'Uygulama her açıldığında biyometrik onay istenir',
+                      ),
                       value: enabled,
                       onChanged: (v) async {
                         if (v) {
-                          final available = await BiometricService().isAvailable();
+                          final available = await BiometricService()
+                              .isAvailable();
                           if (!available) {
                             if (mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Bu cihazda parmak izi/yüz tanıma desteklenmiyor.')),
+                                const SnackBar(
+                                  content: Text(
+                                    'Bu cihazda parmak izi/yüz tanıma desteklenmiyor.',
+                                  ),
+                                ),
                               );
                             }
                             return;
                           }
                           // Etkinleştirirken hemen bir kez doğrulama isteyip
                           // gerçekten çalıştığından emin oluyoruz.
-                          final confirmed = await BiometricService().authenticate();
+                          final confirmed = await BiometricService()
+                              .authenticate();
                           if (!confirmed) return;
                         }
                         ThemeController().setBiometricLockEnabled(v);
@@ -134,7 +158,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           valueListenable: ThemeController().fontScale,
                           builder: (context, scale, _) => Column(
                             children: [
-                              Text('Örnek Metin', style: TextStyle(fontSize: 16 * scale)),
+                              Text(
+                                'Örnek Metin',
+                                style: TextStyle(fontSize: 16 * scale),
+                              ),
                               Slider(
                                 value: scale,
                                 min: 0.85,
@@ -143,11 +170,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 label: scale <= 0.9
                                     ? 'Küçük'
                                     : scale <= 1.05
-                                        ? 'Normal'
-                                        : scale <= 1.2
-                                            ? 'Büyük'
-                                            : 'Çok Büyük',
-                                onChanged: (v) => ThemeController().setFontScale(v),
+                                    ? 'Normal'
+                                    : scale <= 1.2
+                                    ? 'Büyük'
+                                    : 'Çok Büyük',
+                                onChanged: (v) =>
+                                    ThemeController().setFontScale(v),
                               ),
                             ],
                           ),
@@ -164,7 +192,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     children: [
                       SwitchListTile(
                         title: const Text('Sessiz Saatleri Etkinleştir'),
-                        subtitle: const Text('Belirlediğiniz saat aralığında bildirim gelmez'),
+                        subtitle: const Text(
+                          'Belirlediğiniz saat aralığında bildirim gelmez',
+                        ),
                         value: _profile?['quietHoursEnabled'] == true,
                         onChanged: (v) => _setQuietHours(enabled: v),
                       ),
@@ -174,7 +204,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           title: const Text('Başlangıç'),
                           trailing: Text(
                             _profile?['quietHoursStart'] ?? '22:00',
-                            style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.navy),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.navy,
+                            ),
                           ),
                           onTap: () => _pickTime(true),
                         ),
@@ -182,7 +215,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           title: const Text('Bitiş'),
                           trailing: Text(
                             _profile?['quietHoursEnd'] ?? '07:00',
-                            style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.navy),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.navy,
+                            ),
                           ),
                           onTap: () => _pickTime(false),
                         ),
@@ -196,11 +232,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 StandardCard(
                   child: Column(
                     children: _kNotificationTypeLabels.entries
-                        .map((e) => SwitchListTile(
-                              title: Text(e.value),
-                              value: _prefFor(e.key),
-                              onChanged: (v) => _setPref(e.key, v),
-                            ))
+                        .map(
+                          (e) => SwitchListTile(
+                            title: Text(e.value),
+                            value: _prefFor(e.key),
+                            onChanged: (v) => _setPref(e.key, v),
+                          ),
+                        )
                         .toList(),
                   ),
                 ),
@@ -220,7 +258,12 @@ class _SectionTitle extends StatelessWidget {
       padding: const EdgeInsets.only(left: 4, bottom: AppSpacing.xs),
       child: Text(
         text.toUpperCase(),
-        style: TextStyle(fontWeight: FontWeight.w800, fontSize: 11.5, color: Colors.grey.shade500, letterSpacing: 0.6),
+        style: TextStyle(
+          fontWeight: FontWeight.w800,
+          fontSize: 11.5,
+          color: Colors.grey.shade500,
+          letterSpacing: 0.6,
+        ),
       ),
     );
   }

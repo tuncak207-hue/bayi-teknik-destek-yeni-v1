@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// İndirilen dokümanların yerel kaydı (manifest). Dosyaların kendisi
@@ -51,7 +52,9 @@ class OfflineDocumentsStore {
 
   Future<List<Map<String, dynamic>>> listAll() async {
     final manifest = await _readManifest();
-    return manifest.values.cast<Map<String, dynamic>>().toList()
-      ..sort((a, b) => (b['downloadedAt'] as String).compareTo(a['downloadedAt'] as String));
+    return manifest.values.cast<Map<String, dynamic>>().toList()..sort(
+      (a, b) =>
+          (b['downloadedAt'] as String).compareTo(a['downloadedAt'] as String),
+    );
   }
 }

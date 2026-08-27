@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
+
 import 'dart:io' show Platform;
+
 import '../theme/app_theme.dart';
 
 /// Alt sayfalar için tek tip başlık ve geri navigasyonu. Ana sekmelerin üst
@@ -12,10 +14,12 @@ class AppPageHeader extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onBack;
   final Color? backgroundColor;
   final Color? foregroundColor;
+
   /// Başlığın hemen yanına (ör. bir sayaç rozeti) yerleştirilecek isteğe
   /// bağlı küçük bileşen — "rozet en sağda değil, başlığın yanında olmalı"
   /// isteği için: actions sağ kenara yaslanır, bu ise başlıkla birlikte akar.
   final Widget? titleBadge;
+
   /// Başlığın geri okuna olan mesafesi — "yazı ortada duruyor, sola yakın
   /// olmalı" gibi tekil isteklerde, bu ekrana özel daraltmak için.
   final double? titleSpacing;
@@ -51,7 +55,13 @@ class AppPageHeader extends StatelessWidget implements PreferredSizeWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Flexible(child: Text(title, style: AppText.screenTitle.copyWith(color: foreground), overflow: TextOverflow.ellipsis)),
+                Flexible(
+                  child: Text(
+                    title,
+                    style: AppText.screenTitle.copyWith(color: foreground),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
                 const SizedBox(width: AppSpacing.xs),
                 titleBadge!,
               ],
@@ -63,13 +73,15 @@ class AppPageHeader extends StatelessWidget implements PreferredSizeWidget {
         tooltip: 'Geri',
         color: foreground,
         icon: const Icon(Icons.arrow_back),
-        onPressed: onBack ?? () {
-          if (Navigator.of(context).canPop()) {
-            Navigator.of(context).pop();
-          } else {
-            context.go('/home');
-          }
-        },
+        onPressed:
+            onBack ??
+            () {
+              if (Navigator.of(context).canPop()) {
+                Navigator.of(context).pop();
+              } else {
+                context.go('/home');
+              }
+            },
       ),
       actions: actions,
     );
@@ -85,7 +97,12 @@ class StatusBadge extends StatelessWidget {
   final AppStatusTone tone;
   final IconData? icon;
 
-  const StatusBadge({super.key, required this.label, required this.tone, this.icon});
+  const StatusBadge({
+    super.key,
+    required this.label,
+    required this.tone,
+    this.icon,
+  });
 
   ({Color bg, Color fg}) get _colors {
     switch (tone) {
@@ -107,12 +124,25 @@ class StatusBadge extends StatelessWidget {
     final c = _colors;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(color: c.bg, borderRadius: BorderRadius.circular(20)),
+      decoration: BoxDecoration(
+        color: c.bg,
+        borderRadius: BorderRadius.circular(20),
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (icon != null) ...[Icon(icon, size: 12, color: c.fg), const SizedBox(width: 4)],
-          Text(label, style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: c.fg)),
+          if (icon != null) ...[
+            Icon(icon, size: 12, color: c.fg),
+            const SizedBox(width: 4),
+          ],
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11.5,
+              fontWeight: FontWeight.w700,
+              color: c.fg,
+            ),
+          ),
         ],
       ),
     );
@@ -126,19 +156,40 @@ class StandardCard extends StatelessWidget {
   final VoidCallback? onTap;
   final Border? border;
 
-  const StandardCard({super.key, required this.child, this.padding = const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.md), this.onTap, this.border});
+  const StandardCard({
+    super.key,
+    required this.child,
+    this.padding = const EdgeInsets.symmetric(
+      horizontal: AppSpacing.md,
+      vertical: AppSpacing.md,
+    ),
+    this.onTap,
+    this.border,
+  });
 
   @override
   Widget build(BuildContext context) {
     final card = Container(
-        padding: padding,
-        decoration: BoxDecoration(
+      padding: padding,
+      decoration: BoxDecoration(
         color: Theme.of(context).brightness == Brightness.dark
             ? Theme.of(context).colorScheme.surfaceContainerLow
             : const Color(0xFFF8F7FC),
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: border ?? Border.all(color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.72)),
-        boxShadow: [BoxShadow(color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.035), blurRadius: 10, offset: const Offset(0, 3))],
+        border:
+            border ??
+            Border.all(
+              color: Theme.of(context).colorScheme.outlineVariant
+                  .withValues(alpha: 0.72),
+            ),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).colorScheme.shadow
+                .withValues(alpha: 0.035),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       child: child,
     );
@@ -162,7 +213,12 @@ class CardHeaderRow extends StatelessWidget {
   final String? subtitle;
   final Widget? trailing;
 
-  const CardHeaderRow({super.key, required this.title, this.subtitle, this.trailing});
+  const CardHeaderRow({
+    super.key,
+    required this.title,
+    this.subtitle,
+    this.trailing,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -173,10 +229,24 @@ class CardHeaderRow extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: const TextStyle(fontSize: 15.5, fontWeight: FontWeight.w800, color: AppColors.navy), maxLines: 1, overflow: TextOverflow.ellipsis),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 15.5,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.navy,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
               if (subtitle != null) ...[
                 const SizedBox(height: 3),
-                Text(subtitle!, style: TextStyle(fontSize: 12.5, color: Colors.grey.shade500), maxLines: 2, overflow: TextOverflow.ellipsis),
+                Text(
+                  subtitle!,
+                  style: TextStyle(fontSize: 12.5, color: Colors.grey.shade500),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ],
             ],
           ),
@@ -201,7 +271,10 @@ class CardFooterMeta extends StatelessWidget {
       children: [
         Icon(icon, size: 13, color: Colors.grey.shade400),
         const SizedBox(width: 4),
-        Text(label, style: TextStyle(fontSize: 11.5, color: Colors.grey.shade500)),
+        Text(
+          label,
+          style: TextStyle(fontSize: 11.5, color: Colors.grey.shade500),
+        ),
       ],
     );
   }
@@ -213,7 +286,12 @@ class StandardFab extends StatelessWidget {
   final VoidCallback onPressed;
   final IconData icon;
 
-  const StandardFab({super.key, required this.label, required this.onPressed, this.icon = Icons.add});
+  const StandardFab({
+    super.key,
+    required this.label,
+    required this.onPressed,
+    this.icon = Icons.add,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -269,9 +347,19 @@ class PlatformFormScaffold extends StatelessWidget {
           leading: CupertinoButton(
             padding: EdgeInsets.zero,
             onPressed: () => Navigator.pop(context),
-            child: Text('İptal', style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 16)),
+            child: Text(
+              'İptal',
+              style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 16),
+            ),
           ),
-          middle: Text(title, style: TextStyle(color: scheme.onSurface, fontWeight: FontWeight.w600, fontSize: 16)),
+          middle: Text(
+            title,
+            style: TextStyle(
+              color: scheme.onSurface,
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
+            ),
+          ),
           trailing: CupertinoButton(
             padding: EdgeInsets.zero,
             onPressed: canSubmit && !submitting ? onSubmit : null,
@@ -280,7 +368,9 @@ class PlatformFormScaffold extends StatelessWidget {
                 : Text(
                     submitLabel,
                     style: TextStyle(
-                      color: canSubmit ? scheme.primary : scheme.onSurfaceVariant.withValues(alpha: 0.45),
+                      color: canSubmit
+                          ? scheme.primary
+                          : scheme.onSurfaceVariant.withValues(alpha: 0.45),
                       fontWeight: FontWeight.w600,
                       fontSize: 16,
                     ),
@@ -305,19 +395,32 @@ class PlatformFormScaffold extends StatelessWidget {
         elevation: 0,
         surfaceTintColor: scheme.surface,
         automaticallyImplyLeading: true,
-        title: Text(title, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700, color: scheme.onSurface)),
+        title: Text(
+          title,
+          style: Theme.of(context).textTheme.titleMedium
+              ?.copyWith(fontWeight: FontWeight.w700, color: scheme.onSurface),
+        ),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 8),
             child: TextButton(
-              style: TextButton.styleFrom(minimumSize: const Size(0, 48), padding: const EdgeInsets.symmetric(horizontal: 16)),
+              style: TextButton.styleFrom(
+                minimumSize: const Size(0, 48),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+              ),
               onPressed: canSubmit && !submitting ? onSubmit : null,
               child: submitting
-                  ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
                   : Text(
                       submitLabel.toUpperCase(),
                       style: TextStyle(
-                        color: canSubmit ? scheme.primary : scheme.onSurfaceVariant.withValues(alpha: 0.45),
+                        color: canSubmit
+                            ? scheme.primary
+                            : scheme.onSurfaceVariant.withValues(alpha: 0.45),
                         fontWeight: FontWeight.w800,
                         fontSize: 13.5,
                         letterSpacing: 0.5,
@@ -370,8 +473,17 @@ class PlatformTextField extends StatelessWidget {
         controller: controller,
         onChanged: onChanged,
         placeholder: hint,
-        placeholderStyle: TextStyle(fontSize: fontSize, fontWeight: fontWeight, color: scheme.onSurfaceVariant.withValues(alpha: 0.6)),
-        style: TextStyle(fontSize: fontSize, fontWeight: fontWeight, color: scheme.onSurface, height: 1.4),
+        placeholderStyle: TextStyle(
+          fontSize: fontSize,
+          fontWeight: fontWeight,
+          color: scheme.onSurfaceVariant.withValues(alpha: 0.6),
+        ),
+        style: TextStyle(
+          fontSize: fontSize,
+          fontWeight: fontWeight,
+          color: scheme.onSurface,
+          height: 1.4,
+        ),
         padding: EdgeInsets.zero,
         minLines: minLines,
         maxLines: maxLines,
@@ -382,10 +494,19 @@ class PlatformTextField extends StatelessWidget {
       onChanged: onChanged,
       minLines: minLines,
       maxLines: maxLines,
-      style: TextStyle(fontSize: fontSize, fontWeight: fontWeight, color: scheme.onSurface, height: 1.4),
+      style: TextStyle(
+        fontSize: fontSize,
+        fontWeight: fontWeight,
+        color: scheme.onSurface,
+        height: 1.4,
+      ),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: TextStyle(fontSize: fontSize, fontWeight: fontWeight, color: scheme.onSurfaceVariant.withValues(alpha: 0.6)),
+        hintStyle: TextStyle(
+          fontSize: fontSize,
+          fontWeight: fontWeight,
+          color: scheme.onSurfaceVariant.withValues(alpha: 0.6),
+        ),
         border: InputBorder.none,
         contentPadding: EdgeInsets.zero,
       ),

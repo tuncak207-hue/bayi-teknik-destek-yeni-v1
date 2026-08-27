@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
+
 import '../../core/theme/app_theme.dart';
 import '../ai_assistant/data/ai_repository.dart';
 
@@ -20,7 +21,8 @@ class VoiceQuickQuestionSheet extends StatefulWidget {
   }
 
   @override
-  State<VoiceQuickQuestionSheet> createState() => _VoiceQuickQuestionSheetState();
+  State<VoiceQuickQuestionSheet> createState() =>
+      _VoiceQuickQuestionSheetState();
 }
 
 enum _SheetState { idle, listening, sending, error }
@@ -112,7 +114,10 @@ class _VoiceQuickQuestionSheetState extends State<VoiceQuickQuestionSheet> {
           Container(
             width: 40,
             height: 4,
-            decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade300,
+              borderRadius: BorderRadius.circular(2),
+            ),
           ),
           const SizedBox(height: AppSpacing.md),
           if (_state == _SheetState.error) ...[
@@ -120,7 +125,10 @@ class _VoiceQuickQuestionSheetState extends State<VoiceQuickQuestionSheet> {
             const SizedBox(height: AppSpacing.sm),
             Text(_errorText ?? 'Bir hata oluştu.', textAlign: TextAlign.center),
             const SizedBox(height: AppSpacing.md),
-            OutlinedButton(onPressed: () => Navigator.pop(context), child: const Text('Kapat')),
+            OutlinedButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Kapat'),
+            ),
           ] else ...[
             Container(
               width: 84,
@@ -134,7 +142,9 @@ class _VoiceQuickQuestionSheetState extends State<VoiceQuickQuestionSheet> {
               child: Icon(
                 _state == _SheetState.sending ? Icons.send_outlined : Icons.mic,
                 size: 38,
-                color: _state == _SheetState.listening ? AppColors.brand : AppColors.navy,
+                color: _state == _SheetState.listening
+                    ? AppColors.brand
+                    : AppColors.navy,
               ),
             ),
             const SizedBox(height: AppSpacing.md),
@@ -142,21 +152,30 @@ class _VoiceQuickQuestionSheetState extends State<VoiceQuickQuestionSheet> {
               _state == _SheetState.listening
                   ? 'Dinliyorum... sorunuzu söyleyin'
                   : _state == _SheetState.sending
-                      ? 'Gönderiliyor...'
-                      : 'Hazırlanıyor...',
-              style: const TextStyle(fontWeight: FontWeight.w600, color: AppColors.navy),
+                  ? 'Gönderiliyor...'
+                  : 'Hazırlanıyor...',
+              style: const TextStyle(
+                fontWeight: FontWeight.w600,
+                color: AppColors.navy,
+              ),
             ),
             const SizedBox(height: AppSpacing.sm),
             if (_transcript.isNotEmpty)
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(AppSpacing.sm),
-                decoration: BoxDecoration(color: Colors.grey.shade100, borderRadius: BorderRadius.circular(AppSpacing.radius)),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(AppSpacing.radius),
+                ),
                 child: Text(_transcript, textAlign: TextAlign.center),
               ),
             const SizedBox(height: AppSpacing.md),
             if (_state == _SheetState.listening)
-              TextButton(onPressed: _send, child: const Text('Bitirdim, Gönder'))
+              TextButton(
+                onPressed: _send,
+                child: const Text('Bitirdim, Gönder'),
+              )
             else if (_state != _SheetState.sending)
               TextButton(onPressed: _cancel, child: const Text('Vazgeç')),
           ],

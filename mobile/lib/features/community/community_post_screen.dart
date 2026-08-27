@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+
 import '../../core/widgets/design_system.dart';
+
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:dio/dio.dart';
+
 import '../../core/api/api_client.dart';
 import '../../core/auth/current_user.dart';
 import '../../core/theme/app_theme.dart';
@@ -41,7 +44,10 @@ class _CommunityPostScreenState extends State<CommunityPostScreen> {
     if (text.isEmpty) return;
     setState(() => _sendingComment = true);
     try {
-      await _dio.post('/community/posts/${widget.postId}/comments', data: {'body': text});
+      await _dio.post(
+        '/community/posts/${widget.postId}/comments',
+        data: {'body': text},
+      );
       _commentController.clear();
       await _load();
     } finally {
@@ -66,7 +72,10 @@ class _CommunityPostScreenState extends State<CommunityPostScreen> {
         title: const Text('Yorumu Sil'),
         content: const Text('Bu yorumu silmek istediğinize emin misiniz?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Vazgeç'),
+          ),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
             child: const Text('Sil', style: TextStyle(color: AppColors.navy)),
@@ -103,11 +112,23 @@ class _CommunityPostScreenState extends State<CommunityPostScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(_post!['title'] ?? '', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: AppColors.navy)),
+                        Text(
+                          _post!['title'] ?? '',
+                          style: const TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.navy,
+                          ),
+                        ),
                         const SizedBox(height: 6),
                         Text(
-                          author != null ? '${author['company']} — ${author['firstName']} ${author['lastName']}' : '',
-                          style: TextStyle(fontSize: 12.5, color: Colors.grey.shade600),
+                          author != null
+                              ? '${author['company']} — ${author['firstName']} ${author['lastName']}'
+                              : '',
+                          style: TextStyle(
+                            fontSize: 12.5,
+                            color: Colors.grey.shade600,
+                          ),
                         ),
                         const SizedBox(height: AppSpacing.xs),
                         Text(_post!['body'] ?? ''),
@@ -118,15 +139,30 @@ class _CommunityPostScreenState extends State<CommunityPostScreen> {
                 const SizedBox(height: AppSpacing.md),
                 Row(
                   children: [
-                    Text('Yorumlar (${comments.length})', style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.navy)),
+                    Text(
+                      'Yorumlar (${comments.length})',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.navy,
+                      ),
+                    ),
                     const Spacer(),
                     OutlinedButton.icon(
                       onPressed: _askingAi ? null : _askAi,
                       icon: _askingAi
-                          ? const SizedBox(height: 14, width: 14, child: CircularProgressIndicator(strokeWidth: 2))
+                          ? const SizedBox(
+                              height: 14,
+                              width: 14,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
                           : const Icon(Icons.smart_toy_outlined, size: 16),
                       label: const Text('AI\'dan Yardım İste'),
-                      style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6)),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -134,7 +170,9 @@ class _CommunityPostScreenState extends State<CommunityPostScreen> {
                 ...comments.map((c) {
                   final isAi = c['isAI'] == true;
                   final commentAuthor = c['author'];
-                  final isMyComment = commentAuthor != null && commentAuthor['id'] == CurrentUser().id;
+                  final isMyComment =
+                      commentAuthor != null &&
+                      commentAuthor['id'] == CurrentUser().id;
                   return Card(
                     margin: const EdgeInsets.only(bottom: AppSpacing.xs),
                     child: Padding(
@@ -145,31 +183,44 @@ class _CommunityPostScreenState extends State<CommunityPostScreen> {
                           Row(
                             children: [
                               Icon(
-                                isAi ? Icons.smart_toy_outlined : Icons.person_outline,
+                                isAi
+                                    ? Icons.smart_toy_outlined
+                                    : Icons.person_outline,
                                 size: 15,
                                 color: isAi ? AppColors.brand : AppColors.navy,
                               ),
                               const SizedBox(width: 4),
                               Expanded(
                                 child: Text(
-                                  isAi ? 'AI destekli topluluk cevabı' : '${commentAuthor?['firstName'] ?? ''} ${commentAuthor?['lastName'] ?? ''}',
+                                  isAi
+                                      ? 'AI destekli topluluk cevabı'
+                                      : '${commentAuthor?['firstName'] ?? ''} ${commentAuthor?['lastName'] ?? ''}',
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w700,
-                                    color: isAi ? AppColors.brand : AppColors.navy,
+                                    color: isAi
+                                        ? AppColors.brand
+                                        : AppColors.navy,
                                   ),
                                 ),
                               ),
                               if (isMyComment)
                                 InkWell(
                                   onTap: () => _deleteComment(c['id']),
-                                  child: Icon(Icons.delete_outline, size: 16, color: Colors.grey.shade500),
+                                  child: Icon(
+                                    Icons.delete_outline,
+                                    size: 16,
+                                    color: Colors.grey.shade500,
+                                  ),
                                 ),
                             ],
                           ),
                           const SizedBox(height: 6),
                           isAi
-                              ? MarkdownBody(data: c['body'] ?? '', selectable: true)
+                              ? MarkdownBody(
+                                  data: c['body'] ?? '',
+                                  selectable: true,
+                                )
                               : Text(c['body'] ?? ''),
                         ],
                       ),
@@ -187,7 +238,9 @@ class _CommunityPostScreenState extends State<CommunityPostScreen> {
                   Expanded(
                     child: TextField(
                       controller: _commentController,
-                      decoration: const InputDecoration(hintText: 'Yorum yazın...'),
+                      decoration: const InputDecoration(
+                        hintText: 'Yorum yazın...',
+                      ),
                       onSubmitted: (_) => _addComment(),
                     ),
                   ),

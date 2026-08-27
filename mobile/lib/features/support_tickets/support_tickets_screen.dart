@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+
 import 'dart:io' show Platform;
+
 import 'package:dio/dio.dart';
 import 'package:image_picker/image_picker.dart';
+
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_components.dart';
@@ -25,7 +28,9 @@ class _SupportTicketsScreenState extends State<SupportTicketsScreen> {
   void initState() {
     super.initState();
     _load();
-    _dio.post('/notifications/mark-category-read/support_tickets').then((_) => NotificationBadgeBus.bump());
+    _dio
+        .post('/notifications/mark-category-read/support_tickets')
+        .then((_) => NotificationBadgeBus.bump());
   }
 
   Future<void> _load() async {
@@ -40,7 +45,9 @@ class _SupportTicketsScreenState extends State<SupportTicketsScreen> {
   Future<void> _openCreate({required bool isEmergency}) async {
     final created = await Navigator.push<bool>(
       context,
-      MaterialPageRoute(builder: (_) => _CreateTicketScreen(isEmergency: isEmergency)),
+      MaterialPageRoute(
+        builder: (_) => _CreateTicketScreen(isEmergency: isEmergency),
+      ),
     );
     if (created == true) _load();
   }
@@ -91,33 +98,45 @@ class _SupportTicketsScreenState extends State<SupportTicketsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      floatingActionButton: StandardFab(label: 'Yeni Kayıt', onPressed: () => _openCreate(isEmergency: false)),
+      floatingActionButton: StandardFab(
+        label: 'Yeni Kayıt',
+        onPressed: () => _openCreate(isEmergency: false),
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: SafeArea(
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.sm, AppSpacing.md, AppSpacing.md, AppSpacing.sm),
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.sm,
+                AppSpacing.md,
+                AppSpacing.md,
+                AppSpacing.sm,
+              ),
               child: Row(
                 children: [
                   IconButton(
                     icon: const Icon(Icons.arrow_back, color: AppColors.navy),
                     onPressed: () => Navigator.pop(context),
                   ),
-                  const Text(
-                    'Teknik Destek',
-                    style: AppText.screenTitle,
-                  ),
+                  const Text('Teknik Destek', style: AppText.screenTitle),
                   const SizedBox(width: AppSpacing.xs),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.primarySoft,
                       borderRadius: BorderRadius.circular(AppRadius.pill),
                     ),
                     child: Text(
                       '${_tickets.length}',
-                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.primary),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.primary,
+                      ),
                     ),
                   ),
                 ],
@@ -125,110 +144,203 @@ class _SupportTicketsScreenState extends State<SupportTicketsScreen> {
             ),
             Expanded(
               child: _loading
-                ? const Center(child: CircularProgressIndicator())
-                : RefreshIndicator(
-                    onRefresh: _load,
-                    child: ListView(
-                      padding: const EdgeInsets.all(AppSpacing.md),
-                      children: [
-                  Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(20),
-                      onTap: () => _openCreate(isEmergency: true),
-                      child: Container(
+                  ? const Center(child: CircularProgressIndicator())
+                  : RefreshIndicator(
+                      onRefresh: _load,
+                      child: ListView(
                         padding: const EdgeInsets.all(AppSpacing.md),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(colors: [AppColors.brand, AppColors.brand.withValues(alpha: 0.8)]),
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [BoxShadow(color: AppColors.brand.withValues(alpha: 0.35), blurRadius: 18, offset: const Offset(0, 6))],
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 46,
-                              height: 46,
-                              decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(14)),
-                              child: const Icon(Icons.warning_rounded, color: Colors.white, size: 24),
-                            ),
-                            const SizedBox(width: AppSpacing.sm),
-                            const Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Acil Teknik Destek', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 16)),
-                                  SizedBox(height: 2),
-                                  Text('Tek tuşla acil kayıt oluştur', style: TextStyle(color: Colors.white70, fontSize: 12)),
-                                ],
-                              ),
-                            ),
-                            const Icon(Icons.chevron_right, color: Colors.white),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  if (_tickets.isEmpty)
-                    Padding(
-                      padding: const EdgeInsets.only(top: AppSpacing.xl),
-                      child: StandardCard(
-                        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
-                        child: const AppEmptyState(icon: Icons.build_circle_outlined, title: 'Henüz bir teknik destek kaydınız yok'),
-                      ),
-                    )
-                  else
-                    ..._tickets.map((t) {
-                      final isEmergency = t['isEmergency'] == true;
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: AppSpacing.xs),
-                        child: StandardCard(
-                          onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (_) => _TicketDetailScreen(ticketId: t['id'])),
-                          ),
-                          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
-                          border: isEmergency ? Border.all(color: AppColors.navy.withValues(alpha: 0.35), width: 1.5) : null,
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 40,
-                                height: 40,
-                                decoration: BoxDecoration(color: _priorityColor(t['priority']).withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
-                                child: Icon(
-                                  isEmergency ? Icons.warning_amber_rounded : Icons.build_outlined,
-                                  color: _priorityColor(t['priority']),
-                                  size: 19,
-                                ),
-                              ),
-                              const SizedBox(width: AppSpacing.sm),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    CardHeaderRow(
-                                      title: t['productName'] ?? t['description'] ?? '',
-                                      trailing: isEmergency ? const StatusBadge(label: 'ACİL', tone: AppStatusTone.danger) : null,
+                        children: [
+                          Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(20),
+                              onTap: () => _openCreate(isEmergency: true),
+                              child: Container(
+                                padding: const EdgeInsets.all(AppSpacing.md),
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      AppColors.brand,
+                                      AppColors.brand.withValues(alpha: 0.8),
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.circular(20),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: AppColors.brand.withValues(
+                                        alpha: 0.35,
+                                      ),
+                                      blurRadius: 18,
+                                      offset: const Offset(0, 6),
                                     ),
-                                    const SizedBox(height: 6),
-                                    Row(
-                                      children: [
-                                        StatusBadge(label: _statusText(t['status']), tone: _statusTone(t['status'])),
-                                        const SizedBox(width: 8),
-                                        CardFooterMeta(icon: Icons.schedule_outlined, label: _formatDate(t['createdAt'])),
-                                      ],
+                                  ],
+                                ),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 46,
+                                      height: 46,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withValues(
+                                          alpha: 0.2,
+                                        ),
+                                        borderRadius: BorderRadius.circular(14),
+                                      ),
+                                      child: const Icon(
+                                        Icons.warning_rounded,
+                                        color: Colors.white,
+                                        size: 24,
+                                      ),
+                                    ),
+                                    const SizedBox(width: AppSpacing.sm),
+                                    const Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Acil Teknik Destek',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w800,
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                          SizedBox(height: 2),
+                                          Text(
+                                            'Tek tuşla acil kayıt oluştur',
+                                            style: TextStyle(
+                                              color: Colors.white70,
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const Icon(
+                                      Icons.chevron_right,
+                                      color: Colors.white,
                                     ),
                                   ],
                                 ),
                               ),
-                            ],
+                            ),
                           ),
-                        ),
-                      );
-                    }),
-                      ],
+                          const SizedBox(height: AppSpacing.md),
+                          if (_tickets.isEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                top: AppSpacing.xl,
+                              ),
+                              child: StandardCard(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: AppSpacing.lg,
+                                  vertical: AppSpacing.xl,
+                                ),
+                                child: const AppEmptyState(
+                                  icon: Icons.build_circle_outlined,
+                                  title: 'Henüz bir teknik destek kaydınız yok',
+                                ),
+                              ),
+                            )
+                          else
+                            ..._tickets.map((t) {
+                              final isEmergency = t['isEmergency'] == true;
+                              return Container(
+                                margin: const EdgeInsets.only(
+                                  bottom: AppSpacing.xs,
+                                ),
+                                child: StandardCard(
+                                  onTap: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => _TicketDetailScreen(
+                                        ticketId: t['id'],
+                                      ),
+                                    ),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: AppSpacing.sm,
+                                    vertical: AppSpacing.xs,
+                                  ),
+                                  border: isEmergency
+                                      ? Border.all(
+                                          color: AppColors.navy.withValues(
+                                            alpha: 0.35,
+                                          ),
+                                          width: 1.5,
+                                        )
+                                      : null,
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        width: 40,
+                                        height: 40,
+                                        decoration: BoxDecoration(
+                                          color: _priorityColor(t['priority'])
+                                              .withValues(alpha: 0.1),
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                        ),
+                                        child: Icon(
+                                          isEmergency
+                                              ? Icons.warning_amber_rounded
+                                              : Icons.build_outlined,
+                                          color: _priorityColor(t['priority']),
+                                          size: 19,
+                                        ),
+                                      ),
+                                      const SizedBox(width: AppSpacing.sm),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            CardHeaderRow(
+                                              title:
+                                                  t['productName'] ??
+                                                  t['description'] ??
+                                                  '',
+                                              trailing: isEmergency
+                                                  ? const StatusBadge(
+                                                      label: 'ACİL',
+                                                      tone:
+                                                          AppStatusTone.danger,
+                                                    )
+                                                  : null,
+                                            ),
+                                            const SizedBox(height: 6),
+                                            Row(
+                                              children: [
+                                                StatusBadge(
+                                                  label: _statusText(
+                                                    t['status'],
+                                                  ),
+                                                  tone: _statusTone(
+                                                    t['status'],
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 8),
+                                                CardFooterMeta(
+                                                  icon: Icons.schedule_outlined,
+                                                  label: _formatDate(
+                                                    t['createdAt'],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }),
+                        ],
+                      ),
                     ),
-                  ),
             ),
           ],
         ),
@@ -278,7 +390,10 @@ class _CreateTicketScreenState extends State<_CreateTicketScreen> {
       ),
     );
     if (choice == null) return;
-    final picked = await ImagePicker().pickImage(source: choice, imageQuality: 80);
+    final picked = await ImagePicker().pickImage(
+      source: choice,
+      imageQuality: 80,
+    );
     if (picked != null) {
       setState(() {
         _pickedPhotoPath = picked.path;
@@ -296,21 +411,30 @@ class _CreateTicketScreenState extends State<_CreateTicketScreen> {
     }
     setState(() => _submitting = true);
     try {
-      final res = await _dio.post('/support-tickets', data: {
-        'productName': _productNameController.text.trim(),
-        'productModel': _productModelController.text.trim(),
-        'serialNumber': _serialNumberController.text.trim(),
-        'location': _locationController.text.trim(),
-        'description': _descriptionController.text.trim(),
-        'isEmergency': widget.isEmergency,
-      });
+      final res = await _dio.post(
+        '/support-tickets',
+        data: {
+          'productName': _productNameController.text.trim(),
+          'productModel': _productModelController.text.trim(),
+          'serialNumber': _serialNumberController.text.trim(),
+          'location': _locationController.text.trim(),
+          'description': _descriptionController.text.trim(),
+          'isEmergency': widget.isEmergency,
+        },
+      );
 
       if (_pickedPhotoPath != null) {
         final ticketId = res.data['id'];
         final formData = FormData.fromMap({
-          'file': await MultipartFile.fromFile(_pickedPhotoPath!, filename: _pickedPhotoName),
+          'file': await MultipartFile.fromFile(
+            _pickedPhotoPath!,
+            filename: _pickedPhotoName,
+          ),
         });
-        await _dio.post('/support-tickets/$ticketId/attachment', data: formData);
+        await _dio.post(
+          '/support-tickets/$ticketId/attachment',
+          data: formData,
+        );
       }
 
       if (mounted) Navigator.pop(context, true);
@@ -330,89 +454,140 @@ class _CreateTicketScreenState extends State<_CreateTicketScreen> {
           leading: CupertinoButton(
             padding: EdgeInsets.zero,
             onPressed: () => Navigator.pop(context),
-            child: const Text('İptal', style: TextStyle(color: CupertinoColors.systemGrey, fontSize: 16)),
+            child: const Text(
+              'İptal',
+              style: TextStyle(color: CupertinoColors.systemGrey, fontSize: 16),
+            ),
           ),
-          middle: Text(widget.isEmergency ? 'Acil Teknik Destek' : 'Yeni Teknik Destek Kaydı', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: AppColors.navy)),
+          middle: Text(
+            widget.isEmergency
+                ? 'Acil Teknik Destek'
+                : 'Yeni Teknik Destek Kaydı',
+            style: const TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
+              color: AppColors.navy,
+            ),
+          ),
         ),
         child: SafeArea(child: _buildForm()),
       );
     }
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppPageHeader(title: widget.isEmergency ? 'Acil Teknik Destek' : 'Yeni Teknik Destek Kaydı'),
+      appBar: AppPageHeader(
+        title: widget.isEmergency
+            ? 'Acil Teknik Destek'
+            : 'Yeni Teknik Destek Kaydı',
+      ),
       body: SafeArea(child: _buildForm()),
     );
   }
 
   Widget _buildForm() {
     return ListView(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        children: [
-          if (widget.isEmergency)
-            Container(
-              margin: const EdgeInsets.only(bottom: AppSpacing.md),
-              padding: const EdgeInsets.all(AppSpacing.sm),
-              decoration: BoxDecoration(color: AppColors.navy.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(14)),
-              child: Row(
-                children: [
-                  const Icon(Icons.warning_amber_rounded, color: AppColors.navy, size: 18),
-                  const SizedBox(width: 8),
-                  const Expanded(
-                    child: Text(
-                      'Bu kayıt ACİL olarak işaretlenip mühendis ve yöneticilere anında bildirilecek.',
-                      style: TextStyle(fontSize: 12.5, color: AppColors.navy),
-                    ),
+      padding: const EdgeInsets.all(AppSpacing.md),
+      children: [
+        if (widget.isEmergency)
+          Container(
+            margin: const EdgeInsets.only(bottom: AppSpacing.md),
+            padding: const EdgeInsets.all(AppSpacing.sm),
+            decoration: BoxDecoration(
+              color: AppColors.navy.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.warning_amber_rounded,
+                  color: AppColors.navy,
+                  size: 18,
+                ),
+                const SizedBox(width: 8),
+                const Expanded(
+                  child: Text(
+                    'Bu kayıt ACİL olarak işaretlenip mühendis ve yöneticilere anında bildirilecek.',
+                    style: TextStyle(fontSize: 12.5, color: AppColors.navy),
                   ),
-                ],
-              ),
-            ),
-          TextField(
-            controller: _productNameController,
-            decoration: const InputDecoration(labelText: 'Ürün Adı', hintText: 'Örn: MA8000 Yangın Alarm Paneli'),
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _productModelController,
-            decoration: const InputDecoration(labelText: 'Model (opsiyonel)'),
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _serialNumberController,
-            decoration: const InputDecoration(labelText: 'Seri Numarası (opsiyonel)'),
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _locationController,
-            decoration: const InputDecoration(labelText: 'Konum (opsiyonel)', hintText: 'Örn: İstanbul, Kadıköy'),
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _descriptionController,
-            minLines: 3,
-            maxLines: 6,
-            decoration: const InputDecoration(labelText: 'Sorunu Açıklayın'),
-          ),
-          const SizedBox(height: 16),
-          OutlinedButton.icon(
-            onPressed: _pickPhoto,
-            icon: Icon(_pickedPhotoPath != null ? Icons.check_circle_outline : Icons.camera_alt_outlined),
-            label: Text(_pickedPhotoPath != null ? 'Fotoğraf Eklendi' : 'Fotoğraf Ekle (opsiyonel)'),
-          ),
-          const SizedBox(height: 20),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: _submitting ? null : _submit,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: widget.isEmergency ? AppColors.navy : AppColors.brand,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-              ),
-              child: _submitting
-                  ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                  : Text(widget.isEmergency ? 'Acil Kaydı Gönder' : 'Kaydı Gönder', style: const TextStyle(fontWeight: FontWeight.w700)),
+                ),
+              ],
             ),
           ),
-        ],
+        TextField(
+          controller: _productNameController,
+          decoration: const InputDecoration(
+            labelText: 'Ürün Adı',
+            hintText: 'Örn: MA8000 Yangın Alarm Paneli',
+          ),
+        ),
+        const SizedBox(height: 12),
+        TextField(
+          controller: _productModelController,
+          decoration: const InputDecoration(labelText: 'Model (opsiyonel)'),
+        ),
+        const SizedBox(height: 12),
+        TextField(
+          controller: _serialNumberController,
+          decoration: const InputDecoration(
+            labelText: 'Seri Numarası (opsiyonel)',
+          ),
+        ),
+        const SizedBox(height: 12),
+        TextField(
+          controller: _locationController,
+          decoration: const InputDecoration(
+            labelText: 'Konum (opsiyonel)',
+            hintText: 'Örn: İstanbul, Kadıköy',
+          ),
+        ),
+        const SizedBox(height: 12),
+        TextField(
+          controller: _descriptionController,
+          minLines: 3,
+          maxLines: 6,
+          decoration: const InputDecoration(labelText: 'Sorunu Açıklayın'),
+        ),
+        const SizedBox(height: 16),
+        OutlinedButton.icon(
+          onPressed: _pickPhoto,
+          icon: Icon(
+            _pickedPhotoPath != null
+                ? Icons.check_circle_outline
+                : Icons.camera_alt_outlined,
+          ),
+          label: Text(
+            _pickedPhotoPath != null
+                ? 'Fotoğraf Eklendi'
+                : 'Fotoğraf Ekle (opsiyonel)',
+          ),
+        ),
+        const SizedBox(height: 20),
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: _submitting ? null : _submit,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: widget.isEmergency
+                  ? AppColors.navy
+                  : AppColors.brand,
+              padding: const EdgeInsets.symmetric(vertical: 14),
+            ),
+            child: _submitting
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                : Text(
+                    widget.isEmergency ? 'Acil Kaydı Gönder' : 'Kaydı Gönder',
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -475,14 +650,31 @@ class _TicketDetailScreenState extends State<_TicketDetailScreen> {
             if (isEmergency)
               Container(
                 margin: const EdgeInsets.only(bottom: AppSpacing.sm),
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(color: AppColors.navy.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(20)),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.navy.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.warning_amber_rounded, size: 14, color: AppColors.navy),
+                    Icon(
+                      Icons.warning_amber_rounded,
+                      size: 14,
+                      color: AppColors.navy,
+                    ),
                     SizedBox(width: 6),
-                    Text('ACİL KAYIT', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AppColors.navy)),
+                    Text(
+                      'ACİL KAYIT',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.navy,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -490,15 +682,25 @@ class _TicketDetailScreenState extends State<_TicketDetailScreen> {
               Container(
                 margin: const EdgeInsets.only(bottom: AppSpacing.sm),
                 padding: const EdgeInsets.all(AppSpacing.sm),
-                decoration: BoxDecoration(color: Colors.orange.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(14)),
+                decoration: BoxDecoration(
+                  color: Colors.orange.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(14),
+                ),
                 child: Row(
                   children: [
-                    const Icon(Icons.trending_up, color: Colors.orange, size: 18),
+                    const Icon(
+                      Icons.trending_up,
+                      color: Colors.orange,
+                      size: 18,
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         'Bu kayıt yükseltildi (eskalasyon seviye $escalationLevel) — yanıt/çözüm süresi aşıldığı için üst yetkiliye bildirildi.',
-                        style: const TextStyle(fontSize: 12, color: Colors.orange),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.orange,
+                        ),
                       ),
                     ),
                   ],
@@ -510,25 +712,49 @@ class _TicketDetailScreenState extends State<_TicketDetailScreen> {
                 padding: const EdgeInsets.all(AppSpacing.md),
                 margin: const EdgeInsets.only(bottom: AppSpacing.md),
                 decoration: BoxDecoration(
-                  color: slaStatus['resolutionBreached'] == true ? AppColors.navy.withValues(alpha: 0.06) : Colors.white,
+                  color: slaStatus['resolutionBreached'] == true
+                      ? AppColors.navy.withValues(alpha: 0.06)
+                      : Colors.white,
                   borderRadius: BorderRadius.circular(18),
-                  boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 2))],
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.03),
+                      blurRadius: 10,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.timer_outlined, color: slaStatus['resolutionBreached'] == true ? AppColors.navy : AppColors.brand),
+                    Icon(
+                      Icons.timer_outlined,
+                      color: slaStatus['resolutionBreached'] == true
+                          ? AppColors.navy
+                          : AppColors.brand,
+                    ),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Çözüm Süresi (SLA)', style: TextStyle(fontSize: 11.5, color: Colors.grey, fontWeight: FontWeight.w600)),
+                          const Text(
+                            'Çözüm Süresi (SLA)',
+                            style: TextStyle(
+                              fontSize: 11.5,
+                              color: Colors.grey,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                           Text(
-                            _formatRemaining(slaStatus['resolutionRemainingMinutes']),
+                            _formatRemaining(
+                              slaStatus['resolutionRemainingMinutes'],
+                            ),
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w800,
-                              color: slaStatus['resolutionBreached'] == true ? AppColors.navy : AppColors.navy,
+                              color: slaStatus['resolutionBreached'] == true
+                                  ? AppColors.navy
+                                  : AppColors.navy,
                             ),
                           ),
                         ],
@@ -542,33 +768,70 @@ class _TicketDetailScreenState extends State<_TicketDetailScreen> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(18),
-                boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 2))],
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.03),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(t['productName'] ?? 'Ürün belirtilmedi', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: AppColors.navy)),
+                  Text(
+                    t['productName'] ?? 'Ürün belirtilmedi',
+                    style: const TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.navy,
+                    ),
+                  ),
                   if ((t['productModel'] ?? '').toString().isNotEmpty) ...[
                     const SizedBox(height: 4),
-                    Text('Model: ${t['productModel']}', style: TextStyle(fontSize: 12.5, color: Colors.grey.shade600)),
+                    Text(
+                      'Model: ${t['productModel']}',
+                      style: TextStyle(
+                        fontSize: 12.5,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
                   ],
                   if ((t['serialNumber'] ?? '').toString().isNotEmpty) ...[
                     const SizedBox(height: 2),
-                    Text('Seri No: ${t['serialNumber']}', style: TextStyle(fontSize: 12.5, color: Colors.grey.shade600)),
+                    Text(
+                      'Seri No: ${t['serialNumber']}',
+                      style: TextStyle(
+                        fontSize: 12.5,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
                   ],
                   if ((t['location'] ?? '').toString().isNotEmpty) ...[
                     const SizedBox(height: 2),
-                    Text('Konum: ${t['location']}', style: TextStyle(fontSize: 12.5, color: Colors.grey.shade600)),
+                    Text(
+                      'Konum: ${t['location']}',
+                      style: TextStyle(
+                        fontSize: 12.5,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
                   ],
                   const Divider(height: 24),
-                  Text(t['description'] ?? '', style: const TextStyle(fontSize: 14, height: 1.5)),
+                  Text(
+                    t['description'] ?? '',
+                    style: const TextStyle(fontSize: 14, height: 1.5),
+                  ),
                 ],
               ),
             ),
             const SizedBox(height: AppSpacing.md),
             _BeforeAfterPhotoSection(ticketId: widget.ticketId),
             const SizedBox(height: AppSpacing.md),
-            _MeasurementSection(ticketId: widget.ticketId, serialNumber: t['serialNumber']),
+            _MeasurementSection(
+              ticketId: widget.ticketId,
+              serialNumber: t['serialNumber'],
+            ),
             const SizedBox(height: AppSpacing.md),
             _SparePartSection(ticketId: widget.ticketId, ticket: t),
             const SizedBox(height: AppSpacing.md),
@@ -589,7 +852,8 @@ class _BeforeAfterPhotoSection extends StatefulWidget {
   const _BeforeAfterPhotoSection({required this.ticketId});
 
   @override
-  State<_BeforeAfterPhotoSection> createState() => _BeforeAfterPhotoSectionState();
+  State<_BeforeAfterPhotoSection> createState() =>
+      _BeforeAfterPhotoSectionState();
 }
 
 class _BeforeAfterPhotoSectionState extends State<_BeforeAfterPhotoSection> {
@@ -613,35 +877,63 @@ class _BeforeAfterPhotoSectionState extends State<_BeforeAfterPhotoSection> {
   }
 
   Future<void> _addPhoto(String type) async {
-    final picked = await ImagePicker().pickImage(source: ImageSource.camera, imageQuality: 80);
+    final picked = await ImagePicker().pickImage(
+      source: ImageSource.camera,
+      imageQuality: 80,
+    );
     if (picked == null) return;
     setState(() => _uploading = true);
     try {
       final formData = FormData.fromMap({
-        'file': await MultipartFile.fromFile(picked.path, filename: picked.name),
+        'file': await MultipartFile.fromFile(
+          picked.path,
+          filename: picked.name,
+        ),
       });
-      await _dio.post('/support-tickets/${widget.ticketId}/photos/$type', data: formData);
+      await _dio.post(
+        '/support-tickets/${widget.ticketId}/photos/$type',
+        data: formData,
+      );
       await _load();
     } finally {
       if (mounted) setState(() => _uploading = false);
     }
   }
 
-  Widget _photoGrid(List<dynamic> photos, String label, String type, Color color) {
+  Widget _photoGrid(
+    List<dynamic> photos,
+    String label,
+    String type,
+    Color color,
+  ) {
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: color)),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11.5,
+              fontWeight: FontWeight.w700,
+              color: color,
+            ),
+          ),
           const SizedBox(height: 6),
           Wrap(
             spacing: 6,
             runSpacing: 6,
             children: [
-              ...photos.map((p) => ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.network(p['signedUrl'], width: 64, height: 64, fit: BoxFit.cover),
-                  )),
+              ...photos.map(
+                (p) => ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.network(
+                    p['signedUrl'],
+                    width: 64,
+                    height: 64,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
               InkWell(
                 onTap: _uploading ? null : () => _addPhoto(type),
                 borderRadius: BorderRadius.circular(10),
@@ -653,7 +945,11 @@ class _BeforeAfterPhotoSectionState extends State<_BeforeAfterPhotoSection> {
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(color: color.withValues(alpha: 0.25)),
                   ),
-                  child: Icon(Icons.add_a_photo_outlined, size: 20, color: color),
+                  child: Icon(
+                    Icons.add_a_photo_outlined,
+                    size: 20,
+                    color: color,
+                  ),
                 ),
               ),
             ],
@@ -670,12 +966,25 @@ class _BeforeAfterPhotoSectionState extends State<_BeforeAfterPhotoSection> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 2))],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Önce / Sonra Fotoğraf', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: AppColors.navy)),
+          const Text(
+            'Önce / Sonra Fotoğraf',
+            style: TextStyle(
+              fontWeight: FontWeight.w800,
+              fontSize: 15,
+              color: AppColors.navy,
+            ),
+          ),
           const SizedBox(height: 12),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -732,15 +1041,20 @@ class _MeasurementSectionState extends State<_MeasurementSection> {
     if (_selectedTypeId == null || value == null) return;
     setState(() => _submitting = true);
     try {
-      final res = await _dio.post('/support-tickets/${widget.ticketId}/measurements', data: {
-        'measurementTypeId': _selectedTypeId,
-        'value': value,
-      });
+      final res = await _dio.post(
+        '/support-tickets/${widget.ticketId}/measurements',
+        data: {'measurementTypeId': _selectedTypeId, 'value': value},
+      );
       _valueController.clear();
       await _load();
       if (res.data['isOutOfRange'] == true && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('⚠️ Girilen değer kabul edilebilir aralığın dışında!'), backgroundColor: AppColors.navy),
+          const SnackBar(
+            content: Text(
+              '⚠️ Girilen değer kabul edilebilir aralığın dışında!',
+            ),
+            backgroundColor: AppColors.navy,
+          ),
         );
       }
     } finally {
@@ -755,12 +1069,25 @@ class _MeasurementSectionState extends State<_MeasurementSection> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 2))],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Teknik Ölçümler', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: AppColors.navy)),
+          const Text(
+            'Teknik Ölçümler',
+            style: TextStyle(
+              fontWeight: FontWeight.w800,
+              fontSize: 15,
+              color: AppColors.navy,
+            ),
+          ),
           const SizedBox(height: 12),
           if (_types.isNotEmpty) ...[
             Row(
@@ -769,9 +1096,20 @@ class _MeasurementSectionState extends State<_MeasurementSection> {
                   child: DropdownButtonFormField<String>(
                     value: _selectedTypeId,
                     isExpanded: true,
-                    decoration: const InputDecoration(labelText: 'Ölçüm Türü', isDense: true),
+                    decoration: const InputDecoration(
+                      labelText: 'Ölçüm Türü',
+                      isDense: true,
+                    ),
                     items: _types
-                        .map<DropdownMenuItem<String>>((t) => DropdownMenuItem(value: t['id'], child: Text('${t['name']} (${t['unit']})', overflow: TextOverflow.ellipsis)))
+                        .map<DropdownMenuItem<String>>(
+                          (t) => DropdownMenuItem(
+                            value: t['id'],
+                            child: Text(
+                              '${t['name']} (${t['unit']})',
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        )
                         .toList(),
                     onChanged: (v) => setState(() => _selectedTypeId = v),
                   ),
@@ -781,20 +1119,37 @@ class _MeasurementSectionState extends State<_MeasurementSection> {
                   width: 80,
                   child: TextField(
                     controller: _valueController,
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    decoration: const InputDecoration(labelText: 'Değer', isDense: true),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    decoration: const InputDecoration(
+                      labelText: 'Değer',
+                      isDense: true,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8),
                 IconButton.filled(
                   onPressed: _submitting ? null : _submit,
-                  icon: _submitting ? const SizedBox(height: 16, width: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)) : const Icon(Icons.add),
+                  icon: _submitting
+                      ? const SizedBox(
+                          height: 16,
+                          width: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Icon(Icons.add),
                 ),
               ],
             ),
             const SizedBox(height: 12),
           ] else
-            Text('Admin panelden henüz ölçüm türü tanımlanmamış.', style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
+            Text(
+              'Admin panelden henüz ölçüm türü tanımlanmamış.',
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+            ),
           if (_measurements.isNotEmpty) ...[
             const Divider(height: 20),
             ..._measurements.map((m) {
@@ -803,12 +1158,22 @@ class _MeasurementSectionState extends State<_MeasurementSection> {
                 padding: const EdgeInsets.symmetric(vertical: 4),
                 child: Row(
                   children: [
-                    Icon(outOfRange ? Icons.warning_amber_rounded : Icons.check_circle_outline, size: 16, color: outOfRange ? AppColors.navy : Colors.green),
+                    Icon(
+                      outOfRange
+                          ? Icons.warning_amber_rounded
+                          : Icons.check_circle_outline,
+                      size: 16,
+                      color: outOfRange ? AppColors.navy : Colors.green,
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         '${m['measurementType']['name']}: ${m['value']} ${m['measurementType']['unit']}',
-                        style: TextStyle(fontSize: 12.5, color: outOfRange ? AppColors.navy : AppColors.navy, fontWeight: FontWeight.w600),
+                        style: TextStyle(
+                          fontSize: 12.5,
+                          color: outOfRange ? AppColors.navy : AppColors.navy,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ],
@@ -844,7 +1209,9 @@ class _SparePartSectionState extends State<_SparePartSection> {
   }
 
   Future<void> _load() async {
-    final res = await _dio.get('/support-tickets/${widget.ticketId}/spare-part-requests');
+    final res = await _dio.get(
+      '/support-tickets/${widget.ticketId}/spare-part-requests',
+    );
     setState(() => _requests = res.data);
   }
 
@@ -855,7 +1222,10 @@ class _SparePartSectionState extends State<_SparePartSection> {
       builder: (context) => _SparePartRequestSheet(ticket: widget.ticket),
     );
     if (result != null) {
-      await _dio.post('/support-tickets/${widget.ticketId}/spare-part-requests', data: result);
+      await _dio.post(
+        '/support-tickets/${widget.ticketId}/spare-part-requests',
+        data: result,
+      );
       _load();
     }
   }
@@ -867,7 +1237,13 @@ class _SparePartSectionState extends State<_SparePartSection> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 2))],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -875,28 +1251,55 @@ class _SparePartSectionState extends State<_SparePartSection> {
           Row(
             children: [
               const Expanded(
-                child: Text('Yedek Parça Talepleri', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: AppColors.navy)),
+                child: Text(
+                  'Yedek Parça Talepleri',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 15,
+                    color: AppColors.navy,
+                  ),
+                ),
               ),
               TextButton.icon(
                 onPressed: _openRequestForm,
                 icon: const Icon(Icons.add, size: 16),
-                label: const Text('Talep Oluştur', style: TextStyle(fontSize: 12.5)),
+                label: const Text(
+                  'Talep Oluştur',
+                  style: TextStyle(fontSize: 12.5),
+                ),
               ),
             ],
           ),
           if (_requests.isEmpty)
-            Text('Henüz parça talebi yok.', style: TextStyle(fontSize: 12, color: Colors.grey.shade500))
+            Text(
+              'Henüz parça talebi yok.',
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+            )
           else
-            ..._requests.map((r) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.build_circle_outlined, size: 16, color: AppColors.brand),
-                      const SizedBox(width: 8),
-                      Expanded(child: Text('${r['partName']} × ${r['quantity']}', style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600))),
-                    ],
-                  ),
-                )),
+            ..._requests.map(
+              (r) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.build_circle_outlined,
+                      size: 16,
+                      color: AppColors.brand,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        '${r['partName']} × ${r['quantity']}',
+                        style: const TextStyle(
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -919,12 +1322,20 @@ class _SparePartRequestSheetState extends State<_SparePartRequestSheet> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(left: 20, right: 20, top: 20, bottom: MediaQuery.of(context).viewInsets.bottom + 20),
+      padding: EdgeInsets.only(
+        left: 20,
+        right: 20,
+        top: 20,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text('Yedek Parça Talebi', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+          const Text(
+            'Yedek Parça Talebi',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+          ),
           const SizedBox(height: 6),
           // Ürün/model/seri no otomatik aktarılıyor — kullanıcı tekrar girmiyor.
           Text(
@@ -932,11 +1343,23 @@ class _SparePartRequestSheetState extends State<_SparePartRequestSheet> {
             style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
           ),
           const SizedBox(height: 16),
-          TextField(controller: _partCodeController, decoration: const InputDecoration(labelText: 'Parça Kodu (opsiyonel)')),
+          TextField(
+            controller: _partCodeController,
+            decoration: const InputDecoration(
+              labelText: 'Parça Kodu (opsiyonel)',
+            ),
+          ),
           const SizedBox(height: 12),
-          TextField(controller: _partNameController, decoration: const InputDecoration(labelText: 'Parça Adı')),
+          TextField(
+            controller: _partNameController,
+            decoration: const InputDecoration(labelText: 'Parça Adı'),
+          ),
           const SizedBox(height: 12),
-          TextField(controller: _quantityController, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Miktar')),
+          TextField(
+            controller: _quantityController,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(labelText: 'Miktar'),
+          ),
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
@@ -996,20 +1419,32 @@ class _CostSectionState extends State<_CostSection> {
       builder: (context) => const _CostEntrySheet(),
     );
     if (result != null) {
-      await _dio.post('/support-tickets/${widget.ticketId}/costs', data: result);
+      await _dio.post(
+        '/support-tickets/${widget.ticketId}/costs',
+        data: result,
+      );
       _load();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final total = _costs.fold<double>(0, (sum, c) => sum + (c['amount'] as num).toDouble());
+    final total = _costs.fold<double>(
+      0,
+      (sum, c) => sum + (c['amount'] as num).toDouble(),
+    );
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 2))],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1017,33 +1452,70 @@ class _CostSectionState extends State<_CostSection> {
           Row(
             children: [
               const Expanded(
-                child: Text('Maliyet Kalemleri', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: AppColors.navy)),
+                child: Text(
+                  'Maliyet Kalemleri',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 15,
+                    color: AppColors.navy,
+                  ),
+                ),
               ),
               TextButton.icon(
                 onPressed: _openCostForm,
                 icon: const Icon(Icons.add, size: 16),
-                label: const Text('Kalem Ekle', style: TextStyle(fontSize: 12.5)),
+                label: const Text(
+                  'Kalem Ekle',
+                  style: TextStyle(fontSize: 12.5),
+                ),
               ),
             ],
           ),
           if (_costs.isEmpty)
-            Text('Henüz maliyet kaydı yok.', style: TextStyle(fontSize: 12, color: Colors.grey.shade500))
+            Text(
+              'Henüz maliyet kaydı yok.',
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+            )
           else ...[
-            ..._costs.map((c) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
-                  child: Row(
-                    children: [
-                      Expanded(child: Text(_categoryLabels[c['category']] ?? c['category'], style: const TextStyle(fontSize: 12.5))),
-                      Text('${c['amount']} ₺', style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.brand)),
-                    ],
-                  ),
-                )),
+            ..._costs.map(
+              (c) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        _categoryLabels[c['category']] ?? c['category'],
+                        style: const TextStyle(fontSize: 12.5),
+                      ),
+                    ),
+                    Text(
+                      '${c['amount']} ₺',
+                      style: const TextStyle(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.brand,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
             const Divider(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Toplam', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13)),
-                Text('${total.toStringAsFixed(2)} ₺', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: AppColors.navy)),
+                const Text(
+                  'Toplam',
+                  style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13),
+                ),
+                Text(
+                  '${total.toStringAsFixed(2)} ₺',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 14,
+                    color: AppColors.navy,
+                  ),
+                ),
               ],
             ),
           ],
@@ -1077,18 +1549,30 @@ class _CostEntrySheetState extends State<_CostEntrySheet> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(left: 20, right: 20, top: 20, bottom: MediaQuery.of(context).viewInsets.bottom + 20),
+      padding: EdgeInsets.only(
+        left: 20,
+        right: 20,
+        top: 20,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text('Maliyet Kalemi Ekle', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+          const Text(
+            'Maliyet Kalemi Ekle',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+          ),
           const SizedBox(height: 16),
           DropdownButtonFormField<String>(
             value: _category,
             isExpanded: true,
             decoration: const InputDecoration(labelText: 'Kategori'),
-            items: _categories.entries.map((e) => DropdownMenuItem(value: e.key, child: Text(e.value))).toList(),
+            items: _categories.entries
+                .map(
+                  (e) => DropdownMenuItem(value: e.key, child: Text(e.value)),
+                )
+                .toList(),
             onChanged: (v) => setState(() => _category = v ?? _category),
           ),
           const SizedBox(height: 12),
@@ -1098,7 +1582,12 @@ class _CostEntrySheetState extends State<_CostEntrySheet> {
             decoration: const InputDecoration(labelText: 'Tutar (₺)'),
           ),
           const SizedBox(height: 12),
-          TextField(controller: _descriptionController, decoration: const InputDecoration(labelText: 'Açıklama (opsiyonel)')),
+          TextField(
+            controller: _descriptionController,
+            decoration: const InputDecoration(
+              labelText: 'Açıklama (opsiyonel)',
+            ),
+          ),
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
@@ -1157,24 +1646,47 @@ class _KnowledgeBaseSectionState extends State<_KnowledgeBaseSection> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 2))],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         children: [
           Container(
             width: 40,
             height: 40,
-            decoration: BoxDecoration(color: AppColors.navy.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(12)),
-            child: const Icon(Icons.psychology_outlined, color: AppColors.navy, size: 19),
+            decoration: BoxDecoration(
+              color: AppColors.navy.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(
+              Icons.psychology_outlined,
+              color: AppColors.navy,
+              size: 19,
+            ),
           ),
           const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Bilgi Hafızasına Ekle', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: AppColors.navy)),
+                const Text(
+                  'Bilgi Hafızasına Ekle',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 14,
+                    color: AppColors.navy,
+                  ),
+                ),
                 const SizedBox(height: 2),
-                Text('Bu vakadan öğrendiklerinizi kaydedin, AI gelecekte kullansın.', style: TextStyle(fontSize: 11.5, color: Colors.grey.shade500)),
+                Text(
+                  'Bu vakadan öğrendiklerinizi kaydedin, AI gelecekte kullansın.',
+                  style: TextStyle(fontSize: 11.5, color: Colors.grey.shade500),
+                ),
               ],
             ),
           ),
@@ -1183,7 +1695,11 @@ class _KnowledgeBaseSectionState extends State<_KnowledgeBaseSection> {
               : TextButton(
                   onPressed: _submitting ? null : _openForm,
                   child: _submitting
-                      ? const SizedBox(height: 16, width: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                      ? const SizedBox(
+                          height: 16,
+                          width: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
                       : const Text('Ekle'),
                 ),
         ],
@@ -1215,29 +1731,59 @@ class _KnowledgeEntrySheetState extends State<_KnowledgeEntrySheet> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(left: 20, right: 20, top: 20, bottom: MediaQuery.of(context).viewInsets.bottom + 20),
+      padding: EdgeInsets.only(
+        left: 20,
+        right: 20,
+        top: 20,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text('Saha Tecrübesi Kaydet', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+          const Text(
+            'Saha Tecrübesi Kaydet',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+          ),
           const SizedBox(height: 6),
           Text(
             '${widget.ticket['productName'] ?? ''} ${widget.ticket['productModel'] ?? ''}',
             style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
           ),
           const SizedBox(height: 16),
-          TextField(controller: _problemController, minLines: 2, maxLines: 4, decoration: const InputDecoration(labelText: 'Problem')),
+          TextField(
+            controller: _problemController,
+            minLines: 2,
+            maxLines: 4,
+            decoration: const InputDecoration(labelText: 'Problem'),
+          ),
           const SizedBox(height: 12),
-          TextField(controller: _solutionController, minLines: 2, maxLines: 4, decoration: const InputDecoration(labelText: 'Çözüm')),
+          TextField(
+            controller: _solutionController,
+            minLines: 2,
+            maxLines: 4,
+            decoration: const InputDecoration(labelText: 'Çözüm'),
+          ),
           const SizedBox(height: 12),
-          TextField(controller: _errorCodeController, decoration: const InputDecoration(labelText: 'Hata Kodu (opsiyonel)')),
+          TextField(
+            controller: _errorCodeController,
+            decoration: const InputDecoration(
+              labelText: 'Hata Kodu (opsiyonel)',
+            ),
+          ),
           const SizedBox(height: 12),
-          TextField(controller: _partUsedController, decoration: const InputDecoration(labelText: 'Kullanılan Parça (opsiyonel)')),
+          TextField(
+            controller: _partUsedController,
+            decoration: const InputDecoration(
+              labelText: 'Kullanılan Parça (opsiyonel)',
+            ),
+          ),
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
-              if (_problemController.text.trim().isEmpty || _solutionController.text.trim().isEmpty) return;
+              if (_problemController.text.trim().isEmpty ||
+                  _solutionController.text.trim().isEmpty)
+                return;
               Navigator.pop(context, {
                 'problem': _problemController.text.trim(),
                 'solution': _solutionController.text.trim(),

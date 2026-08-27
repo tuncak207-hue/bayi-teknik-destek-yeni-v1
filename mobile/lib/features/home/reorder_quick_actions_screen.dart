@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/design_system.dart';
 import 'quick_actions_data.dart';
@@ -7,7 +8,8 @@ class ReorderQuickActionsScreen extends StatefulWidget {
   const ReorderQuickActionsScreen({super.key});
 
   @override
-  State<ReorderQuickActionsScreen> createState() => _ReorderQuickActionsScreenState();
+  State<ReorderQuickActionsScreen> createState() =>
+      _ReorderQuickActionsScreenState();
 }
 
 class _ReorderQuickActionsScreenState extends State<ReorderQuickActionsScreen> {
@@ -50,12 +52,17 @@ class _ReorderQuickActionsScreenState extends State<ReorderQuickActionsScreen> {
                   padding: const EdgeInsets.all(AppSpacing.md),
                   child: Text(
                     'En sık kullandığınız işlemi en üste taşımak için sürükleyin — Ana Sayfa\'da bu sırayla görünür.',
-                    style: TextStyle(fontSize: 12.5, color: Colors.grey.shade600),
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      color: Colors.grey.shade600,
+                    ),
                   ),
                 ),
                 Expanded(
                   child: ReorderableListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.md,
+                    ),
                     itemCount: _order.length,
                     onReorder: _onReorder,
                     itemBuilder: (context, index) {
@@ -66,7 +73,10 @@ class _ReorderQuickActionsScreenState extends State<ReorderQuickActionsScreen> {
                         child: ListTile(
                           leading: Icon(action.icon, color: AppColors.navy),
                           title: Text(action.label),
-                          trailing: const Icon(Icons.drag_handle, color: Colors.grey),
+                          trailing: const Icon(
+                            Icons.drag_handle,
+                            color: Colors.grey,
+                          ),
                         ),
                       );
                     },
