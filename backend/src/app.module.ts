@@ -35,9 +35,24 @@ import { QuotesModule } from './quotes/quotes.module';
 import { PrismaModule } from './common/prisma/prisma.module';
 import { HealthController } from './health.controller';
 
+function validateConfiguration(config: Record<string, unknown>) {
+  if (config.NODE_ENV !== 'production') return config;
+
+  const required = ['DATABASE_URL', 'JWT_SECRET', 'CORS_ORIGINS'];
+  const missing = required.filter((key) => {
+    const value = config[key];
+    return typeof value !== 'string' || value.trim().length === 0;
+  });
+  if (missing.length > 0) {
+    throw new Error(`Production yapılandırması eksik: ${missing.join(', ')}`);
+  }
+
+  return config;
+}
+
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({ isGlobal: true, validate: validateConfiguration }),
     ThrottlerModule.forRoot([{ ttl: 60000, limit: 100 }]),
     ScheduleModule.forRoot(),
     PrismaModule,
