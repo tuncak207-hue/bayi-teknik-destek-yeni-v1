@@ -136,6 +136,7 @@ jobs:
         run: dart format lib test
 
       - name: Create pull request when formatting changed
+        continue-on-error: true
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -156,3 +157,7 @@ jobs:
             automation
             low-risk
             mobile
+
+      - name: Report formatter PR permission limitation
+        if: ${{ failure() }}
+        run: echo "Formatter changes were generated, but GitHub token cannot create pull requests in this repository; review automation/low-risk-formatting manually."
