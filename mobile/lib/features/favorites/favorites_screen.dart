@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:dio/dio.dart';
@@ -18,6 +20,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   final Dio _dio = ApiClient().dio;
   List<dynamic> _favorites = [];
   bool _loading = true;
+  String? _error;
 
   @override
   void initState() {
@@ -26,12 +29,41 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   }
 
   Future<void> _load() async {
-    setState(() => _loading = true);
-    final res = await _dio.get('/favorites');
-    setState(() {
-      _favorites = res.data;
-      _loading = false;
-    });
+    if (mounted) {
+      setState(() {
+        _loading = true;
+        _error = null;
+      });
+    }
+    try {
+      final res = await _dio.get('/favorites').timeout(const Duration(seconds: 15));
+      if (!mounted) return;
+      setState(() {
+        _favorites = (res.data as List<dynamic>?) ?? <dynamic>[];
+        _loading = false;
+      });
+    } on TimeoutException {
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+        _error = 'Sunucudan yanıt alınamadı. Lütfen tekrar deneyin.';
+      });
+    } on DioException catch (error) {
+      if (!mounted) return;
+      final status = error.response?.statusCode;
+      setState(() {
+        _loading = false;
+        _error = status == 401
+            ? 'Oturumunuzun süresi dolmuş olabilir. Lütfen tekrar giriş yapın.'
+            : 'Favoriler yüklenemedi. İnternet bağlantınızı kontrol edip tekrar deneyin.';
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+        _error = 'Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.';
+      });
+    }
   }
 
   /// Önceden bu ekranda favorilerden kaldırma imkanı hiç yoktu — kullanıcı
@@ -92,6 +124,29 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
             Expanded(
               child: _loading
                 ? const Center(child: CircularProgressIndicator())
+                : _error != null
+                    ? RefreshIndicator(
+                        onRefresh: _load,
+                        child: ListView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          children: [
+                            const SizedBox(height: 120),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                              child: StandardCard(
+                                padding: const EdgeInsets.all(AppSpacing.xl),
+                                child: AppEmptyState(
+                                  icon: Icons.cloud_off_outlined,
+                                  title: 'Favoriler yüklenemedi',
+                                  description: _error!,
+                                  actionLabel: 'Tekrar Dene',
+                                  onAction: _load,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
                 : _favorites.isEmpty
                     ? RefreshIndicator(
                         onRefresh: _load,

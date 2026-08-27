@@ -111,11 +111,17 @@ export class AuthService {
     if (!process.env.GOOGLE_CLIENT_ID) {
       throw new UnauthorizedException('Google girişi bu sunucuda yapılandırılmamış (GOOGLE_CLIENT_ID eksik).');
     }
-    const ticket = await this.googleClient.verifyIdToken({
-      idToken,
-      audience: process.env.GOOGLE_CLIENT_ID,
-    });
-    const payload = ticket.getPayload();
+
+    let payload;
+    try {
+      const ticket = await this.googleClient.verifyIdToken({
+        idToken,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      });
+      payload = ticket.getPayload();
+    } catch {
+      throw new UnauthorizedException('Google token doğrulanamadı veya süresi dolmuş.');
+    }
     if (!payload?.email) throw new UnauthorizedException('Google token doğrulanamadı.');
 
     let user = await this.prisma.user.findUnique({ where: { email: payload.email } });
