@@ -8,7 +8,9 @@ generator client {
 
 datasource db {
   provider   = "postgresql"
+  // Runtime: transaction pooler (6543); migrations: session pooler (5432).
   url        = env("DATABASE_URL")
+  directUrl  = env("DIRECT_URL")
   extensions = [vector]
 }
 
