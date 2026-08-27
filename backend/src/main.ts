@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
@@ -17,6 +18,10 @@ async function bootstrap() {
     bodyParser: true,
   });
   app.use(helmet());
+  app.use((_request: unknown, response: { setHeader: (name: string, value: string) => void }, next: () => void) => {
+    response.setHeader('X-Request-ID', randomUUID());
+    next();
+  });
   if (!isProduction) {
     app.enableShutdownHooks();
   }
