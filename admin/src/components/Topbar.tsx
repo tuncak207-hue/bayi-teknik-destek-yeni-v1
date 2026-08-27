@@ -85,24 +85,25 @@ export default function Topbar({
   const hasResults = results && ((results.documents?.length ?? 0) + (results.dealers?.length ?? 0) + (results.posts?.length ?? 0) > 0);
 
   return (
-    <header className="h-14 border-b border-gray-200/70 bg-white flex items-center justify-between gap-4 px-4 md:px-6 shrink-0 sticky top-0 z-30">
+    <header className="h-[72px] border-b border-slate-200/80 bg-white/95 backdrop-blur flex items-center justify-between gap-4 px-4 sm:px-6 lg:px-8 shrink-0 sticky top-0 z-30">
       <div className="flex items-center gap-3 min-w-0">
-        <button onClick={onToggleMobile} className="md:hidden text-gray-500 hover:text-gray-800 shrink-0" aria-label="Menüyü aç">
+        <button onClick={onToggleMobile} className="md:hidden text-slate-500 hover:text-slate-900 shrink-0 rounded-lg p-2 hover:bg-slate-100 transition" aria-label="Menüyü aç">
           <IconMenu width={19} height={19} />
         </button>
-        <button onClick={onToggleCollapse} className="hidden md:block text-gray-300 hover:text-gray-600 shrink-0 transition-colors" aria-label="Menüyü daralt/genişlet">
+        <button onClick={onToggleCollapse} className="hidden md:block text-slate-400 hover:text-slate-900 shrink-0 rounded-lg p-2 hover:bg-slate-100 transition" aria-label="Menüyü daralt/genişlet">
           <IconPanelLeft width={17} height={17} />
         </button>
-        <h1 className="text-[13.5px] font-semibold text-gray-900 truncate">{title}</h1>
+        <div className="min-w-0"><p className="admin-eyebrow hidden sm:block">ENTPA OPERASYON MERKEZİ</p><h1 className="text-[15px] font-bold tracking-[-0.02em] text-slate-950 truncate">{title}</h1></div>
       </div>
 
       <div ref={searchBoxRef} className="relative hidden sm:block flex-1 max-w-xs">
         <IconSearch width={14} height={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-300" />
         <input
+          aria-label="Admin panelinde ara"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Ara..."
-          className="w-full h-8 bg-gray-50 border border-gray-200/70 rounded-lg pl-8 pr-3 text-[12.5px] focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-gray-300 transition"
+          className="w-full h-10 bg-slate-50 border border-slate-200/80 rounded-xl pl-8 pr-3 text-[12.5px] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300 transition"
         />
         {query.trim().length >= 2 && (
           <div className="absolute top-full mt-2 left-0 right-0 bg-white rounded-lg border border-gray-200 shadow-lg max-h-80 overflow-y-auto z-40">
@@ -138,12 +139,12 @@ export default function Topbar({
       </div>
 
       <div className="flex items-center gap-1 md:gap-2 shrink-0">
-        <button className="relative text-gray-400 hover:text-gray-700 transition p-1.5 rounded-md hover:bg-gray-50" aria-label="Bildirimler">
+        <button className="relative text-slate-400 hover:text-slate-900 transition p-2 rounded-xl hover:bg-slate-100" aria-label="Bildirimler">
           <IconBell width={16} height={16} />
         </button>
 
         <div className="hidden sm:flex items-center gap-2 pl-1">
-          <div className="w-[26px] h-[26px] rounded-full bg-navy text-white flex items-center justify-center text-[10.5px] font-semibold shrink-0">
+          <div className="w-9 h-9 rounded-xl bg-[var(--admin-navy)] text-white flex items-center justify-center text-[11px] font-bold shrink-0 shadow-[0_6px_14px_rgba(16,42,67,0.18)]">
             {initials || '?'}
           </div>
           <div className="hidden lg:block leading-tight">
@@ -155,7 +156,7 @@ export default function Topbar({
 
         <button
           onClick={logout}
-          className="flex items-center gap-1.5 text-[12.5px] font-medium text-gray-500 hover:text-red-600 hover:bg-red-50 px-2 md:px-2.5 h-8 rounded-md transition-colors"
+          className="flex items-center gap-1.5 text-[12.5px] font-semibold text-slate-500 hover:text-red-600 hover:bg-red-50 px-2 md:px-2.5 h-9 rounded-lg transition-colors"
         >
           <IconLogout width={14} height={14} />
           <span className="hidden md:inline">Çıkış</span>
