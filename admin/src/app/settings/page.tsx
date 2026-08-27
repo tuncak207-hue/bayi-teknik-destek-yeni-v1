@@ -27,18 +27,19 @@ const settingsLinks = [
 
 export default function SettingsPage() {
   return (
-    <div>
-      <p className="text-[13px] text-gray-400 mb-7">Uygulama genelindeki yapılandırılabilir ayarlar tek yerden.</p>
+    <div className="admin-page">
+      <div className="mb-7"><p className="admin-eyebrow">YÖNETİM / KONFİGÜRASYON</p><h2 className="admin-page-title">Ayarlar</h2><p className="admin-page-subtitle">Uygulama genelindeki operasyonel yapılandırmaları ve sistem bilgisini yönetin.</p></div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         {settingsLinks.map((s) => (
           <Link key={s.title} href={s.href}>
-            <Card className="p-5 h-full hover:shadow-md hover:shadow-gray-200/60 transition-shadow cursor-pointer">
-              <div className="w-10 h-10 rounded-xl bg-navy/[0.06] flex items-center justify-center text-navy mb-3">
+                          <Card className="p-5 h-full hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-[0_14px_30px_rgba(30,64,175,0.10)] transition-all cursor-pointer">
+
+              <div className="w-11 h-11 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-700 mb-4">
                 <s.Icon width={18} height={18} />
               </div>
-              <h3 className="text-sm font-bold text-navy mb-1">{s.title}</h3>
-              <p className="text-xs text-gray-400 leading-relaxed">{s.description}</p>
+              <h3 className="text-[14px] font-bold tracking-[-0.015em] text-slate-900 mb-1">{s.title}</h3>
+              <p className="text-[12.5px] text-slate-500 leading-relaxed">{s.description}</p>
             </Card>
           </Link>
         ))}
@@ -46,12 +47,12 @@ export default function SettingsPage() {
 
       <Card>
         <CardHeader title="Sistem Bilgisi" subtitle="AI ve altyapı yapılandırması" />
-        <div className="px-6 pb-6 space-y-3">
+        <div className="px-5 pb-5 space-y-3">
           <InfoRow label="AI Sağlayıcı" value="Backend .env dosyasındaki AI_PROVIDER değişkeni ile belirlenir (anthropic / ollama)." />
           <InfoRow label="Embedding Sağlayıcı" value="Backend .env dosyasındaki EMBEDDING_PROVIDER değişkeni ile belirlenir." />
           <InfoRow label="Dosya Depolama" value="Cloudflare R2 üzerinde, backend .env yapılandırmasıyla bağlanır." />
         </div>
-        <div className="px-6 pb-6">
+        <div className="px-5 pb-5">
           <div className="flex items-center gap-2 text-xs text-gray-400 bg-gray-50 rounded-xl px-4 py-3">
             <Badge label="Bilgi" tone="neutral" />
             <span>Bu değerler güvenlik nedeniyle backend&apos;deki <code className="bg-gray-100 px-1 py-0.5 rounded">.env</code> dosyası üzerinden yönetilir, bu panelden değiştirilemez.</span>
