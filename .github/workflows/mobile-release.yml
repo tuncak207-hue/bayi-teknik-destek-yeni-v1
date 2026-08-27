@@ -47,12 +47,13 @@ jobs:
           test -n "$GOOGLE_SERVICES_JSON_B64" || { echo "Missing FIREBASE_GOOGLE_SERVICES_JSON_B64"; exit 1; }
           test -n "$KEY_PROPERTIES_B64" || { echo "Missing ANDROID_KEY_PROPERTIES_B64"; exit 1; }
           test -n "$KEYSTORE_B64" || { echo "Missing ANDROID_KEYSTORE_B64"; exit 1; }
-          printf '%s' "$GOOGLE_SERVICES_JSON_B64" | base64 --decode > android/app/google-services.json
-          printf '%s' "$KEY_PROPERTIES_B64" | base64 --decode > android/key.properties
+          printf '%s' "$GOOGLE_SERVICES_JSON_B64" | tr -d '[:space:]' | base64 --decode > android/app/google-services.json
+          printf '%s' "$KEY_PROPERTIES_B64" | tr -d '[:space:]' | base64 --decode > android/key.properties
+          node -e "JSON.parse(require('fs').readFileSync('android/app/google-services.json', 'utf8'))"
           KEYSTORE_PATH=$(awk -F= '$1 == "storeFile" {print substr($0, index($0, "=") + 1)}' android/key.properties)
           test -n "$KEYSTORE_PATH" || { echo "key.properties must define storeFile"; exit 1; }
           mkdir -p "$(dirname "$KEYSTORE_PATH")"
-          printf '%s' "$KEYSTORE_B64" | base64 --decode > "$KEYSTORE_PATH"
+          printf '%s' "$KEYSTORE_B64" | tr -d '[:space:]' | base64 --decode > "$KEYSTORE_PATH"
           test -s android/app/google-services.json
           test -s android/key.properties
           test -s "$KEYSTORE_PATH"
