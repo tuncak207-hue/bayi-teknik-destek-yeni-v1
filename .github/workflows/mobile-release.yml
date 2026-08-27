@@ -84,7 +84,7 @@ jobs:
       - name: Run production API smoke test
         env:
           API_BASE_URL: ${{ secrets.MOBILE_API_BASE_URL }}
-        run: flutter test test/api_integration_test.dart --dart-define=API_BASE_URL="$API_BASE_URL"
+        run: flutter test --dart-define=API_BASE_URL="$API_BASE_URL" test/api_integration_test.dart
 
       - name: Build signed release App Bundle
         env:
