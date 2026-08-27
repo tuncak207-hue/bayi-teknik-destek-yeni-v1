@@ -170,11 +170,20 @@ class _SpecialtyScreenState extends State<SpecialtyScreen> {
                   runSpacing: 8,
                   children: _kAvailableTags
                       .map((tag) => FilterChip(
-                            label: Text(tag),
+                            label: Text(
+                              tag,
+                              style: const TextStyle(
+                                color: AppColors.navy,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                             selected: _selectedTags.contains(tag),
                             onSelected: (_) => _toggleTag(tag),
+                            backgroundColor: Colors.white,
                             selectedColor: AppColors.navy.withValues(alpha: 0.15),
                             checkmarkColor: AppColors.navy,
+                            side: BorderSide(color: AppColors.outline),
                           ))
                       .toList(),
                 ),
