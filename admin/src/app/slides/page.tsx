@@ -66,7 +66,7 @@ export default function SlidesPage() {
     <div className="p-8 max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold text-gray-900 mb-1">Ana Sayfa Slaytları</h1>
       <p className="text-sm text-gray-500 mb-6">
-        Burada yüklediğiniz görseller, mobil uygulamanın Ana Sayfa'sında otomatik olarak dönen bir slayt bandı şeklinde gösterilir.
+        Burada yüklediğiniz görseller, mobil uygulamanın Ana Sayfa&apos;sında otomatik olarak dönen bir slayt bandı şeklinde gösterilir.
       </p>
 
       <Card className="mb-8 p-6">

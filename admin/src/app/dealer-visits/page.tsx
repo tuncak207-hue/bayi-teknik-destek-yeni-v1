@@ -109,7 +109,7 @@ export default function DealerVisitsPage() {
           disabled={!visits?.length}
           className="text-[12.5px] font-medium text-gray-600 border border-gray-200 rounded-lg px-3 h-8 hover:bg-gray-50 transition disabled:opacity-40"
         >
-          ⬇ Excel'e Aktar (CSV)
+          ⬇ Excel&apos;e Aktar (CSV)
         </button>
       </div>
 

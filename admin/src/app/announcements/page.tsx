@@ -62,7 +62,7 @@ export default function AnnouncementsPage() {
           />
           <span>
             <strong>Kritik duyuru</strong> — bayiler uygulamayı açtığında kapatılamayan bir onay
-            ekranı görür, "Okudum, Anladım" demeden geçemez.
+            ekranı görür, &quot;Okudum, Anladım&quot; demeden geçemez.
           </span>
         </label>
         <button className="bg-brand text-white rounded-lg px-4 py-2 font-medium hover:bg-brand-dark transition">

@@ -29,7 +29,7 @@ export default function ProductAnalysisPage() {
 
   return (
     <div>
-      <p className="text-sm text-gray-500 mb-6">Ürün sağlık skorları, versiyon karşılaştırması ve AR-GE'ye otomatik geri bildirim uyarıları.</p>
+      <p className="text-sm text-gray-500 mb-6">Ürün sağlık skorları, versiyon karşılaştırması ve AR-GE&apos;ye otomatik geri bildirim uyarıları.</p>
 
       {rndAlerts?.length > 0 && (
         <div className="bg-white rounded-lg border border-red-200 p-6 mb-8">
