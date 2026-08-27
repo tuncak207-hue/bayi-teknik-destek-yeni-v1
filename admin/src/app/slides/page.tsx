@@ -64,13 +64,13 @@ export default function SlidesPage() {
   }
 
   return (
-    <div className="p-8 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold text-gray-900 mb-1">Ana Sayfa Slaytları</h1>
-      <p className="text-sm text-gray-500 mb-6">
-        Burada yüklediğiniz görseller, mobil uygulamanın Ana Sayfa&apos;sında otomatik olarak dönen bir slayt bandı şeklinde gösterilir.
-      </p>
+          <div className="admin-page">
+        <div className="mb-7"><p className="admin-eyebrow">İÇERİK / MOBİL DENEYİM</p><h2 className="admin-page-title">Ana Sayfa Slaytları</h2>
 
-      <Card className="mb-8 p-6">
+              <p className="admin-page-subtitle mb-7">Mobil uygulamanın ana sayfasındaki tanıtım slaytlarını, sıralamasını ve aktiflik durumunu yönetin.</p></div>
+
+        <Card className="mb-8 p-6">
+
         <CardHeader title="Yeni Slayt Ekle" />
         <form onSubmit={handleUpload} className="space-y-4 mt-4">
           <div>
@@ -106,7 +106,7 @@ export default function SlidesPage() {
           <button
             type="submit"
             disabled={uploading}
-            className="bg-orange-600 text-white text-sm font-semibold rounded-lg px-4 h-10 hover:bg-orange-700 transition disabled:opacity-50"
+            className="bg-[var(--admin-navy)] text-white text-[12.5px] font-semibold rounded-xl px-4 h-10 hover:bg-slate-800 transition disabled:opacity-50"
           >
             {uploading ? 'Yükleniyor...' : 'Slaytı Ekle'}
           </button>
@@ -122,7 +122,7 @@ export default function SlidesPage() {
       ) : (
         <div className="space-y-3">
           {slides.map((s: any) => (
-            <Card key={s.id} className="p-4 flex items-center gap-4">
+            <Card key={s.id} className="p-4 flex items-center gap-4 hover:border-blue-200 transition-colors">
               <Image
                 src={s.imageUrl}
                 alt={s.title || 'Slayt'}

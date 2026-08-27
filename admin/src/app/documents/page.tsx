@@ -113,12 +113,14 @@ export default function DocumentsPage() {
   const allDone = items.length > 0 && items.every((it) => it.status === 'done' || it.status === 'error');
 
   return (
-    <div>
-      <div className="flex justify-end gap-2 mb-3">
+    <div className="admin-page">
+      <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between mb-7">
+        <div><p className="admin-eyebrow">İÇERİK / BİLGİ BANKASI</p><h2 className="admin-page-title">Dokümanlar</h2><p className="admin-page-subtitle">Teknik dokümanları yükleyin, işleme durumunu izleyin ve bilgi bankasını güncel tutun.</p></div>
+      <div className="flex flex-wrap justify-end gap-2">
         <button
           onClick={() => handleReprocess(false)}
           disabled={reprocessing}
-          className="text-[12.5px] font-medium text-gray-600 border border-gray-200 bg-gray-50 rounded-lg px-3 h-8 hover:bg-gray-100 transition disabled:opacity-50"
+          className="text-[12.5px] font-semibold text-slate-700 border border-slate-200 bg-white rounded-xl px-3.5 h-10 hover:bg-slate-50 transition disabled:opacity-50"
           title="Sadece henüz işlenmemiş veya başarısız olmuş dokümanları işler — zaten işlenmiş dokümanları atlar, çok daha hızlıdır."
         >
           {reprocessing ? '⏳ İşleniyor...' : '🔄 Eksik/Başarısız Olanları İşle'}
@@ -126,13 +128,14 @@ export default function DocumentsPage() {
         <button
           onClick={() => handleReprocess(true)}
           disabled={reprocessing}
-          className="text-[12.5px] font-medium text-gray-600 border border-amber-200 bg-amber-50 rounded-lg px-3 h-8 hover:bg-amber-100 transition disabled:opacity-50"
+          className="text-[12.5px] font-semibold text-amber-800 border border-amber-200 bg-amber-50 rounded-xl px-3.5 h-10 hover:bg-amber-100 transition disabled:opacity-50"
           title="AI/embedding sağlayıcısını değiştirdiyseniz (örn. Voyage AI'dan Ollama'ya geçiş), TÜM dokümanları (zaten işlenmiş olanlar dahil) sıfırdan yeniden işlemeniz gerekir."
         >
           {reprocessing ? '⏳ İşleniyor...' : '⚠️ Tümünü Zorla Yeniden İşle'}
         </button>
       </div>
-      <form onSubmit={handleUpload} className="bg-white rounded-xl border border-gray-200 p-6 mb-8 space-y-4">
+      </div>
+      <form onSubmit={handleUpload} className="admin-surface p-6 mb-8 space-y-5">
         <div className="grid grid-cols-3 gap-4">
           <Input label="Marka" value={form.brand} onChange={(v) => setForm({ ...form, brand: v })} placeholder="Honeywell" />
           <Input label="Model" value={form.model} onChange={(v) => setForm({ ...form, model: v })} placeholder="MA8000" />
@@ -148,7 +151,8 @@ export default function DocumentsPage() {
             multiple
             accept=".pdf,.docx,.xlsx,.txt,.jpg,.jpeg,.png"
             onChange={(e) => handleFilesSelected(e.target.files)}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2"
+            aria-label="Doküman dosyaları seç"
+            className="w-full border border-slate-200 bg-slate-50 rounded-xl px-3 py-2.5 text-sm"
           />
           <p className="text-xs text-gray-400 mt-1">
             Her dosyanın başlığı, dosya adından otomatik alınır. Marka/model/versiyon tüm dosyalara uygulanır.
@@ -158,7 +162,7 @@ export default function DocumentsPage() {
         {items.length > 0 && (
           <div className="border border-gray-100 rounded-lg divide-y">
             {items.map((it, idx) => (
-              <div key={idx} className="flex items-center justify-between px-3 py-2 text-sm">
+              <div key={idx} className="flex items-center justify-between px-3.5 py-3 text-sm hover:bg-slate-50/70">
                 <span className="truncate">{it.file.name}</span>
                 <span>
                   {it.status === 'pending' && <span className="text-gray-400">Bekliyor</span>}
@@ -175,7 +179,7 @@ export default function DocumentsPage() {
           <button
             type="submit"
             disabled={uploading || items.length === 0 || !form.brand || !form.model || !form.version}
-            className="bg-brand text-white rounded-lg px-4 py-2 font-medium hover:bg-brand-dark transition disabled:opacity-60"
+            className="bg-[var(--admin-navy)] text-white rounded-xl px-4 h-10 font-semibold hover:bg-slate-800 transition disabled:opacity-60"
           >
             {uploading ? 'Yükleniyor...' : `${items.length > 1 ? `${items.length} Dokümanı Yükle` : 'Doküman Yükle'}`}
           </button>

@@ -75,21 +75,19 @@ export default function TrainingPage() {
   }
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <p className="text-[13px] text-gray-400">
-          Bayilerin uygulama içinden görüntüleyebileceği eğitim videoları ve dokümanları. Her formatta dosya kabul edilir.
-        </p>
+    <div className="admin-page">
+      <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between mb-7">
+        <div><p className="admin-eyebrow">İÇERİK / EĞİTİM</p><h2 className="admin-page-title">Eğitim İçerikleri</h2><p className="admin-page-subtitle">Bayilerin uygulama içinde kullanacağı eğitim video ve dokümanlarını yönetin.</p></div>
         <button
           onClick={() => setShowForm((v) => !v)}
-          className="bg-navy text-white text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-navy-light transition shadow-[0_1px_2px_rgba(15,23,42,0.04)] shrink-0 ml-4"
+          className="bg-[var(--admin-navy)] text-white text-[12.5px] font-semibold px-4 h-10 rounded-xl hover:bg-slate-800 transition shadow-sm shrink-0 ml-4"
         >
           {showForm ? 'Vazgeç' : '+ İçerik Ekle'}
         </button>
       </div>
 
       {showForm && (
-        <form onSubmit={submit} className="bg-white rounded-lg border border-gray-100 shadow-[0_1px_2px_rgba(15,23,42,0.04)] shadow-gray-100/50 p-6 mb-8 max-w-xl">
+        <form onSubmit={submit} className="admin-surface p-6 mb-8 max-w-xl">
           {error && (
             <div className="mb-5 px-3.5 py-2.5 bg-red-50 border border-red-100 rounded-lg">
               <p className="text-[13px] text-red-600">{error}</p>
@@ -114,7 +112,7 @@ export default function TrainingPage() {
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-navy/10 focus:border-navy transition"
+              className="w-full border border-slate-200 bg-slate-50 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300 transition"
               required
             />
           </div>
@@ -124,7 +122,7 @@ export default function TrainingPage() {
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-navy/10 focus:border-navy transition"
+              className="w-full border border-slate-200 bg-slate-50 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300 transition"
               rows={2}
             />
           </div>
@@ -181,7 +179,7 @@ export default function TrainingPage() {
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 placeholder="https://..."
-                className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-navy/10 focus:border-navy transition"
+                className="w-full border border-slate-200 bg-slate-50 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300 transition"
               />
             )}
           </div>

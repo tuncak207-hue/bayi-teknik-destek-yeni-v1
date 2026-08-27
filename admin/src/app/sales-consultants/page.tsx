@@ -47,18 +47,22 @@ export default function SalesConsultantsPage() {
   }
 
   return (
-    <div>
+    <div className="admin-page">
+      <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between mb-7">
+        <div><p className="admin-eyebrow">KULLANICI / SATIŞ</p><h2 className="admin-page-title">Satış Danışmanları</h2><p className="admin-page-subtitle">Bayilerin doğrudan iletişim kurabileceği satış danışmanı hesaplarını yönetin.</p></div>
       <div className="flex items-center justify-end mb-1">
         <PillButton onClick={() => setShowForm((v) => !v)} variant="primary">
           {showForm ? 'Vazgeç' : '+ Danışman Ekle'}
         </PillButton>
+      </div>
       </div>
       <p className="text-sm text-gray-500 mb-6">
         Bayilerin mobil uygulamada &quot;Satış Danışmanına Sor&quot; ile doğrudan mesaj gönderebileceği hesaplar. Bir karta tıklayarak düzenleyebilir veya silebilirsiniz.
       </p>
 
       {showForm && (
-        <form onSubmit={submit} className="bg-white rounded-lg border border-gray-100 shadow-[0_1px_2px_rgba(15,23,42,0.04)] shadow-gray-100/50 p-6 mb-6 max-w-lg">
+        <form onSubmit={submit}         className="admin-surface p-6 mb-6 max-w-lg"
+>
           {error && <p className="text-sm text-red-600 mb-4">{error}</p>}
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
@@ -96,7 +100,7 @@ export default function SalesConsultantsPage() {
               setSelected(c);
               setEditing(false);
             }}
-            className="text-left bg-white rounded-lg border border-gray-100 shadow-[0_1px_2px_rgba(15,23,42,0.04)] shadow-gray-100/50 p-5 hover:shadow-md hover:shadow-gray-200/60 hover:-translate-y-0.5 transition-all"
+            className="text-left bg-white rounded-2xl border border-slate-200/80 shadow-[0_10px_30px_rgba(15,23,42,0.035)] p-5 hover:border-blue-200 hover:shadow-[0_14px_30px_rgba(30,64,175,0.10)] hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30 transition-all"
           >
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm mb-3 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
               {c.firstName?.[0]?.toUpperCase()}{c.lastName?.[0]?.toUpperCase()}
@@ -110,8 +114,8 @@ export default function SalesConsultantsPage() {
       {consultants?.length === 0 && <p className="text-center text-gray-400 py-16">Henüz satış danışmanı eklenmedi.</p>}
 
       {selected && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4" onClick={() => setSelected(null)}>
-          <div className="bg-white rounded-lg w-full max-w-md overflow-hidden" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-slate-950/45 backdrop-blur-[2px] flex items-center justify-center z-50 p-4" onClick={() => setSelected(null)}>
+          <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <div className="h-1.5 bg-brand" />
             <div className="p-6">
               {editing ? (

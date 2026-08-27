@@ -94,27 +94,27 @@ export default function SupportTicketsPage() {
   };
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <p className="text-sm text-gray-500">Bayilerden gelen teknik destek kayıtları — acil kayıtlar ayrı ve belirgin şekilde gösterilir.</p>
+    <div className="admin-page">
+      <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between mb-7">
+        <div><p className="admin-eyebrow">OPERASYON / DESTEK</p><h2 className="admin-page-title">Teknik Destek</h2><p className="admin-page-subtitle">Bayilerden gelen destek kayıtlarını, SLA durumunu ve yedek parça taleplerini yönetin.</p></div>
         <div className="flex gap-2 shrink-0 ml-4 flex-wrap justify-end">
-          <button onClick={() => setShowCostReport((v) => !v)} className="text-sm font-medium text-navy border border-gray-200 px-4 py-2 rounded-xl hover:bg-gray-50 transition">
+          <button onClick={() => setShowCostReport((v) => !v)} className="text-[12.5px] font-semibold text-slate-700 bg-white border border-slate-200 px-3.5 h-10 rounded-xl hover:bg-slate-50 hover:border-slate-300 transition">
             {showCostReport ? 'Kapat' : 'Maliyet Raporu'}
           </button>
-          <button onClick={() => setShowSpareParts((v) => !v)} className="text-sm font-medium text-navy border border-gray-200 px-4 py-2 rounded-xl hover:bg-gray-50 transition">
+          <button onClick={() => setShowSpareParts((v) => !v)} className="text-[12.5px] font-semibold text-slate-700 bg-white border border-slate-200 px-3.5 h-10 rounded-xl hover:bg-slate-50 hover:border-slate-300 transition">
             {showSpareParts ? 'Kapat' : 'Yedek Parça Talepleri'}
           </button>
-          <button onClick={() => setShowMeasurementTypes((v) => !v)} className="text-sm font-medium text-navy border border-gray-200 px-4 py-2 rounded-xl hover:bg-gray-50 transition">
+          <button onClick={() => setShowMeasurementTypes((v) => !v)} className="text-[12.5px] font-semibold text-slate-700 bg-white border border-slate-200 px-3.5 h-10 rounded-xl hover:bg-slate-50 hover:border-slate-300 transition">
             {showMeasurementTypes ? 'Kapat' : 'Ölçüm Türleri'}
           </button>
-          <button onClick={() => setShowSlaSettings((v) => !v)} className="text-sm font-medium text-navy border border-gray-200 px-4 py-2 rounded-xl hover:bg-gray-50 transition">
+          <button onClick={() => setShowSlaSettings((v) => !v)} className="text-[12.5px] font-semibold text-slate-700 bg-white border border-slate-200 px-3.5 h-10 rounded-xl hover:bg-slate-50 hover:border-slate-300 transition">
             {showSlaSettings ? 'Kapat' : 'SLA Ayarları'}
           </button>
         </div>
       </div>
 
       {showCostReport && (
-        <div className="bg-white rounded-lg border border-gray-100 p-6 mb-8">
+        <div className="admin-surface p-6 mb-8">
           <h3 className="text-sm font-bold text-gray-700 mb-4">Maliyet Analizi Raporu</h3>
           <div className="flex flex-wrap gap-3 mb-5">
             {costReport && Object.entries(costReport.totalByCategory).map(([cat, amount]: [string, any]) => (

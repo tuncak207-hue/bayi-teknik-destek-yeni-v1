@@ -39,20 +39,23 @@ export default function AnnouncementsPage() {
   }
 
   return (
-    <div>
-      <form onSubmit={create} className="bg-white rounded-xl border border-gray-200 p-6 mb-8 space-y-4">
+    <div className="admin-page">
+      <div className="mb-7"><p className="admin-eyebrow">İLETİŞİM / YAYIN</p><h2 className="admin-page-title">Duyurular</h2><p className="admin-page-subtitle">Bayi iletişimini yönetin, kritik bilgilendirmelerin okuma durumunu takip edin.</p></div>
+      <form onSubmit={create} className="admin-surface p-6 mb-8 space-y-4">
         <input
           value={form.title}
           onChange={(e) => setForm({ ...form, title: e.target.value })}
           placeholder="Başlık"
-          className="w-full border border-gray-300 rounded-lg px-3 py-2"
+          aria-label="Duyuru başlığı"
+          className="w-full h-11 border border-slate-200 bg-slate-50 rounded-xl px-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300"
         />
         <textarea
           value={form.body}
           onChange={(e) => setForm({ ...form, body: e.target.value })}
           placeholder="Duyuru içeriği"
+          aria-label="Duyuru içeriği"
           rows={4}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2"
+          className="w-full border border-slate-200 bg-slate-50 rounded-xl px-3.5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300"
         />
         <label className="flex items-center gap-2 text-sm">
           <input
@@ -65,14 +68,14 @@ export default function AnnouncementsPage() {
             ekranı görür, &quot;Okudum, Anladım&quot; demeden geçemez.
           </span>
         </label>
-        <button className="bg-brand text-white rounded-lg px-4 py-2 font-medium hover:bg-brand-dark transition">
+        <button className="bg-[var(--admin-navy)] text-white rounded-xl px-4 h-10 font-semibold hover:bg-slate-800 transition">
           Duyuru Yayınla (tüm bayilere push gider)
         </button>
       </form>
 
       <div className="space-y-3">
         {announcements?.map((a: any) => (
-          <div key={a.id} className={`bg-white rounded-xl border p-4 ${a.isCritical ? 'border-brand' : 'border-gray-200'}`}>
+          <div key={a.id} className={`bg-white rounded-2xl border p-5 shadow-sm ${a.isCritical ? 'border-blue-400 shadow-blue-100/50' : 'border-slate-200/80'}`}>
             <div className="flex justify-between">
               <div>
                 <p className="font-medium flex items-center gap-2">

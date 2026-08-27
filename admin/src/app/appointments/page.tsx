@@ -64,14 +64,15 @@ export default function AppointmentsPage() {
   }
 
   return (
-    <div>
-      <div className="flex gap-2 mb-6">
+    <div className="admin-page">
+      <div className="mb-6"><p className="admin-eyebrow">OPERASYON / PLANLAMA</p><h2 className="admin-page-title">Randevular</h2><p className="admin-page-subtitle">Bayi randevularını durumlarına göre izleyin ve operasyon adımlarını yönetin.</p></div>
+      <div className="flex flex-wrap gap-2 mb-6">
         {['', 'PENDING', 'CONFIRMED', 'CANCELLED', 'COMPLETED'].map((s) => (
           <button
             key={s}
             onClick={() => setFilter(s)}
-            className={`px-3 py-1.5 rounded-full text-sm font-medium transition ${
-              filter === s ? 'bg-brand text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            className={`px-3.5 h-9 rounded-xl text-[12.5px] font-semibold transition ${
+              filter === s ? 'bg-[var(--admin-navy)] text-white shadow-sm' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300'
             }`}
           >
             {s === '' ? 'Tümü' : STATUS_LABEL[s]}
@@ -79,9 +80,9 @@ export default function AppointmentsPage() {
         ))}
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <div className="admin-surface overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50 text-gray-500 text-left">
+          <thead className="bg-slate-50/80 text-slate-500 text-left text-[11px] uppercase tracking-[0.08em]">
             <tr>
               <th className="px-4 py-3">Bayi</th>
               <th className="px-4 py-3">Konu</th>
@@ -93,7 +94,7 @@ export default function AppointmentsPage() {
           </thead>
           <tbody>
             {appointments?.map((a: any) => (
-              <tr key={a.id} className="border-t border-gray-100 align-top">
+              <tr key={a.id} className="border-t border-slate-100 align-top hover:bg-slate-50/60 transition-colors">
                 <td className="px-4 py-3">
                   <div className="font-medium">{a.dealer?.company}</div>
                   <div className="text-xs text-gray-500">
