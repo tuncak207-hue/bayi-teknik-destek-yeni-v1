@@ -73,16 +73,16 @@ jobs:
           API_BASE_URL: ${{ secrets.MOBILE_API_BASE_URL }}
         run: flutter test test/api_integration_test.dart --dart-define=API_BASE_URL="$API_BASE_URL"
 
-      - name: Build signed release APK
+      - name: Build signed release App Bundle
         env:
           API_BASE_URL: ${{ secrets.MOBILE_API_BASE_URL }}
           SOCKET_URL: ${{ secrets.MOBILE_SOCKET_URL }}
-        run: flutter build apk --release --dart-define=API_BASE_URL="$API_BASE_URL" --dart-define=SOCKET_URL="$SOCKET_URL"
+        run: flutter build appbundle --release --dart-define=API_BASE_URL="$API_BASE_URL" --dart-define=SOCKET_URL="$SOCKET_URL"
 
-      - name: Upload signed APK
+      - name: Upload signed App Bundle
         uses: actions/upload-artifact@v4
         with:
-          name: entpa-android-release-${{ github.ref_name }}-${{ github.run_number }}
-          path: mobile/build/app/outputs/flutter-apk/app-release.apk
+          name: entpa-android-aab-${{ github.ref_name }}-${{ github.run_number }}
+          path: mobile/build/app/outputs/bundle/release/app-release.aab
           if-no-files-found: error
           retention-days: 14
