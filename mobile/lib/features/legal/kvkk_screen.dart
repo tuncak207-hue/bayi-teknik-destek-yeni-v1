@@ -26,8 +26,8 @@ class KvkkScreen extends StatelessWidget {
           _Body(
             'Kişisel verileriniz, veri sorumlusu sıfatıyla ENTPA Elektronik Cihazlar '
             'Tic. Paz. ve Turizm A.Ş. tarafından işlenmektedir.\n\n'
-            'Adres: Y. Dudullu OSB, 1. Cadde No:23, 34775 Ümraniye – İstanbul / TR\n'
-            'E-posta: info@entpa.com.tr',
+'Adres: Y. Dudullu OSB. 1. Cadde No: 23, 34775 Ümraniye – İstanbul / TR\n'
+            'E-posta: ekerim@entpa.com.tr',
           ),
           SizedBox(height: 20),
           _Heading('2. İşlenen Kişisel Veriler'),
@@ -87,7 +87,7 @@ class KvkkScreen extends StatelessWidget {
           _Heading('7. Başvuru Yöntemi'),
           _Body(
             'KVKK kapsamındaki taleplerinizi, kimliğinizi doğrulamaya yarayan bilgilerle birlikte '
-            'info@entpa.com.tr adresine e-posta yoluyla veya veri sorumlusunun yukarıda belirtilen '
+            'ekerim@entpa.com.tr adresine e-posta yoluyla veya veri sorumlusunun yukarıda belirtilen '
             'adresine yazılı olarak iletebilirsiniz. Başvurular, KVKK ve ilgili ikincil mevzuatta '
             'öngörülen usul ve süreler çerçevesinde sonuçlandırılır.',
           ),

@@ -33,8 +33,10 @@ class CurrentUser {
       role = res.data['role'];
       ThemeController().setDark(res.data['darkMode'] == true);
     } catch (e) {
+      clear();
       // ignore: avoid_print
       print('[current_user] Profil bilgisi alınamadı: $e');
+      rethrow;
     }
   }
 

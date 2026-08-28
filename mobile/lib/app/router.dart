@@ -23,6 +23,7 @@ import '../features/profile/specialty_screen.dart';
 import '../features/profile/year_in_review_screen.dart';
 import '../features/legal/about_us_screen.dart';
 import '../features/legal/kvkk_screen.dart';
+import '../features/legal/privacy_policy_screen.dart';
 import '../features/appointments/appointments_screen.dart';
 import '../features/search/search_screen.dart';
 import '../features/favorites/favorites_screen.dart';
@@ -69,6 +70,7 @@ final appRouter = GoRouter(
     ),
     GoRoute(path: '/about', builder: (context, state) => const AboutUsScreen()),
     GoRoute(path: '/kvkk', builder: (context, state) => const KvkkScreen()),
+    GoRoute(path: '/privacy-policy', builder: (context, state) => const PrivacyPolicyScreen()),
     GoRoute(path: '/appointments', builder: (context, state) => const AppointmentsScreen()),
     GoRoute(path: '/search', builder: (context, state) => const SearchScreen()),
     GoRoute(path: '/favorites', builder: (context, state) => const FavoritesScreen()),
