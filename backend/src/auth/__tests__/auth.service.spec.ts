@@ -43,11 +43,20 @@ describe('AuthService', () => {
         phone: '5551234567',
         email: 'ali@abc.com',
         password: 'Sifre1234',
+        acceptedKvkk: true,
+        acceptedPrivacyPolicy: true,
       });
 
       expect(prisma.user.create).toHaveBeenCalledWith(
         expect.objectContaining({
-          data: expect.objectContaining({ email: 'ali@abc.com', status: 'PENDING' }),
+          data: expect.objectContaining({
+            email: 'ali@abc.com',
+            status: 'PENDING',
+            kvkkAcceptedAt: expect.any(Date),
+            kvkkConsentVersion: '2026-08-28',
+            privacyAcceptedAt: expect.any(Date),
+            privacyConsentVersion: '2026-08-28',
+          }),
         }),
       );
       expect(result.message).toBe('Hesabınız admin onayı bekliyor.');
@@ -64,8 +73,25 @@ describe('AuthService', () => {
           phone: '5551234567',
           email: 'ali@abc.com',
           password: 'Sifre1234',
+          acceptedKvkk: true,
+          acceptedPrivacyPolicy: true,
         }),
       ).rejects.toThrow(ConflictException);
+    });
+    it('hukuki metinlerden biri kabul edilmezse kayıt oluşturmaz', async () => {
+      await expect(
+        service.register({
+          firstName: 'Ali',
+          lastName: 'Yılmaz',
+          company: 'ABC',
+          phone: '5551234567',
+          email: 'ali@abc.com',
+          password: 'Sifre1234',
+          acceptedKvkk: true,
+          acceptedPrivacyPolicy: false,
+        }),
+      ).rejects.toThrow('KVKK Aydınlatma Metni ve Gizlilik Politikası onayı zorunludur.');
+      expect(prisma.user.findUnique).not.toHaveBeenCalled();
     });
   });
 

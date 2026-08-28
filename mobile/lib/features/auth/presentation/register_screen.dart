@@ -26,20 +26,24 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   bool _loading = false;
   bool _obscurePassword = true;
   bool _kvkkAccepted = false;
+  bool _privacyAccepted = false;
   bool _kvkkTouched = false; // "onaylanmadı" hatasını sadece denemeden sonra göster
   String? _error;
 
   late final TapGestureRecognizer _kvkkTapRecognizer;
+  late final TapGestureRecognizer _privacyTapRecognizer;
 
   @override
   void initState() {
     super.initState();
     _kvkkTapRecognizer = TapGestureRecognizer()..onTap = () => context.push('/kvkk');
+    _privacyTapRecognizer = TapGestureRecognizer()..onTap = () => context.push('/privacy-policy');
   }
 
   @override
   void dispose() {
     _kvkkTapRecognizer.dispose();
+    _privacyTapRecognizer.dispose();
     super.dispose();
   }
 
@@ -52,11 +56,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       );
       return;
     }
-    if (!_kvkkAccepted) {
-      // Önceden burada sessizce çıkıyorduk — kullanıcı "hiçbir şey olmuyor"
-      // sanıyordu. Artık net bir uyarı gösteriyoruz.
+    if (!_kvkkAccepted || !_privacyAccepted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Devam etmek için KVKK Aydınlatma Metni\'ni onaylamanız gerekiyor.')),
+        const SnackBar(content: Text('Devam etmek için KVKK Aydınlatma Metni ve Gizlilik Politikası onaylarını vermeniz gerekiyor.')),
       );
       return;
     }
@@ -72,6 +74,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             phone: _phone.text.trim(),
             email: _email!,
             password: _password.text,
+            acceptedKvkk: _kvkkAccepted,
+            acceptedPrivacyPolicy: _privacyAccepted,
           );
       if (!mounted) return;
       showDialog(
@@ -206,48 +210,25 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
                     const SizedBox(height: AppSpacing.md),
 
-                    // ---- KVKK onayı ----
-                    Container(
-                      padding: const EdgeInsets.all(AppSpacing.xs),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(AppSpacing.radius),
-                        border: Border.all(
-                          color: (_kvkkTouched && !_kvkkAccepted) ? AppColors.brand : AppColors.divider,
-                        ),
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Checkbox(
-                            value: _kvkkAccepted,
-                            onChanged: (v) => setState(() => _kvkkAccepted = v ?? false),
-                          ),
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 12),
-                              child: RichText(
-                                text: TextSpan(
-                                  style: const TextStyle(fontSize: 13.5, color: AppColors.ink),
-                                  children: [
-                                    TextSpan(
-                                      text: 'KVKK Aydınlatma Metni\'ni okudum ve kabul ediyorum.',
-                                      style: const TextStyle(fontWeight: FontWeight.w600, color: AppColors.navy),
-                                      recognizer: _kvkkTapRecognizer,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                    // ---- Zorunlu hukuki metin onayları ----
+                    _ConsentRow(
+                      value: _kvkkAccepted,
+                      onChanged: (value) => setState(() => _kvkkAccepted = value),
+                      recognizer: _kvkkTapRecognizer,
+                      text: 'KVKK Aydınlatma Metni\'ni okudum ve kabul ediyorum.',
                     ),
-                    if (_kvkkTouched && !_kvkkAccepted)
+                    const SizedBox(height: AppSpacing.xs),
+                    _ConsentRow(
+                      value: _privacyAccepted,
+                      onChanged: (value) => setState(() => _privacyAccepted = value),
+                      recognizer: _privacyTapRecognizer,
+                      text: 'Gizlilik Politikası\'nı okudum ve kabul ediyorum.',
+                    ),
+                    if (_kvkkTouched && (!_kvkkAccepted || !_privacyAccepted))
                       const Padding(
                         padding: EdgeInsets.only(left: 12, top: 6),
                         child: Text(
-                          'Devam etmek için KVKK Aydınlatma Metni\'ni onaylamanız gerekiyor.',
+                          'Kayıt için her iki metni de onaylamanız gerekiyor.',
                           style: TextStyle(color: AppColors.brand, fontSize: 12.5),
                         ),
                       ),
@@ -286,6 +267,55 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       obscureText: obscure,
       decoration: InputDecoration(labelText: label, prefixIcon: Icon(icon)),
       validator: (v) => (v == null || v.trim().isEmpty) ? '$label zorunludur' : null,
+    );
+  }
+}
+
+class _ConsentRow extends StatelessWidget {
+  final bool value;
+  final ValueChanged<bool> onChanged;
+  final TapGestureRecognizer recognizer;
+  final String text;
+
+  const _ConsentRow({
+    required this.value,
+    required this.onChanged,
+    required this.recognizer,
+    required this.text,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.xs),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(AppSpacing.radius),
+        border: Border.all(color: value ? AppColors.divider : AppColors.divider),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Checkbox(value: value, onChanged: (next) => onChanged(next ?? false)),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: RichText(
+                text: TextSpan(
+                  style: const TextStyle(fontSize: 13.5, color: AppColors.ink),
+                  children: [
+                    TextSpan(
+                      text: text,
+                      style: const TextStyle(fontWeight: FontWeight.w600, color: AppColors.navy),
+                      recognizer: recognizer,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

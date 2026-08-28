@@ -1,6 +1,7 @@
 import {
   Injectable,
   ConflictException,
+  BadRequestException,
   UnauthorizedException,
   ForbiddenException,
 } from '@nestjs/common';
@@ -34,6 +35,10 @@ export class AuthService {
   }
 
   async register(dto: RegisterDto) {
+    if (dto.acceptedKvkk !== true || dto.acceptedPrivacyPolicy !== true) {
+      throw new BadRequestException('KVKK Aydınlatma Metni ve Gizlilik Politikası onayı zorunludur.');
+    }
+
     const existing = await this.prisma.user.findUnique({ where: { email: dto.email } });
     if (existing) {
       throw new ConflictException('Bu e-posta ile kayıtlı bir hesap zaten var.');
@@ -50,6 +55,10 @@ export class AuthService {
         email: dto.email,
         passwordHash,
         status: 'PENDING', // admin onayı bekliyor
+        kvkkAcceptedAt: new Date(),
+        kvkkConsentVersion: '2026-08-28',
+        privacyAcceptedAt: new Date(),
+        privacyConsentVersion: '2026-08-28',
       },
     });
 

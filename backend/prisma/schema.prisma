@@ -93,6 +93,11 @@ model User {
   // göstermek için.
   specialtyTags String[] @default([])
   lastLoginAt   DateTime? // Pasif bayi tespiti için — her başarılı girişte güncellenir
+  // Kayıt sırasında kabul edilen hukuki metinlerin izlenebilir onay kayıtları.
+  kvkkAcceptedAt         DateTime?
+  kvkkConsentVersion     String?
+  privacyAcceptedAt      DateTime?
+  privacyConsentVersion  String?
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
 

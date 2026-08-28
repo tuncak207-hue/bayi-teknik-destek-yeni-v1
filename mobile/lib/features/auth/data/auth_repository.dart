@@ -23,6 +23,8 @@ class AuthRepository {
     required String phone,
     required String email,
     required String password,
+    required bool acceptedKvkk,
+    required bool acceptedPrivacyPolicy,
   }) async {
     final res = await _dio.post('/auth/register', data: {
       'firstName': firstName,
@@ -31,6 +33,8 @@ class AuthRepository {
       'phone': phone,
       'email': email,
       'password': password,
+      'acceptedKvkk': acceptedKvkk,
+      'acceptedPrivacyPolicy': acceptedPrivacyPolicy,
     });
     return res.data['message'] as String;
   }
