@@ -82,6 +82,11 @@ class AuthRepository {
 
   Future<void> logout() async {
     await PushNotificationService().unregister();
+    try {
+      await GoogleSignIn(serverClientId: _googleServerClientId).signOut();
+    } catch (_) {
+      // Google oturumu bulunmasa da yerel/backend oturumu kapatılmalıdır.
+    }
     SocketService().disconnect();
     CurrentUser().clear();
     await _tokenStorage.clear();

@@ -272,10 +272,16 @@ export class UsersService {
    * ekranında kırık referans olarak kalmaz, ama kişisel veriler
    * (KVKK gereği) temizlenir ve hesap artık giriş yapılamaz hâle gelir.
    */
-  async deleteOwnAccount(id: string, password: string) {
+  async deleteOwnAccount(id: string, password?: string) {
     const user = await this.ensureExists(id);
-    const valid = await bcrypt.compare(password, user.passwordHash);
-    if (!valid) throw new UnauthorizedException('Şifre hatalı.');
+
+    // Yerel hesaplarda parola verilmişse doğrula. Google/telefon ile açılan
+    // hesaplarda kullanıcı tarafından bilinen bir parola bulunmadığı için,
+    // JWT ile doğrulanmış oturum hesap silme onayı olarak yeterlidir.
+    if (password?.trim()) {
+      const valid = await bcrypt.compare(password, user.passwordHash);
+      if (!valid) throw new UnauthorizedException('Şifre hatalı.');
+    }
 
     const randomPassword = await bcrypt.hash(`deleted-${id}-${Date.now()}`, 12);
 

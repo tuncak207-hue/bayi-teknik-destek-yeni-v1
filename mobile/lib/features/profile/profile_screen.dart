@@ -216,9 +216,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _openDeleteAccountDialog() async {
-    final passwordController = TextEditingController();
-    String? error;
-
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => StatefulBuilder(
@@ -231,20 +228,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Bu işlem geri alınamaz. Hesabınız kalıcı olarak devre dışı bırakılacak ve '
-                    'bir daha giriş yapamayacaksınız. Devam etmek için şifrenizi girin.',
+                    'Bu işlem geri alınamaz. Hesabınız ve kişisel bilgileriniz silinecek; '
+                    'mesajlarınız anonimleştirilecek ve bu oturum kapatılacaktır.',
                     style: TextStyle(fontSize: 13.5),
-                  ),
-                  const SizedBox(height: 16),
-                  if (error != null)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: Text(error!, style: const TextStyle(color: AppColors.navy, fontSize: 13)),
-                    ),
-                  TextField(
-                    controller: passwordController,
-                    obscureText: true,
-                    decoration: const InputDecoration(labelText: 'Şifreniz'),
                   ),
                 ],
               ),
@@ -255,10 +241,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 style: ElevatedButton.styleFrom(backgroundColor: AppColors.navy),
                 onPressed: () async {
                   try {
-                    await _dio.delete('/users/me', data: {'password': passwordController.text});
+                    await _dio.delete('/users/me');
                     if (dialogContext.mounted) Navigator.pop(dialogContext, true);
                   } on DioException catch (e) {
-                    setDialogState(() => error = e.response?.data?['message'] ?? 'Hesap silinemedi.');
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(e.response?.data?['message'] ?? 'Hesap silinemedi.')),
+                    );
                   }
                 },
                 child: const Text('Hesabımı Sil'),

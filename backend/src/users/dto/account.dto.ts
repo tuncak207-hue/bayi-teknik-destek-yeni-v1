@@ -1,4 +1,4 @@
-import { IsString, MinLength } from 'class-validator';
+import { IsOptional, IsString, MinLength } from 'class-validator';
 
 export class ChangePasswordDto {
   @IsString()
@@ -10,6 +10,8 @@ export class ChangePasswordDto {
 }
 
 export class DeleteAccountDto {
+  /** Google/telefon ile giriş yapan kullanıcıların yerel şifresi yoktur. */
+  @IsOptional()
   @IsString()
-  password: string;
+  password?: string;
 }
