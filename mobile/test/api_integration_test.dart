@@ -24,11 +24,11 @@ void main() {
       validateStatus: (status) => status != null,
     ));
 
-    final healthResponse = await dio.get('/health');
+    final healthResponse = await dio.get('health');
     expect(healthResponse.statusCode, 200,
         reason: 'Production API health endpoint must be available');
 
-    final response = await dio.get('/users/me');
+    final response = await dio.get('users/me');
 
     expect(
       response.statusCode,
