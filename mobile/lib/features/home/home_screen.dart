@@ -43,9 +43,18 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    // Kritik kartı önce yükle. Render cold start ve Supabase pooler
+    // bağlantısı sırasında ikincil isteklerin aynı anda yarışması, istatistik
+    // kartının gereksiz yere gecikmesine neden olabiliyor.
     _loadStats();
-    _loadPinnedDocuments();
     _loadQuickActionsOrder();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future.delayed(const Duration(milliseconds: 250), () {
+        if (!mounted) return;
+        _loadPinnedDocuments();
+        _loadCategoryBadges();
+      });
+    });
     // Randevu/eğitim içeriği/sertifika gibi bildirimler her ekrandan
     // (RootShell) dinlendiği için, buradan gelen sinyalle kart
     // rozetlerini tazeliyoruz — Ana Sayfa şu an görünür olmasa bile.
@@ -55,7 +64,6 @@ class _HomeScreenState extends State<HomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) CriticalAnnouncementGate.checkAndShow(context);
     });
-    _loadCategoryBadges();
     // Alt menüdeki rozet mesaj geldiğinde anlık güncelleniyordu ama bu
     // karttaki rozet sadece ekran ilk açıldığında bir kere yükleniyordu —
     // Ana Sayfa'dayken mesaj gelirse kart hiç haberdar olmuyordu. Artık
@@ -178,8 +186,8 @@ class _HomeScreenState extends State<HomeScreen> {
       // yapmadan, otomatik olarak birkaç kez (artan bekleme ile) tekrar
       // deniyoruz; sadece bunlar da başarısız olursa hata gösteriyoruz.
       if (!mounted) return;
-      if (attempt < 2) {
-        await Future.delayed(Duration(milliseconds: 800 * (attempt + 1)));
+      if (attempt < 4) {
+        await Future.delayed(Duration(milliseconds: 400 * (1 << attempt)));
         if (mounted) _loadStats(attempt: attempt + 1);
         return;
       }
