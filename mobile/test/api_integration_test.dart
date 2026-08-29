@@ -22,11 +22,17 @@ void main() {
       receiveTimeout: const Duration(seconds: 30),
       validateStatus: (status) => status != null,
     ));
-    final apiRoot = apiBaseUrl.endsWith('/')
-        ? apiBaseUrl.substring(0, apiBaseUrl.length - 1)
-        : apiBaseUrl;
+    final baseUri = Uri.parse(apiBaseUrl);
+    final apiRootUri = Uri(
+      scheme: baseUri.scheme,
+      host: baseUri.host,
+      port: baseUri.port,
+      path: '/api/v1',
+    );
 
-    final response = await dio.getUri(Uri.parse('$apiRoot/users/me'));
+    final response = await dio.getUri(
+      apiRootUri.replace(path: '${apiRootUri.path}/users/me'),
+    );
 
     expect(
       response.statusCode,
