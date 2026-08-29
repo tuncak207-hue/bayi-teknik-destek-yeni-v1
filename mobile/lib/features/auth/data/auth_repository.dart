@@ -16,22 +16,6 @@ class AuthRepository {
   final Dio _dio = ApiClient().dio;
   final TokenStorage _tokenStorage = TokenStorage();
 
-  // ÖNEMLİ: google_sign_in paketi 6.x'ten 7.x'e geçince API tamamen
-  // değişti — artık tekil bir "instance" üzerinden, açıkça
-  // initialize() edilmesi gereken bir yapı kullanılıyor. Bu, "code: 10 /
-  // DEVELOPER_ERROR" hatasının olası bir nedeni olan eski platform
-  // implementasyonunu (google_sign_in_android 6.2.1) devre dışı
-  // bırakıp, Play App Signing ile daha uyumlu güncel implementasyona
-  // (7.x) geçiyor. initialize() sadece bir kez çağrılmalı, bu yüzden
-  // bir bayrak (_googleSignInReady) ile korunuyor.
-  bool _googleSignInReady = false;
-
-  Future<void> _ensureGoogleSignInReady() async {
-    if (_googleSignInReady) return;
-    await GoogleSignIn.instance.initialize(serverClientId: _googleServerClientId);
-    _googleSignInReady = true;
-  }
-
   Future<String> register({
     required String firstName,
     required String lastName,
@@ -61,9 +45,14 @@ class AuthRepository {
   }
 
   Future<String?> loginWithGoogle({required bool acceptedKvkk, required bool acceptedPrivacyPolicy}) async {
-    await _ensureGoogleSignInReady();
-    final googleUser = await GoogleSignIn.instance.authenticate();
-    final idToken = googleUser.authentication.idToken;
+    final googleUser = await GoogleSignIn(
+      serverClientId: _googleServerClientId,
+    ).signIn();
+    if (googleUser == null) {
+      throw Exception('Google girişi iptal edildi.');
+    }
+    final googleAuth = await googleUser.authentication;
+    final idToken = googleAuth.idToken;
     if (idToken == null) {
       throw Exception('Google kimlik doğrulaması başarısız oldu.');
     }
@@ -106,8 +95,7 @@ class AuthRepository {
   Future<void> logout() async {
     await PushNotificationService().unregister();
     try {
-      await _ensureGoogleSignInReady();
-      await GoogleSignIn.instance.signOut();
+      await GoogleSignIn(serverClientId: _googleServerClientId).signOut();
     } catch (_) {
       // Google oturumu bulunmasa da yerel/backend oturumu kapatılmalıdır.
     }
