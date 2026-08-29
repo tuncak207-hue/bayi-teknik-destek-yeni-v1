@@ -38,7 +38,7 @@ jobs:
           MOBILE_API_BASE_URL: ${{ secrets.MOBILE_API_BASE_URL }}
         run: |
           test -n "$MOBILE_API_BASE_URL" || { echo "MOBILE_API_BASE_URL secret is required"; exit 1; }
-          flutter test test/api_integration_test.dart --coverage --dart-define=API_BASE_URL="$MOBILE_API_BASE_URL"
+          flutter test --dart-define=API_BASE_URL="$MOBILE_API_BASE_URL" --coverage test/api_integration_test.dart
 
       - name: Install CocoaPods dependencies
         run: pod install --project-directory=ios
