@@ -269,7 +269,7 @@ class AppTheme {
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         floatingLabelBehavior: FloatingLabelBehavior.auto,
       ),
-      cardTheme: CardThemeData(
+      cardTheme: CardTheme(
         elevation: 0,
         shadowColor: Colors.black.withOpacity(0.04),
         surfaceTintColor: Colors.transparent,
@@ -328,7 +328,7 @@ class AppTheme {
         contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
       ),
-      dialogTheme: DialogThemeData(
+      dialogTheme: DialogTheme(
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.white,
         elevation: 0,
@@ -366,7 +366,7 @@ class AppTheme {
       switchTheme: SwitchThemeData(
         thumbIcon: WidgetStateProperty.resolveWith((states) => states.contains(WidgetState.selected) ? const Icon(Icons.check, size: 16) : null),
       ),
-      progressIndicatorTheme: const ProgressIndicatorThemeData(strokeWidth: 3),
+      progressIndicatorTheme: const ProgressIndicatorThemeData(),
       tooltipTheme: TooltipThemeData(
         decoration: BoxDecoration(color: AppColors.ink, borderRadius: BorderRadius.circular(8)),
         textStyle: const TextStyle(color: Colors.white, fontSize: 12),
@@ -481,7 +481,7 @@ class AppTheme {
         surfaceTintColor: const Color(0xFFFF8A55).withOpacity(0.08),
         titleTextStyle: TextStyle(fontFamily: _platformFontFamily, color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700),
       ),
-      cardTheme: CardThemeData(
+      cardTheme: CardTheme(
         color: darkCard,
         elevation: 0,
         margin: EdgeInsets.zero,
@@ -540,7 +540,7 @@ class AppTheme {
         contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
       ),
-      dialogTheme: DialogThemeData(
+      dialogTheme: DialogTheme(
         backgroundColor: darkCard,
         surfaceTintColor: darkCard,
         elevation: 0,
@@ -575,7 +575,7 @@ class AppTheme {
       switchTheme: SwitchThemeData(
         thumbIcon: WidgetStateProperty.resolveWith((states) => states.contains(WidgetState.selected) ? const Icon(Icons.check, size: 16) : null),
       ),
-      progressIndicatorTheme: const ProgressIndicatorThemeData(strokeWidth: 3),
+      progressIndicatorTheme: const ProgressIndicatorThemeData(),
       tooltipTheme: TooltipThemeData(
         decoration: BoxDecoration(color: Colors.black87, borderRadius: BorderRadius.circular(8)),
         textStyle: const TextStyle(color: Colors.white, fontSize: 12),
