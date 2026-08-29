@@ -39,24 +39,19 @@ jobs:
 
       - name: Materialize production-only files
         env:
-          GOOGLE_SERVICES_JSON_B64: ${{ secrets.FIREBASE_GOOGLE_SERVICES_JSON_B64 }}
           KEY_PROPERTIES_B64: ${{ secrets.ANDROID_KEY_PROPERTIES_B64 }}
           KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
         run: |
           set -euo pipefail
-          test -n "$GOOGLE_SERVICES_JSON_B64" || { echo "Missing FIREBASE_GOOGLE_SERVICES_JSON_B64"; exit 1; }
           test -n "$KEY_PROPERTIES_B64" || { echo "Missing ANDROID_KEY_PROPERTIES_B64"; exit 1; }
           test -n "$KEYSTORE_B64" || { echo "Missing ANDROID_KEYSTORE_B64"; exit 1; }
-          if ! printf '%s' "$GOOGLE_SERVICES_JSON_B64" | tr -d '[:space:]' | base64 --decode > android/app/google-services.json; then
-            echo "Invalid Base64: FIREBASE_GOOGLE_SERVICES_JSON_B64"
+          test -s android/app/google-services.json || { echo "Missing checked-in android/app/google-services.json"; exit 1; }
+          if ! node -e "JSON.parse(require('fs').readFileSync('android/app/google-services.json', 'utf8'))"; then
+            echo "android/app/google-services.json is not valid JSON"
             exit 1
           fi
           if ! printf '%s' "$KEY_PROPERTIES_B64" | tr -d '[:space:]' | base64 --decode > android/key.properties; then
             echo "Invalid Base64: ANDROID_KEY_PROPERTIES_B64"
-            exit 1
-          fi
-          if ! node -e "JSON.parse(require('fs').readFileSync('android/app/google-services.json', 'utf8'))"; then
-            echo "Decoded FIREBASE_GOOGLE_SERVICES_JSON_B64 is not valid JSON"
             exit 1
           fi
           # Local key.properties may contain a Windows absolute path. CI uses an app-relative path.
@@ -102,7 +97,7 @@ jobs:
           set -euo pipefail
           API_BASE_URL=$(printf '%s' "$API_BASE_URL" | tr -d '[:space:]')
           SOCKET_URL=$(printf '%s' "$SOCKET_URL" | tr -d '[:space:]')
-          flutter build appbundle --release --build-number=6 "--dart-define=API_BASE_URL=$API_BASE_URL" "--dart-define=SOCKET_URL=$SOCKET_URL"
+          flutter build appbundle --release --build-number=7 "--dart-define=API_BASE_URL=$API_BASE_URL" "--dart-define=SOCKET_URL=$SOCKET_URL"
 
       - name: Upload signed App Bundle
         uses: actions/upload-artifact@v4
