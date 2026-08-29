@@ -92,6 +92,6 @@ flutter:
 
 flutter_launcher_icons:
   android: true
-  ios: false # bu proje şimdilik sadece Android için hedefleniyor
+  ios: true
   image_path: "assets/images/entpa_logo.png"
   min_sdk_android: 21
