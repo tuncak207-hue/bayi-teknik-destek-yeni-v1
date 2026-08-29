@@ -1,0 +1,50 @@
+name: iOS CI
+
+on:
+  pull_request:
+    paths:
+      - 'mobile/lib/**'
+      - 'mobile/ios/**'
+      - 'mobile/test/**'
+      - 'mobile/pubspec.yaml'
+      - 'mobile/pubspec.lock'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ios:
+    name: Flutter iOS analyze, test and build
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze --no-fatal-infos
+
+      - name: Test
+        env:
+          API_BASE_URL: ${{ secrets.MOBILE_API_BASE_URL }}
+        run: |
+          test -n "$API_BASE_URL" || { echo "MOBILE_API_BASE_URL secret is required"; exit 1; }
+          flutter test test/api_integration_test.dart
+
+      - name: Install CocoaPods dependencies
+        run: pod install --project-directory=ios
+
+      - name: Build iOS release without signing
+        run: flutter build ios --release --no-codesign
