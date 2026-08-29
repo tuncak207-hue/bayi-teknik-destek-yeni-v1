@@ -73,7 +73,7 @@ export class DealerVisitsController {
 
   @Roles('ADMIN', 'SALES')
   @Get('attachments/:fileId/signed-url')
-  getAttachmentUrl(@Param('fileId') fileId: string) {
-    return this.visitsService.getAttachmentUrl(fileId);
+  getAttachmentUrl(@Req() req: any, @Param('fileId') fileId: string) {
+    return this.visitsService.getAttachmentUrl(fileId, req.user.sub, req.user.role === 'ADMIN');
   }
 }

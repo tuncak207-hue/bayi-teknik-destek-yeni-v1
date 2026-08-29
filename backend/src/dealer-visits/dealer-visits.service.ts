@@ -180,9 +180,13 @@ export class DealerVisitsService {
     });
   }
 
-  async getAttachmentUrl(fileId: string) {
-    const file = await this.prisma.dealerVisitFile.findUnique({ where: { id: fileId } });
+  async getAttachmentUrl(fileId: string, requestingUserId: string, isAdmin: boolean) {
+    const file = await this.prisma.dealerVisitFile.findUnique({
+      where: { id: fileId },
+      select: { fileKey: true, visitId: true },
+    });
     if (!file) throw new NotFoundException('Dosya bulunamadı.');
+    await this.get(file.visitId, requestingUserId, isAdmin);
     return { url: await this.storage.getSignedUrl(file.fileKey) };
   }
 

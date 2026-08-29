@@ -4,6 +4,7 @@ import type { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { SocialAuthDto } from './dto/social-auth.dto';
 
 const ACCESS_COOKIE = 'admin_access_token';
 const REFRESH_COOKIE = 'admin_refresh_token';
@@ -37,13 +38,13 @@ export class AuthController {
   }
 
   @Post('google')
-  googleLogin(@Body('idToken') idToken: string) {
-    return this.authService.googleLogin(idToken);
+  googleLogin(@Body() dto: SocialAuthDto) {
+    return this.authService.googleLogin(dto);
   }
 
   @Post('phone')
-  phoneLogin(@Body('idToken') idToken: string) {
-    return this.authService.phoneLogin(idToken);
+  phoneLogin(@Body() dto: SocialAuthDto) {
+    return this.authService.phoneLogin(dto);
   }
 
   @Post('refresh')

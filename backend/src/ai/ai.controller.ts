@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Patch, Body, Param, Query, UseGuards, Req, UseInterceptors, UploadedFile, ForbiddenException } from '@nestjs/common';
+import { Controller, Post, Get, Patch, Body, Param, Query, UseGuards, Req, UseInterceptors, UploadedFile, ForbiddenException, BadRequestException } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard, Roles } from '../auth/guards/jwt-auth.guard';
@@ -83,12 +83,23 @@ export class AiController {
   }
 
   @Post('ask-with-image')
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(
+    FileInterceptor('image', {
+      limits: { fileSize: 10 * 1024 * 1024 },
+      fileFilter: (_req, file, callback) => {
+        const allowed = ['image/jpeg', 'image/png', 'image/webp'];
+        callback(null, allowed.includes(file.mimetype));
+      },
+    }),
+  )
   async askWithImage(
     @Req() req: any,
     @Body() dto: AskAiDto,
     @UploadedFile() image: Express.Multer.File,
   ) {
+    if (!image?.buffer?.length) {
+      throw new BadRequestException('Geçerli bir görsel dosyası yükleyin.');
+    }
     const conversationId =
       dto.conversationId ?? (await this.conversations.createAiConversation(req.user.sub)).id;
 
