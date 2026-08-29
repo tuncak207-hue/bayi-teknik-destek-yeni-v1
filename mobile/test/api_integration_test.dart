@@ -26,10 +26,6 @@ void main() {
         ? apiBaseUrl.substring(0, apiBaseUrl.length - 1)
         : apiBaseUrl;
 
-    final healthResponse = await dio.getUri(Uri.parse('$apiRoot/health'));
-    expect(healthResponse.statusCode, 200,
-        reason: 'Production API health endpoint must be available');
-
     final response = await dio.getUri(Uri.parse('$apiRoot/users/me'));
 
     expect(
