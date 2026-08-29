@@ -10,7 +10,7 @@ import '../../../core/notifications/push_notification_service.dart';
 class AuthRepository {
   static const _googleServerClientId = String.fromEnvironment(
     'GOOGLE_SERVER_CLIENT_ID',
-    defaultValue: '677096560319-612fv939c3apr5sfs67pl28onlk57486.apps.googleusercontent.com',
+    defaultValue: '677096560319-i2n8hji80go4eu9u22ubi5onhi6nl5qj.apps.googleusercontent.com',
   );
 
   final Dio _dio = ApiClient().dio;
