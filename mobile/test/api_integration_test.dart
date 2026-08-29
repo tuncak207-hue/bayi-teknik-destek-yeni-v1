@@ -1,8 +1,13 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  const apiBaseUrl = String.fromEnvironment('API_BASE_URL');
+  const compileTimeApiBaseUrl = String.fromEnvironment('API_BASE_URL');
+  final apiBaseUrl = compileTimeApiBaseUrl.isNotEmpty
+      ? compileTimeApiBaseUrl
+      : (Platform.environment['API_BASE_URL'] ?? '');
 
   test('production API is reachable and protects the current-user endpoint', () async {
     expect(apiBaseUrl, isNotEmpty,
