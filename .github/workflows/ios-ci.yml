@@ -34,7 +34,11 @@ jobs:
         run: flutter analyze --no-fatal-infos
 
       - name: Test
-        run: flutter test --coverage
+        env:
+          MOBILE_API_BASE_URL: ${{ secrets.MOBILE_API_BASE_URL }}
+        run: |
+          test -n "$MOBILE_API_BASE_URL" || { echo "MOBILE_API_BASE_URL secret is required"; exit 1; }
+          flutter test --coverage --dart-define=API_BASE_URL="$MOBILE_API_BASE_URL"
 
       - name: Install CocoaPods dependencies
         run: pod install --project-directory=ios
