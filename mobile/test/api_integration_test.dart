@@ -18,7 +18,7 @@ void main() {
     expect(uri.host, isNotEmpty);
 
     final dio = Dio(BaseOptions(
-      baseUrl: apiBaseUrl,
+      baseUrl: apiBaseUrl.endsWith('/') ? apiBaseUrl : '$apiBaseUrl/',
       connectTimeout: const Duration(seconds: 30),
       receiveTimeout: const Duration(seconds: 30),
       validateStatus: (status) => status != null,
