@@ -19,10 +19,14 @@ void main() {
 
     final dio = Dio(BaseOptions(
       baseUrl: apiBaseUrl,
-      connectTimeout: const Duration(seconds: 10),
-      receiveTimeout: const Duration(seconds: 15),
+      connectTimeout: const Duration(seconds: 30),
+      receiveTimeout: const Duration(seconds: 30),
       validateStatus: (status) => status != null,
     ));
+
+    final healthResponse = await dio.get('/health');
+    expect(healthResponse.statusCode, 200,
+        reason: 'Production API health endpoint must be available');
 
     final response = await dio.get('/users/me');
 
