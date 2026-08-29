@@ -436,7 +436,7 @@ class _QuoteBuilderScreenState extends State<_QuoteBuilderScreen> {
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(18),
-                          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 3))],
+                          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 3))],
                         ),
                         child: Column(
                           children: [
@@ -477,7 +477,7 @@ class _QuoteBuilderScreenState extends State<_QuoteBuilderScreen> {
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(14),
-                            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 8, offset: const Offset(0, 2))],
+                            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 8, offset: const Offset(0, 2))],
                           ),
                           child: TextField(
                             controller: _searchController,
@@ -517,8 +517,8 @@ class _QuoteBuilderScreenState extends State<_QuoteBuilderScreen> {
                                     decoration: BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(16),
-                                      border: selected ? Border.all(color: AppColors.brand.withValues(alpha: 0.4), width: 1.5) : null,
-                                      boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 8, offset: const Offset(0, 2))],
+                                      border: selected ? Border.all(color: AppColors.brand.withOpacity(0.4), width: 1.5) : null,
+                                      boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 8, offset: const Offset(0, 2))],
                                     ),
                                     child: Material(
                                       color: Colors.transparent,
@@ -606,7 +606,7 @@ class _QuoteBuilderScreenState extends State<_QuoteBuilderScreen> {
                 ),
                 Container(
                   padding: const EdgeInsets.all(AppSpacing.md),
-                  decoration: BoxDecoration(color: Colors.white, boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, -2))]),
+                  decoration: BoxDecoration(color: Colors.white, boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -2))]),
                   child: Column(
                     children: [
                       Row(
@@ -761,7 +761,7 @@ class _QuoteDetailScreenState extends State<_QuoteDetailScreen> {
         children: [
           Container(
             padding: const EdgeInsets.all(AppSpacing.md),
-            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18), boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 2))]),
+            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 2))]),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

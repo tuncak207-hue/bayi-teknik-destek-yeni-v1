@@ -88,7 +88,7 @@ class AppButton extends StatelessWidget {
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary,
             foregroundColor: AppColors.onPrimary,
-            disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.4),
+            disabledBackgroundColor: AppColors.primary.withOpacity(0.4),
             elevation: 0,
             padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
             minimumSize: const Size(0, 48),
@@ -301,10 +301,10 @@ class AppCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: scheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: scheme.outlineVariant.withValues(alpha: 0.72)),
+        border: Border.all(color: scheme.outlineVariant.withOpacity(0.72)),
         boxShadow: [
           BoxShadow(
-            color: scheme.shadow.withValues(alpha: elevated ? 0.08 : 0.035),
+            color: scheme.shadow.withOpacity(elevated ? 0.08 : 0.035),
             blurRadius: elevated ? 16 : 10,
             offset: Offset(0, elevated ? 5 : 3),
           ),

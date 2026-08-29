@@ -262,14 +262,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   // efekt yok, sadece çok ince bir gölge ile bannerın
                   // sayfadan hafifçe ayrılması sağlandı.
                   boxShadow: [
-                    BoxShadow(color: AppColors.primary.withValues(alpha: 0.20), blurRadius: 16, offset: const Offset(0, 6)),
+                    BoxShadow(color: AppColors.primary.withOpacity(0.20), blurRadius: 16, offset: const Offset(0, 6)),
                   ],
                 ),
                 child: Row(
                   children: [
                     Container(
                       padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.18), borderRadius: BorderRadius.circular(AppRadius.sm)),
+                      decoration: BoxDecoration(color: Colors.white.withOpacity(0.18), borderRadius: BorderRadius.circular(AppRadius.sm)),
                       child: const Icon(Icons.auto_awesome, color: Colors.white, size: 24),
                     ),
                     const SizedBox(width: AppSpacing.sm + 2),
@@ -289,7 +289,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     ),
-                    Icon(Icons.arrow_forward_ios, size: 14, color: Colors.white.withValues(alpha: 0.85)),
+                    Icon(Icons.arrow_forward_ios, size: 14, color: Colors.white.withOpacity(0.85)),
                   ],
                 ),
               ),
@@ -502,8 +502,8 @@ class _StatCard extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppRadius.lg),
-            border: Border.all(color: AppColors.outline.withValues(alpha: 0.72)),
-            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.035), blurRadius: 10, offset: const Offset(0, 3))],
+            border: Border.all(color: AppColors.outline.withOpacity(0.72)),
+            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.035), blurRadius: 10, offset: const Offset(0, 3))],
           ),
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.lg),
           child: Stack(
@@ -572,10 +572,10 @@ class _QuickAction extends StatelessWidget {
           decoration: BoxDecoration(
             color: const Color(0xFFF8F7FC),
             borderRadius: BorderRadius.circular(AppRadius.lg),
-            border: Border.all(color: AppColors.outline.withValues(alpha: 0.72)),
+            border: Border.all(color: AppColors.outline.withOpacity(0.72)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.035),
+                color: Colors.black.withOpacity(0.035),
                 blurRadius: 14,
                 offset: const Offset(0, 4),
               ),
@@ -738,7 +738,7 @@ class _TodayForMeSectionState extends State<_TodayForMeSection> {
   Widget _summaryChip(IconData icon, String label, Color color) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(color: color.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(20)),
+      decoration: BoxDecoration(color: color.withOpacity(0.08), borderRadius: BorderRadius.circular(20)),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

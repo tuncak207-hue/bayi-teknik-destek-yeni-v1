@@ -118,9 +118,9 @@ class _AnnouncementsScreenState extends State<AnnouncementsScreen> {
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(16),
                           border: isUnread
-                              ? Border.all(color: AppColors.brand.withValues(alpha: 0.5), width: 1.5)
-                              : (isCritical ? Border.all(color: AppColors.brand.withValues(alpha: 0.3)) : null),
-                          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 2))],
+                              ? Border.all(color: AppColors.brand.withOpacity(0.5), width: 1.5)
+                              : (isCritical ? Border.all(color: AppColors.brand.withOpacity(0.3)) : null),
+                          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 2))],
                         ),
                         child: Material(
                           color: Colors.transparent,
@@ -136,7 +136,7 @@ class _AnnouncementsScreenState extends State<AnnouncementsScreen> {
                                     width: 40,
                                     height: 40,
                                     decoration: BoxDecoration(
-                                      color: (isCritical ? AppColors.brand : AppColors.navy).withValues(alpha: 0.08),
+                                      color: (isCritical ? AppColors.brand : AppColors.navy).withOpacity(0.08),
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: Icon(
@@ -274,8 +274,8 @@ class _AnnouncementDetailScreenState extends State<_AnnouncementDetailScreen> {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(20),
-              border: isCritical ? Border.all(color: AppColors.brand.withValues(alpha: 0.3)) : null,
-              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 12, offset: const Offset(0, 3))],
+              border: isCritical ? Border.all(color: AppColors.brand.withOpacity(0.3)) : null,
+              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 12, offset: const Offset(0, 3))],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -286,7 +286,7 @@ class _AnnouncementDetailScreenState extends State<_AnnouncementDetailScreen> {
                       width: 44,
                       height: 44,
                       decoration: BoxDecoration(
-                        color: (isCritical ? AppColors.brand : AppColors.navy).withValues(alpha: 0.08),
+                        color: (isCritical ? AppColors.brand : AppColors.navy).withOpacity(0.08),
                         borderRadius: BorderRadius.circular(14),
                       ),
                       child: Icon(

@@ -65,7 +65,7 @@ class EmailSplitFieldState extends State<EmailSplitField> {
           border: Border.all(color: _focused ? AppColors.brand : Colors.grey.shade200, width: _focused ? 1.4 : 1),
           boxShadow: [
             BoxShadow(
-              color: _focused ? AppColors.brand.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.03),
+              color: _focused ? AppColors.brand.withOpacity(0.08) : Colors.black.withOpacity(0.03),
               blurRadius: _focused ? 14 : 8,
               offset: const Offset(0, 3),
             ),

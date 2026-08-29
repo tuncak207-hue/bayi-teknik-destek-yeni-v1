@@ -1,8 +1,13 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  const apiBaseUrl = String.fromEnvironment('API_BASE_URL');
+  const compileTimeApiBaseUrl = String.fromEnvironment('API_BASE_URL');
+  final apiBaseUrl = compileTimeApiBaseUrl.isNotEmpty
+      ? compileTimeApiBaseUrl
+      : (Platform.environment['API_BASE_URL'] ?? '');
 
   test('production API is reachable and protects the current-user endpoint', () async {
     expect(apiBaseUrl, isNotEmpty,
@@ -13,13 +18,21 @@ void main() {
     expect(uri.host, isNotEmpty);
 
     final dio = Dio(BaseOptions(
-      baseUrl: apiBaseUrl,
-      connectTimeout: const Duration(seconds: 10),
-      receiveTimeout: const Duration(seconds: 15),
+      connectTimeout: const Duration(seconds: 30),
+      receiveTimeout: const Duration(seconds: 30),
       validateStatus: (status) => status != null,
     ));
+    final baseUri = Uri.parse(apiBaseUrl);
+    final apiRootUri = Uri(
+      scheme: baseUri.scheme,
+      host: baseUri.host,
+      port: baseUri.port,
+      path: '/api/v1',
+    );
 
-    final response = await dio.get('/users/me');
+    final response = await dio.getUri(
+      apiRootUri.replace(path: '${apiRootUri.path}/users/me'),
+    );
 
     expect(
       response.statusCode,

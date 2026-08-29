@@ -255,7 +255,7 @@ class _AppointmentCard extends StatelessWidget {
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [AppColors.navy.withValues(alpha: 0.10), AppColors.brand.withValues(alpha: 0.10)],
+                      colors: [AppColors.navy.withOpacity(0.10), AppColors.brand.withOpacity(0.10)],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),

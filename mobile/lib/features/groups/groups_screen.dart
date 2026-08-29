@@ -145,8 +145,8 @@ class _GroupsScreenState extends State<GroupsScreen> {
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(18),
-                            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 2))],
-                            border: isMember ? Border.all(color: AppColors.brand.withValues(alpha: 0.15)) : null,
+                            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 2))],
+                            border: isMember ? Border.all(color: AppColors.brand.withOpacity(0.15)) : null,
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -158,7 +158,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
                                     width: 40,
                                     height: 40,
                                     decoration: BoxDecoration(
-                                      color: (isMember ? AppColors.brand : AppColors.infoColor).withValues(alpha: 0.08),
+                                      color: (isMember ? AppColors.brand : AppColors.infoColor).withOpacity(0.08),
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: isOpening
@@ -208,7 +208,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
                                   width: double.infinity,
                                   padding: const EdgeInsets.symmetric(vertical: 7),
                                   decoration: BoxDecoration(
-                                    color: AppColors.brand.withValues(alpha: 0.08),
+                                    color: AppColors.brand.withOpacity(0.08),
                                     borderRadius: BorderRadius.circular(9),
                                   ),
                                   child: Text(

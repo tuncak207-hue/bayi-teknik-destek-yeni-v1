@@ -281,7 +281,7 @@ class _DocumentWalletScreenState extends State<DocumentWalletScreen> {
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(18),
                                 border: Border.all(color: AppColors.divider),
-                                boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 3))],
+                                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 3))],
                               ),
                               child: ListTile(
                                 contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 4),
@@ -290,7 +290,7 @@ class _DocumentWalletScreenState extends State<DocumentWalletScreen> {
                                   height: 44,
                                   decoration: BoxDecoration(
                                     gradient: LinearGradient(
-                                      colors: [AppColors.navy.withValues(alpha: 0.10), AppColors.brand.withValues(alpha: 0.10)],
+                                      colors: [AppColors.navy.withOpacity(0.10), AppColors.brand.withOpacity(0.10)],
                                       begin: Alignment.topLeft,
                                       end: Alignment.bottomRight,
                                     ),
