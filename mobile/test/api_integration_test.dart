@@ -18,17 +18,19 @@ void main() {
     expect(uri.host, isNotEmpty);
 
     final dio = Dio(BaseOptions(
-      baseUrl: apiBaseUrl.endsWith('/') ? apiBaseUrl : '$apiBaseUrl/',
       connectTimeout: const Duration(seconds: 30),
       receiveTimeout: const Duration(seconds: 30),
       validateStatus: (status) => status != null,
     ));
+    final apiRoot = apiBaseUrl.endsWith('/')
+        ? apiBaseUrl.substring(0, apiBaseUrl.length - 1)
+        : apiBaseUrl;
 
-    final healthResponse = await dio.get('health');
+    final healthResponse = await dio.getUri(Uri.parse('$apiRoot/health'));
     expect(healthResponse.statusCode, 200,
         reason: 'Production API health endpoint must be available');
 
-    final response = await dio.get('users/me');
+    final response = await dio.getUri(Uri.parse('$apiRoot/users/me'));
 
     expect(
       response.statusCode,
