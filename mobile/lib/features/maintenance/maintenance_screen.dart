@@ -147,7 +147,7 @@ class _MaintenanceScreenState extends State<MaintenanceScreen> {
                             Container(
                               width: 40,
                               height: 40,
-                              decoration: BoxDecoration(color: AppColors.navy.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(12)),
+                              decoration: BoxDecoration(color: AppColors.navy.withOpacity(0.08), borderRadius: BorderRadius.circular(12)),
                               child: const Icon(Icons.build_outlined, color: AppColors.navy, size: 19),
                             ),
                             const SizedBox(width: AppSpacing.sm),
@@ -307,7 +307,7 @@ class _MaintenanceDetailScreenState extends State<_MaintenanceDetailScreen> {
           if (widget.record['signatureUrl'] != null)
             Container(
               padding: const EdgeInsets.all(AppSpacing.sm),
-              decoration: BoxDecoration(color: Colors.green.withValues(alpha: 0.06), borderRadius: BorderRadius.circular(14)),
+              decoration: BoxDecoration(color: Colors.green.withOpacity(0.06), borderRadius: BorderRadius.circular(14)),
               child: Row(
                 children: [
                   Icon(Icons.draw_outlined, color: Colors.green.shade700, size: 18),
@@ -436,19 +436,19 @@ class _CreateMaintenanceScreenState extends State<_CreateMaintenanceScreen> {
             margin: const EdgeInsets.only(bottom: AppSpacing.md),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [AppColors.brand, AppColors.brand.withValues(alpha: 0.85)],
+                colors: [AppColors.brand, AppColors.brand.withOpacity(0.85)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(20),
-              boxShadow: [BoxShadow(color: AppColors.brand.withValues(alpha: 0.25), blurRadius: 16, offset: const Offset(0, 6))],
+              boxShadow: [BoxShadow(color: AppColors.brand.withOpacity(0.25), blurRadius: 16, offset: const Offset(0, 6))],
             ),
             child: Row(
               children: [
                 Container(
                   width: 46,
                   height: 46,
-                  decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(14)),
+                  decoration: BoxDecoration(color: Colors.white.withOpacity(0.15), borderRadius: BorderRadius.circular(14)),
                   child: const Icon(Icons.build_outlined, color: Colors.white, size: 22),
                 ),
                 const SizedBox(width: AppSpacing.sm),
@@ -491,7 +491,7 @@ class _CreateMaintenanceScreenState extends State<_CreateMaintenanceScreen> {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(18),
-              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 12, offset: const Offset(0, 3))],
+              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 12, offset: const Offset(0, 3))],
             ),
             padding: const EdgeInsets.all(AppSpacing.md),
             child: Column(

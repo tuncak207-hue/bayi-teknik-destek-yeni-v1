@@ -41,7 +41,7 @@ class AppPageHeader extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       backgroundColor: backgroundColor ?? AppColors.background,
       foregroundColor: foreground,
-      surfaceTintColor: scheme.primary.withValues(alpha: 0.04),
+      surfaceTintColor: scheme.primary.withOpacity(0.04),
       elevation: 0,
       scrolledUnderElevation: 1,
       toolbarHeight: 64,
@@ -137,8 +137,8 @@ class StandardCard extends StatelessWidget {
             ? Theme.of(context).colorScheme.surfaceContainerLow
             : const Color(0xFFF8F7FC),
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: border ?? Border.all(color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.72)),
-        boxShadow: [BoxShadow(color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.035), blurRadius: 10, offset: const Offset(0, 3))],
+        border: border ?? Border.all(color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.72)),
+        boxShadow: [BoxShadow(color: Theme.of(context).colorScheme.shadow.withOpacity(0.035), blurRadius: 10, offset: const Offset(0, 3))],
       ),
       child: child,
     );
@@ -280,7 +280,7 @@ class PlatformFormScaffold extends StatelessWidget {
                 : Text(
                     submitLabel,
                     style: TextStyle(
-                      color: canSubmit ? scheme.primary : scheme.onSurfaceVariant.withValues(alpha: 0.45),
+                      color: canSubmit ? scheme.primary : scheme.onSurfaceVariant.withOpacity(0.45),
                       fontWeight: FontWeight.w600,
                       fontSize: 16,
                     ),
@@ -317,7 +317,7 @@ class PlatformFormScaffold extends StatelessWidget {
                   : Text(
                       submitLabel.toUpperCase(),
                       style: TextStyle(
-                        color: canSubmit ? scheme.primary : scheme.onSurfaceVariant.withValues(alpha: 0.45),
+                        color: canSubmit ? scheme.primary : scheme.onSurfaceVariant.withOpacity(0.45),
                         fontWeight: FontWeight.w800,
                         fontSize: 13.5,
                         letterSpacing: 0.5,
@@ -370,7 +370,7 @@ class PlatformTextField extends StatelessWidget {
         controller: controller,
         onChanged: onChanged,
         placeholder: hint,
-        placeholderStyle: TextStyle(fontSize: fontSize, fontWeight: fontWeight, color: scheme.onSurfaceVariant.withValues(alpha: 0.6)),
+        placeholderStyle: TextStyle(fontSize: fontSize, fontWeight: fontWeight, color: scheme.onSurfaceVariant.withOpacity(0.6)),
         style: TextStyle(fontSize: fontSize, fontWeight: fontWeight, color: scheme.onSurface, height: 1.4),
         padding: EdgeInsets.zero,
         minLines: minLines,
@@ -385,7 +385,7 @@ class PlatformTextField extends StatelessWidget {
       style: TextStyle(fontSize: fontSize, fontWeight: fontWeight, color: scheme.onSurface, height: 1.4),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: TextStyle(fontSize: fontSize, fontWeight: fontWeight, color: scheme.onSurfaceVariant.withValues(alpha: 0.6)),
+        hintStyle: TextStyle(fontSize: fontSize, fontWeight: fontWeight, color: scheme.onSurfaceVariant.withOpacity(0.6)),
         border: InputBorder.none,
         contentPadding: EdgeInsets.zero,
       ),

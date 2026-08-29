@@ -593,7 +593,7 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
                                         margin: const EdgeInsets.only(bottom: 6),
                                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                                         decoration: BoxDecoration(
-                                          color: (isMine ? Colors.white : Colors.black).withValues(alpha: 0.08),
+                                          color: (isMine ? Colors.white : Colors.black).withOpacity(0.08),
                                           borderRadius: BorderRadius.circular(8),
                                           border: Border(
                                             left: BorderSide(color: isMine ? Colors.white : AppColors.navy, width: 2.5),
@@ -605,7 +605,7 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
                                           overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
                                             fontSize: 12,
-                                            color: isMine ? Colors.white.withValues(alpha: 0.85) : Colors.black54,
+                                            color: isMine ? Colors.white.withOpacity(0.85) : Colors.black54,
                                           ),
                                         ),
                                       ),
@@ -633,7 +633,7 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
                                                 style: TextStyle(
                                                   fontSize: 10.5,
                                                   fontStyle: FontStyle.italic,
-                                                  color: (isMine ? Colors.white : Colors.black87).withValues(alpha: 0.6),
+                                                  color: (isMine ? Colors.white : Colors.black87).withOpacity(0.6),
                                                 ),
                                               ),
                                           ],
@@ -650,7 +650,7 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
                                             _formatMessageTime(m['createdAt']),
                                             style: TextStyle(
                                               fontSize: 10,
-                                              color: (isMine ? Colors.white : Colors.black87).withValues(alpha: 0.55),
+                                              color: (isMine ? Colors.white : Colors.black87).withOpacity(0.55),
                                             ),
                                           ),
                                           if (isMine) ...[
@@ -661,7 +661,7 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
                                               return Icon(
                                                 read ? Icons.done_all : Icons.done,
                                                 size: 13,
-                                                color: read ? Colors.lightBlueAccent : Colors.white.withValues(alpha: 0.6),
+                                                color: read ? Colors.lightBlueAccent : Colors.white.withOpacity(0.6),
                                               );
                                             }),
                                           ],

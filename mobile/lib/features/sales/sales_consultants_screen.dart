@@ -87,14 +87,14 @@ class _SalesConsultantsScreenState extends State<SalesConsultantsScreen> {
                             end: Alignment.bottomRight,
                           ),
                           borderRadius: BorderRadius.circular(20),
-                          boxShadow: [BoxShadow(color: AppColors.navy.withValues(alpha: 0.22), blurRadius: 16, offset: const Offset(0, 6))],
+                          boxShadow: [BoxShadow(color: AppColors.navy.withOpacity(0.22), blurRadius: 16, offset: const Offset(0, 6))],
                         ),
                         child: Row(
                           children: [
                             Container(
                               width: 50,
                               height: 50,
-                              decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(15)),
+                              decoration: BoxDecoration(color: Colors.white.withOpacity(0.15), borderRadius: BorderRadius.circular(15)),
                               child: const Icon(Icons.headset_mic_outlined, color: Colors.white, size: 24),
                             ),
                             const SizedBox(width: AppSpacing.sm),
@@ -127,7 +127,7 @@ class _SalesConsultantsScreenState extends State<SalesConsultantsScreen> {
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(16),
-                            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 2))],
+                            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 2))],
                           ),
                           child: Row(
                             children: [
@@ -136,7 +136,7 @@ class _SalesConsultantsScreenState extends State<SalesConsultantsScreen> {
                                 children: [
                                   CircleAvatar(
                                     radius: 24,
-                                    backgroundColor: AppColors.navy.withValues(alpha: 0.08),
+                                    backgroundColor: AppColors.navy.withOpacity(0.08),
                                     child: const Icon(Icons.headset_mic_outlined, color: AppColors.navy, size: 22),
                                   ),
                                   Positioned(
@@ -167,7 +167,7 @@ class _SalesConsultantsScreenState extends State<SalesConsultantsScreen> {
                                     Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                                       decoration: BoxDecoration(
-                                        color: AppColors.brand.withValues(alpha: 0.08),
+                                        color: AppColors.brand.withOpacity(0.08),
                                         borderRadius: BorderRadius.circular(20),
                                       ),
                                       child: const Text(
@@ -183,7 +183,7 @@ class _SalesConsultantsScreenState extends State<SalesConsultantsScreen> {
                                   onPressed: () => _call(phone),
                                   icon: const Icon(Icons.call_outlined, size: 17),
                                   style: IconButton.styleFrom(
-                                    backgroundColor: Colors.green.withValues(alpha: 0.1),
+                                    backgroundColor: Colors.green.withOpacity(0.1),
                                     foregroundColor: Colors.green.shade700,
                                   ),
                                   tooltip: 'Ara',
@@ -193,7 +193,7 @@ class _SalesConsultantsScreenState extends State<SalesConsultantsScreen> {
                                 onPressed: () => _startChat(c['id']),
                                 icon: const Icon(Icons.chat_bubble_outline, size: 17),
                                 style: IconButton.styleFrom(
-                                  backgroundColor: AppColors.brand.withValues(alpha: 0.1),
+                                  backgroundColor: AppColors.brand.withOpacity(0.1),
                                   foregroundColor: AppColors.brand,
                                 ),
                                 tooltip: 'Mesaj gönder',

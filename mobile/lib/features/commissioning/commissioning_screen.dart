@@ -450,7 +450,7 @@ class _CommissioningFormScreenState extends State<CommissioningFormScreen> {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(color: AppColors.divider),
-                    boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 16, offset: const Offset(0, 4))],
+                    boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 16, offset: const Offset(0, 4))],
                   ),
                   child: Row(
                     children: [
@@ -500,12 +500,12 @@ class _CommissioningFormScreenState extends State<CommissioningFormScreen> {
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
                       decoration: BoxDecoration(
-                        color: checked ? Colors.green.withValues(alpha: 0.06) : Colors.white,
+                        color: checked ? Colors.green.withOpacity(0.06) : Colors.white,
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: checked ? Colors.green.withValues(alpha: 0.25) : Colors.transparent, width: 1.2),
+                        border: Border.all(color: checked ? Colors.green.withOpacity(0.25) : Colors.transparent, width: 1.2),
                         boxShadow: checked
                             ? []
-                            : [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 8, offset: const Offset(0, 2))],
+                            : [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 8, offset: const Offset(0, 2))],
                       ),
                       child: Material(
                         color: Colors.transparent,
@@ -524,7 +524,7 @@ class _CommissioningFormScreenState extends State<CommissioningFormScreen> {
                                     color: checked ? Colors.green.shade600 : Colors.white,
                                     shape: BoxShape.circle,
                                     border: Border.all(color: checked ? Colors.green.shade600 : Colors.grey.shade300, width: 1.6),
-                                    boxShadow: checked ? [BoxShadow(color: Colors.green.withValues(alpha: 0.35), blurRadius: 6)] : [],
+                                    boxShadow: checked ? [BoxShadow(color: Colors.green.withOpacity(0.35), blurRadius: 6)] : [],
                                   ),
                                   child: checked ? const Icon(Icons.check, size: 16, color: Colors.white) : null,
                                 ),
@@ -562,7 +562,7 @@ class _CommissioningFormScreenState extends State<CommissioningFormScreen> {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(18),
-                    boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 12, offset: const Offset(0, 3))],
+                    boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 12, offset: const Offset(0, 3))],
                   ),
                   padding: const EdgeInsets.all(AppSpacing.md),
                   child: Column(

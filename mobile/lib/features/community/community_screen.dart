@@ -185,7 +185,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
                                     height: 42,
                                     decoration: BoxDecoration(
                                       gradient: LinearGradient(
-                                        colors: [AppColors.primary.withValues(alpha: 0.14), AppColors.primary.withValues(alpha: 0.06)],
+                                        colors: [AppColors.primary.withOpacity(0.14), AppColors.primary.withOpacity(0.06)],
                                         begin: Alignment.topLeft,
                                         end: Alignment.bottomRight,
                                       ),

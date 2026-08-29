@@ -329,7 +329,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     height: 180,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      gradient: RadialGradient(colors: [AppColors.brand.withValues(alpha: 0.10), Colors.transparent]),
+                      gradient: RadialGradient(colors: [AppColors.brand.withOpacity(0.10), Colors.transparent]),
                     ),
                   ),
                 ),
@@ -341,7 +341,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     height: 160,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      gradient: RadialGradient(colors: [AppColors.navy.withValues(alpha: 0.06), Colors.transparent]),
+                      gradient: RadialGradient(colors: [AppColors.navy.withOpacity(0.06), Colors.transparent]),
                     ),
                   ),
                 ),
@@ -360,8 +360,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 colors: [AppColors.brand, AppColors.navy, AppColors.brand],
                               ),
                               boxShadow: [
-                                BoxShadow(color: AppColors.brand.withValues(alpha: 0.25), blurRadius: 24, offset: const Offset(0, 8)),
-                                BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 10, offset: const Offset(0, 2)),
+                                BoxShadow(color: AppColors.brand.withOpacity(0.25), blurRadius: 24, offset: const Offset(0, 8)),
+                                BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 10, offset: const Offset(0, 2)),
                               ],
                             ),
                             child: Container(
@@ -393,7 +393,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   decoration: BoxDecoration(
                                     gradient: const LinearGradient(colors: [Color(0xFF22C55E), Color(0xFF16A34A)]),
                                     shape: BoxShape.circle,
-                                    boxShadow: [BoxShadow(color: const Color(0xFF16A34A).withValues(alpha: 0.4), blurRadius: 8)],
+                                    boxShadow: [BoxShadow(color: const Color(0xFF16A34A).withOpacity(0.4), blurRadius: 8)],
                                   ),
                                   child: const Icon(Icons.check, size: 14, color: Colors.white),
                                 ),
@@ -416,9 +416,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                         decoration: BoxDecoration(
-                          gradient: LinearGradient(colors: [AppColors.navy.withValues(alpha: 0.06), AppColors.brand.withValues(alpha: 0.06)]),
+                          gradient: LinearGradient(colors: [AppColors.navy.withOpacity(0.06), AppColors.brand.withOpacity(0.06)]),
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: AppColors.navy.withValues(alpha: 0.08)),
+                          border: Border.all(color: AppColors.navy.withOpacity(0.08)),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -516,7 +516,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               child: Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                                 decoration: BoxDecoration(
-                                  color: earned ? AppColors.navy.withValues(alpha: 0.06) : Colors.grey.shade100,
+                                  color: earned ? AppColors.navy.withOpacity(0.06) : Colors.grey.shade100,
                                   borderRadius: BorderRadius.circular(AppSpacing.radius),
                                   border: Border.all(color: AppColors.divider),
                                 ),
@@ -663,7 +663,7 @@ class _ProfileSection extends StatelessWidget {
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surfaceContainer,
             borderRadius: BorderRadius.circular(18),
-            boxShadow: [BoxShadow(color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.08), blurRadius: 14, offset: const Offset(0, 3))],
+            boxShadow: [BoxShadow(color: Theme.of(context).colorScheme.shadow.withOpacity(0.08), blurRadius: 14, offset: const Offset(0, 3))],
           ),
           child: Column(
             children: [
@@ -700,12 +700,12 @@ class _ProfileTile extends StatelessWidget {
       leading: Container(
         width: 38,
         height: 38,
-        decoration: BoxDecoration(color: tileColor.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(11)),
+        decoration: BoxDecoration(color: tileColor.withOpacity(0.08), borderRadius: BorderRadius.circular(11)),
         child: Icon(icon, size: 18, color: tileColor),
       ),
       title: Text(title, style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w500, color: color ?? scheme.onSurface)),
       subtitle: subtitle != null ? Text(subtitle!, style: TextStyle(fontSize: 12, color: scheme.onSurfaceVariant)) : null,
-      trailing: trailing ?? (onTap != null ? Icon(Icons.chevron_right, size: 20, color: scheme.onSurfaceVariant.withValues(alpha: 0.5)) : null),
+      trailing: trailing ?? (onTap != null ? Icon(Icons.chevron_right, size: 20, color: scheme.onSurfaceVariant.withOpacity(0.5)) : null),
       onTap: onTap,
     );
   }
@@ -727,19 +727,19 @@ class _StatCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [accent.withValues(alpha: 0.07), accent.withValues(alpha: 0.02)],
+          colors: [accent.withOpacity(0.07), accent.withOpacity(0.02)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: accent.withValues(alpha: 0.1)),
+        border: Border.all(color: accent.withOpacity(0.1)),
       ),
       child: Column(
         children: [
           Container(
             width: 26,
             height: 26,
-            decoration: BoxDecoration(color: accent.withValues(alpha: 0.12), shape: BoxShape.circle),
+            decoration: BoxDecoration(color: accent.withOpacity(0.12), shape: BoxShape.circle),
             child: Icon(icon, size: 13, color: accent),
           ),
           const SizedBox(height: 6),
@@ -767,7 +767,7 @@ class _ProfileSwitchTile extends StatelessWidget {
       secondary: Container(
         width: 38,
         height: 38,
-        decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(11)),
+        decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary.withOpacity(0.08), borderRadius: BorderRadius.circular(11)),
         child: Icon(icon, size: 18, color: Theme.of(context).colorScheme.primary),
       ),
       title: Text(title, style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w500, color: Theme.of(context).colorScheme.onSurface)),

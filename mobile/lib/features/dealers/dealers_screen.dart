@@ -132,7 +132,7 @@ class _DealersScreenState extends State<DealersScreen> {
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(color: AppColors.divider),
-                          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 3))],
+                          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 3))],
                         ),
                         child: ListTile(
                           contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 6),
@@ -143,7 +143,7 @@ class _DealersScreenState extends State<DealersScreen> {
                                   height: 48,
                                   decoration: BoxDecoration(
                                     gradient: LinearGradient(
-                                      colors: [AppColors.navy.withValues(alpha: 0.12), AppColors.brand.withValues(alpha: 0.12)],
+                                      colors: [AppColors.navy.withOpacity(0.12), AppColors.brand.withOpacity(0.12)],
                                       begin: Alignment.topLeft,
                                       end: Alignment.bottomRight,
                                     ),
@@ -162,7 +162,7 @@ class _DealersScreenState extends State<DealersScreen> {
                                 onPressed: () => _startChat(d['id']),
                                 icon: const Icon(Icons.chat_bubble_outline, size: 17),
                                 style: IconButton.styleFrom(
-                                  backgroundColor: AppColors.navy.withValues(alpha: 0.08),
+                                  backgroundColor: AppColors.navy.withOpacity(0.08),
                                   foregroundColor: AppColors.navy,
                                   padding: const EdgeInsets.all(8),
                                 ),

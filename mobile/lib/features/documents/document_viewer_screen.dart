@@ -325,7 +325,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                               width: 72,
                               height: 72,
                               decoration: BoxDecoration(
-                                color: AppColors.navy.withValues(alpha: 0.06),
+                                color: AppColors.navy.withOpacity(0.06),
                                 borderRadius: BorderRadius.circular(AppSpacing.radius),
                               ),
                               child: const Icon(Icons.picture_as_pdf_outlined, size: 36, color: AppColors.navy),
