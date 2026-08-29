@@ -59,14 +59,25 @@ jobs:
         env:
           API_BASE_URL: ${{ secrets.MOBILE_API_BASE_URL }}
           SOCKET_URL: ${{ secrets.MOBILE_SOCKET_URL }}
+          GOOGLE_SERVICES_JSON_B64: ${{ secrets.FIREBASE_GOOGLE_SERVICES_JSON_B64 }}
+          KEY_PROPERTIES_B64: ${{ secrets.ANDROID_KEY_PROPERTIES_B64 }}
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
         run: |
           set -euo pipefail
           test -n "$API_BASE_URL" || { echo "MOBILE_API_BASE_URL secret is required"; exit 1; }
           test -n "$SOCKET_URL" || { echo "MOBILE_SOCKET_URL secret is required"; exit 1; }
+          test -n "$GOOGLE_SERVICES_JSON_B64" || { echo "FIREBASE_GOOGLE_SERVICES_JSON_B64 secret is required"; exit 1; }
+          test -n "$KEY_PROPERTIES_B64" || { echo "ANDROID_KEY_PROPERTIES_B64 secret is required"; exit 1; }
+          test -n "$KEYSTORE_B64" || { echo "ANDROID_KEYSTORE_B64 secret is required"; exit 1; }
           case "$API_BASE_URL" in https://*) ;; *) echo "API endpoint must use HTTPS"; exit 1 ;; esac
           case "$SOCKET_URL" in https://*) ;; *) echo "Socket endpoint must use HTTPS"; exit 1 ;; esac
-          test -f android/app/google-services.json || { echo "google-services.json is required for release"; exit 1; }
-          test -f android/key.properties || { echo "key.properties is required for release signing"; exit 1; }
+          printf '%s' "$GOOGLE_SERVICES_JSON_B64" | tr -d '[:space:]' | base64 --decode > android/app/google-services.json
+          printf '%s' "$KEY_PROPERTIES_B64" | tr -d '[:space:]' | base64 --decode > android/key.properties
+          sed -i 's#^storeFile=.*#storeFile=entpa-upload-key.jks#' android/key.properties
+          printf '%s' "$KEYSTORE_B64" | tr -d '[:space:]' | base64 --decode > android/app/entpa-upload-key.jks
+          test -s android/app/google-services.json
+          test -s android/key.properties
+          test -s android/app/entpa-upload-key.jks
           flutter build apk --release \
             --dart-define=API_BASE_URL="$API_BASE_URL" \
             --dart-define=SOCKET_URL="$SOCKET_URL"

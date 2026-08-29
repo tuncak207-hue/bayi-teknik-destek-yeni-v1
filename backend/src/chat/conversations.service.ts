@@ -100,7 +100,15 @@ export class ConversationsService {
         OR: [{ type: { not: 'DIRECT' } }, { messages: { some: {} } }],
       },
       include: {
-        participants: { include: { user: true } },
+        participants: {
+          select: {
+            userId: true,
+            lastReadAt: true,
+            hiddenAt: true,
+            archivedAt: true,
+            user: { select: { id: true, firstName: true, lastName: true, company: true, avatarUrl: true, role: true } },
+          },
+        },
         // AI konuşmalarında son 2 mesajı (kullanıcının sorusu + AI'ın
         // cevabı) birlikte göstermek için 2 alıyoruz — DIRECT/GROUP
         // sohbetlerde sadece ilk (en son) eleman kullanılıyor, zararsız.
@@ -168,7 +176,8 @@ export class ConversationsService {
    * "Gönderildi/okundu" tiklerini gösterebilmek için katılımcıların
    * kendi son okuma zamanlarını (lastReadAt) döner.
    */
-  getParticipants(conversationId: string) {
+  async getParticipants(conversationId: string, userId: string) {
+    await this.assertParticipant(conversationId, userId);
     return this.prisma.conversationParticipant.findMany({
       where: { conversationId },
       select: { userId: true, lastReadAt: true },

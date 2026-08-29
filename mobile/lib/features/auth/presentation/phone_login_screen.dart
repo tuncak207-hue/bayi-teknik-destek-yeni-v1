@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../../core/theme/app_theme.dart';
 import '../data/auth_providers.dart';
+import 'legal_consent_dialog.dart';
 
 class PhoneLoginScreen extends ConsumerStatefulWidget {
   const PhoneLoginScreen({super.key});
@@ -76,8 +77,20 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
       final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
       final idToken = await userCredential.user?.getIdToken();
       if (idToken == null) throw Exception('Kimlik doğrulama tamamlanamadı.');
+      if (!mounted) return;
 
-      final pendingMessage = await ref.read(authRepositoryProvider).completePhoneLogin(idToken);
+      final accepted = await showLegalConsentDialog(context);
+      if (!accepted) {
+        await FirebaseAuth.instance.signOut();
+        if (mounted) setState(() => _loading = false);
+        return;
+      }
+
+      final pendingMessage = await ref.read(authRepositoryProvider).completePhoneLogin(
+            idToken,
+            acceptedKvkk: true,
+            acceptedPrivacyPolicy: true,
+          );
       if (!mounted) return;
 
       if (pendingMessage != null) {

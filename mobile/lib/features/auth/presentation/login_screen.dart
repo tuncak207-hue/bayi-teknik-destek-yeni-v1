@@ -11,6 +11,7 @@ import '../../../core/auth/current_user.dart';
 import '../../../core/api/socket_service.dart';
 import '../../../core/notifications/push_notification_service.dart';
 import '../data/auth_providers.dart';
+import 'legal_consent_dialog.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -93,12 +94,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _submitGoogle() async {
+    final accepted = await showLegalConsentDialog(context);
+    if (!mounted || !accepted) return;
     setState(() {
       _googleLoading = true;
       _error = null;
     });
     try {
-      final pendingMessage = await ref.read(authRepositoryProvider).loginWithGoogle();
+      final pendingMessage = await ref.read(authRepositoryProvider).loginWithGoogle(
+            acceptedKvkk: true,
+            acceptedPrivacyPolicy: true,
+          );
       if (!mounted) return;
       if (pendingMessage != null) {
         showDialog(

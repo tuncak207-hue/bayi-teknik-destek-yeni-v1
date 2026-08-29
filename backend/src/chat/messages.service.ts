@@ -235,6 +235,9 @@ export class MessagesService {
    * Aynı emoji ile tekrar çağrılırsa tepki kaldırılır (toggle davranışı).
    */
   async toggleReaction(userId: string, messageId: string, emoji: string) {
+    const message = await this.prisma.message.findUnique({ where: { id: messageId }, select: { conversationId: true } });
+    if (!message) return { reacted: false };
+    await this.conversations.assertParticipant(message.conversationId, userId);
     const existing = await this.prisma.messageReaction.findUnique({
       where: { messageId_userId: { messageId, userId } },
     });
@@ -251,6 +254,9 @@ export class MessagesService {
   }
 
   async toggleFavorite(userId: string, messageId: string) {
+    const message = await this.prisma.message.findUnique({ where: { id: messageId }, select: { conversationId: true } });
+    if (!message) return { favorited: false };
+    await this.conversations.assertParticipant(message.conversationId, userId);
     const existing = await this.prisma.favorite.findFirst({ where: { userId, messageId } });
     if (existing) {
       await this.prisma.favorite.delete({ where: { id: existing.id } });
@@ -316,8 +322,9 @@ export class MessagesService {
    * mesajları... silebiliyor olmam gerekirken silemiyorum."
    */
   async hideMessageForMe(userId: string, messageId: string) {
-    const message = await this.prisma.message.findUnique({ where: { id: messageId } });
+    const message = await this.prisma.message.findUnique({ where: { id: messageId }, select: { conversationId: true } });
     if (!message) return { success: true };
+    await this.conversations.assertParticipant(message.conversationId, userId);
     await this.prisma.messageHiddenFor.upsert({
       where: { messageId_userId: { messageId, userId } },
       create: { messageId, userId },

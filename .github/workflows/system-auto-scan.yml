@@ -52,7 +52,7 @@ jobs:
             https://*) ;;
             *) echo "MOBILE_API_BASE_URL must use HTTPS"; exit 1 ;;
           esac
-          flutter test test/api_integration_test.dart \\
+          flutter test test/api_integration_test.dart \
             --dart-define=API_BASE_URL="$MOBILE_API_BASE_URL"
 
   backend:

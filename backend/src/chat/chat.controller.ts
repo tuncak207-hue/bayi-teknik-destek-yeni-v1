@@ -11,6 +11,7 @@ import {
   Req,
   UseInterceptors,
   UploadedFile,
+  BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -101,12 +102,24 @@ export class ChatController {
   }
 
   @Post('conversations/:id/attachments')
-  @UseInterceptors(FileInterceptor('file', { limits: { fileSize: 10 * 1024 * 1024 } })) // 10 MB sınırı
+  @UseInterceptors(
+    FileInterceptor('file', {
+      limits: { fileSize: 10 * 1024 * 1024 },
+      fileFilter: (_req, file, callback) => {
+        const allowed = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
+        callback(null, allowed.includes(file.mimetype));
+      },
+    }),
+  )
   async sendAttachment(
     @Req() req: any,
     @Param('id') id: string,
     @UploadedFile() file: Express.Multer.File,
   ) {
+    if (!file?.buffer?.length) {
+      throw new BadRequestException('Geçerli bir ek dosyası yükleyin.');
+    }
+    await this.conversations.assertParticipant(id, req.user.sub);
     const key = await this.storage.upload(file.buffer, file.originalname, file.mimetype, 'chat');
     const attachmentType = file.mimetype.startsWith('image/')
       ? 'image'
@@ -171,8 +184,8 @@ export class ChatController {
 
   /** "Gönderildi/okundu" tikleri için katılımcıların okuma zamanlarını döner. */
   @Get('conversations/:id/participants')
-  getParticipants(@Param('id') id: string) {
-    return this.conversations.getParticipants(id);
+  getParticipants(@Req() req: any, @Param('id') id: string) {
+    return this.conversations.getParticipants(id, req.user.sub);
   }
 
   @Post('messages/:id/feedback')

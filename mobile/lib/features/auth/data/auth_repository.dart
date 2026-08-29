@@ -44,7 +44,7 @@ class AuthRepository {
     await _saveSessionAndConnect(res.data['accessToken'], res.data['refreshToken']);
   }
 
-  Future<String?> loginWithGoogle() async {
+  Future<String?> loginWithGoogle({required bool acceptedKvkk, required bool acceptedPrivacyPolicy}) async {
     final googleUser = await GoogleSignIn(
       serverClientId: _googleServerClientId,
     ).signIn();
@@ -56,7 +56,11 @@ class AuthRepository {
     if (idToken == null) {
       throw Exception('Google kimlik doğrulaması başarısız oldu.');
     }
-    final res = await _dio.post('/auth/google', data: {'idToken': idToken});
+    final res = await _dio.post('/auth/google', data: {
+      'idToken': idToken,
+      'acceptedKvkk': acceptedKvkk,
+      'acceptedPrivacyPolicy': acceptedPrivacyPolicy,
+    });
     if (res.data['accessToken'] != null) {
       await _saveSessionAndConnect(res.data['accessToken'], res.data['refreshToken']);
       return null;
@@ -64,8 +68,16 @@ class AuthRepository {
     return res.data['message'] as String?;
   }
 
-  Future<String?> completePhoneLogin(String firebaseIdToken) async {
-    final res = await _dio.post('/auth/phone', data: {'idToken': firebaseIdToken});
+  Future<String?> completePhoneLogin(
+    String firebaseIdToken, {
+    required bool acceptedKvkk,
+    required bool acceptedPrivacyPolicy,
+  }) async {
+    final res = await _dio.post('/auth/phone', data: {
+      'idToken': firebaseIdToken,
+      'acceptedKvkk': acceptedKvkk,
+      'acceptedPrivacyPolicy': acceptedPrivacyPolicy,
+    });
     if (res.data['accessToken'] != null) {
       await _saveSessionAndConnect(res.data['accessToken'], res.data['refreshToken']);
       return null;

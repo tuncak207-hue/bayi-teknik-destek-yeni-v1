@@ -11,6 +11,7 @@ import { OAuth2Client } from 'google-auth-library';
 import { PrismaService } from '../common/prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { SocialAuthDto } from './dto/social-auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -116,7 +117,11 @@ export class AuthService {
    * telefon bilgisini tamamlamalı — bu akışa ayrı bir "bilgileri tamamlayın"
    * ekranı eklemek daha iyi bir deneyim olur, burada kapsam dışı bırakıldı.
    */
-  async googleLogin(idToken: string) {
+  async googleLogin(dto: SocialAuthDto) {
+    if (dto.acceptedKvkk !== true || dto.acceptedPrivacyPolicy !== true) {
+      throw new BadRequestException('KVKK Aydınlatma Metni ve Gizlilik Politikası onayı zorunludur.');
+    }
+    const idToken = dto.idToken;
     if (!process.env.GOOGLE_CLIENT_ID) {
       throw new UnauthorizedException('Google girişi bu sunucuda yapılandırılmamış (GOOGLE_CLIENT_ID eksik).');
     }
@@ -146,6 +151,10 @@ export class AuthService {
           passwordHash: randomPassword,
           avatarUrl: payload.picture,
           status: 'PENDING',
+          kvkkAcceptedAt: new Date(),
+          kvkkConsentVersion: '2026-08-28',
+          privacyAcceptedAt: new Date(),
+          privacyConsentVersion: '2026-08-28',
         },
       });
       return { message: 'Hesabınız Google ile oluşturuldu, admin onayı bekliyor.', userId: user.id, isNewUser: true };
@@ -161,7 +170,11 @@ export class AuthService {
    * doğrulanmış bir ID Token gönderir. Aynı MVP basitleştirmesi burada da
    * geçerli — yeni kullanıcı otomatik, eksik bilgilerle, PENDING oluşturulur.
    */
-  async phoneLogin(idToken: string) {
+  async phoneLogin(dto: SocialAuthDto) {
+    if (dto.acceptedKvkk !== true || dto.acceptedPrivacyPolicy !== true) {
+      throw new BadRequestException('KVKK Aydınlatma Metni ve Gizlilik Politikası onayı zorunludur.');
+    }
+    const idToken = dto.idToken;
     const admin = this.getFirebaseAdmin();
     if (!admin) throw new UnauthorizedException('Telefon girişi bu sunucuda yapılandırılmamış (FIREBASE_CONFIG eksik).');
 
@@ -183,6 +196,10 @@ export class AuthService {
           email: placeholderEmail,
           passwordHash: randomPassword,
           status: 'PENDING',
+          kvkkAcceptedAt: new Date(),
+          kvkkConsentVersion: '2026-08-28',
+          privacyAcceptedAt: new Date(),
+          privacyConsentVersion: '2026-08-28',
         },
       });
       return { message: 'Hesabınız telefon numaranızla oluşturuldu, admin onayı bekliyor.', userId: user.id, isNewUser: true };

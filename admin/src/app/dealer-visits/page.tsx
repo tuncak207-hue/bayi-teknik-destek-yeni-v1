@@ -304,7 +304,8 @@ function VisitDetailDrawer({ visit, onClose, onEdit, onDelete }: { visit: any; o
                   onClick={async (e) => {
                     e.preventDefault();
                     const res = await api.get(`/dealer-visits/attachments/${f.id}/signed-url`);
-                    window.open(res.data.url, '_blank');
+                    const opened = window.open(res.data.url, '_blank', 'noopener,noreferrer');
+                    if (opened) opened.opener = null;
                   }}
                   className="block text-[12.5px] text-blue-600 hover:underline truncate"
                 >
