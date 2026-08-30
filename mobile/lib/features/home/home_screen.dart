@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart';
 import 'dart:async';
 import '../../app/top_nav_bar.dart';
@@ -161,6 +163,26 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadStats({int attempt = 0}) async {
+    // Son başarılı değeri önce göster; ağ isteği arka planda güncellensin.
+    // Böylece Render cold start sırasında kart boş kalmaz.
+    if (attempt == 0 && _stats == null) {
+      try {
+        final userKey = CurrentUser().id;
+        if (userKey != null) {
+          final prefs = await SharedPreferences.getInstance();
+          final cached = prefs.getString('home_stats_$userKey');
+          if (cached != null && mounted && _stats == null) {
+            final data = Map<String, dynamic>.from(jsonDecode(cached) as Map);
+            setState(() {
+              _stats = data;
+              _statsError = false;
+            });
+          }
+        }
+      } catch (_) {
+        // Bozuk/eski önbellek ağ isteğini engellememeli.
+      }
+    }
     try {
       final res = await _dio.get('/stats/me');
       if (!mounted) return;
@@ -172,11 +194,21 @@ class _HomeScreenState extends State<HomeScreen> {
         final value = (data[key] ?? 0) as int;
         badges[key] = await _badgeTracker.hasNewValue(key, value);
       }
-      setState(() {
-        _stats = data;
-        _hasNewBadge = badges;
-        _statsError = false;
-      });
+              setState(() {
+          _stats = data;
+          _hasNewBadge = badges;
+          _statsError = false;
+        });
+        try {
+          final userKey = CurrentUser().id;
+          if (userKey != null) {
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.setString('home_stats_$userKey', jsonEncode(data));
+          }
+        } catch (_) {
+          // Önbellek yazılamazsa güncel ağ verisi yine gösterilir.
+        }
+
     } catch (_) {
       // ÖNEMLİ DÜZELTME: "istatistikler çıkmıyor, tekrar dene ile
       // çıkıyor" — bu, uygulama soğuk açılışında ilk isteğin (bağlantı

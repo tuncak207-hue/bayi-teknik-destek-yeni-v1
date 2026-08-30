@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:dio/dio.dart';
+import '../../core/api/api_config.dart';
 import 'package:audioplayers/audioplayers.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/theme_controller.dart';
@@ -9,7 +11,8 @@ import '../../core/auth/current_user.dart';
 import '../../core/auth/biometric_service.dart';
 import '../../core/api/socket_service.dart';
 
-/// Açılış ekranı: ENTPA logosu + yangın alarm sesi, 5 saniye sonra
+  /// Açılış ekranı: ENTPA logosu + yangın alarm sesi, kısa süre sonra
+
 /// otomatik olarak giriş ekranına geçer.
 ///
 /// Logo dosyası: assets/images/entpa_logo.png (yoksa yer tutucu ikon gösterilir)
@@ -27,7 +30,9 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   late final Animation<double> _fadeAnimation;
   bool _logoAvailable = true;
 
-  static const _splashDuration = Duration(seconds: 5);
+  // Render cold start'ını splash sırasında başlatıyoruz; kullanıcı ana sayfaya
+  // geçtiğinde ilk API isteği backend'i yeni uyandırmaya çalışmasın.
+  static const _splashDuration = Duration(seconds: 2);
 
   @override
   void initState() {
@@ -38,7 +43,24 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     _fadeController.forward();
 
     _playAlarmSound();
+    _warmBackend();
     _scheduleNavigation();
+  }
+
+  Future<void> _warmBackend() async {
+    // Release sürümünde canlı backend'i splash görünürken uyandırır.
+    // Debug sürümünde de yerel/emulator backend için aynı istek zararsızdır.
+    final baseUrl = ApiConfig.baseUrl;
+    if (baseUrl.trim().isEmpty) return;
+    try {
+      await Dio(BaseOptions(
+        baseUrl: baseUrl,
+        connectTimeout: const Duration(seconds: 8),
+        receiveTimeout: const Duration(seconds: 8),
+      )).get('/health');
+    } catch (_) {
+      // Ana akışı bloklama; HomeScreen kendi retry mekanizmasını kullanır.
+    }
   }
 
   Future<void> _playAlarmSound() async {
