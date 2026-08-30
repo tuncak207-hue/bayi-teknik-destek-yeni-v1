@@ -20,7 +20,10 @@ const statusLabel: Record<string, string> = {
 };
 
 export default function DealersPage() {
-  const { data: dealers, mutate } = useSWR('/users', fetcher);
+  // Kullanıcı isteği: "daha erken olmalı" — yeni bayi kayıtlarının
+  // panelde görünmesi için sayfayı yenilemek gerekmesin diye, liste
+  // otomatik olarak her 5 saniyede bir tazeleniyor.
+  const { data: dealers, mutate } = useSWR('/users', fetcher, { refreshInterval: 5000 });
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<any>(null);
   const [editing, setEditing] = useState(false);
