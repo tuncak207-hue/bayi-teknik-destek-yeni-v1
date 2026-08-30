@@ -90,10 +90,17 @@ export class AuthController {
   }
 
   private cookieOptions() {
+    // ÖNEMLİ DÜZELTME: "girince kendi kendine atıyor" — admin panel ile
+    // backend FARKLI alan adlarında (cross-origin) çalıştığında,
+    // "sameSite: 'lax'" tarayıcının çerezi bu isteklerde GÖNDERMESİNİ
+    // engelliyordu (giriş başarılı oluyordu ama sonraki her istek
+    // "giriş yapılmamış" gibi davranıyordu). Cross-origin çerezlerin
+    // çalışması için "sameSite: 'none'" + "secure: true" gerekiyor.
+    const isProduction = process.env.NODE_ENV === 'production';
     return {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax' as const,
+      secure: isProduction,
+      sameSite: (isProduction ? 'none' : 'lax') as 'none' | 'lax',
       path: '/',
     };
   }
