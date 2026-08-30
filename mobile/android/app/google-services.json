@@ -30,6 +30,14 @@
           }
         },
         {
+          "client_id": "677096560319-id9eg2a5mj3m7aesn4qpp57vvscnr5li.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.bayiteknikdestek.bayi_teknik_destek",
+            "certificate_hash": "2c89e71360d387bc96790012429573ce409fc2ed"
+          }
+        },
+        {
           "client_id": "677096560319-i2n8hji80go4eu9u22ubi5onhi6nl5qj.apps.googleusercontent.com",
           "client_type": 3
         }
