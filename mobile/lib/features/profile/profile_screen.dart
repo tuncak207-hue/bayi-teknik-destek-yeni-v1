@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:dio/dio.dart';
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/theme/theme_controller.dart';
 import '../../core/widgets/design_system.dart';
 import '../auth/data/auth_repository.dart';
 
@@ -116,11 +115,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       padding: const EdgeInsets.only(bottom: 12),
                       child: Text(error!, style: const TextStyle(color: AppColors.navy, fontSize: 13)),
                     ),
-                  _PremiumDialogField(controller: firstNameController, label: 'Ad', icon: Icons.person_outline),
+                  _ProfileDialogField(controller: firstNameController, label: 'Ad', icon: Icons.person_outline),
                   const SizedBox(height: 10),
-                  _PremiumDialogField(controller: lastNameController, label: 'Soyad', icon: Icons.person_outline),
+                  _ProfileDialogField(controller: lastNameController, label: 'Soyad', icon: Icons.person_outline),
                   const SizedBox(height: 10),
-                  _PremiumDialogField(
+                  _ProfileDialogField(
                     controller: phoneController,
                     label: 'Telefon',
                     icon: Icons.phone_outlined,
@@ -302,191 +301,109 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
     if (_profile == null) return const Scaffold(body: Center(child: CircularProgressIndicator()));
 
-    // Profil sekmesi kök akış olduğu için geri oku göstermez; ikincil
-    // profil ekranları AppPageHeader üzerinden geri navigasyon sağlar.
+    // Kullanıcı isteği: "profil içeriğinin tasarımını komple değiştir,
+    // daha premium, daha sade ve global olmalı" — önceki dekoratif
+    // sweep-gradient avatar halkası, arka plan "halo" lekeleri, gradyan
+    // metin ve gradyanlı istatistik kartları tamamen kaldırıldı. Yerine
+    // düz renkler, ince kenarlıklar ve bol boşluk kullanan; büyük
+    // uluslararası SaaS ürünlerinde (Linear, Stripe, Notion) görülen
+    // sade/nötr bir dil kullanıldı.
     final scheme = Theme.of(context).colorScheme;
     return Scaffold(
       backgroundColor: scheme.surface,
       appBar: const AppPageHeader(title: 'Profil'),
       body: ListView(
-            children: [
-          // ---- Üst kimlik bandı: beyaz zemin ama çok katmanlı, göz alıcı bir
-          // görsel doku ile — arka planda ince gradyan "halo" lekeleri,
-          // büyük tipografi, çok katmanlı gölgeli avatar.
-          Container(
-            width: double.infinity,
-            decoration: BoxDecoration(color: scheme.surface),
-            child: Stack(
-              clipBehavior: Clip.none,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.xl, AppSpacing.lg, AppSpacing.lg),
+            child: Column(
               children: [
-                // Arka planda, çok hafif iki renkli "halo" lekesi — beyaz
-                // zeminde bile derinlik hissi veriyor, düz/sıradan durmasın diye.
-                Positioned(
-                  top: -60,
-                  right: -40,
-                  child: Container(
-                    width: 180,
-                    height: 180,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: RadialGradient(colors: [AppColors.brand.withValues(alpha: 0.10), Colors.transparent]),
+                Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    CircleAvatar(
+                      radius: 42,
+                      backgroundColor: scheme.surfaceContainerHighest,
+                      backgroundImage: _profile!['avatarUrl'] != null ? NetworkImage(_profile!['avatarUrl']) : null,
+                      child: _profile!['avatarUrl'] == null
+                          ? Text(
+                              _initials(_profile!['firstName'], _profile!['lastName']),
+                              style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w700, color: AppColors.navy),
+                            )
+                          : null,
                     ),
-                  ),
-                ),
-                Positioned(
-                  top: -20,
-                  left: -60,
-                  child: Container(
-                    width: 160,
-                    height: 160,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: RadialGradient(colors: [AppColors.navy.withValues(alpha: 0.06), Colors.transparent]),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.xl, AppSpacing.md, AppSpacing.lg),
-                  child: Column(
-                    children: [
-                      Stack(
-                        clipBehavior: Clip.none,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              gradient: const SweepGradient(
-                                colors: [AppColors.brand, AppColors.navy, AppColors.brand],
-                              ),
-                              boxShadow: [
-                                BoxShadow(color: AppColors.brand.withValues(alpha: 0.25), blurRadius: 24, offset: const Offset(0, 8)),
-                                BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 10, offset: const Offset(0, 2)),
-                              ],
-                            ),
-                            child: Container(
-                              padding: const EdgeInsets.all(3),
-                              decoration: BoxDecoration(color: scheme.surface, shape: BoxShape.circle),
-                              child: CircleAvatar(
-                                radius: 44,
-                                backgroundColor: scheme.surfaceContainerHighest,
-                                backgroundImage: _profile!['avatarUrl'] != null ? NetworkImage(_profile!['avatarUrl']) : null,
-                                child: _profile!['avatarUrl'] == null
-                                    ? Text(
-                                        _initials(_profile!['firstName'], _profile!['lastName']),
-                                        style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w800, color: AppColors.navy),
-                                      )
-                                    : null,
-                              ),
-                            ),
+                    if (_profile!['status'] == 'ACTIVE')
+                      Positioned(
+                        right: -1,
+                        bottom: -1,
+                        child: Container(
+                          padding: const EdgeInsets.all(2.5),
+                          decoration: BoxDecoration(color: scheme.surface, shape: BoxShape.circle),
+                          child: Container(
+                            width: 17,
+                            height: 17,
+                            decoration: const BoxDecoration(color: Color(0xFF16A34A), shape: BoxShape.circle),
+                            child: const Icon(Icons.check, size: 11, color: Colors.white),
                           ),
-                          if (_profile!['status'] == 'ACTIVE')
-                            Positioned(
-                              right: 0,
-                              bottom: 2,
-                              child: Container(
-                                padding: const EdgeInsets.all(3),
-                                decoration: BoxDecoration(color: scheme.surface, shape: BoxShape.circle),
-                                child: Container(
-                                  width: 22,
-                                  height: 22,
-                                  decoration: BoxDecoration(
-                                    gradient: const LinearGradient(colors: [Color(0xFF22C55E), Color(0xFF16A34A)]),
-                                    shape: BoxShape.circle,
-                                    boxShadow: [BoxShadow(color: const Color(0xFF16A34A).withValues(alpha: 0.4), blurRadius: 8)],
-                                  ),
-                                  child: const Icon(Icons.check, size: 14, color: Colors.white),
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                      const SizedBox(height: AppSpacing.md),
-                      ShaderMask(
-                        blendMode: BlendMode.srcIn,
-                        shaderCallback: (bounds) => const LinearGradient(
-                          colors: [AppColors.navy, AppColors.navyLight],
-                        ).createShader(bounds),
-                        child: Text(
-                          '${_profile!['firstName']} ${_profile!['lastName']}',
-                          style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: -0.6),
                         ),
                       ),
-                      const SizedBox(height: 10),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(colors: [AppColors.navy.withValues(alpha: 0.06), AppColors.brand.withValues(alpha: 0.06)]),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: AppColors.navy.withValues(alpha: 0.08)),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.workspace_premium, size: 13, color: AppColors.brand),
-                            const SizedBox(width: 6),
-                            Text(
-                              _profile!['company'] ?? '',
-                              style: const TextStyle(color: AppColors.navy, fontSize: 12.5, fontWeight: FontWeight.w700),
-                            ),
-                          ],
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.md),
+                Text(
+                  '${_profile!['firstName']} ${_profile!['lastName']}',
+                  style: const TextStyle(fontSize: 21, fontWeight: FontWeight.w700, color: AppColors.navy, letterSpacing: -0.3),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  _profile!['company'] ?? '',
+                  style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 13.5, fontWeight: FontWeight.w500),
+                ),
+                if (_myStats != null || _badges.isNotEmpty) ...[
+                  const SizedBox(height: AppSpacing.lg),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _StatCard(
+                          value: '${_myStats?['questionsThisMonth'] ?? '—'}',
+                          label: 'Bu Ay Soru',
                         ),
                       ),
-                      if (_myStats != null || _badges.isNotEmpty) ...[
-                        const SizedBox(height: AppSpacing.lg),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _StatCard(
-                                icon: Icons.smart_toy_outlined,
-                                value: '${_myStats?['questionsThisMonth'] ?? '—'}',
-                                label: 'Bu Ay Soru',
-                                accent: AppColors.navy,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: _StatCard(
-                                icon: Icons.bookmark_border,
-                                value: '${_myStats?['favoritesCount'] ?? '—'}',
-                                label: 'Favori',
-                                accent: AppColors.brand,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: _StatCard(
-                                icon: Icons.emoji_events_outlined,
-                                value: '${_badges.where((b) => b['earned'] == true).length}/${_badges.length}',
-                                label: 'Rozet',
-                                accent: const Color(0xFFCA8A04),
-                              ),
-                            ),
-                          ],
+                      _StatDivider(),
+                      Expanded(
+                        child: _StatCard(
+                          value: '${_myStats?['favoritesCount'] ?? '—'}',
+                          label: 'Favori',
                         ),
-                      ],
-                      const SizedBox(height: AppSpacing.md),
-                      OutlinedButton.icon(
-                        onPressed: _openEditProfileDialog,
-                        style: OutlinedButton.styleFrom(
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                          side: const BorderSide(color: AppColors.divider),
-                          foregroundColor: AppColors.navy,
-                          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                      ),
+                      _StatDivider(),
+                      Expanded(
+                        child: _StatCard(
+                          value: '${_badges.where((b) => b['earned'] == true).length}/${_badges.length}',
+                          label: 'Rozet',
                         ),
-                        icon: const Icon(Icons.edit_outlined, size: 15),
-                        label: const Text('Profili Düzenle', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
                       ),
                     ],
                   ),
+                ],
+                const SizedBox(height: AppSpacing.md),
+                OutlinedButton.icon(
+                  onPressed: _openEditProfileDialog,
+                  style: OutlinedButton.styleFrom(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    side: BorderSide(color: scheme.outlineVariant),
+                    foregroundColor: AppColors.navy,
+                    padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                  ),
+                  icon: const Icon(Icons.edit_outlined, size: 15),
+                  label: const Text('Profili Düzenle', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
                 ),
               ],
             ),
           ),
-          Container(height: 8, color: const Color(0xFFFFFFFF)),
 
           Padding(
-            padding: const EdgeInsets.all(AppSpacing.md),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
             child: Column(
               children: [
                 // ---- Hesap Bilgileri ----
@@ -505,7 +422,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     title: 'Rozetler',
                     children: [
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(AppSpacing.sm, 0, AppSpacing.sm, AppSpacing.sm),
+                        padding: const EdgeInsets.fromLTRB(AppSpacing.sm, AppSpacing.xs, AppSpacing.sm, AppSpacing.sm),
                         child: Wrap(
                           spacing: 8,
                           runSpacing: 8,
@@ -516,14 +433,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               child: Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                                 decoration: BoxDecoration(
-                                  color: earned ? AppColors.navy.withValues(alpha: 0.06) : Colors.grey.shade100,
-                                  borderRadius: BorderRadius.circular(AppSpacing.radius),
-                                  border: Border.all(color: AppColors.divider),
+                                  color: scheme.surface,
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(color: scheme.outlineVariant),
                                 ),
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Text(b['icon'] ?? '🏅', style: const TextStyle(fontSize: 22)),
+                                    Text(b['icon'] ?? '🏅', style: const TextStyle(fontSize: 20)),
                                     const SizedBox(height: 4),
                                     Text(
                                       b['label'] ?? '',
@@ -599,7 +516,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ],
                 ),
 
-                // ---- Tehlikeli Bölge ----
+                // ---- Hesap ----
                 const SizedBox(height: AppSpacing.md),
                 _ProfileSection(
                   title: 'Hesap',
@@ -622,15 +539,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ],
             ),
           ),
-            ],
-          ),
+        ],
+      ),
     );
   }
 }
 
-/// Bir profil bölümünü (başlık + gruplu satırlar) beyaz, hafif gölgeli bir
-/// kart içinde gösteren yardımcı widget — önceden tüm satırlar tek bir
-/// kartta karışık şekilde duruyordu, artık her biri kendi başlığı altında.
+/// Bir profil bölümünü (başlık + gruplu satırlar) düz beyaz zeminde,
+/// ince kenarlıklı bir kart içinde gösteren yardımcı widget.
 class _ProfileSection extends StatelessWidget {
   final String title;
   final List<Widget> children;
@@ -639,6 +555,7 @@ class _ProfileSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -646,20 +563,20 @@ class _ProfileSection extends StatelessWidget {
           padding: const EdgeInsets.only(left: 6, bottom: 8),
           child: Text(
             title.toUpperCase(),
-            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Theme.of(context).colorScheme.onSurfaceVariant, letterSpacing: 0.8),
+            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: scheme.onSurfaceVariant, letterSpacing: 0.8),
           ),
         ),
         Container(
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceContainer,
-            borderRadius: BorderRadius.circular(18),
-            boxShadow: [BoxShadow(color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.08), blurRadius: 14, offset: const Offset(0, 3))],
+            color: scheme.surface,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: scheme.outlineVariant),
           ),
           child: Column(
             children: [
               for (int i = 0; i < children.length; i++) ...[
                 children[i],
-                if (i != children.length - 1) Divider(height: 1, indent: 64, color: Theme.of(context).colorScheme.outlineVariant),
+                if (i != children.length - 1) Divider(height: 1, indent: 60, color: scheme.outlineVariant),
               ],
             ],
           ),
@@ -669,8 +586,8 @@ class _ProfileSection extends StatelessWidget {
   }
 }
 
-/// Renkli daire içinde ikon + başlık/alt başlık satırı — önceki düz gri
-/// ikonlar yerine, daha "premium" bir görünüm için lacivert tonlu rozet.
+/// Nötr gri daire içinde ikon + başlık/alt başlık satırı — sade,
+/// tek renkli (marka rengine bağlı olmayan) bir liste öğesi dili.
 class _ProfileTile extends StatelessWidget {
   final IconData icon;
   final String title;
@@ -684,14 +601,14 @@ class _ProfileTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final tileColor = color ?? scheme.primary;
+    final iconColor = color ?? scheme.onSurfaceVariant;
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
       leading: Container(
-        width: 38,
-        height: 38,
-        decoration: BoxDecoration(color: tileColor.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(11)),
-        child: Icon(icon, size: 18, color: tileColor),
+        width: 36,
+        height: 36,
+        decoration: BoxDecoration(color: scheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(10)),
+        child: Icon(icon, size: 18, color: iconColor),
       ),
       title: Text(title, style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w500, color: color ?? scheme.onSurface)),
       subtitle: subtitle != null ? Text(subtitle!, style: TextStyle(fontSize: 12, color: scheme.onSurfaceVariant)) : null,
@@ -701,44 +618,31 @@ class _ProfileTile extends StatelessWidget {
   }
 }
 
-/// Avatar altındaki mini istatistik kartları — büyük SaaS/fintech
-/// uygulamalarındaki (Revolut, Linear vb.) profil özetlerine benzer.
+/// Avatar altındaki mini istatistik — düz zemin, sadece rakam ve etiket;
+/// aradaki ince dikey çizgiyle ayrılan, tamamen nötr bir özet şeridi.
 class _StatCard extends StatelessWidget {
-  final IconData icon;
   final String value;
   final String label;
-  final Color accent;
 
-  const _StatCard({required this.icon, required this.value, required this.label, this.accent = AppColors.brand});
+  const _StatCard({required this.value, required this.label});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [accent.withValues(alpha: 0.07), accent.withValues(alpha: 0.02)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: accent.withValues(alpha: 0.1)),
-      ),
-      child: Column(
-        children: [
-          Container(
-            width: 26,
-            height: 26,
-            decoration: BoxDecoration(color: accent.withValues(alpha: 0.12), shape: BoxShape.circle),
-            child: Icon(icon, size: 13, color: accent),
-          ),
-          const SizedBox(height: 6),
-          Text(value, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: Theme.of(context).colorScheme.onSurface)),
-          const SizedBox(height: 1),
-          Text(label, style: TextStyle(fontSize: 10, color: Theme.of(context).colorScheme.onSurfaceVariant, fontWeight: FontWeight.w600), textAlign: TextAlign.center),
-        ],
-      ),
+    final scheme = Theme.of(context).colorScheme;
+    return Column(
+      children: [
+        Text(value, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: scheme.onSurface)),
+        const SizedBox(height: 2),
+        Text(label, style: TextStyle(fontSize: 10.5, color: scheme.onSurfaceVariant, fontWeight: FontWeight.w500), textAlign: TextAlign.center),
+      ],
     );
+  }
+}
+
+class _StatDivider extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(width: 1, height: 28, color: Theme.of(context).colorScheme.outlineVariant);
   }
 }
 
@@ -752,15 +656,16 @@ class _ProfileSwitchTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return SwitchListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
       secondary: Container(
-        width: 38,
-        height: 38,
-        decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(11)),
-        child: Icon(icon, size: 18, color: Theme.of(context).colorScheme.primary),
+        width: 36,
+        height: 36,
+        decoration: BoxDecoration(color: scheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(10)),
+        child: Icon(icon, size: 18, color: scheme.onSurfaceVariant),
       ),
-      title: Text(title, style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w500, color: Theme.of(context).colorScheme.onSurface)),
+      title: Text(title, style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w500, color: scheme.onSurface)),
       value: value,
       onChanged: onChanged,
       activeColor: AppColors.brand,
@@ -768,16 +673,15 @@ class _ProfileSwitchTile extends StatelessWidget {
   }
 }
 
-/// Kullanıcı isteği: "profil kısmı çok kötü" — özellikle "Profili
-/// Düzenle" penceresindeki sade TextField'lar, premium bir alana
-/// çevrildi (ikonlu, hafif gölgeli, odaklanınca canlanan çerçeve).
-class _PremiumDialogField extends StatefulWidget {
+/// Profili Düzenle penceresindeki sade, ikonlu metin alanı — odaklanınca
+/// ince bir çerçeve rengi değişir, aksi halde tamamen nötr durur.
+class _ProfileDialogField extends StatefulWidget {
   final TextEditingController controller;
   final String label;
   final IconData icon;
   final TextInputType? keyboardType;
 
-  const _PremiumDialogField({
+  const _ProfileDialogField({
     required this.controller,
     required this.label,
     required this.icon,
@@ -785,10 +689,10 @@ class _PremiumDialogField extends StatefulWidget {
   });
 
   @override
-  State<_PremiumDialogField> createState() => _PremiumDialogFieldState();
+  State<_ProfileDialogField> createState() => _ProfileDialogFieldState();
 }
 
-class _PremiumDialogFieldState extends State<_PremiumDialogField> {
+class _ProfileDialogFieldState extends State<_ProfileDialogField> {
   bool _focused = false;
 
   @override
@@ -799,8 +703,8 @@ class _PremiumDialogFieldState extends State<_PremiumDialogField> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 150),
         decoration: BoxDecoration(
-          color: scheme.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(14),
+          color: scheme.surface,
+          borderRadius: BorderRadius.circular(10),
           border: Border.all(color: _focused ? AppColors.brand : scheme.outlineVariant, width: _focused ? 1.3 : 1),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
