@@ -73,27 +73,33 @@ export class RagIngestionService {
       return pages.length;
     }
 
-    // Batch halinde embed et (API maliyeti/rate-limit için)
-    const BATCH = 32;
+    // Voyage tek istekte çok sayıda metni embed edebilir. Daha büyük batch,
+    // uzak API çağrısı sayısını azaltır; veritabanı yazımları da kontrollü
+    // paralellik ile yapılır. Böylece Render/Supabase ağ gecikmesi her chunk
+    // için ayrı ayrı toplam süreye eklenmez.
+    const BATCH = 64;
+    const WRITE_CONCURRENCY = 8;
     for (let i = 0; i < pendingChunks.length; i += BATCH) {
       const batch = pendingChunks.slice(i, i + BATCH);
       const vectors = await this.embedding.embedBatch(batch.map((c) => c.content));
 
-      for (let j = 0; j < batch.length; j++) {
-        const chunk = batch[j];
-        const vector = vectors[j];
-        const id = crypto.randomUUID();
-        // pgvector kolonuna Prisma'nın native desteği olmadığı için raw SQL kullanılıyor.
-        await this.prisma.$executeRawUnsafe(
-          `INSERT INTO document_chunks (id, "documentVersionId", page, "chunkIndex", content, embedding, "createdAt")
-           VALUES ($1, $2, $3, $4, $5, $6::vector, now())`,
-          id,
-          versionId,
-          chunk.page,
-          chunk.chunkIndex,
-          chunk.content,
-          `[${vector.join(',')}]`,
-        );
+      for (let j = 0; j < batch.length; j += WRITE_CONCURRENCY) {
+        const writes = batch.slice(j, j + WRITE_CONCURRENCY).map((chunk, offset) => {
+          const vector = vectors[j + offset];
+          const id = crypto.randomUUID();
+          // pgvector kolonuna Prisma'nın native desteği olmadığı için raw SQL kullanılıyor.
+          return this.prisma.$executeRawUnsafe(
+            `INSERT INTO document_chunks (id, "documentVersionId", page, "chunkIndex", content, embedding, "createdAt")
+             VALUES ($1, $2, $3, $4, $5, $6::vector, now())`,
+            id,
+            versionId,
+            chunk.page,
+            chunk.chunkIndex,
+            chunk.content,
+            `[${vector.join(',')}]`,
+          );
+        });
+        await Promise.all(writes);
       }
     }
 
