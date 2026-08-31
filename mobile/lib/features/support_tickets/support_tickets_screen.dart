@@ -134,13 +134,13 @@ class _SupportTicketsScreenState extends State<SupportTicketsScreen> {
                   Material(
                     color: Colors.transparent,
                     child: InkWell(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(AppRadius.xl),
                       onTap: () => _openCreate(isEmergency: true),
                       child: Container(
                         padding: const EdgeInsets.all(AppSpacing.md),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(colors: [AppColors.brand, AppColors.brand.withValues(alpha: 0.8)]),
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(AppRadius.xl),
                           boxShadow: [BoxShadow(color: AppColors.brand.withValues(alpha: 0.35), blurRadius: 18, offset: const Offset(0, 6))],
                         ),
                         child: Row(
@@ -148,7 +148,7 @@ class _SupportTicketsScreenState extends State<SupportTicketsScreen> {
                             Container(
                               width: 46,
                               height: 46,
-                              decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(14)),
+                              decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(AppRadius.sm)),
                               child: const Icon(Icons.warning_rounded, color: Colors.white, size: 24),
                             ),
                             const SizedBox(width: AppSpacing.sm),
@@ -194,7 +194,7 @@ class _SupportTicketsScreenState extends State<SupportTicketsScreen> {
                               Container(
                                 width: 40,
                                 height: 40,
-                                decoration: BoxDecoration(color: _priorityColor(t['priority']).withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
+                                decoration: BoxDecoration(color: _priorityColor(t['priority']).withValues(alpha: 0.1), borderRadius: BorderRadius.circular(AppRadius.sm)),
                                 child: Icon(
                                   isEmergency ? Icons.warning_amber_rounded : Icons.build_outlined,
                                   color: _priorityColor(t['priority']),
@@ -352,7 +352,7 @@ class _CreateTicketScreenState extends State<_CreateTicketScreen> {
             Container(
               margin: const EdgeInsets.only(bottom: AppSpacing.md),
               padding: const EdgeInsets.all(AppSpacing.sm),
-              decoration: BoxDecoration(color: AppColors.navy.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(14)),
+              decoration: BoxDecoration(color: AppColors.navy.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(AppRadius.sm)),
               child: Row(
                 children: [
                   const Icon(Icons.warning_amber_rounded, color: AppColors.navy, size: 18),
@@ -476,7 +476,7 @@ class _TicketDetailScreenState extends State<_TicketDetailScreen> {
               Container(
                 margin: const EdgeInsets.only(bottom: AppSpacing.sm),
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(color: AppColors.navy.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(20)),
+                decoration: BoxDecoration(color: AppColors.navy.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(AppRadius.xl)),
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -490,7 +490,7 @@ class _TicketDetailScreenState extends State<_TicketDetailScreen> {
               Container(
                 margin: const EdgeInsets.only(bottom: AppSpacing.sm),
                 padding: const EdgeInsets.all(AppSpacing.sm),
-                decoration: BoxDecoration(color: Colors.orange.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(14)),
+                decoration: BoxDecoration(color: Colors.orange.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(AppRadius.sm)),
                 child: Row(
                   children: [
                     const Icon(Icons.trending_up, color: Colors.orange, size: 18),
@@ -511,8 +511,8 @@ class _TicketDetailScreenState extends State<_TicketDetailScreen> {
                 margin: const EdgeInsets.only(bottom: AppSpacing.md),
                 decoration: BoxDecoration(
                   color: slaStatus['resolutionBreached'] == true ? AppColors.navy.withValues(alpha: 0.06) : Colors.white,
-                  borderRadius: BorderRadius.circular(18),
-                  boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 2))],
+                  borderRadius: BorderRadius.circular(AppRadius.lg),
+                  boxShadow: AppShadows.subtle,
                 ),
                 child: Row(
                   children: [
@@ -541,8 +541,8 @@ class _TicketDetailScreenState extends State<_TicketDetailScreen> {
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(18),
-                boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 2))],
+                borderRadius: BorderRadius.circular(AppRadius.lg),
+                boxShadow: AppShadows.subtle,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -639,18 +639,18 @@ class _BeforeAfterPhotoSectionState extends State<_BeforeAfterPhotoSection> {
             runSpacing: 6,
             children: [
               ...photos.map((p) => ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
                     child: Image.network(p['signedUrl'], width: 64, height: 64, fit: BoxFit.cover),
                   )),
               InkWell(
                 onTap: _uploading ? null : () => _addPhoto(type),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
                 child: Container(
                   width: 64,
                   height: 64,
                   decoration: BoxDecoration(
                     color: color.withValues(alpha: 0.06),
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
                     border: Border.all(color: color.withValues(alpha: 0.25)),
                   ),
                   child: Icon(Icons.add_a_photo_outlined, size: 20, color: color),
@@ -669,8 +669,8 @@ class _BeforeAfterPhotoSectionState extends State<_BeforeAfterPhotoSection> {
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 2))],
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        boxShadow: AppShadows.subtle,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -754,8 +754,8 @@ class _MeasurementSectionState extends State<_MeasurementSection> {
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 2))],
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        boxShadow: AppShadows.subtle,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -866,8 +866,8 @@ class _SparePartSectionState extends State<_SparePartSection> {
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 2))],
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        boxShadow: AppShadows.subtle,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1008,8 +1008,8 @@ class _CostSectionState extends State<_CostSection> {
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 2))],
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        boxShadow: AppShadows.subtle,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1156,15 +1156,15 @@ class _KnowledgeBaseSectionState extends State<_KnowledgeBaseSection> {
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 2))],
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        boxShadow: AppShadows.subtle,
       ),
       child: Row(
         children: [
           Container(
             width: 40,
             height: 40,
-            decoration: BoxDecoration(color: AppColors.navy.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(12)),
+            decoration: BoxDecoration(color: AppColors.navy.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(AppRadius.sm)),
             child: const Icon(Icons.psychology_outlined, color: AppColors.navy, size: 19),
           ),
           const SizedBox(width: AppSpacing.sm),
