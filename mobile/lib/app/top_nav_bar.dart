@@ -66,7 +66,7 @@ class TopNavSliverAppBar extends StatelessWidget {
           Expanded(
             child: Text(
               'ENTPA Teknik Mühendislik Platformu',
-              style: AppText.screenTitle.copyWith(fontSize: 14, letterSpacing: -0.1, overflow: TextOverflow.ellipsis),
+              style: AppText.screenTitle.copyWith(fontSize: 19, fontWeight: FontWeight.w800, letterSpacing: -0.35, overflow: TextOverflow.ellipsis),
             ),
           ),
           IconButton(
