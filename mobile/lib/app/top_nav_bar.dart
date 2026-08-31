@@ -60,15 +60,7 @@ class TopNavSliverAppBar extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 4, 12, 4),
       child: Row(
         children: [
-          Expanded(
-            child: Text(
-              'Bayi Teknik Destek',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -0.2,
-                  ),
-            ),
-          ),
+          const Spacer(),
           IconButton(
             tooltip: 'Bildirimler',
             onPressed: onNotificationsTap,
