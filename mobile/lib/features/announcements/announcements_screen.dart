@@ -116,16 +116,16 @@ class _AnnouncementsScreenState extends State<AnnouncementsScreen> {
                       return Container(
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(AppRadius.md),
                           border: isUnread
                               ? Border.all(color: AppColors.brand.withValues(alpha: 0.5), width: 1.5)
                               : (isCritical ? Border.all(color: AppColors.brand.withValues(alpha: 0.3)) : null),
-                          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 2))],
+                          boxShadow: AppShadows.subtle,
                         ),
                         child: Material(
                           color: Colors.transparent,
                           child: InkWell(
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(AppRadius.md),
                             onTap: () => _openDetail(a),
                             child: Padding(
                               padding: const EdgeInsets.all(AppSpacing.sm),
@@ -137,7 +137,7 @@ class _AnnouncementsScreenState extends State<AnnouncementsScreen> {
                                     height: 40,
                                     decoration: BoxDecoration(
                                       color: (isCritical ? AppColors.brand : AppColors.navy).withValues(alpha: 0.08),
-                                      borderRadius: BorderRadius.circular(12),
+                                      borderRadius: BorderRadius.circular(AppRadius.sm),
                                     ),
                                     child: Icon(
                                       isCritical ? Icons.warning_amber_rounded : Icons.campaign_outlined,
@@ -162,7 +162,7 @@ class _AnnouncementsScreenState extends State<AnnouncementsScreen> {
                                               Container(
                                                 margin: const EdgeInsets.only(left: 6),
                                                 padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                                                decoration: BoxDecoration(color: AppColors.brand, borderRadius: BorderRadius.circular(20)),
+                                                decoration: BoxDecoration(color: AppColors.brand, borderRadius: BorderRadius.circular(AppRadius.xl)),
                                                 child: const Text('YENİ', style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w800, color: Colors.white)),
                                               ),
                                           ],
@@ -273,9 +273,9 @@ class _AnnouncementDetailScreenState extends State<_AnnouncementDetailScreen> {
             padding: const EdgeInsets.all(AppSpacing.md),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(AppRadius.xl),
               border: isCritical ? Border.all(color: AppColors.brand.withValues(alpha: 0.3)) : null,
-              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 12, offset: const Offset(0, 3))],
+              boxShadow: AppShadows.subtle,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -287,7 +287,7 @@ class _AnnouncementDetailScreenState extends State<_AnnouncementDetailScreen> {
                       height: 44,
                       decoration: BoxDecoration(
                         color: (isCritical ? AppColors.brand : AppColors.navy).withValues(alpha: 0.08),
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: BorderRadius.circular(AppRadius.sm),
                       ),
                       child: Icon(
                         isCritical ? Icons.warning_amber_rounded : Icons.campaign_outlined,
