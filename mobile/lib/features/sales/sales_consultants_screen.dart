@@ -86,7 +86,7 @@ class _SalesConsultantsScreenState extends State<SalesConsultantsScreen> {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(AppRadius.xl),
                           boxShadow: [BoxShadow(color: AppColors.navy.withValues(alpha: 0.22), blurRadius: 16, offset: const Offset(0, 6))],
                         ),
                         child: Row(
@@ -94,7 +94,7 @@ class _SalesConsultantsScreenState extends State<SalesConsultantsScreen> {
                             Container(
                               width: 50,
                               height: 50,
-                              decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(15)),
+                              decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(AppRadius.md)),
                               child: const Icon(Icons.headset_mic_outlined, color: Colors.white, size: 24),
                             ),
                             const SizedBox(width: AppSpacing.sm),
@@ -126,8 +126,8 @@ class _SalesConsultantsScreenState extends State<SalesConsultantsScreen> {
                           padding: const EdgeInsets.all(AppSpacing.sm),
                           decoration: BoxDecoration(
                             color: Colors.white,
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 2))],
+                            borderRadius: BorderRadius.circular(AppRadius.md),
+                            boxShadow: AppShadows.subtle,
                           ),
                           child: Row(
                             children: [
@@ -168,7 +168,7 @@ class _SalesConsultantsScreenState extends State<SalesConsultantsScreen> {
                                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                                       decoration: BoxDecoration(
                                         color: AppColors.brand.withValues(alpha: 0.08),
-                                        borderRadius: BorderRadius.circular(20),
+                                        borderRadius: BorderRadius.circular(AppRadius.xl),
                                       ),
                                       child: const Text(
                                         'SATIŞ DANIŞMANI',
