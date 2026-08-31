@@ -418,7 +418,7 @@ class _HomeScreenState extends State<HomeScreen> {
               physics: const NeverScrollableScrollPhysics(),
               mainAxisSpacing: AppSpacing.sm,
               crossAxisSpacing: AppSpacing.sm,
-              childAspectRatio: 1.08,
+              childAspectRatio: 1.18,
               padding: EdgeInsets.zero,
               children: _quickActionsOrder
                   // "Bayi Ziyaretleri" sadece SALES (satış danışmanı)
@@ -615,8 +615,8 @@ class _QuickAction extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      width: 44,
-                      height: 44,
+                      width: 36,
+                      height: 36,
                       decoration: const BoxDecoration(
                         color: AppColors.primarySoft,
                         shape: BoxShape.circle,
@@ -624,10 +624,10 @@ class _QuickAction extends StatelessWidget {
                       child: Icon(
                         icon,
                         color: AppColors.primary,
-                        size: 21,
+                        size: 17,
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 4),
                     // ÖNEMLİ DÜZELTME: Etiketler tek satır ("Ara", "Gruplar")
                     // veya iki satır ("Bayilere Sor", "Satış Danışmanına
                     // Sor") olabiliyor. İçerik dikeyde ortalandığı için,
@@ -638,7 +638,7 @@ class _QuickAction extends StatelessWidget {
                     // kartlardaki ikon konumunu, etiket kaç satır sürerse
                     // sürsün sabitliyoruz.
                     SizedBox(
-                      height: 28,
+                      height: 24,
                       child: Text(
                         label,
                         textAlign: TextAlign.center,
@@ -647,9 +647,9 @@ class _QuickAction extends StatelessWidget {
                         style: const TextStyle(
                           fontFamily: 'Inter',
                           fontWeight: FontWeight.w600,
-                          fontSize: 11.5,
+                          fontSize: 10.5,
                           color: AppColors.textPrimary,
-                          height: 1.15,
+                          height: 1.1,
                           letterSpacing: -0.15,
                         ),
                       ),
