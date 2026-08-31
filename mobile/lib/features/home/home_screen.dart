@@ -536,26 +536,26 @@ class _StatCard extends StatelessWidget {
             border: Border.all(color: AppColors.outline.withValues(alpha: 0.72)),
             boxShadow: AppShadows.subtle,
           ),
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.lg),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.sm),
           child: Stack(
             clipBehavior: Clip.none,
             children: [
               SizedBox(
-                height: 78,
+                height: 58,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Center(child: Icon(icon, color: AppColors.textMuted, size: 14)),
-                    const SizedBox(height: 4),
-                    Center(child: Text(value, style: AppText.statValue.copyWith(fontSize: 20, fontWeight: FontWeight.w800))),
+                    Center(child: Icon(icon, color: AppColors.textMuted, size: 12)),
+                    const SizedBox(height: 3),
+                    Center(child: Text(value, style: AppText.statValue.copyWith(fontSize: 15, fontWeight: FontWeight.w800))),
                     const SizedBox(height: 1),
                     Text(
                       label,
                       textAlign: TextAlign.center,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: AppText.statLabel.copyWith(fontSize: 11.5),
+                      style: AppText.statLabel.copyWith(fontSize: 9.5),
                     ),
                   ],
                 ),
