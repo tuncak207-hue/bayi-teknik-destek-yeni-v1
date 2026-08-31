@@ -5,6 +5,7 @@ import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/design_system.dart';
 import '../../core/widgets/app_components.dart';
+import '../../core/events/notification_badge_bus.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -51,6 +52,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       // en azından bir sonraki listelemede backend'in gerçek durumunu
       // yansıtması için _load() çağrılıyor.
     }
+    // ÖNEMLİ DÜZELTME: "hem kartın üzerindeki uyarı hem bildirim ikonun
+    // üstündeki uyarı kapanmalı" — üstteki zil ikonu kendi rozetini
+    // yeniliyordu ama Ana Sayfa'daki kart rozetleri (Duyurular vb.)
+    // hiç haberdar edilmiyordu. NotificationBadgeBus.bump() bu ikisini
+    // de tetikliyor.
+    NotificationBadgeBus.bump();
     _load();
   }
 
@@ -154,6 +161,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   Future<void> _markAllRead() async {
     await _dio.patch('/notifications/read-all');
+    NotificationBadgeBus.bump();
     _load();
   }
 
