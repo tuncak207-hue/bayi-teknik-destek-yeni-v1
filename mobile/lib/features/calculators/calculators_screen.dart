@@ -55,10 +55,10 @@ class _CalculatorsScreenState extends State<CalculatorsScreen> with SingleTicker
             padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.sm, AppSpacing.md, 0),
             child: Container(
               padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(color: const Color(0xFFEFF1F4), borderRadius: BorderRadius.circular(14)),
+              decoration: BoxDecoration(color: const Color(0xFFEFF1F4), borderRadius: BorderRadius.circular(AppRadius.sm)),
               child: TabBar(
                 controller: _tabController,
-                indicator: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(11), boxShadow: [
+                indicator: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(AppRadius.sm), boxShadow: [
                   BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 6, offset: const Offset(0, 1)),
                 ]),
                 indicatorSize: TabBarIndicatorSize.tab,
@@ -156,8 +156,8 @@ class _ResultCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 12, offset: const Offset(0, 3))],
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        boxShadow: AppShadows.subtle,
       ),
       padding: const EdgeInsets.all(AppSpacing.md),
       child: Column(
@@ -168,7 +168,7 @@ class _ResultCard extends StatelessWidget {
               Container(
                 width: 34,
                 height: 34,
-                decoration: BoxDecoration(color: AppColors.brand.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
+                decoration: BoxDecoration(color: AppColors.brand.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(AppRadius.sm)),
                 child: const Icon(Icons.check_circle_outline, color: AppColors.brand, size: 18),
               ),
               const SizedBox(width: 10),
@@ -182,7 +182,7 @@ class _ResultCard extends StatelessWidget {
             Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
-              decoration: BoxDecoration(color: const Color(0xFFFAFAFB), borderRadius: BorderRadius.circular(14)),
+              decoration: BoxDecoration(color: const Color(0xFFFAFAFB), borderRadius: BorderRadius.circular(AppRadius.sm)),
               child: Column(
                 children: [
                   Text(_kLabels[headlineKey] ?? headlineKey!, style: TextStyle(fontSize: 11.5, color: Colors.grey.shade500, fontWeight: FontWeight.w600)),
@@ -202,7 +202,7 @@ class _ResultCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 10),
               decoration: BoxDecoration(
                 color: result![statusKey] == true ? Colors.green.withValues(alpha: 0.08) : AppColors.navy.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -522,7 +522,7 @@ class _CalculatorIntro extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.sm),
-      decoration: BoxDecoration(color: AppColors.navy.withValues(alpha: 0.04), borderRadius: BorderRadius.circular(14)),
+      decoration: BoxDecoration(color: AppColors.navy.withValues(alpha: 0.04), borderRadius: BorderRadius.circular(AppRadius.sm)),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
