@@ -10,6 +10,7 @@ import '../../core/api/api_client.dart';
 import '../../core/api/socket_service.dart';
 import '../../core/notifications/notification_sound_service.dart';
 import '../../core/events/notification_badge_bus.dart';
+import '../../core/events/stats_refresh_bus.dart';
 import '../../core/auth/current_user.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_components.dart';
@@ -45,9 +46,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // Kritik kartı önce yükle. Render cold start ve Supabase pooler
-    // bağlantısı sırasında ikincil isteklerin aynı anda yarışması, istatistik
-    // kartının gereksiz yere gecikmesine neden olabiliyor.
     _loadStats();
     _loadQuickActionsOrder();
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -57,19 +55,11 @@ class _HomeScreenState extends State<HomeScreen> {
         _loadCategoryBadges();
       });
     });
-    // Randevu/eğitim içeriği/sertifika gibi bildirimler her ekrandan
-    // (RootShell) dinlendiği için, buradan gelen sinyalle kart
-    // rozetlerini tazeliyoruz — Ana Sayfa şu an görünür olmasa bile.
     NotificationBadgeBus.trigger.addListener(_loadCategoryBadges);
-    // Ana Sayfa açıldığında henüz onaylanmamış kritik duyuru varsa
-    // kapatılamayan bir uyarı göster.
+    StatsRefreshBus.trigger.addListener(_onStatsRefreshBump);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) CriticalAnnouncementGate.checkAndShow(context);
     });
-    // Alt menüdeki rozet mesaj geldiğinde anlık güncelleniyordu ama bu
-    // karttaki rozet sadece ekran ilk açıldığında bir kere yükleniyordu —
-    // Ana Sayfa'dayken mesaj gelirse kart hiç haberdar olmuyordu. Artık
-    // burada da aynı soket sinyalini dinliyoruz.
     SocketService().connect();
     _messageSub = SocketService().onMessage.listen(_onSocketMessage);
     HomeScrollToTopBus.trigger.addListener(_scrollToTop);
@@ -83,9 +73,6 @@ class _HomeScreenState extends State<HomeScreen> {
     if (senderType != 'USER') return;
     if (senderId == null || senderId == CurrentUser().id) return;
     if (!mounted) return;
-    // ÖNEMLİ: Önceden burada yerel "+1" ekleniyordu — bu, sayının yanlış
-    // artmasına yol açabiliyordu ("1 mesaj geldi ama kartta 2 yazıyor"
-    // hatası). Artık her zaman sunucudaki gerçek sayıyı yeniden çekiyoruz.
     _loadCategoryBadges();
     NotificationSoundService().play();
   }
@@ -95,12 +82,11 @@ class _HomeScreenState extends State<HomeScreen> {
     _messageSub?.cancel();
     _scrollController.dispose();
     NotificationBadgeBus.trigger.removeListener(_loadCategoryBadges);
+    StatsRefreshBus.trigger.removeListener(_onStatsRefreshBump);
     HomeScrollToTopBus.trigger.removeListener(_scrollToTop);
     super.dispose();
   }
 
-  /// "Mesajlar", "Bayilere Sor", "Gruplar" kartlarının üzerinde gösterilen
-  /// rozet sayıları — her biri kendi bildirim türüne göre ayrı hesaplanıyor.
   Future<void> _loadCategoryBadges() async {
     try {
       final res = await _dio.get('/notifications/unread-counts-by-category');
@@ -117,18 +103,14 @@ class _HomeScreenState extends State<HomeScreen> {
               'support_tickets': res.data['supportTickets'] ?? 0,
             });
       }
-    } catch (_) {
-      // Rozetler ikincil bir bilgi, sessizce yut.
-    }
+    } catch (_) {}
   }
 
   Future<void> _loadPinnedDocuments() async {
     try {
       final res = await _dio.get('/favorites/pinned');
       if (mounted) setState(() => _pinnedDocuments = res.data);
-    } catch (_) {
-      // Sabitlenmiş dokümanlar ikincil bir bilgi, sessizce yut.
-    }
+    } catch (_) {}
   }
 
   Future<void> _loadQuickActionsOrder() async {
@@ -136,8 +118,6 @@ class _HomeScreenState extends State<HomeScreen> {
     if (mounted) setState(() => _quickActionsOrder = order);
   }
 
-  /// Favoriler'in özel bir davranışı var (rozet işaretleme + dönüşte
-  /// istatistikleri yenileme) — diğer tüm işlemler için basitçe rotaya gider.
   Future<void> _handleQuickActionTap(QuickActionDef action) async {
     if (action.id == 'favorites') {
       await _markStatSeen('favoritesCount');
@@ -147,9 +127,6 @@ class _HomeScreenState extends State<HomeScreen> {
       return;
     }
     await context.push(action.route);
-    // Mesajlar/Bayilere Sor/Gruplar'dan dönünce rozetleri tazele — kart
-    // üzerindeki sayı, kullanıcı o alanı ziyaret ettikten sonra doğru
-    // yansımalı.
     if (action.id == 'messages' ||
         action.id == 'community' ||
         action.id == 'groups' ||
@@ -162,9 +139,9 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  void _onStatsRefreshBump() => _loadStats();
+
   Future<void> _loadStats({int attempt = 0}) async {
-    // Son başarılı değeri önce göster; ağ isteği arka planda güncellensin.
-    // Böylece Render cold start sırasında kart boş kalmaz.
     if (attempt == 0 && _stats == null) {
       try {
         final userKey = CurrentUser().id;
@@ -179,44 +156,30 @@ class _HomeScreenState extends State<HomeScreen> {
             });
           }
         }
-      } catch (_) {
-        // Bozuk/eski önbellek ağ isteğini engellememeli.
-      }
+      } catch (_) {}
     }
     try {
       final res = await _dio.get('/stats/me');
       if (!mounted) return;
       final data = res.data as Map<String, dynamic>;
-      // Her istatistik için, sunucudan gelen sayı daha önce görülenden
-      // büyükse "yeni" rozetini yak.
       final badges = <String, bool>{};
       for (final key in ['questionsThisMonth', 'favoritesCount', 'supportTicketsCount']) {
         final value = (data[key] ?? 0) as int;
         badges[key] = await _badgeTracker.hasNewValue(key, value);
       }
-              setState(() {
-          _stats = data;
-          _hasNewBadge = badges;
-          _statsError = false;
-        });
-        try {
-          final userKey = CurrentUser().id;
-          if (userKey != null) {
-            final prefs = await SharedPreferences.getInstance();
-            await prefs.setString('home_stats_$userKey', jsonEncode(data));
-          }
-        } catch (_) {
-          // Önbellek yazılamazsa güncel ağ verisi yine gösterilir.
+      setState(() {
+        _stats = data;
+        _hasNewBadge = badges;
+        _statsError = false;
+      });
+      try {
+        final userKey = CurrentUser().id;
+        if (userKey != null) {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('home_stats_$userKey', jsonEncode(data));
         }
-
+      } catch (_) {}
     } catch (_) {
-      // ÖNEMLİ DÜZELTME: "istatistikler çıkmıyor, tekrar dene ile
-      // çıkıyor" — bu, uygulama soğuk açılışında ilk isteğin (bağlantı
-      // tam hazır olmadan atıldığı için) başarısız olup, birkaç saniye
-      // sonraki elle denemenin çalışması anlamına geliyordu — klasik bir
-      // "soğuk başlangıç" zamanlama sorunu. Kullanıcı hiçbir şey
-      // yapmadan, otomatik olarak birkaç kez (artan bekleme ile) tekrar
-      // deniyoruz; sadece bunlar da başarısız olursa hata gösteriyoruz.
       if (!mounted) return;
       if (attempt < 4) {
         await Future.delayed(Duration(milliseconds: 400 * (1 << attempt)));
@@ -227,9 +190,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  /// Kullanıcı bir istatistik kartına girip baktığında, o kartın rozetini
-  /// "görüldü" olarak işaretler — bir dahaki Ana Sayfa açılışında tekrar
-  /// çıkmasın diye.
   Future<void> _markStatSeen(String key) async {
     if (_stats == null) return;
     final value = (_stats![key] ?? 0) as int;
@@ -239,16 +199,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Kullanıcı isteği: "üst menü ana menünün bir parçası gibi hareket
-    // etmeli" — RootShell'in paylaştığı veriyi (seçili sekme, rozet
-    // sayıları, dokunma işleyicileri) buradan okuyup, üst menüyü
-    // CustomScrollView'ın İLK sliver'ı olarak gömüyoruz. Bu, menünün
-    // Ana Sayfa'nın kaydırma fiziğinin GERÇEK bir parçası olmasını
-    // sağlıyor (SliverAppBar floating+snap) — parmakla birebir hareket.
     final navData = RootNavData.current!;
     return Scaffold(
-      // Kullanıcı isteği: "Ana background çok hafif kırık beyaz/off-white
-      // olabilir." AppColors.background artık bu hafif tonu taşıyor.
       backgroundColor: AppColors.background,
       body: CustomScrollView(
         controller: _scrollController,
@@ -269,17 +221,8 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.all(AppSpacing.md),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
-            // Kullanıcı isteği: "ilk ekrandaki 'Ana Sayfa' yazısını
-            // kaldır" — büyük başlık kaldırıldı.
-            // Kullanıcı isteği: "uygulama açılırken ekranda slayt
-            // dönsün" — admin panelden yönetilen, otomatik dönen
-            // tanıtım slaytları, Ana Sayfa'nın en üstünde.
             const HomeSlideshow(),
             const SizedBox(height: AppSpacing.sm),
-            // AI'a Sor — kullanıcı isteği: "hiçbir yerde gölge olmayacak,
-            // arka fon bembeyaz." Eski gradyanlı/gölgeli lacivert kart
-            // tamamen kaldırıldı, düz turuncu (marka rengi), gölgesiz,
-            // sade bir kart ile değiştirildi.
             InkWell(
               onTap: () => context.push('/ai-quick'),
               borderRadius: BorderRadius.circular(AppRadius.xl),
@@ -288,10 +231,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 decoration: BoxDecoration(
                   color: AppColors.primary,
                   borderRadius: BorderRadius.circular(AppRadius.xl),
-                  // Kullanıcı isteği: "Kontrollü radius, çok hafif
-                  // elevation... Premium ve kurumsal görünmeli." — aşırı
-                  // efekt yok, sadece çok ince bir gölge ile bannerın
-                  // sayfadan hafifçe ayrılması sağlandı.
                   boxShadow: [
                     BoxShadow(color: AppColors.primary.withValues(alpha: 0.20), blurRadius: 16, offset: const Offset(0, 6)),
                   ],
@@ -326,8 +265,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const SizedBox(height: AppSpacing.sm),
-            // İstatistikler — kullanıcı isteği üzerine (dashboard tarzı)
-            // en üste, göze ilk çarpan yere taşındı.
             const Text('BU AY', style: AppText.eyebrow),
             const SizedBox(height: AppSpacing.xs),
             _stats == null
@@ -381,13 +318,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
             const SizedBox(height: 4),
-            // Hızlı İşlemler — daha sıkı dashboard ritmi.
-            // kaldırıldı, "Düzenle" yazısı yerine sadece ikon konuldu,
-            // ve AI butonunun hemen altına (yukarı) taşındı.
-            // Kullanıcı isteği: "Filtre ikonu havada duruyorsa, ilgili
-            // section başlığı ya da hızlı işlemler alanıyla görsel
-            // olarak hizala." — küçük bir bağlam etiketi eklenip ikonla
-            // aynı satıra alındı, artık tek başına havada değil.
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -421,9 +351,6 @@ class _HomeScreenState extends State<HomeScreen> {
               childAspectRatio: 1.18,
               padding: EdgeInsets.zero,
               children: _quickActionsOrder
-                  // "Bayi Ziyaretleri" sadece SALES (satış danışmanı)
-                  // rolündeki hesaplara gösterilir — bayilerin bu
-                  // özellikle bir ilgisi yok.
                   .where((action) => action.id != 'dealer_visits' || CurrentUser().role == 'SALES' || CurrentUser().role == 'ADMIN')
                   .map((action) => _QuickAction(
                         icon: action.icon,
@@ -496,7 +423,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: AppSpacing.xs),
             ],
-            // "Bugün Benim İçin" özeti.
             const _TodayForMeSection(),
                 ]),
               ),
@@ -519,11 +445,6 @@ class _StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Kullanıcı isteği: "BU AY bölümünü profesyonel dashboard componenti
-    // gibi tasarla... Sayılar daha güçlü ve görünür olmalı. Label'lar
-    // daha küçük ve muted olmalı. İkonlar sayılarla yarışmamalı." Kart
-    // artık kenarlıksız + çok hafif gölgeli, ikon küçük/soluk, rakam
-    // güçlü/kalın, etiket küçük/muted.
     return Material(
       color: const Color(0xFFF8F7FC),
       borderRadius: BorderRadius.circular(AppRadius.lg),
@@ -628,15 +549,6 @@ class _QuickAction extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    // ÖNEMLİ DÜZELTME: Etiketler tek satır ("Ara", "Gruplar")
-                    // veya iki satır ("Bayilere Sor", "Satış Danışmanına
-                    // Sor") olabiliyor. İçerik dikeyde ortalandığı için,
-                    // farklı satır sayısı ikon dairesinin hücreden hücreye
-                    // (ve satırdan satıra) farklı yükseklikte görünmesine
-                    // yol açıyordu. Etiket alanına, iki satırlık sabit bir
-                    // yükseklik ayırarak (ve metni üste hizalayarak) tüm
-                    // kartlardaki ikon konumunu, etiket kaç satır sürerse
-                    // sürsün sabitliyoruz.
                     SizedBox(
                       height: 24,
                       child: Text(
@@ -688,9 +600,6 @@ class _QuickAction extends StatelessWidget {
   }
 }
 
-/// "Bugün Benim İçin" özeti (#17) — bugünkü randevular, açık teknik
-/// destek kayıtları, SLA riski, okunmamış bildirim sayısı. Mevcut Ana
-/// Sayfa kartlarına dokunulmadan, üstüne eklenen bağımsız bir bölüm.
 class _TodayForMeSection extends StatefulWidget {
   const _TodayForMeSection();
 
@@ -712,10 +621,7 @@ class _TodayForMeSectionState extends State<_TodayForMeSection> {
     try {
       final res = await _dio.get('/dashboard/for-me');
       if (mounted) setState(() => _summary = res.data);
-    } catch (_) {
-      // Sessizce yoksay — bu özet ek bir bilgi katmanı, başarısız olursa
-      // Ana Sayfa'nın geri kalanını etkilememeli.
-    }
+    } catch (_) {}
   }
 
   @override
