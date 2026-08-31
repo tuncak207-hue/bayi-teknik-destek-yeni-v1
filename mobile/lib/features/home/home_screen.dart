@@ -269,17 +269,8 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.all(AppSpacing.md),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
-            // Kullanıcı isteği: "tüm menüler için uygulayalım" — diğer
-            // liste ekranlarındaki (Bayiler, Gruplar vb.) büyük başlık
-            // dili, ortak üst menüye geçen bu ekranda da tutarlılık için
-            // geri eklendi.
-            const Padding(
-              padding: EdgeInsets.only(bottom: AppSpacing.sm, left: 2),
-              child: Text(
-                'Ana Sayfa',
-                style: TextStyle(fontSize: 21, fontWeight: FontWeight.w700, color: AppColors.navy, letterSpacing: -0.35, height: 1.15),
-              ),
-            ),
+            // Kullanıcı isteği: "ilk ekrandaki 'Ana Sayfa' yazısını
+            // kaldır" — büyük başlık kaldırıldı.
             // Kullanıcı isteği: "uygulama açılırken ekranda slayt
             // dönsün" — admin panelden yönetilen, otomatik dönen
             // tanıtım slaytları, Ana Sayfa'nın en üstünde.
@@ -790,6 +781,3 @@ class _TodayForMeSectionState extends State<_TodayForMeSection> {
     );
   }
 }
-
-
-
