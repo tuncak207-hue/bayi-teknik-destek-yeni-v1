@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
 import '../../../core/api/api_client.dart';
+import '../../../core/events/stats_refresh_bus.dart';
 import '../domain/chat_message.dart';
 
 class AiRepository {
@@ -18,6 +19,7 @@ class AiRepository {
       if (brand != null) 'brand': brand,
       if (model != null) 'model': model,
     });
+    StatsRefreshBus.bump();
     return (
       conversationId: res.data['conversationId'] as String,
       message: ChatMessage.fromJson(res.data['message']),
@@ -37,6 +39,7 @@ class AiRepository {
       'image': await MultipartFile.fromFile(image.path),
     });
     final res = await _dio.post('/ai/ask-with-image', data: formData);
+    StatsRefreshBus.bump();
     return (
       conversationId: res.data['conversationId'] as String,
       message: ChatMessage.fromJson(res.data['message']),
@@ -55,8 +58,6 @@ class AiRepository {
     return (res.data as List).map((m) => ChatMessage.fromJson(m)).toList();
   }
 
-  /// Kullanıcı isteği: "yeni sohbet dediğimde ayrı bir kart açmalı" —
-  /// mevcut sohbeti aramadan tamamen yeni, ayrı bir AI konuşması açar.
   Future<String> createNewConversation() async {
     final res = await _dio.post('/ai/conversations/new');
     return res.data['id'] as String;
@@ -64,9 +65,5 @@ class AiRepository {
 
   Future<void> toggleFavorite(String messageId) => _dio.post('/chat/messages/$messageId/favorite');
 
-  /// Kullanıcı isteği: "aı cevaba doğrulama ikonu koy, cevap doğruysa
-  /// mühendislik hafızası çalışsın" — herhangi bir bayi bu cevabın
-  /// doğru olduğunu onaylayabilir, bu AI Teknik Hafıza kaydını
-  /// "doğrulanmış" yapar (gelecekte aynı soruda doküman taraması atlanır).
   Future<void> verifyMemory(String memoryId) => _dio.patch('/ai/technical-memory/$memoryId/verify');
 }
