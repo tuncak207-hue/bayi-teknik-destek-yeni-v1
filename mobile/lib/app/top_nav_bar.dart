@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../core/theme/app_theme.dart';
 
 /// Kullanıcı isteği: "üst menü barı ana menüden bağımsız olmamalı, ana
 /// menünün bir parçası gibi hareket etmeli." Önceki yaklaşım (kaydırma
@@ -65,8 +66,7 @@ class TopNavSliverAppBar extends StatelessWidget {
           Expanded(
             child: Text(
               'ENTPA Teknik Mühendislik Platformu',
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w400, color: scheme.onSurfaceVariant),
+              style: AppText.screenTitle.copyWith(overflow: TextOverflow.ellipsis),
             ),
           ),
           IconButton(
