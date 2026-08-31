@@ -10,7 +10,7 @@ import { AIProvider, AIMessage, AICompletionResult } from './ai-provider.interfa
 @Injectable()
 export class GroqProvider implements AIProvider {
   private readonly apiKey = process.env.GROQ_API_KEY;
-  private readonly model = process.env.GROQ_MODEL || 'llama-3.3-70b-versatile';
+  private readonly model = process.env.GROQ_MODEL || 'openai/gpt-oss-120b';
 
   async complete(
     messages: AIMessage[],
