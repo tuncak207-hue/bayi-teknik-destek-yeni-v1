@@ -60,7 +60,15 @@ class TopNavSliverAppBar extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 4, 12, 4),
       child: Row(
         children: [
-          const Spacer(),
+          // Kullanıcı isteği: "en solda, bildirim ikonunun yanında
+          // ENTPA Teknik Mühendislik Platformu yazısı olmalı."
+          Expanded(
+            child: Text(
+              'ENTPA Teknik Mühendislik Platformu',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w500, color: scheme.onSurfaceVariant),
+            ),
+          ),
           IconButton(
             tooltip: 'Bildirimler',
             onPressed: onNotificationsTap,
