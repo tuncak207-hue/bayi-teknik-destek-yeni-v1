@@ -534,7 +534,7 @@ class _StatCard extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppRadius.lg),
             border: Border.all(color: AppColors.outline.withValues(alpha: 0.72)),
-            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.035), blurRadius: 10, offset: const Offset(0, 3))],
+            boxShadow: AppShadows.subtle,
           ),
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.lg),
           child: Stack(
@@ -604,13 +604,7 @@ class _QuickAction extends StatelessWidget {
             color: const Color(0xFFF8F7FC),
             borderRadius: BorderRadius.circular(AppRadius.lg),
             border: Border.all(color: AppColors.outline.withValues(alpha: 0.72)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.035),
-                blurRadius: 14,
-                offset: const Offset(0, 4),
-              ),
-            ],
+            boxShadow: AppShadows.card,
           ),
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.sm),
           child: Stack(
@@ -672,7 +666,7 @@ class _QuickAction extends StatelessWidget {
                     constraints: const BoxConstraints(minWidth: 18),
                     decoration: BoxDecoration(
                       color: AppColors.brand,
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(AppRadius.sm),
                       border: Border.all(color: Colors.white, width: 1.5),
                     ),
                     child: Text(
@@ -738,7 +732,7 @@ class _TodayForMeSectionState extends State<_TodayForMeSection> {
       padding: const EdgeInsets.all(AppSpacing.sm),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(AppRadius.lg),
         boxShadow: AppShadows.subtle,
       ),
       child: Column(
@@ -769,7 +763,7 @@ class _TodayForMeSectionState extends State<_TodayForMeSection> {
   Widget _summaryChip(IconData icon, String label, Color color) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(color: color.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(20)),
+      decoration: BoxDecoration(color: color.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(AppRadius.xl)),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
