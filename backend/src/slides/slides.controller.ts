@@ -26,7 +26,10 @@ export class SlidesController {
   @Roles('ADMIN')
   @UseGuards(RolesGuard)
   @Post()
-  @UseInterceptors(FileInterceptor('image', { limits: { fileSize: 10 * 1024 * 1024 } })) // 10 MB sınırı
+  // Kullanıcı isteği: "slayt video olarak da dönebilsin" — video
+  // dosyaları görsellerden çok daha büyük olduğu için sınır 10MB'tan
+  // 80MB'a çıkarıldı.
+  @UseInterceptors(FileInterceptor('image', { limits: { fileSize: 80 * 1024 * 1024 } }))
   create(
     @UploadedFile() file: Express.Multer.File,
     @Body() dto: { title?: string; subtitle?: string; linkUrl?: string; order?: string },

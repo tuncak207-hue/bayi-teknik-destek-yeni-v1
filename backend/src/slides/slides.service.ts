@@ -46,9 +46,14 @@ export class SlidesService {
     dto: { title?: string; subtitle?: string; linkUrl?: string; order?: number },
   ) {
     const fileKey = await this.storage.upload(file.buffer, file.originalname, file.mimetype, 'slides');
+    // Video mu görsel mi olduğunu, yüklenen dosyanın MIME tipinden
+    // otomatik belirliyoruz — admin panelde ayrıca bir seçim yapmaya
+    // gerek kalmıyor.
+    const mediaType = file.mimetype?.startsWith('video/') ? 'VIDEO' : 'IMAGE';
     return this.prisma.slide.create({
       data: {
         imageUrl: fileKey,
+        mediaType,
         title: dto.title,
         subtitle: dto.subtitle,
         linkUrl: dto.linkUrl,

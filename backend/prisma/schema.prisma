@@ -155,6 +155,11 @@ model Block {
 model Slide {
   id        String   @id @default(uuid())
   imageUrl  String
+  // Kullanıcı isteği: "slayt video olarak da dönebilsin" — dosyanın
+  // görsel mi video mu olduğunu belirtir, mobil buna göre Image ya da
+  // VideoPlayer widget'ı kullanır. Geriye dönük uyumluluk için varsayılan
+  // "IMAGE" — önceden yüklenmiş tüm slaytlar otomatik görsel kalır.
+  mediaType String   @default("IMAGE") // "IMAGE" | "VIDEO"
   title     String?
   subtitle  String?
   linkUrl   String? // dokunulunca açılacak isteğe bağlı bir bağlantı (örn. bir doküman ya da dış URL)

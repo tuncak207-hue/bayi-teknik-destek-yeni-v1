@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:video_player/video_player.dart';
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
 
@@ -104,7 +105,13 @@ class _HomeSlideshowState extends State<HomeSlideshow> {
                     child: Stack(
                       fit: StackFit.expand,
                       children: [
-                        Image.network(
+                        // Kullanıcı isteği: "slayt video olarak da
+                        // dönebiliyor mu" — backend'in belirlediği
+                        // mediaType'a göre ya görsel ya da (sessiz,
+                        // otomatik oynayan, döngülü) video gösteriliyor.
+                        (slide['mediaType'] == 'VIDEO')
+                            ? _SlideVideo(url: slide['imageUrl'] ?? '')
+                            : Image.network(
                           slide['imageUrl'] ?? '',
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) => Container(
@@ -184,6 +191,71 @@ class _HomeSlideshowState extends State<HomeSlideshow> {
           ),
         ],
       ],
+    );
+  }
+}
+
+/// Bir slaytın video versiyonu — sessiz, otomatik oynayan, döngülü.
+/// Kullanıcı etkileşimi olmadan başlaması gerektiği için ses kapalı
+/// başlıyor (tarayıcı/mobil platformlarda genel kabul gören davranış).
+class _SlideVideo extends StatefulWidget {
+  final String url;
+  const _SlideVideo({required this.url});
+
+  @override
+  State<_SlideVideo> createState() => _SlideVideoState();
+}
+
+class _SlideVideoState extends State<_SlideVideo> {
+  VideoPlayerController? _controller;
+  bool _ready = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _init();
+  }
+
+  Future<void> _init() async {
+    try {
+      final controller = VideoPlayerController.networkUrl(Uri.parse(widget.url));
+      await controller.initialize();
+      await controller.setLooping(true);
+      await controller.setVolume(0);
+      await controller.play();
+      if (mounted) {
+        setState(() {
+          _controller = controller;
+          _ready = true;
+        });
+      }
+    } catch (_) {
+      // Video oynatılamazsa sessizce boş bir alan bırak — Ana Sayfa'nın
+      // geri kalanı etkilenmesin.
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_ready || _controller == null) {
+      return Container(
+        color: AppColors.surfaceVariant,
+        child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+      );
+    }
+    return FittedBox(
+      fit: BoxFit.cover,
+      child: SizedBox(
+        width: _controller!.value.size.width,
+        height: _controller!.value.size.height,
+        child: VideoPlayer(_controller!),
+      ),
     );
   }
 }

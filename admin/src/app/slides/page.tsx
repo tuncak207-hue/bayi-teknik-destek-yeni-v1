@@ -74,11 +74,11 @@ export default function SlidesPage() {
         <CardHeader title="Yeni Slayt Ekle" />
         <form onSubmit={handleUpload} className="space-y-4 mt-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Görsel</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Görsel veya Video</label>
             <input
               id="slide-file-input"
               type="file"
-              accept="image/*"
+              accept="image/*,video/*"
               onChange={(e) => setFile(e.target.files?.[0] || null)}
               className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-gray-100 file:text-sm file:font-medium hover:file:bg-gray-200"
             />
