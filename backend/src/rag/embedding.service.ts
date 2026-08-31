@@ -55,21 +55,36 @@ export class EmbeddingService {
    * hatayı yukarı fırlatıyoruz.
    */
   private async callWithRetry<T>(fn: () => Promise<T>, attempt = 1): Promise<T> {
-    const maxAttempts = 5;
-    const delays = [5000, 15000, 30000, 60000];
+    const maxAttempts = 3;
+    // Gerçek rate-limit durumlarında kısa bekleme; kota/kimlik doğrulama
+    // hatalarında tekrar denemeyip anında hata döndür.
+    const delays = [1000, 3000];
     try {
       return await fn();
     } catch (err: any) {
-      const isRateLimit = err?.status === 429 || String(err?.message ?? '').includes('429');
-      if (isRateLimit && attempt < maxAttempts) {
-        const delay = delays[attempt - 1] ?? 60000;
-        this.logger.warn(
-          `Embedding API hız sınırına takıldı, ${delay / 1000}sn beklenip tekrar denenecek (deneme ${attempt}/${maxAttempts}).`,
-        );
-        await new Promise((resolve) => setTimeout(resolve, delay));
-        return this.callWithRetry(fn, attempt + 1);
+      const message = String(err?.message ?? '');
+      const isQuotaError =
+        message.includes('insufficient_quota') ||
+        message.includes('credit_balance_exhausted') ||
+        message.includes('no credits remaining') ||
+        err?.code === 'insufficient_quota' ||
+        err?.code === 'credit_balance_exhausted';
+      const isAuthOrClientError = err?.status === 400 || err?.status === 401 || err?.status === 403;
+      const isRateLimit = err?.status === 429 || message.includes('429');
+
+      // Bu hatalar kalıcıdır. Eski davranışta kota yetersizliği 5/15/30/60
+      // saniye beklemelerine giriyor ve admin paneli gereksiz yere uzun süre
+      // "İşleniyor" durumunda kalıyordu.
+      if (isQuotaError || isAuthOrClientError || !isRateLimit || attempt >= maxAttempts) {
+        throw err;
       }
-      throw err;
+
+      const delay = delays[attempt - 1] ?? 3000;
+      this.logger.warn(
+        `Embedding API hız sınırına takıldı, ${delay / 1000}sn beklenip tekrar denenecek (deneme ${attempt}/${maxAttempts}).`,
+      );
+      await new Promise((resolve) => setTimeout(resolve, delay));
+      return this.callWithRetry(fn, attempt + 1);
     }
   }
 

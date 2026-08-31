@@ -49,7 +49,10 @@ export class RagIngestionService {
     // Kullanıcı isteği: şema/diyagram analizi açık kalsın, ama daha
     // güvenilir çalışsın (aşağıda tekrar deneme ve daha uzun zaman aşımı
     // eklendi).
-    if (mimeType === 'application/pdf') {
+    // Görsel şema analizi pahalı ve sayfa başına yavaştır. Hızlı ve
+    // güvenilir doküman işleme için production'da varsayılan olarak kapalıdır;
+    // gerektiğinde ENABLE_DIAGRAM_ANALYSIS=true ile ayrıca açılabilir.
+    if (mimeType === 'application/pdf' && process.env.ENABLE_DIAGRAM_ANALYSIS === 'true') {
       await this.appendDiagramDescriptions(buffer, pages);
     }
 
