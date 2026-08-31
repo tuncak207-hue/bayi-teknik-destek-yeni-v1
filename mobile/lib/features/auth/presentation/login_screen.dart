@@ -172,6 +172,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.textPrimary, letterSpacing: 0.2),
                     ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'ENTPA Teknik Mühendislik Platformu',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 13.5, color: AppColors.textMuted, fontWeight: FontWeight.w400),
+                    ),
                     const SizedBox(height: AppSpacing.xl),
                     if (_error != null)
                       Container(
