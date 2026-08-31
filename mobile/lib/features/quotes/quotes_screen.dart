@@ -181,7 +181,7 @@ class _QuotesScreenState extends State<QuotesScreen> {
                               height: 44,
                               decoration: BoxDecoration(
                                 gradient: const LinearGradient(colors: [AppColors.navy, AppColors.navyLight]),
-                                borderRadius: BorderRadius.circular(14),
+                                borderRadius: BorderRadius.circular(AppRadius.sm),
                               ),
                               child: const Icon(Icons.request_quote_outlined, color: Colors.white, size: 20),
                             ),
@@ -435,8 +435,8 @@ class _QuoteBuilderScreenState extends State<_QuoteBuilderScreen> {
                         padding: const EdgeInsets.all(AppSpacing.sm),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(18),
-                          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 3))],
+                          borderRadius: BorderRadius.circular(AppRadius.lg),
+                          boxShadow: AppShadows.subtle,
                         ),
                         child: Column(
                           children: [
@@ -476,8 +476,8 @@ class _QuoteBuilderScreenState extends State<_QuoteBuilderScreen> {
                         Container(
                           decoration: BoxDecoration(
                             color: Colors.white,
-                            borderRadius: BorderRadius.circular(14),
-                            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 8, offset: const Offset(0, 2))],
+                            borderRadius: BorderRadius.circular(AppRadius.sm),
+                            boxShadow: AppShadows.subtle,
                           ),
                           child: TextField(
                             controller: _searchController,
@@ -516,14 +516,14 @@ class _QuoteBuilderScreenState extends State<_QuoteBuilderScreen> {
                                     margin: const EdgeInsets.only(bottom: 8),
                                     decoration: BoxDecoration(
                                       color: Colors.white,
-                                      borderRadius: BorderRadius.circular(16),
+                                      borderRadius: BorderRadius.circular(AppRadius.md),
                                       border: selected ? Border.all(color: AppColors.brand.withValues(alpha: 0.4), width: 1.5) : null,
-                                      boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 8, offset: const Offset(0, 2))],
+                                      boxShadow: AppShadows.subtle,
                                     ),
                                     child: Material(
                                       color: Colors.transparent,
                                       child: InkWell(
-                                        borderRadius: BorderRadius.circular(16),
+                                        borderRadius: BorderRadius.circular(AppRadius.md),
                                         onTap: () => _toggleItem(item),
                                         child: Padding(
                                           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 10),
@@ -761,7 +761,7 @@ class _QuoteDetailScreenState extends State<_QuoteDetailScreen> {
         children: [
           Container(
             padding: const EdgeInsets.all(AppSpacing.md),
-            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18), boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 2))]),
+            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(AppRadius.lg), boxShadow: AppShadows.subtle),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
