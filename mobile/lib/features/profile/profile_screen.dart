@@ -555,16 +555,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         setState(() => _profile!['notificationsEnabled'] = v);
                       },
                     ),
-                    _ProfileSwitchTile(
-                      icon: Icons.dark_mode_outlined,
-                      title: 'Karanlık Tema',
-                      value: _profile!['darkMode'] ?? false,
-                      onChanged: (v) async {
-                        ThemeController().setDark(v);
-                        await _dio.patch('/users/me/settings', data: {'darkMode': v});
-                        setState(() => _profile!['darkMode'] = v);
-                      },
-                    ),
                     _ProfileTile(
                       icon: Icons.language_outlined,
                       title: 'Dil',
