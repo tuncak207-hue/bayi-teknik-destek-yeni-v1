@@ -34,7 +34,23 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 
   Future<void> _markRead(String id) async {
-    await _dio.patch('/notifications/$id/read');
+    // ÖNEMLİ DÜZELTME: "bildirime tıklayınca kapanmıyor, yine bildirim
+    // var uyarısı gözüküyor" — hata yakalama hiç yoktu, ağ sorununda
+    // istek sessizce başarısız olup ekran hiç yenilenmiyordu. Artık
+    // önce YEREL olarak (anında, beklemeden) okunmuş gösteriliyor,
+    // arka planda backend'e bildiriliyor — başarısız olursa sessizce
+    // yutuluyor ama en azından kullanıcı arayüzü anında tepki veriyor.
+    setState(() {
+      final idx = _notifications.indexWhere((n) => n['id'] == id);
+      if (idx != -1) _notifications[idx]['readAt'] = DateTime.now().toIso8601String();
+    });
+    try {
+      await _dio.patch('/notifications/$id/read');
+    } catch (_) {
+      // Arka planda sessizce yeniden dener gibi davranmak yerine,
+      // en azından bir sonraki listelemede backend'in gerçek durumunu
+      // yansıtması için _load() çağrılıyor.
+    }
     _load();
   }
 
