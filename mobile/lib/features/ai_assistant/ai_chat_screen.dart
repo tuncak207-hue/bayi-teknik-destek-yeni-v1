@@ -13,11 +13,7 @@ import 'presentation/message_bubble.dart';
 
 class AiChatScreen extends StatefulWidget {
   final String? conversationId;
-  // "Fotoğraf Gönder" kısayolundan girildiğinde ekran açılır açılmaz
-  // fotoğraf seçiciyi otomatik başlatsın diye.
   final bool autoOpenCamera;
-  // Ana Sayfa'nın üst kutusundan doğrudan soru/fotoğraf ile gelindiğinde
-  // ekran açılır açılmaz otomatik gönderim yapılsın diye.
   final String? initialQuestion;
   final File? initialImage;
 
@@ -43,14 +39,10 @@ class _AiChatScreenState extends State<AiChatScreen> {
   StreamSubscription<Map<String, dynamic>>? _messageSub;
   String? _conversationId;
   List<ChatMessage> _messages = [];
-  // AI Teknik Soru Hafızası — hangi mesaj ID'lerinin geçmiş bir kayıttan
-  // geldiğini tutar, "Bu soru daha önce yanıtlandı" göstergesi için.
   final Set<String> _fromMemoryMessageIds = {};
   bool _loading = true;
   bool _sending = false;
   bool _listening = false;
-  // Seçilen/çekilen fotoğraf, gönderilmeden önce burada "bekler" —
-  // kullanıcı fotoğrafı gördükten sonra soru yazıp öyle gönderebilir.
   File? _pendingImage;
 
   @override
@@ -60,13 +52,8 @@ class _AiChatScreenState extends State<AiChatScreen> {
     _loadHistory();
     _connectRealtime();
     if (widget.autoOpenCamera) {
-      // Ekran ilk çizildikten hemen sonra fotoğraf seçiciyi aç — sadece
-      // SEÇER, otomatik göndermez; kullanıcı önce fotoğrafı görüp isterse
-      // soru yazabilsin diye.
       WidgetsBinding.instance.addPostFrameCallback((_) => _pickPhoto());
     } else if (widget.initialQuestion != null || widget.initialImage != null) {
-      // Ana Sayfa'nın üst kutusundan soru/fotoğraf ile geldiyse, kullanıcı
-      // zaten "gönder"e bastığı için burada bekletmeden hemen gönderiyoruz.
       _inputController.text = widget.initialQuestion ?? '';
       _pendingImage = widget.initialImage;
       WidgetsBinding.instance.addPostFrameCallback((_) => _send());
@@ -77,31 +64,33 @@ class _AiChatScreenState extends State<AiChatScreen> {
     await _socket.connect();
     if (_conversationId != null) _socket.joinConversation(_conversationId!);
     _messageSub = _socket.onMessage.listen((data) {
-      // Backend'in gönderdiği mesaj bu konuşmaya ait mi kontrol edelim.
       if (data['conversationId'] != null && data['conversationId'] != _conversationId) return;
       final incoming = ChatMessage.fromJson(data);
-      if (_messages.any((m) => m.id == incoming.id)) return; // zaten optimistic olarak eklenmiş olabilir
+      if (_messages.any((m) => m.id == incoming.id)) return;
       setState(() => _messages = [..._messages, incoming]);
       _scrollToBottom();
     });
   }
 
-  void _scrollToBottom() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 250),
-          curve: Curves.easeOut,
-        );
+  void _scrollToBottom({bool instant = false}) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!_scrollController.hasClients) return;
+      if (instant) {
+        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+        await Future.delayed(const Duration(milliseconds: 120));
+        if (_scrollController.hasClients) {
+          _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+        }
+        return;
       }
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOut,
+      );
     });
   }
 
-  /// Kullanıcı isteği: "cevap doğruysa mühendislik hafızası çalışsın" ve
-  /// "doğrulama sürekli kalmalı" — herhangi bir bayi bu cevabı "doğru"
-  /// olarak işaretleyebilir; bu artık backend'de kalıcı olarak saklanıyor
-  /// (uygulama kapatılıp açılsa, konuşma yeniden yüklense bile kalır).
   Future<void> _verifyAnswer(int index) async {
     final msg = _messages[index];
     if (msg.memoryId == null || msg.memoryIsVerified) return;
@@ -129,11 +118,6 @@ class _AiChatScreenState extends State<AiChatScreen> {
   }
 
   Future<void> _loadHistory() async {
-    // Kullanıcı isteği: "aı teknik asistana basınca içine sürekli
-    // yazabileyim, her yeni soruda kart açmasın" — bu ekran artık
-    // (AI sekmesinin kökünden, conversationId verilmeden) açıldığında,
-    // kullanıcının ZATEN var olan tek sürekli sohbetini kendisi bulup
-    // yüklüyor. Ayrı bir "önizleme kartı" ekranına gerek kalmıyor.
     if (_conversationId == null) {
       try {
         final conversations = await _repository.listConversations();
@@ -141,9 +125,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
           _conversationId = conversations.first['id'] as String;
           if (_conversationId != null) _socket.joinConversation(_conversationId!);
         }
-      } catch (_) {
-        // Sessizce geç — kullanıcı yine de yeni bir soru sorabilir.
-      }
+      } catch (_) {}
     }
     if (_conversationId == null) {
       setState(() => _loading = false);
@@ -152,20 +134,15 @@ class _AiChatScreenState extends State<AiChatScreen> {
     try {
       final messages = await _repository.listMessages(_conversationId!);
       setState(() {
-        _messages = messages.reversed.toList(); // API en yeniden en eskiye döner
+        _messages = messages.reversed.toList();
         _loading = false;
       });
-      _scrollToBottom();
+      _scrollToBottom(instant: true);
     } catch (_) {
       setState(() => _loading = false);
     }
   }
 
-  /// Kullanıcı isteği: "yeni sohbet dediğimde ayrı bir kart açmalı, eski
-  /// sohbet eski kartının içinde, yeni sohbet yeni kartının içinde
-  /// kalmalı" — artık backend'de GERÇEKTEN yeni, ayrı bir konuşma
-  /// oluşturuluyor. Eski konuşma hiç değişmeden kendi kaydında kalıyor,
-  /// bu ekran sadece o yeni (boş) konuşmaya geçiyor.
   Future<void> _startNewConversation() async {
     try {
       final oldConversationId = _conversationId;
@@ -188,9 +165,6 @@ class _AiChatScreenState extends State<AiChatScreen> {
     }
   }
 
-  /// Kullanıcı isteği: eski sohbetlere geri dönebilmek için basit bir
-  /// geçmiş listesi — alttan açılan bir pencerede tüm AI konuşmalarını
-  /// gösterir, birine dokununca o konuşmaya geçilir.
   Future<void> _showHistory() async {
     List<dynamic> conversations;
     try {
@@ -263,9 +237,6 @@ class _AiChatScreenState extends State<AiChatScreen> {
     }
   }
 
-  /// Tek, birleşik gönderme fonksiyonu — bekleyen bir fotoğraf varsa
-  /// fotoğraf+soru birlikte, yoksa sadece metin gönderilir. Fotoğrafsız
-  /// da, fotoğrafla da soru sorulabilir.
   Future<void> _send() async {
     final question = _inputController.text.trim();
     if (question.isEmpty && _pendingImage == null) return;
@@ -273,12 +244,6 @@ class _AiChatScreenState extends State<AiChatScreen> {
     final imageToSend = _pendingImage;
     _inputController.clear();
 
-    // ÖNEMLİ DÜZELTME: Kullanıcı isteği — "her sorduğum soru anlık
-    // ekranda görünmeli." Önceden sadece AI'ın cevabı ekleniyordu,
-    // kullanıcının kendi sorusu hiç eklenmiyordu (Socket.IO'nun bunu
-    // yakalaması zamanlamaya bağlıydı, güvenilir değildi). Artık soru,
-    // gönderilir gönderilmez YEREL olarak ekleniyor — sunucudan cevap
-    // beklemeye gerek yok.
     final tempUserMessage = ChatMessage(
       id: 'temp-${DateTime.now().millisecondsSinceEpoch}',
       content: question,
@@ -302,22 +267,14 @@ class _AiChatScreenState extends State<AiChatScreen> {
           : await _repository.ask(question: question, conversationId: _conversationId);
       _conversationId = result.conversationId;
       if (wasNew) _socket.joinConversation(_conversationId!);
-      // AI cevabı Socket.IO üzerinden de yayınlanıyor; aynı mesajın iki kez
-      // eklenmesini önlemek için id kontrolü yapıyoruz.
       if (!_messages.any((m) => m.id == result.message.id)) {
         if (result.fromMemory) _fromMemoryMessageIds.add(result.message.id);
         setState(() => _messages = [..._messages, result.message]);
       }
       _scrollToBottom();
     } catch (e) {
-      // ÖNEMLİ DÜZELTME: Aynı Ana Sayfa'daki sessiz başarısızlık hatası
-      // burada da vardı — özellikle günlük soru limiti dolduğunda
-      // kullanıcı hiçbir şey görmüyordu. Metin de kaybolmuyor, tekrar
-      // yazmasına gerek yok.
       if (!mounted) return;
       _inputController.text = question;
-      // Gönderim başarısız oldu — yerel olarak eklediğimiz geçici soru
-      // balonunu da geri alalım, yanıltıcı olmasın.
       setState(() => _messages.removeWhere((m) => m.id == tempUserMessage.id));
       String message = 'Sorunuz gönderilemedi, tekrar deneyin.';
       if (e is DioException) {
@@ -336,8 +293,6 @@ class _AiChatScreenState extends State<AiChatScreen> {
     }
   }
 
-  /// Sadece fotoğraf SEÇER/ÇEKER — göndermez. Kullanıcı fotoğrafı önizleme
-  /// alanında görüp isterse bir soru yazıp öyle gönderebilir.
   Future<void> _pickPhoto() async {
     final source = await showModalBottomSheet<ImageSource>(
       context: context,
@@ -391,23 +346,12 @@ class _AiChatScreenState extends State<AiChatScreen> {
       appBar: AppPageHeader(
         title: 'AI Teknik Asistan',
         titleSpacing: 0,
-        // ÖNEMLİ DÜZELTME: Bu ekran, alt menüdeki "AI" sekmesinin kök
-        // ekranına (AiAssistantScreen) otomatik yönlendirmeyle
-        // (pushReplacement) açılıyor — bu, geri gidilecek bir sayfa
-        // bırakmadığı için geri oku hiç çıkmıyordu. AppPageHeader'ın
-        // varsayılan geri davranışı zaten bunu çözüyor: geri
-        // gidilebiliyorsa normal pop, gidilemiyorsa (bu ekran sekmenin
-        // kökündeyse) doğrudan Ana Sayfa'ya döner — burada elle
-        // tekrarlamaya gerek yok.
         actions: [
-          // Kullanıcı isteği: eski sohbetlere geri dönebilmek için.
           IconButton(
             icon: const Icon(Icons.history),
             tooltip: 'Sohbet Geçmişi',
             onPressed: _showHistory,
           ),
-          // Kullanıcı isteği: "yeni sohbet dediğimde ayrı bir kart
-          // açmalı" — gerçekten yeni, ayrı bir konuşma başlatır.
           IconButton(
             icon: const Icon(Icons.add_comment_outlined),
             tooltip: 'Yeni Sohbet',
@@ -423,9 +367,6 @@ class _AiChatScreenState extends State<AiChatScreen> {
                 : ListView.builder(
                     controller: _scrollController,
                     padding: const EdgeInsets.all(16),
-                    // Kullanıcı isteği: "aı cevap vermeye başlarken entpa aı
-                    // düşünüyor demeli" — gönderim sürerken listenin en
-                    // sonuna bir "düşünüyor" göstergesi ekleniyor.
                     itemCount: _messages.length + (_sending ? 1 : 0),
                     itemBuilder: (context, index) {
                       if (index == _messages.length) {
@@ -442,8 +383,6 @@ class _AiChatScreenState extends State<AiChatScreen> {
                     },
                   ),
           ),
-          // Bekleyen fotoğraf önizlemesi — gönderilmeden önce kullanıcı
-          // fotoğrafı görüp isterse kaldırabilir.
           if (_pendingImage != null)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -501,7 +440,6 @@ class _AiChatScreenState extends State<AiChatScreen> {
   }
 }
 
-/// AI cevap üretirken gösterilen "düşünüyor" balonu.
 class _ThinkingBubble extends StatelessWidget {
   const _ThinkingBubble();
 
