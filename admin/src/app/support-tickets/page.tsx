@@ -16,7 +16,10 @@ const statusLabels: Record<string, string> = {
 };
 
 export default function SupportTicketsPage() {
-  const { data: tickets, mutate } = useSWR('/support-tickets', fetcher);
+  // Kullanıcı isteği: "bildirimler admin paneline geç düşüyor" — ana liste
+  // artık her 5 saniyede bir otomatik tazeleniyor, sayfa yenilemeye
+  // gerek kalmadan yeni kayıtlar/durum değişiklikleri görünüyor.
+  const { data: tickets, mutate } = useSWR('/support-tickets', fetcher, { refreshInterval: 5000 });
   const { data: slaSettings, mutate: mutateSla } = useSWR('/support-tickets/settings/sla', fetcher);
   const { data: measurementTypes, mutate: mutateTypes } = useSWR('/support-tickets/measurement-types', fetcher);
   const { data: spareParts, mutate: mutateSpareParts } = useSWR('/support-tickets/spare-part-requests', fetcher);

@@ -71,7 +71,7 @@ const projectTypeLabels: Record<string, string> = {
 export default function DealerVisitsPage() {
   const [filters, setFilters] = useState({ from: '', to: '', city: '', visitType: '', outcome: '', needsFollowUp: '', search: '' });
   const queryString = new URLSearchParams(Object.entries(filters).filter(([, v]) => v)).toString();
-  const { data: visits, isLoading, error, mutate } = useSWR(`/dealer-visits?${queryString}`, fetcher);
+  const { data: visits, isLoading, error, mutate } = useSWR(`/dealer-visits?${queryString}`, fetcher, { refreshInterval: 5000 });
   const { data: dealers } = useSWR('/users?status=ACTIVE', fetcher);
 
   const [showForm, setShowForm] = useState(false);

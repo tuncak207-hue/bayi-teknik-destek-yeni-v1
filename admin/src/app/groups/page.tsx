@@ -8,7 +8,7 @@ import { PillButton } from '@/components/ui';
 const fetcher = (url: string) => api.get(url).then((r) => r.data);
 
 export default function GroupsPage() {
-  const { data: groups, mutate } = useSWR('/groups', fetcher);
+  const { data: groups, mutate } = useSWR('/groups', fetcher, { refreshInterval: 5000 });
   const [name, setName] = useState('');
   const [selected, setSelected] = useState<any>(null);
   const [editing, setEditing] = useState(false);

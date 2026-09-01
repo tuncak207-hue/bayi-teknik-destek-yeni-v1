@@ -67,7 +67,7 @@ export default function Sidebar({
   onCloseMobile: () => void;
 }) {
   const pathname = usePathname();
-  const { data: badgeCounts } = useSWR('/dashboard/admin-badge-counts', fetcher, { refreshInterval: 20000 });
+  const { data: badgeCounts } = useSWR('/dashboard/admin-badge-counts', fetcher, { refreshInterval: 5000 });
   const emergencyCount = badgeCounts?.emergencyTickets ?? 0;
 
   const content = (

@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui';
 const fetcher = (url: string) => api.get(url).then((r) => r.data);
 
 export default function InactiveDealersPage() {
-  const { data: dealers } = useSWR('/users/inactive', fetcher);
+  const { data: dealers } = useSWR('/users/inactive', fetcher, { refreshInterval: 5000 });
 
   return (
     <div className="admin-page">

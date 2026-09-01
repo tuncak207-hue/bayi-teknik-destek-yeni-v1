@@ -15,7 +15,7 @@ const statusLabels: Record<string, string> = {
 
 export default function QuotesPage() {
   const { data: priceItems, mutate: mutatePriceItems } = useSWR('/quotes/price-list', fetcher);
-  const { data: quotes, mutate: mutateQuotes } = useSWR('/quotes/all', fetcher);
+  const { data: quotes, mutate: mutateQuotes } = useSWR('/quotes/all', fetcher, { refreshInterval: 5000 });
   const [showForm, setShowForm] = useState(false);
   const [showBulkImport, setShowBulkImport] = useState(false);
   const [bulkText, setBulkText] = useState('');

@@ -14,7 +14,7 @@ const BAN_OPTIONS = [
 ];
 
 export default function ChatsPage() {
-  const { data: conversations, mutate } = useSWR('/chat/admin/conversations', fetcher);
+  const { data: conversations, mutate } = useSWR('/chat/admin/conversations', fetcher, { refreshInterval: 3000 });
   const [openId, setOpenId] = useState<string | null>(null);
 
   async function deleteConversation(id: string) {
@@ -69,7 +69,7 @@ export default function ChatsPage() {
 }
 
 function ConversationMessages({ conversationId, onChanged }: { conversationId: string; onChanged: () => void }) {
-  const { data: messages, mutate } = useSWR(`/chat/admin/conversations/${conversationId}/messages`, fetcher);
+  const { data: messages, mutate } = useSWR(`/chat/admin/conversations/${conversationId}/messages`, fetcher, { refreshInterval: 3000 });
   const [banMenuFor, setBanMenuFor] = useState<string | null>(null);
 
   async function deleteMessage(id: string) {

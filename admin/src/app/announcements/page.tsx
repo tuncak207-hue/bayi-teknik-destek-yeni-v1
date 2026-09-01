@@ -7,7 +7,7 @@ import { api } from '@/lib/api';
 const fetcher = (url: string) => api.get(url).then((r) => r.data);
 
 export default function AnnouncementsPage() {
-  const { data: announcements, mutate } = useSWR('/announcements', fetcher);
+  const { data: announcements, mutate } = useSWR('/announcements', fetcher, { refreshInterval: 5000 });
   const [form, setForm] = useState({ title: '', body: '', isCritical: false });
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const { data: readStatus } = useSWR(

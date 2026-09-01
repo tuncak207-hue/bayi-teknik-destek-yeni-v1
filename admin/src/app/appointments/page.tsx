@@ -25,6 +25,7 @@ export default function AppointmentsPage() {
   const { data: appointments, mutate } = useSWR(
     `/appointments${filter ? `?status=${filter}` : ''}`,
     fetcher,
+    { refreshInterval: 5000 },
   );
 
   async function updateStatus(id: string, status: string) {
