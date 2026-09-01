@@ -10,6 +10,7 @@ import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_components.dart';
 import '../../core/widgets/design_system.dart';
 import '../../core/events/notification_badge_bus.dart';
+import '../../l10n/app_localizations.dart';
 
 // Gruplarla tutarlı olsun diye aynı kategori isimlerini kullanıyoruz.
 const _kTags = ['Yangın Alarm', 'Kamera', 'Honeywell', 'Hanwha', 'Teknik Destek'];

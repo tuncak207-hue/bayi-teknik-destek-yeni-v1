@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/design_system.dart';
+import '../../l10n/app_localizations.dart';
 
 enum _SearchScope { all, documents, dealers, posts }
 
