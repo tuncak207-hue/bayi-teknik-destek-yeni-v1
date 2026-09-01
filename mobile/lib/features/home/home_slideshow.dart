@@ -64,7 +64,9 @@ class _HomeSlideshowState extends State<HomeSlideshow> {
   /// Kullanıcı isteği: "sürekli dönsün" — her 4 saniyede bir otomatik
   /// olarak bir sonraki slayta geçiyor, sonuncuya gelince başa dönüyor.
   void _startAutoPlay() {
-    _autoPlayTimer = Timer.periodic(const Duration(seconds: 4), (_) {
+    // Kullanıcı isteği: "slayt geçişleri 10 sn'de bir olmalı, burada
+    // hemen kayıyor" — önceden 4 saniyeydi.
+    _autoPlayTimer = Timer.periodic(const Duration(seconds: 10), (_) {
       if (!mounted || !_pageController.hasClients) return;
       final next = (_currentPage + 1) % _slides.length;
       _pageController.animateToPage(next, duration: const Duration(milliseconds: 500), curve: Curves.easeOut);
