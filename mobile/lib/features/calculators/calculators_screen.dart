@@ -107,7 +107,7 @@ class _CalculatorsScreenState extends State<CalculatorsScreen> with SingleTicker
 class _ResultCard extends StatelessWidget {
   final Map<String, dynamic>? result;
   final String? error;
-  final String title;
+  final String? title;
   final String? headlineKey;
   final String? headlineSuffix;
   final String? statusKey; // boolean bir alan varsa (örn. withinBudget) yeşil/kırmızı rozet gösterir
@@ -115,24 +115,27 @@ class _ResultCard extends StatelessWidget {
   const _ResultCard({
     this.result,
     this.error,
-    this.title = 'Hesaplama Sonucu',
+    this.title,
     this.headlineKey,
     this.headlineSuffix,
     this.statusKey,
   });
 
-  static const _kLabels = {
-    'standbyAh': 'Bekleme (standby) Ah',
-    'alarmAh': 'Alarm Ah',
-    'requiredAh': 'Gerekli toplam Ah',
-    'recommendedBatteryAh': 'Önerilen akü',
-    'requiredTb': 'Gerekli depolama',
-    'recommendedHddTb': 'Önerilen HDD',
-    'totalRequiredW': 'Toplam güç ihtiyacı',
-    'switchBudgetW': 'Switch bütçesi',
-    'utilizationPercent': 'Kullanım oranı',
-    'withinBudget': 'Bütçe içinde mi?',
-  };
+  static Map<String, String> _kLabels(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return {
+      'standbyAh': l10n.calcStandbyAh,
+      'alarmAh': l10n.calcAlarmAh,
+      'requiredAh': l10n.calcRequiredAh,
+      'recommendedBatteryAh': l10n.calcRecommendedBatteryAh,
+      'requiredTb': l10n.calcRequiredTb,
+      'recommendedHddTb': l10n.calcRecommendedHddTb,
+      'totalRequiredW': l10n.calcTotalRequiredW,
+      'switchBudgetW': l10n.calcSwitchBudgetW,
+      'utilizationPercent': l10n.calcUtilizationPercent,
+      'withinBudget': l10n.calcWithinBudget,
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -172,7 +175,7 @@ class _ResultCard extends StatelessWidget {
                 child: const Icon(Icons.check_circle_outline, color: AppColors.brand, size: 18),
               ),
               const SizedBox(width: 10),
-              Expanded(child: Text(title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: AppColors.navy))),
+              Expanded(child: Text(title ?? AppLocalizations.of(context)!.calculationResult, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: AppColors.navy))),
             ],
           ),
           const SizedBox(height: AppSpacing.sm),
@@ -185,7 +188,7 @@ class _ResultCard extends StatelessWidget {
               decoration: BoxDecoration(color: const Color(0xFFFAFAFB), borderRadius: BorderRadius.circular(AppRadius.sm)),
               child: Column(
                 children: [
-                  Text(_kLabels[headlineKey] ?? headlineKey!, style: TextStyle(fontSize: 11.5, color: Colors.grey.shade500, fontWeight: FontWeight.w600)),
+                  Text(_kLabels(context)[headlineKey] ?? headlineKey!, style: TextStyle(fontSize: 11.5, color: Colors.grey.shade500, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 4),
                   Text(
                     '${result![headlineKey]}${headlineSuffix ?? ''}',
@@ -234,7 +237,7 @@ class _ResultCard extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(_kLabels[e.key] ?? e.key, style: TextStyle(color: Colors.grey.shade600, fontSize: 13)),
+                    Text(_kLabels(context)[e.key] ?? e.key, style: TextStyle(color: Colors.grey.shade600, fontSize: 13)),
                     Text('${e.value}', style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.navy, fontSize: 13)),
                   ],
                 ),

@@ -365,10 +365,10 @@ class _AppointmentCard extends StatelessWidget {
 
   Widget _statusPill(String status) {
     final map = <String, (String, Color, IconData)>{
-      'PENDING': ('Onay Bekliyor', Colors.orange, Icons.hourglass_empty),
-      'CONFIRMED': ('Onaylandı', Colors.green, Icons.check_circle_outline),
-      'CANCELLED': ('İptal Edildi', Colors.grey, Icons.cancel_outlined),
-      'COMPLETED': ('Tamamlandı', Colors.blue, Icons.task_alt),
+      'PENDING': (AppLocalizations.of(context)!.statusPendingApproval, Colors.orange, Icons.hourglass_empty),
+      'CONFIRMED': (AppLocalizations.of(context)!.statusConfirmed, Colors.green, Icons.check_circle_outline),
+      'CANCELLED': (AppLocalizations.of(context)!.statusCancelled, Colors.grey, Icons.cancel_outlined),
+      'COMPLETED': (AppLocalizations.of(context)!.statusCompleted, Colors.blue, Icons.task_alt),
     };
     final entry = map[status] ?? (status, Colors.grey, Icons.circle);
     return StatusPill(label: entry.$1, color: entry.$2, icon: entry.$3);

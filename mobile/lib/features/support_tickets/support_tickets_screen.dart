@@ -10,6 +10,15 @@ import '../../core/widgets/app_components.dart';
 import '../../core/widgets/design_system.dart';
 import '../../core/events/notification_badge_bus.dart';
 
+Map<String, String> _costCategoryLabels(BuildContext context) => {
+      'ENGINEER_TIME': AppLocalizations.of(context)!.costEngineerTime,
+      'SITE_VISIT': AppLocalizations.of(context)!.costSiteVisit,
+      'TRAVEL': AppLocalizations.of(context)!.costTravel,
+      'ACCOMMODATION': AppLocalizations.of(context)!.costAccommodation,
+      'SPARE_PART': AppLocalizations.of(context)!.costSparePart,
+      'LABOR': AppLocalizations.of(context)!.costLabor,
+    };
+
 class SupportTicketsScreen extends StatefulWidget {
   const SupportTicketsScreen({super.key});
 
@@ -64,12 +73,12 @@ class _SupportTicketsScreenState extends State<SupportTicketsScreen> {
   }
 
   String _statusText(String status) {
-    const map = {
-      'OPEN': 'Açık',
-      'IN_PROGRESS': 'İşlemde',
-      'RESOLVED': 'Çözüldü',
-      'CLOSED': 'Kapatıldı',
-      'ESCALATED': 'Yükseltildi',
+    final map = {
+      'OPEN': AppLocalizations.of(context)!.statusOpen,
+      'IN_PROGRESS': AppLocalizations.of(context)!.statusInProgress,
+      'RESOLVED': AppLocalizations.of(context)!.statusResolved,
+      'CLOSED': AppLocalizations.of(context)!.statusClosed,
+      'ESCALATED': AppLocalizations.of(context)!.statusEscalated,
     };
     return map[status] ?? status;
   }
@@ -970,15 +979,6 @@ class _CostSectionState extends State<_CostSection> {
   final Dio _dio = ApiClient().dio;
   List<dynamic> _costs = [];
 
-  static const _categoryLabels = {
-    'ENGINEER_TIME': 'Mühendis Çalışma Süresi',
-    'SITE_VISIT': 'Saha Ziyareti',
-    'TRAVEL': 'Yol',
-    'ACCOMMODATION': 'Konaklama',
-    'SPARE_PART': 'Yedek Parça',
-    'LABOR': 'İşçilik',
-  };
-
   @override
   void initState() {
     super.initState();
@@ -1034,7 +1034,7 @@ class _CostSectionState extends State<_CostSection> {
                   padding: const EdgeInsets.symmetric(vertical: 4),
                   child: Row(
                     children: [
-                      Expanded(child: Text(_categoryLabels[c['category']] ?? c['category'], style: const TextStyle(fontSize: 12.5))),
+                      Expanded(child: Text(_costCategoryLabels(context)[c['category']] ?? c['category'], style: const TextStyle(fontSize: 12.5))),
                       Text('${c['amount']} ₺', style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.brand)),
                     ],
                   ),
@@ -1066,15 +1066,6 @@ class _CostEntrySheetState extends State<_CostEntrySheet> {
   final _amountController = TextEditingController();
   final _descriptionController = TextEditingController();
 
-  static const _categories = {
-    'ENGINEER_TIME': 'Mühendis Çalışma Süresi',
-    'SITE_VISIT': 'Saha Ziyareti',
-    'TRAVEL': 'Yol',
-    'ACCOMMODATION': 'Konaklama',
-    'SPARE_PART': 'Yedek Parça',
-    'LABOR': 'İşçilik',
-  };
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -1089,7 +1080,7 @@ class _CostEntrySheetState extends State<_CostEntrySheet> {
             value: _category,
             isExpanded: true,
             decoration: InputDecoration(labelText: AppLocalizations.of(context)!.categoryField),
-            items: _categories.entries.map((e) => DropdownMenuItem(value: e.key, child: Text(e.value))).toList(),
+            items: _costCategoryLabels(context).entries.map((e) => DropdownMenuItem(value: e.key, child: Text(e.value))).toList(),
             onChanged: (v) => setState(() => _category = v ?? _category),
           ),
           const SizedBox(height: 12),

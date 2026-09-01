@@ -9,6 +9,31 @@ import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_components.dart';
 import '../../core/widgets/design_system.dart';
 
+// Kullanıcı isteği: "hala Türkçe" — bu iki harita, dosyada 3 farklı State
+// sınıfında tekrar tanımlıydı; artık tek bir yerden, seçili dile göre
+// üretiliyor.
+Map<String, String> _outcomeLabels(BuildContext context) => {
+      'POSITIVE': AppLocalizations.of(context)!.outcomePositive,
+      'QUOTE_PENDING': AppLocalizations.of(context)!.outcomeQuotePending,
+      'PROJECT_CREATED': AppLocalizations.of(context)!.outcomeProjectCreated,
+      'ORDER_PENDING': AppLocalizations.of(context)!.outcomeOrderPending,
+      'FOLLOW_UP_NEEDED': AppLocalizations.of(context)!.outcomeFollowUpNeeded,
+      'NEGATIVE': AppLocalizations.of(context)!.outcomeNegative,
+      'NOT_HAPPENED': AppLocalizations.of(context)!.outcomeNotHappened,
+      'OTHER': AppLocalizations.of(context)!.outcomeOther,
+    };
+
+Map<String, String> _visitTypeLabels(BuildContext context) => {
+      'DEALER_VISIT': AppLocalizations.of(context)!.visitTypeDealerVisit,
+      'PROJECT_MEETING': AppLocalizations.of(context)!.visitTypeProjectMeeting,
+      'PRODUCT_INTRO': AppLocalizations.of(context)!.visitTypeProductIntro,
+      'TECHNICAL_MEETING': AppLocalizations.of(context)!.visitTypeTechnicalMeeting,
+      'QUOTE_MEETING': AppLocalizations.of(context)!.visitTypeQuoteMeeting,
+      'TRAINING': AppLocalizations.of(context)!.visitTypeTraining,
+      'COLLECTION': AppLocalizations.of(context)!.visitTypeCollection,
+      'OTHER': AppLocalizations.of(context)!.visitTypeOther,
+    };
+
 class DealerVisitsScreen extends StatefulWidget {
   const DealerVisitsScreen({super.key});
 
@@ -20,28 +45,6 @@ class _DealerVisitsScreenState extends State<DealerVisitsScreen> {
   final Dio _dio = ApiClient().dio;
   List<dynamic> _visits = [];
   bool _loading = true;
-
-  static const _outcomeLabels = {
-    'POSITIVE': 'Olumlu',
-    'QUOTE_PENDING': 'Teklif Bekliyor',
-    'PROJECT_CREATED': 'Proje Oluştu',
-    'ORDER_PENDING': 'Sipariş Bekleniyor',
-    'FOLLOW_UP_NEEDED': 'Takip Gerekli',
-    'NEGATIVE': 'Olumsuz',
-    'NOT_HAPPENED': 'Görüşme Gerçekleşmedi',
-    'OTHER': 'Diğer',
-  };
-
-  static const _visitTypeLabels = {
-    'DEALER_VISIT': 'Bayi Ziyareti',
-    'PROJECT_MEETING': 'Proje Görüşmesi',
-    'PRODUCT_INTRO': 'Ürün Tanıtımı',
-    'TECHNICAL_MEETING': 'Teknik Görüşme',
-    'QUOTE_MEETING': 'Teklif Görüşmesi',
-    'TRAINING': 'Eğitim',
-    'COLLECTION': 'Tahsilat / Ticari Görüşme',
-    'OTHER': 'Diğer',
-  };
 
   @override
   void initState() {
@@ -145,12 +148,12 @@ class _DealerVisitsScreenState extends State<DealerVisitsScreen> {
                             children: [
                               CardHeaderRow(
                                 title: v['dealer']?['company'] ?? v['dealerNameFreeText'] ?? 'Bayi belirtilmedi',
-                                subtitle: '${_visitTypeLabels[v['visitType']] ?? v['visitType']} · ${v['city'] ?? '—'}',
+                                subtitle: '${_visitTypeLabels(context)[v['visitType']] ?? v['visitType']} · ${v['city'] ?? '—'}',
                               ),
                               const SizedBox(height: 8),
                               Row(
                                 children: [
-                                  StatusBadge(label: _outcomeLabels[v['outcome']] ?? v['outcome'], tone: _outcomeTone(v['outcome'])),
+                                  StatusBadge(label: _outcomeLabels(context)[v['outcome']] ?? v['outcome'], tone: _outcomeTone(v['outcome'])),
                                   if (needsFollowUp) ...[
                                     const SizedBox(width: 6),
                                     StatusBadge(label: AppLocalizations.of(context)!.followUp, tone: AppStatusTone.pending),
@@ -201,28 +204,6 @@ class _CreateVisitScreenState extends State<_CreateVisitScreen> {
   bool _loadingDealers = true;
   bool _submitting = false;
   String? _error;
-
-  static const _visitTypeLabels = {
-    'DEALER_VISIT': 'Bayi Ziyareti',
-    'PROJECT_MEETING': 'Proje Görüşmesi',
-    'PRODUCT_INTRO': 'Ürün Tanıtımı',
-    'TECHNICAL_MEETING': 'Teknik Görüşme',
-    'QUOTE_MEETING': 'Teklif Görüşmesi',
-    'TRAINING': 'Eğitim',
-    'COLLECTION': 'Tahsilat / Ticari Görüşme',
-    'OTHER': 'Diğer',
-  };
-
-  static const _outcomeLabels = {
-    'POSITIVE': 'Olumlu',
-    'QUOTE_PENDING': 'Teklif Bekliyor',
-    'PROJECT_CREATED': 'Proje Oluştu',
-    'ORDER_PENDING': 'Sipariş Bekleniyor',
-    'FOLLOW_UP_NEEDED': 'Takip Gerekli',
-    'NEGATIVE': 'Olumsuz',
-    'NOT_HAPPENED': 'Görüşme Gerçekleşmedi',
-    'OTHER': 'Diğer',
-  };
 
   @override
   void initState() {
@@ -384,7 +365,7 @@ class _CreateVisitScreenState extends State<_CreateVisitScreen> {
                         value: _visitType,
                         isExpanded: true,
                         decoration: InputDecoration(labelText: AppLocalizations.of(context)!.visitType, border: OutlineInputBorder()),
-                        items: _visitTypeLabels.entries.map((e) => DropdownMenuItem(value: e.key, child: Text(e.value))).toList(),
+                        items: _visitTypeLabels(context).entries.map((e) => DropdownMenuItem(value: e.key, child: Text(e.value))).toList(),
                         onChanged: (v) => setState(() => _visitType = v!),
                       ),
                       const SizedBox(height: 12),
@@ -392,7 +373,7 @@ class _CreateVisitScreenState extends State<_CreateVisitScreen> {
                         value: _outcome,
                         isExpanded: true,
                         decoration: InputDecoration(labelText: AppLocalizations.of(context)!.visitOutcome, border: OutlineInputBorder()),
-                        items: _outcomeLabels.entries.map((e) => DropdownMenuItem(value: e.key, child: Text(e.value))).toList(),
+                        items: _outcomeLabels(context).entries.map((e) => DropdownMenuItem(value: e.key, child: Text(e.value))).toList(),
                         onChanged: (v) => setState(() => _outcome = v!),
                       ),
                       const SizedBox(height: 12),
@@ -471,9 +452,6 @@ class _VisitDetailScreenState extends State<_VisitDetailScreen> {
   Map<String, dynamic>? _visit;
   bool _loading = true;
   bool _uploading = false;
-
-  static const _outcomeLabels = _DealerVisitsScreenState._outcomeLabels;
-  static const _visitTypeLabels = _DealerVisitsScreenState._visitTypeLabels;
 
   @override
   void initState() {
@@ -590,11 +568,11 @@ class _VisitDetailScreenState extends State<_VisitDetailScreen> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            '${_visitTypeLabels[_visit!['visitType']] ?? _visit!['visitType']} · ${_visit!['city'] ?? '—'}',
+                            '${_visitTypeLabels(context)[_visit!['visitType']] ?? _visit!['visitType']} · ${_visit!['city'] ?? '—'}',
                             style: TextStyle(fontSize: 12.5, color: Colors.grey.shade500),
                           ),
                           SizedBox(height: 10),
-                          StatusBadge(label: _outcomeLabels[_visit!['outcome']] ?? _visit!['outcome'], tone: AppStatusTone.neutral),
+                          StatusBadge(label: _outcomeLabels(context)[_visit!['outcome']] ?? _visit!['outcome'], tone: AppStatusTone.neutral),
                           const Divider(height: 24),
                           Text(AppLocalizations.of(context)!.meetingNotes, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12.5, color: AppColors.navy)),
                           const SizedBox(height: 6),

@@ -7,16 +7,18 @@ import '../../core/theme/theme_controller.dart';
 import '../../core/widgets/design_system.dart';
 import '../../core/auth/biometric_service.dart';
 
-const Map<String, String> _kNotificationTypeLabels = {
-  'new_message': 'Yeni mesaj',
-  'group_message': 'Grup mesajı',
-  'announcement': 'Duyurular',
-  'appointment_status_changed': 'Randevu durumu',
-  'new_document': 'Yeni doküman',
-  'ticket_created': 'Teknik destek kaydı',
-  'ticket_status_changed': 'Teknik destek durumu',
-  'emergency_ticket': 'Acil teknik destek',
-};
+/// Kullanıcı isteği: "hala Türkçe" — bildirim türü etiketleri artık
+/// seçili dile göre üretiliyor.
+Map<String, String> _notificationTypeLabels(BuildContext context) => {
+      'new_message': AppLocalizations.of(context)!.notifTypeNewMessage,
+      'group_message': AppLocalizations.of(context)!.notifTypeGroupMessage,
+      'announcement': AppLocalizations.of(context)!.notifTypeAnnouncement,
+      'appointment_status_changed': AppLocalizations.of(context)!.notifTypeAppointmentStatus,
+      'new_document': AppLocalizations.of(context)!.notifTypeNewDocument,
+      'ticket_created': AppLocalizations.of(context)!.notifTypeTicketCreated,
+      'ticket_status_changed': AppLocalizations.of(context)!.notifTypeTicketStatus,
+      'emergency_ticket': AppLocalizations.of(context)!.notifTypeEmergencyTicket,
+    };
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -196,7 +198,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const _SectionTitle('Bildirim Tercihleri'),
                 StandardCard(
                   child: Column(
-                    children: _kNotificationTypeLabels.entries
+                    children: _notificationTypeLabels(context).entries
                         .map((e) => SwitchListTile(
                               title: Text(e.value),
                               value: _prefFor(e.key),

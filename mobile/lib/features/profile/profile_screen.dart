@@ -16,6 +16,30 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  // Kullanıcı isteği: "rozetlerin içindeki kartlarda hala Türkçe" —
+  // backend rozet ETİKETLERİNİ sabit Türkçe döndürüyor; burada backend'in
+  // "id" alanına göre kendi çevrilmiş metnimizi kullanıyoruz, backend'in
+  // gönderdiği "label"ı görmezden geliyoruz.
+  String _badgeLabel(BuildContext context, Map<String, dynamic> badge) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (badge['id']) {
+      case 'first_question':
+        return l10n.badgeFirstQuestion;
+      case 'curious':
+        return l10n.badgeCurious;
+      case 'expert':
+        return l10n.badgeExpert;
+      case 'helper':
+        return l10n.badgeHelper;
+      case 'collector':
+        return l10n.badgeCollector;
+      case 'veteran':
+        return l10n.badgeVeteran;
+      default:
+        return badge['label'] ?? '';
+    }
+  }
+
   final Dio _dio = ApiClient().dio;
   Map<String, dynamic>? _profile;
   String? _loadError;
@@ -477,7 +501,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     Text(b['icon'] ?? '🏅', style: const TextStyle(fontSize: 20)),
                                     const SizedBox(height: 4),
                                     Text(
-                                      b['label'] ?? '',
+                                      _badgeLabel(context, b),
                                       style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
                                       textAlign: TextAlign.center,
                                     ),

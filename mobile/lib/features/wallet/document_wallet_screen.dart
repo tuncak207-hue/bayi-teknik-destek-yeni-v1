@@ -10,13 +10,16 @@ import '../../core/theme/app_theme.dart';
 import '../../core/widgets/design_system.dart';
 import '../../core/widgets/app_components.dart';
 
-const Map<String, String> _kCategoryLabels = {
-  'ISG': 'İSG Evrakları',
-  'CERTIFICATE': 'Sertifikalar',
-  'TRAINING': 'Eğitim Belgeleri',
-  'AUTHORIZATION': 'Yetki Belgeleri',
-  'OTHER': 'Diğer Belgeler',
-};
+/// Kullanıcı isteği: "profildeki kartlarda hala Türkçe" — kategori
+/// etiketleri artık seçili dile göre üretiliyor (üst düzey sabit yerine
+/// context alan bir fonksiyon).
+Map<String, String> _categoryLabels(BuildContext context) => {
+      'ISG': AppLocalizations.of(context)!.categoryIsg,
+      'CERTIFICATE': AppLocalizations.of(context)!.categoryCertificate,
+      'TRAINING': AppLocalizations.of(context)!.categoryTraining,
+      'AUTHORIZATION': AppLocalizations.of(context)!.categoryAuthorization,
+      'OTHER': AppLocalizations.of(context)!.categoryOther,
+    };
 
 /// Evrak Çantası — bayi çalışanlarının kendi evraklarını kategorilere
 /// ayırarak sakladığı, görüntüleyip paylaşabildiği kişisel belge alanı.
@@ -262,7 +265,7 @@ class _DocumentWalletScreenState extends State<DocumentWalletScreen> {
                         child: ListView(
                           padding: const EdgeInsets.all(AppSpacing.md),
                           children: [
-                      ..._kCategoryLabels.entries.where((e) => grouped.containsKey(e.key)).map((entry) {
+                      ..._categoryLabels(context).entries.where((e) => grouped.containsKey(e.key)).map((entry) {
                       final docs = grouped[entry.key]!;
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -376,7 +379,7 @@ class _DocumentMetaSheetState extends State<_DocumentMetaSheet> {
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: _kCategoryLabels.entries
+            children: _categoryLabels(context).entries
                 .map((e) => ChoiceChip(
                       label: Text(e.value),
                       selected: _category == e.key,
