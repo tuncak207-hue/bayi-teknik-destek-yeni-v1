@@ -1,4 +1,5 @@
 ﻿import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import 'package:flutter/cupertino.dart';
 import 'dart:io' show Platform;
 import 'package:go_router/go_router.dart';
