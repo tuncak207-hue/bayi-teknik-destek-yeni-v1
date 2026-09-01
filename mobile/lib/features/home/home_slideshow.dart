@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:video_player/video_player.dart';
 import '../../core/api/api_client.dart';
+import '../../core/api/socket_service.dart';
 import '../../core/theme/app_theme.dart';
 
 /// Kullanıcı isteği: "uygulama açılırken ekranda slayt dönsün ve bu
@@ -23,17 +24,24 @@ class _HomeSlideshowState extends State<HomeSlideshow> {
   bool _loading = true;
   int _currentPage = 0;
   Timer? _autoPlayTimer;
+  StreamSubscription<void>? _slidesUpdatedSub;
 
   @override
   void initState() {
     super.initState();
     _load();
+    // Kullanıcı isteği: "slayt eklediğimde/pasif yaptığımda uygulama
+    // açık bile olsa hemen gelmeli/gitmeli" — admin panelden değişiklik
+    // yapıldığında backend'in yayınladığı sinyali dinleyip yeniden
+    // çekiyoruz, uygulamayı kapatıp açmaya gerek kalmıyor.
+    _slidesUpdatedSub = SocketService().onSlidesUpdated.listen((_) => _load());
   }
 
   @override
   void dispose() {
     _autoPlayTimer?.cancel();
     _pageController.dispose();
+    _slidesUpdatedSub?.cancel();
     super.dispose();
   }
 

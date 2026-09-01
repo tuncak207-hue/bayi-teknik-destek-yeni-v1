@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../common/prisma/prisma.service';
 import { StorageService } from '../common/storage/storage.service';
+import { ChatGateway } from '../chat/gateway/chat.gateway';
 
 /**
  * Kullanıcı isteği: "uygulama açılırken ekranda slayt dönsün, bu
@@ -12,6 +13,7 @@ export class SlidesService {
   constructor(
     private prisma: PrismaService,
     private storage: StorageService,
+    private chatGateway: ChatGateway,
   ) {}
 
   /** Mobil uygulamanın çağırdığı, sadece AKTİF slaytları sıraya göre döndüren uç nokta. */
@@ -50,7 +52,7 @@ export class SlidesService {
     // otomatik belirliyoruz — admin panelde ayrıca bir seçim yapmaya
     // gerek kalmıyor.
     const mediaType = file.mimetype?.startsWith('video/') ? 'VIDEO' : 'IMAGE';
-    return this.prisma.slide.create({
+    const slide = await this.prisma.slide.create({
       data: {
         imageUrl: fileKey,
         mediaType,
@@ -60,10 +62,17 @@ export class SlidesService {
         order: dto.order ?? 0,
       },
     });
+    // ÖNEMLİ DÜZELTME: "slayt eklediğimde uygulama açık bile olsa hemen
+    // gelmeli" — önceden mobil sadece uygulama açılışında slaytları
+    // çekiyordu, canlıyken hiç haberi olmuyordu.
+    this.chatGateway.emitBroadcast('slides:updated');
+    return slide;
   }
 
   async update(id: string, dto: { title?: string; subtitle?: string; linkUrl?: string; order?: number; isActive?: boolean }) {
-    return this.prisma.slide.update({ where: { id }, data: dto });
+    const slide = await this.prisma.slide.update({ where: { id }, data: dto });
+    this.chatGateway.emitBroadcast('slides:updated');
+    return slide;
   }
 
   async delete(id: string) {
@@ -71,6 +80,8 @@ export class SlidesService {
     if (slide) {
       await this.storage.delete(slide.imageUrl).catch(() => {});
     }
-    return this.prisma.slide.delete({ where: { id } });
+    const deleted = await this.prisma.slide.delete({ where: { id } });
+    this.chatGateway.emitBroadcast('slides:updated');
+    return deleted;
   }
 }

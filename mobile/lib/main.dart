@@ -8,6 +8,20 @@ import 'package:firebase_core/firebase_core.dart';
 import 'app/app.dart';
 import 'core/theme/theme_controller.dart';
 import 'core/localization/locale_controller.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+
+/// Kullanıcı isteği: "uygulama kapalı olduğunda bir bildirim geldiğinde
+/// uygulama kapalıda olsa bildirim gelmeli" — FCM, uygulama tamamen
+/// kapalıyken/arka plandayken gelen mesajları bu TOP-LEVEL (main
+/// fonksiyonu dışında, sınıfsız) fonksiyona yönlendirir. Backend zaten
+/// standart "notification" paketiyle gönderdiği için OS bunu genelde
+/// otomatik gösterir; bu işleyici ek bir güvence katmanı ve gelecekte
+/// (örn. rozet sayısı güncelleme gibi) ek işlem eklenebilecek bir yer.
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // Bu noktada widget ağacı yok, sadece Firebase'e erişim var.
+  await Firebase.initializeApp();
+}
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,6 +39,7 @@ Future<void> main() async {
 Future<void> _initializeServices(bool isRelease) async {
   try {
     await Firebase.initializeApp();
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   } catch (error, stackTrace) {
     if (isRelease) {
       FlutterError.reportError(

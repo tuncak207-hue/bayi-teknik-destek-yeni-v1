@@ -108,4 +108,12 @@ export class ChatGateway implements OnGatewayConnection {
   emitNotification(userId: string, notification: unknown) {
     this.server.to(`user:${userId}`).emit('notification:new', notification);
   }
+
+  // Kullanıcı isteği: "ana sayfa slaytı eklediğimde/pasif yaptığımda
+  // uygulama açık bile olsa hemen gelmeli/gitmeli" — TÜM bağlı
+  // kullanıcılara (belirli bir kişiye değil) yayın yapan genel bir
+  // metod. Slayt ekleme/güncelleme/silme işlemlerinde çağrılıyor.
+  emitBroadcast(event: string) {
+    this.server.emit(event);
+  }
 }

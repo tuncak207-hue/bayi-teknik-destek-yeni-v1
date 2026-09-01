@@ -26,6 +26,12 @@ class SocketService {
   Stream<Map<String, dynamic>> get onMessage => _messageController.stream;
   Stream<String> get onTyping => _typingController.stream;
   Stream<Map<String, dynamic>> get onNotification => _notificationController.stream;
+  // Kullanıcı isteği: "slayt eklediğimde/pasif yaptığımda uygulama açık
+  // bile olsa hemen gelmeli/gitmeli" — admin panelden slayt
+  // ekleme/güncelleme/silme olduğunda backend'in TÜM bağlı istemcilere
+  // yayınladığı genel sinyal.
+  final _slidesUpdatedController = StreamController<void>.broadcast();
+  Stream<void> get onSlidesUpdated => _slidesUpdatedController.stream;
 
   bool get isConnected => _socket?.connected ?? false;
 
@@ -72,6 +78,10 @@ class SocketService {
       } else if (data is Map) {
         _notificationController.add(Map<String, dynamic>.from(data));
       }
+    });
+
+    _socket!.on('slides:updated', (_) {
+      _slidesUpdatedController.add(null);
     });
 
     _socket!.onDisconnect((_) {

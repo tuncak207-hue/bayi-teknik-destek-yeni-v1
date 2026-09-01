@@ -32,7 +32,11 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
   // Render cold start'ını splash sırasında başlatıyoruz; kullanıcı ana sayfaya
   // geçtiğinde ilk API isteği backend'i yeni uyandırmaya çalışmasın.
-  static const _splashDuration = Duration(seconds: 2);
+  // Kullanıcı isteği: "uygulama geç açılıyor, hemen açılmalı" — önceden
+  // 2 saniye sabit bekleme vardı (alarm sesi + logo animasyonu için).
+  // Süre kısaltıldı; ses/animasyon hâlâ çalışıyor ama kullanıcıyı
+  // gereksiz yere bekletmiyor.
+  static const _splashDuration = Duration(milliseconds: 900);
 
   @override
   void initState() {
