@@ -74,7 +74,7 @@ class _MaintenanceScreenState extends State<MaintenanceScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      floatingActionButton: StandardFab(label: 'Yeni Kayıt', onPressed: _openCreate),
+      floatingActionButton: StandardFab(label: AppLocalizations.of(context)!.newRecord, onPressed: _openCreate),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: SafeArea(
         child: Column(
@@ -122,8 +122,8 @@ class _MaintenanceScreenState extends State<MaintenanceScreen> {
                                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
                                 child: const AppEmptyState(
                                   icon: Icons.build_outlined,
-                                  title: 'Henüz bir bakım kaydınız yok',
-                                  description: 'Sahada tamamladığınız bakımları burada dijital olarak kaydedebilirsiniz.',
+                                  title: AppLocalizations.of(context)!.emptyMaintenance,
+                                  description: AppLocalizations.of(context)!.maintenanceEmptyHint,
                                 ),
                               ),
                             ),
@@ -167,7 +167,7 @@ class _MaintenanceScreenState extends State<MaintenanceScreen> {
                                       CardFooterMeta(icon: Icons.event_outlined, label: _formatDate(r['performedAt'])),
                                       if (hasSignature) ...[
                                         const SizedBox(width: 8),
-                                        const StatusBadge(label: 'İmzalı', tone: AppStatusTone.success, icon: Icons.draw_outlined),
+                                        StatusBadge(label: AppLocalizations.of(context)!.signedLabel, tone: AppStatusTone.success, icon: Icons.draw_outlined),
                                       ],
                                     ],
                                   ),
@@ -243,7 +243,7 @@ class _MaintenanceDetailScreenState extends State<_MaintenanceDetailScreen> {
         dealerName: '${CurrentUser().firstName} ${CurrentUser().lastName}',
         dealerCompany: '',
         infoRows: [
-          if (_systemDescription.text.isNotEmpty) (label: 'Sistem', value: _systemDescription.text),
+          if (_systemDescription.text.isNotEmpty) (label: AppLocalizations.of(context)!.systemLabel, value: _systemDescription.text),
         ],
         notes: _notes.text,
         signatureBytes: signatureBytes,
@@ -263,7 +263,7 @@ class _MaintenanceDetailScreenState extends State<_MaintenanceDetailScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
       appBar: AppPageHeader(
-        title: 'Bakım Kaydı',
+        title: AppLocalizations.of(context)!.screenMaintenanceRecord,
         actions: [
           if (_exporting)
             const Padding(
@@ -288,20 +288,20 @@ class _MaintenanceDetailScreenState extends State<_MaintenanceDetailScreen> {
         padding: const EdgeInsets.all(AppSpacing.md),
         children: [
           PremiumFormSection(
-            title: 'Saha Bilgileri',
+            title: AppLocalizations.of(context)!.siteInfo,
             children: [
-              PremiumField(controller: _siteName, label: 'Bina / Tesis Adı', icon: Icons.location_on_outlined),
-              PremiumField(controller: _systemDescription, label: 'Sistem Açıklaması', icon: Icons.memory_outlined, isLast: true),
+              PremiumField(controller: _siteName, label: AppLocalizations.of(context)!.buildingFacilityName, icon: Icons.location_on_outlined),
+              PremiumField(controller: _systemDescription, label: AppLocalizations.of(context)!.systemDescription, icon: Icons.memory_outlined, isLast: true),
             ],
           ),
           const SizedBox(height: AppSpacing.md),
           PremiumFormSection(
-            title: 'Yapılan İşlem',
+            title: AppLocalizations.of(context)!.workPerformed,
             children: [
               // Kullanıcı isteği: "istediğim kadar yazı yazabilmeliyim" —
               // maxLines sınırı kaldırıldı, alan içerikle birlikte
               // büyüyor.
-              PremiumField(controller: _notes, label: 'Notlar', icon: Icons.edit_note_outlined, minLines: 3, maxLines: null, isLast: true),
+              PremiumField(controller: _notes, label: AppLocalizations.of(context)!.notesLabel, icon: Icons.edit_note_outlined, minLines: 3, maxLines: null, isLast: true),
             ],
           ),
           const SizedBox(height: AppSpacing.md),
@@ -467,19 +467,19 @@ class _CreateMaintenanceScreenState extends State<_CreateMaintenanceScreen> {
             ),
           ),
           PremiumFormSection(
-            title: 'Saha Bilgileri',
+            title: AppLocalizations.of(context)!.siteInfo,
             children: [
-              PremiumField(controller: _siteName, label: 'Bina / Tesis Adı', icon: Icons.location_on_outlined),
-              PremiumField(controller: _systemDescription, label: 'Sistem Açıklaması (opsiyonel)', icon: Icons.memory_outlined, isLast: true),
+              PremiumField(controller: _siteName, label: AppLocalizations.of(context)!.buildingFacilityName, icon: Icons.location_on_outlined),
+              PremiumField(controller: _systemDescription, label: AppLocalizations.of(context)!.systemDescriptionOptional, icon: Icons.memory_outlined, isLast: true),
             ],
           ),
           const SizedBox(height: AppSpacing.md),
           PremiumFormSection(
-            title: 'Yapılan İşlem',
+            title: AppLocalizations.of(context)!.workPerformed,
             children: [
               PremiumField(
                 controller: _notes,
-                label: 'Neler yapıldı, nelere dikkat edilmeli?',
+                label: AppLocalizations.of(context)!.whatWasDoneHint,
                 icon: Icons.edit_note_outlined,
                 minLines: 3,
                 maxLines: null,

@@ -153,8 +153,8 @@ class _TrainingCenterScreenState extends State<TrainingCenterScreen> {
                                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
                                 child: const AppEmptyState(
                                   icon: Icons.school_outlined,
-                                  title: 'Henüz eğitim içeriği eklenmedi',
-                                  description: 'Admin yeni video veya doküman ekleyince burada görünecek.',
+                                  title: AppLocalizations.of(context)!.emptyTraining,
+                                  description: AppLocalizations.of(context)!.trainingEmptyHint,
                                 ),
                               ),
                             ),

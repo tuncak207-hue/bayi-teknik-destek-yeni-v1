@@ -66,7 +66,7 @@ class _CommissioningListScreenState extends State<CommissioningListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      floatingActionButton: StandardFab(label: 'Yeni Rapor', onPressed: _openCreate),
+      floatingActionButton: StandardFab(label: AppLocalizations.of(context)!.newRecord, onPressed: _openCreate),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: SafeArea(
         child: Column(
@@ -114,8 +114,8 @@ class _CommissioningListScreenState extends State<CommissioningListScreen> {
                                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
                                 child: const AppEmptyState(
                                   icon: Icons.checklist_outlined,
-                                  title: 'Henüz bir devreye alma raporu yok',
-                                  description: 'Sağ alttaki butondan yeni bir rapor oluşturabilirsiniz.',
+                                  title: AppLocalizations.of(context)!.emptyCommissioning,
+                                  description: AppLocalizations.of(context)!.commissioningEmptyHint,
                                 ),
                               ),
                             ),
@@ -346,7 +346,7 @@ class _CommissioningFormScreenState extends State<CommissioningFormScreen> {
         dealerCompany: '',
         customerName: _customerController.text,
         infoRows: [
-          (label: 'Panel', value: '${_brandController.text} ${_modelController.text}'),
+          (label: AppLocalizations.of(context)!.panelLabel, value: '${_brandController.text} ${_modelController.text}'),
         ],
         checklist: _items.map((i) => (label: i['label'] as String, checked: i['checked'] == true)).toList(),
         notes: _notesController.text,
@@ -433,12 +433,12 @@ class _CommissioningFormScreenState extends State<CommissioningFormScreen> {
               ),
               children: [
                 PremiumFormSection(
-                  title: 'Saha Bilgileri',
+                  title: AppLocalizations.of(context)!.siteInfo,
                   children: [
-                    PremiumField(controller: _siteNameController, label: 'Saha / Bina Adı', icon: Icons.location_on_outlined),
-                    PremiumField(controller: _brandController, label: 'Panel Markası', icon: Icons.memory_outlined),
-                    PremiumField(controller: _modelController, label: 'Panel Modeli', icon: Icons.tag_outlined),
-                    PremiumField(controller: _customerController, label: 'Müşteri Adı (opsiyonel)', icon: Icons.person_outline, isLast: true),
+                    PremiumField(controller: _siteNameController, label: AppLocalizations.of(context)!.siteBuildingName, icon: Icons.location_on_outlined),
+                    PremiumField(controller: _brandController, label: AppLocalizations.of(context)!.panelBrand, icon: Icons.memory_outlined),
+                    PremiumField(controller: _modelController, label: AppLocalizations.of(context)!.panelModel, icon: Icons.tag_outlined),
+                    PremiumField(controller: _customerController, label: AppLocalizations.of(context)!.customerNameOptional, icon: Icons.person_outline, isLast: true),
                   ],
                 ),
                 const SizedBox(height: AppSpacing.md),
@@ -552,9 +552,9 @@ class _CommissioningFormScreenState extends State<CommissioningFormScreen> {
 
                 const SizedBox(height: AppSpacing.md),
                 PremiumFormSection(
-                  title: 'Ek Notlar',
+                  title: AppLocalizations.of(context)!.additionalNotes,
                   children: [
-                    PremiumField(controller: _notesController, label: 'Sahada dikkat çeken bir durum var mı?', icon: Icons.edit_note_outlined, minLines: 3, maxLines: 6, isLast: true),
+                    PremiumField(controller: _notesController, label: AppLocalizations.of(context)!.anyFieldIssues, icon: Icons.edit_note_outlined, minLines: 3, maxLines: 6, isLast: true),
                   ],
                 ),
 

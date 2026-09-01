@@ -98,13 +98,13 @@ class _DealerVisitsScreenState extends State<DealerVisitsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      floatingActionButton: StandardFab(label: 'Yeni Ziyaret', onPressed: _openCreate),
+      floatingActionButton: StandardFab(label: AppLocalizations.of(context)!.screenNewVisit, onPressed: _openCreate),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: SafeArea(
         child: _loading
           ? const Center(child: CircularProgressIndicator())
           : _visits.isEmpty
-              ? const AppEmptyState(icon: Icons.location_on_outlined, title: 'Henüz ziyaret kaydınız yok', description: 'Sağ alttaki butondan ilk ziyaret raporunuzu oluşturun.')
+              ? AppEmptyState(icon: Icons.location_on_outlined, title: AppLocalizations.of(context)!.emptyVisits, description: AppLocalizations.of(context)!.firstVisitReportHint)
               : RefreshIndicator(
                   onRefresh: _load,
                   child: ListView.builder(
@@ -153,7 +153,7 @@ class _DealerVisitsScreenState extends State<DealerVisitsScreen> {
                                   StatusBadge(label: _outcomeLabels[v['outcome']] ?? v['outcome'], tone: _outcomeTone(v['outcome'])),
                                   if (needsFollowUp) ...[
                                     const SizedBox(width: 6),
-                                    const StatusBadge(label: 'Takip', tone: AppStatusTone.pending),
+                                    StatusBadge(label: AppLocalizations.of(context)!.followUp, tone: AppStatusTone.pending),
                                   ],
                                   const Spacer(),
                                   CardFooterMeta(icon: Icons.event_outlined, label: _formatDate(v['visitDate'])),
@@ -362,7 +362,7 @@ class _CreateVisitScreenState extends State<_CreateVisitScreen> {
                       DropdownButtonFormField<String>(
                         value: _dealerId,
                         isExpanded: true,
-                        decoration: const InputDecoration(labelText: 'Bayi Seçin', border: OutlineInputBorder()),
+                        decoration: InputDecoration(labelText: AppLocalizations.of(context)!.selectDealer, border: OutlineInputBorder()),
                         items: _dealers
                             .map<DropdownMenuItem<String>>(
                                 (d) => DropdownMenuItem(value: d['id'] as String, child: Text(d['company'] ?? '', overflow: TextOverflow.ellipsis)))
@@ -372,18 +372,18 @@ class _CreateVisitScreenState extends State<_CreateVisitScreen> {
                       const SizedBox(height: 8),
                       TextField(
                         controller: _dealerFreeTextController,
-                        decoration: const InputDecoration(labelText: 'Ya da listede yoksa bayi adı yazın', border: OutlineInputBorder(), isDense: true),
+                        decoration: InputDecoration(labelText: AppLocalizations.of(context)!.orTypeDealerName, border: OutlineInputBorder(), isDense: true),
                       ),
                       const SizedBox(height: 12),
                       TextField(
                         controller: _cityController,
-                        decoration: const InputDecoration(labelText: 'Şehir', border: OutlineInputBorder(), isDense: true),
+                        decoration: InputDecoration(labelText: AppLocalizations.of(context)!.cityField, border: OutlineInputBorder(), isDense: true),
                       ),
                       const SizedBox(height: 12),
                       DropdownButtonFormField<String>(
                         value: _visitType,
                         isExpanded: true,
-                        decoration: const InputDecoration(labelText: 'Ziyaret Türü', border: OutlineInputBorder()),
+                        decoration: InputDecoration(labelText: AppLocalizations.of(context)!.visitType, border: OutlineInputBorder()),
                         items: _visitTypeLabels.entries.map((e) => DropdownMenuItem(value: e.key, child: Text(e.value))).toList(),
                         onChanged: (v) => setState(() => _visitType = v!),
                       ),
@@ -391,7 +391,7 @@ class _CreateVisitScreenState extends State<_CreateVisitScreen> {
                       DropdownButtonFormField<String>(
                         value: _outcome,
                         isExpanded: true,
-                        decoration: const InputDecoration(labelText: 'Ziyaret Sonucu', border: OutlineInputBorder()),
+                        decoration: InputDecoration(labelText: AppLocalizations.of(context)!.visitOutcome, border: OutlineInputBorder()),
                         items: _outcomeLabels.entries.map((e) => DropdownMenuItem(value: e.key, child: Text(e.value))).toList(),
                         onChanged: (v) => setState(() => _outcome = v!),
                       ),
@@ -400,7 +400,7 @@ class _CreateVisitScreenState extends State<_CreateVisitScreen> {
                         controller: _notesController,
                         minLines: 3,
                         maxLines: 6,
-                        decoration: const InputDecoration(labelText: 'Görüşme Notları', hintText: 'Görüşmenin detaylarını yazın...', border: OutlineInputBorder()),
+                        decoration: InputDecoration(labelText: AppLocalizations.of(context)!.meetingNotes, hintText: AppLocalizations.of(context)!.meetingNotesHint, border: OutlineInputBorder()),
                       ),
                     ],
                   ),
@@ -419,9 +419,9 @@ class _CreateVisitScreenState extends State<_CreateVisitScreen> {
                       children: [
                         Text(AppLocalizations.of(context)!.contactPerson, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.navy)),
                         const SizedBox(height: 8),
-                        TextField(controller: _contactNameController, decoration: const InputDecoration(labelText: 'Ad Soyad', border: OutlineInputBorder(), isDense: true)),
+                        TextField(controller: _contactNameController, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.fullName, border: OutlineInputBorder(), isDense: true)),
                         const SizedBox(height: 8),
-                        TextField(controller: _contactPhoneController, decoration: const InputDecoration(labelText: 'Telefon', border: OutlineInputBorder(), isDense: true)),
+                        TextField(controller: _contactPhoneController, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.phone, border: OutlineInputBorder(), isDense: true)),
                         SizedBox(height: 16),
                         Text(AppLocalizations.of(context)!.followUp, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.navy)),
                         SwitchListTile(
@@ -437,7 +437,7 @@ class _CreateVisitScreenState extends State<_CreateVisitScreen> {
                             label: Text(_followUpDate == null ? 'Takip Tarihi Seç' : '${_followUpDate!.day}.${_followUpDate!.month}.${_followUpDate!.year}'),
                           ),
                           const SizedBox(height: 8),
-                          TextField(controller: _followUpActionController, decoration: const InputDecoration(labelText: 'Yapılacak işlem', border: OutlineInputBorder(), isDense: true)),
+                          TextField(controller: _followUpActionController, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.followUpAction, border: OutlineInputBorder(), isDense: true)),
                         ],
                       ],
                     ),

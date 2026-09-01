@@ -112,7 +112,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       backgroundColor: AppColors.surface,
       appBar: const AppPageHeader(
         backgroundColor: Colors.white,
-        title: 'Bayi Kaydı',
+        title: AppLocalizations.of(context)!.dealerRegistration,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -199,7 +199,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       controller: _password,
                       obscureText: _obscurePassword,
                       decoration: InputDecoration(
-                        labelText: 'Şifre',
+                        labelText: AppLocalizations.of(context)!.passwordFieldShort,
                         prefixIcon: const Icon(Icons.lock_outline),
                         suffixIcon: IconButton(
                           icon: Icon(_obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined),

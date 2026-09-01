@@ -149,13 +149,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       padding: const EdgeInsets.only(bottom: 12),
                       child: Text(error!, style: const TextStyle(color: AppColors.navy, fontSize: 13)),
                     ),
-                  _ProfileDialogField(controller: firstNameController, label: 'Ad', icon: Icons.person_outline),
+                  _ProfileDialogField(controller: firstNameController, label: AppLocalizations.of(context)!.firstName, icon: Icons.person_outline),
                   const SizedBox(height: 10),
-                  _ProfileDialogField(controller: lastNameController, label: 'Soyad', icon: Icons.person_outline),
+                  _ProfileDialogField(controller: lastNameController, label: AppLocalizations.of(context)!.lastName, icon: Icons.person_outline),
                   const SizedBox(height: 10),
                   _ProfileDialogField(
                     controller: phoneController,
-                    label: 'Telefon',
+                    label: AppLocalizations.of(context)!.phone,
                     icon: Icons.phone_outlined,
                     keyboardType: TextInputType.phone,
                   ),
@@ -221,19 +221,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   TextField(
                     controller: currentController,
                     obscureText: true,
-                    decoration: const InputDecoration(labelText: 'Mevcut Şifre'),
+                    decoration: InputDecoration(labelText: AppLocalizations.of(context)!.currentPassword),
                   ),
                   const SizedBox(height: 12),
                   TextField(
                     controller: newController,
                     obscureText: true,
-                    decoration: const InputDecoration(labelText: 'Yeni Şifre'),
+                    decoration: InputDecoration(labelText: AppLocalizations.of(context)!.newPassword),
                   ),
                   const SizedBox(height: 12),
                   TextField(
                     controller: confirmController,
                     obscureText: true,
-                    decoration: const InputDecoration(labelText: 'Yeni Şifre (Tekrar)'),
+                    decoration: InputDecoration(labelText: AppLocalizations.of(context)!.newPasswordRepeat),
                   ),
                 ],
               ),
@@ -400,21 +400,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Expanded(
                         child: _StatCard(
                           value: '${_myStats?['questionsThisMonth'] ?? '—'}',
-                          label: 'Bu Ay Soru',
+                          label: AppLocalizations.of(context)!.statAiQuestionsShort,
                         ),
                       ),
                       _StatDivider(),
                       Expanded(
                         child: _StatCard(
                           value: '${_myStats?['favoritesCount'] ?? '—'}',
-                          label: 'Favori',
+                          label: AppLocalizations.of(context)!.statFavorites,
                         ),
                       ),
                       _StatDivider(),
                       Expanded(
                         child: _StatCard(
                           value: '${_badges.where((b) => b['earned'] == true).length}/${_badges.length}',
-                          label: 'Rozet',
+                          label: AppLocalizations.of(context)!.badgesLabel,
                         ),
                       ),
                     ],
@@ -508,14 +508,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     _ProfileTile(
                       icon: Icons.language_outlined,
-                      title: 'Dil',
-                      subtitle: 'Uygulama arayüz dilini değiştirir',
+                      title: AppLocalizations.of(context)!.language,
+                      subtitle: AppLocalizations.of(context)!.changeAppLanguageHint,
                       onTap: _openLanguagePicker,
                     ),
                     _ProfileTile(
                       icon: Icons.settings_outlined,
                       title: AppLocalizations.of(context)!.settings,
-                      subtitle: 'Bildirim türleri, sessiz saatler, yazı boyutu',
+                      subtitle: AppLocalizations.of(context)!.settingsSubtitle,
                       onTap: () => context.push('/settings'),
                     ),
                   ],
@@ -526,11 +526,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 _ProfileSection(
                   title: AppLocalizations.of(context)!.accountManagement,
                   children: [
-                    _ProfileTile(icon: Icons.lock_outline, title: 'Şifre Değiştir', onTap: _openChangePasswordDialog),
+                    _ProfileTile(icon: Icons.lock_outline, title: AppLocalizations.of(context)!.changePassword, onTap: _openChangePasswordDialog),
                     _ProfileTile(
                       icon: Icons.groups_outlined,
                       title: AppLocalizations.of(context)!.teamMembers,
-                      subtitle: 'Firma hesabınıza teknisyen ekleyin',
+                      subtitle: AppLocalizations.of(context)!.teamAddSubtitle,
                       onTap: () => context.push('/team'),
                     ),
                     _ProfileTile(

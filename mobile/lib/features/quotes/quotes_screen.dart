@@ -101,7 +101,7 @@ class _QuotesScreenState extends State<QuotesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      floatingActionButton: StandardFab(label: 'Yeni Teklif', onPressed: () => _openBuilder()),
+      floatingActionButton: StandardFab(label: AppLocalizations.of(context)!.screenNewQuote, onPressed: () => _openBuilder()),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: SafeArea(
         child: Column(
@@ -155,8 +155,8 @@ class _QuotesScreenState extends State<QuotesScreen> {
                                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
                                 child: const AppEmptyState(
                                   icon: Icons.request_quote_outlined,
-                                  title: 'Henüz bir teklifiniz yok',
-                                  description: 'Sağ alttaki butondan müşteriniz için yangın sistemi teklifi oluşturabilirsiniz.',
+                                  title: AppLocalizations.of(context)!.emptyQuotes,
+                                  description: AppLocalizations.of(context)!.quotesEmptyHint,
                                 ),
                               ),
                             ),
@@ -444,18 +444,18 @@ class _QuoteBuilderScreenState extends State<_QuoteBuilderScreen> {
                             TextField(
                               controller: _titleController,
                               style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: AppColors.navy),
-                              decoration: const InputDecoration(labelText: 'Teklif Başlığı', border: InputBorder.none, isDense: true),
+                              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.quoteTitle, border: InputBorder.none, isDense: true),
                             ),
                             const Divider(height: 16),
                             TextField(
                               controller: _customerNameController,
-                              decoration: const InputDecoration(labelText: 'Müşteri Adı', border: InputBorder.none, isDense: true),
+                              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.customerName, border: InputBorder.none, isDense: true),
                             ),
                             const SizedBox(height: 8),
                             TextField(
                               controller: _customerPhoneController,
                               keyboardType: TextInputType.phone,
-                              decoration: const InputDecoration(labelText: 'Müşteri Telefonu (opsiyonel)', border: InputBorder.none, isDense: true),
+                              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.customerPhoneOptional, border: InputBorder.none, isDense: true),
                             ),
                             const Divider(height: 16),
                             ProvinceDistrictPicker(
@@ -484,7 +484,7 @@ class _QuoteBuilderScreenState extends State<_QuoteBuilderScreen> {
                             controller: _searchController,
                             onChanged: (_) => setState(() {}),
                             decoration: InputDecoration(
-                              hintText: 'Ürün adı, kodu veya marka ile ara...',
+                              hintText: AppLocalizations.of(context)!.searchProductHint,
                               prefixIcon: const Icon(Icons.search, size: 20),
                               suffixIcon: _searchController.text.isNotEmpty
                                   ? IconButton(
@@ -739,7 +739,7 @@ class _QuoteDetailScreenState extends State<_QuoteDetailScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
       appBar: AppPageHeader(
-        title: 'Teklif Detayı',
+        title: AppLocalizations.of(context)!.screenQuoteDetail,
         actions: [
           if (_exporting)
             const Padding(padding: EdgeInsets.all(16), child: SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2)))

@@ -422,7 +422,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
                   Expanded(
                     child: TextField(
                       controller: _inputController,
-                      decoration: const InputDecoration(hintText: 'Mesajınızı yazın...'),
+                      decoration: InputDecoration(hintText: AppLocalizations.of(context)!.writeMessagePlaceholder),
                       onSubmitted: (_) => _send(),
                     ),
                   ),

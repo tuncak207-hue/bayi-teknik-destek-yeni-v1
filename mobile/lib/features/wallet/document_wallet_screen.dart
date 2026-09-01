@@ -229,7 +229,7 @@ class _DocumentWalletScreenState extends State<DocumentWalletScreen> {
         ),
       ),
       backgroundColor: const Color(0xFFFFFFFF),
-      floatingActionButton: StandardFab(label: 'Belge Ekle', onPressed: _addDocument),
+      floatingActionButton: StandardFab(label: AppLocalizations.of(context)!.addDocumentAction, onPressed: _addDocument),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: SafeArea(
         child: Column(
@@ -249,8 +249,8 @@ class _DocumentWalletScreenState extends State<DocumentWalletScreen> {
                                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
                                 child: const AppEmptyState(
                                   icon: Icons.folder_open_outlined,
-                                  title: 'Henüz bir belgeniz yok',
-                                  description: 'İSG evrakları, sertifikalar, yetki belgeleriniz gibi evraklarınızı burada saklayabilirsiniz.',
+                                  title: AppLocalizations.of(context)!.emptyDocuments,
+                                  description: AppLocalizations.of(context)!.walletEmptyHint,
                                 ),
                               ),
                             ),
@@ -369,7 +369,7 @@ class _DocumentMetaSheetState extends State<_DocumentMetaSheet> {
         children: [
           Text(widget.initialName == null ? 'Belge Bilgileri' : 'Belgeyi Düzenle', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
           const SizedBox(height: AppSpacing.sm),
-          TextField(controller: _nameController, decoration: const InputDecoration(labelText: 'Belge Adı', hintText: 'Örn: İSG Eğitim Sertifikası')),
+          TextField(controller: _nameController, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.documentName, hintText: AppLocalizations.of(context)!.documentNameHint)),
           SizedBox(height: AppSpacing.sm),
           Text(AppLocalizations.of(context)!.category, style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AppColors.navy)),
           const SizedBox(height: 6),

@@ -71,8 +71,8 @@ class _SalesConsultantsScreenState extends State<SalesConsultantsScreen> {
                 : _consultants.isEmpty
                     ? AppEmptyState(
                         icon: Icons.support_agent_outlined,
-                        title: 'Henüz satış danışmanı eklenmedi',
-                        description: 'Admin, satış danışmanı hesabı ekleyince burada görünecek.',
+                        title: AppLocalizations.of(context)!.emptySalesConsultants,
+                        description: AppLocalizations.of(context)!.salesConsultantEmptyHint,
                       )
                     : RefreshIndicator(
                         onRefresh: _load,

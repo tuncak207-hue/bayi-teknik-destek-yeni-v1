@@ -199,7 +199,7 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                hintText: 'Bayi veya üye adı yazıp mesaj başlatın...',
+                hintText: AppLocalizations.of(context)!.startChatHint,
                 prefixIcon: _searching
                     ? const Padding(
                         padding: EdgeInsets.all(12),

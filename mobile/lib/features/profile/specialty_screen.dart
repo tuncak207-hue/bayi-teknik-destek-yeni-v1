@@ -115,9 +115,9 @@ class _SpecialtyScreenState extends State<SpecialtyScreen> {
       dealerName: '${CurrentUser().firstName} ${CurrentUser().lastName}',
       dealerCompany: '',
       infoRows: [
-        (label: 'Marka', value: cert['brand'] ?? ''),
-        (label: 'Sertifika', value: cert['title'] ?? ''),
-        if (cert['expiresAt'] != null) (label: 'Son Geçerlilik', value: (cert['expiresAt'] as String).substring(0, 10)),
+        (label: AppLocalizations.of(context)!.brandLabel, value: cert['brand'] ?? ''),
+        (label: AppLocalizations.of(context)!.certificateLabel, value: cert['title'] ?? ''),
+        if (cert['expiresAt'] != null) (label: AppLocalizations.of(context)!.expiryDateLabel, value: (cert['expiresAt'] as String).substring(0, 10)),
       ],
       signatureBytes: photoBytes,
     );
@@ -223,8 +223,8 @@ class _SpecialtyScreenState extends State<SpecialtyScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
                       child: const AppEmptyState(
                         icon: Icons.verified_outlined,
-                        title: 'Henüz sertifika eklenmedi',
-                        description: 'Yukarıdaki "Ekle" butonundan yeni bir sertifika ekleyebilirsiniz.',
+                        title: AppLocalizations.of(context)!.emptyCertifications,
+                        description: AppLocalizations.of(context)!.certificateAddHint,
                       ),
                     ),
                   )
@@ -382,9 +382,9 @@ class _AddCertificationSheetState extends State<_AddCertificationSheet> {
         children: [
           Text(AppLocalizations.of(context)!.newCertificate, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
           const SizedBox(height: AppSpacing.sm),
-          TextField(controller: _brandController, decoration: const InputDecoration(labelText: 'Marka (örn. Honeywell)')),
+          TextField(controller: _brandController, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.brandHint)),
           const SizedBox(height: AppSpacing.xs),
-          TextField(controller: _titleController, decoration: const InputDecoration(labelText: 'Sertifika Adı')),
+          TextField(controller: _titleController, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.certificateName)),
           const SizedBox(height: AppSpacing.xs),
           ListTile(
             contentPadding: EdgeInsets.zero,

@@ -90,8 +90,8 @@ class _DealersScreenState extends State<DealersScreen> {
                       const SizedBox(height: 60),
                       AppEmptyState(
                         icon: Icons.groups_outlined,
-                        title: 'Henüz başka bir bayi yok',
-                        description: 'Onaylanmış diğer bayiler burada listelenecek.',
+                        title: AppLocalizations.of(context)!.emptyDealers,
+                        description: AppLocalizations.of(context)!.otherDealersHint,
                       ),
                     ],
                   ),

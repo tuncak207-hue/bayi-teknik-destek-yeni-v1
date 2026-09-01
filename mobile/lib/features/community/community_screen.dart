@@ -93,7 +93,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
     final myId = CurrentUser().id;
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      floatingActionButton: StandardFab(label: 'Soru Paylaş', onPressed: _openCreateSheet),
+      floatingActionButton: StandardFab(label: AppLocalizations.of(context)!.shareQuestion, onPressed: _openCreateSheet),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: SafeArea(
         child: Column(
@@ -118,7 +118,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  _TagChip(label: 'Tümü', selected: _selectedTag == null, onTap: () {
+                  _TagChip(label: AppLocalizations.of(context)!.allTag, selected: _selectedTag == null, onTap: () {
                     setState(() => _selectedTag = null);
                     _load();
                   }),
@@ -153,8 +153,8 @@ class _CommunityScreenState extends State<CommunityScreen> {
                                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
                                 child: const AppEmptyState(
                                   icon: Icons.forum_outlined,
-                                  title: 'Henüz bir paylaşım yok',
-                                  description: 'Sağ alttaki butondan diğer bayilere soru sorabilirsiniz.',
+                                  title: AppLocalizations.of(context)!.emptyPosts,
+                                  description: AppLocalizations.of(context)!.communityEmptyHint,
                                 ),
                               ),
                             ),
@@ -438,7 +438,7 @@ class _CreatePostSheetState extends State<_CreatePostSheet> {
                     style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: Colors.black, height: 1.25),
                     maxLines: null,
                     decoration: InputDecoration(
-                      hintText: 'Başlık',
+                      hintText: AppLocalizations.of(context)!.titleField,
                       hintStyle: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: Colors.grey.shade300),
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.zero,
@@ -454,7 +454,7 @@ class _CreatePostSheetState extends State<_CreatePostSheet> {
                     maxLines: null,
                     style: const TextStyle(fontSize: 16, color: Colors.black, height: 1.5),
                     decoration: InputDecoration(
-                      hintText: 'Sorununuzu ya da deneyiminizi anlatın...',
+                      hintText: AppLocalizations.of(context)!.describeIssueOrExperience,
                       hintStyle: TextStyle(fontSize: 16, color: Colors.grey.shade300, height: 1.5),
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.zero,

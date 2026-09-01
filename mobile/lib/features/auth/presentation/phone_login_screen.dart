@@ -157,7 +157,7 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
                       controller: _phoneController,
                       keyboardType: TextInputType.phone,
                       decoration: const InputDecoration(
-                        labelText: 'Telefon Numarası',
+                        labelText: AppLocalizations.of(context)!.phoneNumberField,
                         hintText: '+905551234567',
                         prefixIcon: Icon(Icons.phone_outlined),
                       ),
@@ -178,7 +178,7 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
                     TextField(
                       controller: _codeController,
                       keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(labelText: 'Doğrulama Kodu', prefixIcon: Icon(Icons.sms_outlined)),
+                      decoration: InputDecoration(labelText: AppLocalizations.of(context)!.verificationCode, prefixIcon: const Icon(Icons.sms_outlined)),
                     ),
                     const SizedBox(height: AppSpacing.md),
                     ElevatedButton(

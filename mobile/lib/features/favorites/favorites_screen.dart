@@ -1,4 +1,5 @@
 import 'dart:async';
+import '../../l10n/app_localizations.dart';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -137,7 +138,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                                 padding: const EdgeInsets.all(AppSpacing.xl),
                                 child: AppEmptyState(
                                   icon: Icons.cloud_off_outlined,
-                                  title: 'Favoriler yüklenemedi',
+                                  title: AppLocalizations.of(context)!.favoritesLoadFailed,
                                   description: _error!,
                                   actionLabel: 'Tekrar Dene',
                                   onAction: _load,
@@ -159,8 +160,8 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
                                 child: const AppEmptyState(
                                   icon: Icons.bookmark_border,
-                                  title: 'Henüz favori eklemediniz',
-                                  description: 'AI cevaplarında bulunan kaydet simgesine dokunarak buraya ekleyebilirsiniz.',
+                                  title: AppLocalizations.of(context)!.emptyFavorites,
+                                  description: AppLocalizations.of(context)!.favoritesEmptyHint,
                                 ),
                               ),
                             ),

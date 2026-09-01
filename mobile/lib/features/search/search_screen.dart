@@ -99,7 +99,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 controller: _controller,
                 onSubmitted: (_) => _search(),
                 decoration: InputDecoration(
-                  hintText: 'Doküman, model, marka veya bayi ara...',
+                  hintText: AppLocalizations.of(context)!.searchDocumentsHint,
                   prefixIcon: const Icon(Icons.search, size: 20),
                   suffixIcon: _controller.text.isEmpty
                       ? null
@@ -123,22 +123,22 @@ class _SearchScreenState extends State<SearchScreen> {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  _ScopeChip(label: 'Tümü', selected: _scope == _SearchScope.all, onTap: () => setState(() => _scope = _SearchScope.all)),
+                  _ScopeChip(label: AppLocalizations.of(context)!.scopeAll, selected: _scope == _SearchScope.all, onTap: () => setState(() => _scope = _SearchScope.all)),
                   const SizedBox(width: 6),
                   _ScopeChip(
-                    label: 'Dokümanlar',
+                    label: AppLocalizations.of(context)!.scopeDocuments,
                     selected: _scope == _SearchScope.documents,
                     onTap: () => setState(() => _scope = _SearchScope.documents),
                   ),
                   const SizedBox(width: 6),
                   _ScopeChip(
-                    label: 'Bayiler',
+                    label: AppLocalizations.of(context)!.scopeDealers,
                     selected: _scope == _SearchScope.dealers,
                     onTap: () => setState(() => _scope = _SearchScope.dealers),
                   ),
                   const SizedBox(width: 6),
                   _ScopeChip(
-                    label: 'Gönderiler',
+                    label: AppLocalizations.of(context)!.scopePosts,
                     selected: _scope == _SearchScope.posts,
                     onTap: () => setState(() => _scope = _SearchScope.posts),
                   ),
@@ -200,7 +200,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     padding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, AppSpacing.md),
                     children: [
                       if (documents.isNotEmpty) ...[
-                        const _SectionHeader(title: 'Dokümanlar', icon: Icons.description_outlined),
+                        _SectionHeader(title: AppLocalizations.of(context)!.scopeDocuments, icon: Icons.description_outlined),
                         ...documents.map((d) => _ResultCard(
                               icon: Icons.picture_as_pdf_outlined,
                               iconColor: AppColors.navy,
@@ -211,7 +211,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         const SizedBox(height: AppSpacing.sm),
                       ],
                       if (dealers.isNotEmpty) ...[
-                        const _SectionHeader(title: 'Bayiler', icon: Icons.groups_outlined),
+                        _SectionHeader(title: AppLocalizations.of(context)!.scopeDealers, icon: Icons.groups_outlined),
                         ...dealers.map((u) => _ResultCard(
                               avatarLetter: (u['company'] as String? ?? '?').characters.first.toUpperCase(),
                               title: u['company'] ?? '',
@@ -222,7 +222,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         const SizedBox(height: AppSpacing.sm),
                       ],
                       if (posts.isNotEmpty) ...[
-                        const _SectionHeader(title: 'Bayilere Sor Gönderileri', icon: Icons.forum_outlined),
+                        _SectionHeader(title: AppLocalizations.of(context)!.communityPostsHeader, icon: Icons.forum_outlined),
                         ...posts.map((p) => _ResultCard(
                               icon: Icons.forum_outlined,
                               iconColor: AppColors.brand,

@@ -236,7 +236,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         child: ListView(
                           children: [
                             const SizedBox(height: 60),
-                            const AppEmptyState(icon: Icons.notifications_none, title: 'Henüz bir bildiriminiz yok'),
+                            AppEmptyState(icon: Icons.notifications_none, title: AppLocalizations.of(context)!.notificationsEmptyHint),
                     ],
                   ),
                 )

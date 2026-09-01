@@ -121,7 +121,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
                       Expanded(
                         child: TextField(
                           controller: _questionController,
-                          decoration: const InputDecoration(hintText: 'Teknik sorunuzu yazın...', border: InputBorder.none, isDense: true),
+                          decoration: InputDecoration(hintText: AppLocalizations.of(context)!.writeTechnicalQuestionHint, border: InputBorder.none, isDense: true),
                           onSubmitted: (_) => _startNewQuestion(),
                         ),
                       ),
@@ -160,8 +160,8 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
                     padding: EdgeInsets.only(top: 40),
                     child: AppEmptyState(
                       icon: Icons.smart_toy_outlined,
-                      title: 'Henüz bir sorunuz yok',
-                      description: 'Yukarıdaki kutuya teknik sorunuzu yazarak başlayın.',
+                      title: AppLocalizations.of(context)!.emptyQuestions,
+                      description: AppLocalizations.of(context)!.aiEmptyHint,
                     ),
                   ),
               ],

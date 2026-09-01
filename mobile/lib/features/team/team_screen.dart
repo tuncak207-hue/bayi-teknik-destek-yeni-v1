@@ -89,8 +89,8 @@ class _TeamScreenState extends State<TeamScreen> {
           : _members.isEmpty
               ? AppEmptyState(
                   icon: Icons.groups_outlined,
-                  title: 'Henüz ekip üyeniz yok',
-                  description: 'Firmanızdaki teknisyenler için ayrı hesaplar oluşturup uygulamayı birlikte kullanabilirsiniz.',
+                  title: AppLocalizations.of(context)!.emptyTeamMembers,
+                  description: AppLocalizations.of(context)!.teamEmptyHint,
                 )
               : ListView.separated(
                   padding: const EdgeInsets.all(AppSpacing.md),
@@ -203,13 +203,13 @@ class _AddTeamMemberSheetState extends State<_AddTeamMemberSheet> {
               padding: const EdgeInsets.only(bottom: AppSpacing.sm),
               child: Text(_error!, style: const TextStyle(color: AppColors.brand)),
             ),
-          TextField(controller: _firstName, decoration: const InputDecoration(labelText: 'Ad')),
+          TextField(controller: _firstName, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.firstName)),
           const SizedBox(height: AppSpacing.xs),
-          TextField(controller: _lastName, decoration: const InputDecoration(labelText: 'Soyad')),
+          TextField(controller: _lastName, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.lastName)),
           const SizedBox(height: AppSpacing.xs),
-          TextField(controller: _email, decoration: const InputDecoration(labelText: 'E-posta')),
+          TextField(controller: _email, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.email)),
           const SizedBox(height: AppSpacing.xs),
-          TextField(controller: _password, obscureText: true, decoration: const InputDecoration(labelText: 'Şifre')),
+          TextField(controller: _password, obscureText: true, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.passwordField)),
           const SizedBox(height: AppSpacing.md),
           ElevatedButton(
             onPressed: _submitting ? null : _submit,

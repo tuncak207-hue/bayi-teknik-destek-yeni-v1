@@ -188,7 +188,7 @@ class _CommunityPostScreenState extends State<CommunityPostScreen> {
                   Expanded(
                     child: TextField(
                       controller: _commentController,
-                      decoration: const InputDecoration(hintText: 'Yorum yazın...'),
+                      decoration: InputDecoration(hintText: AppLocalizations.of(context)!.writeCommentHint),
                       onSubmitted: (_) => _addComment(),
                     ),
                   ),

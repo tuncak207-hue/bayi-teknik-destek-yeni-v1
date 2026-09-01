@@ -148,7 +148,7 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      floatingActionButton: StandardFab(label: 'Randevu Al', onPressed: _openCreateSheet),
+      floatingActionButton: StandardFab(label: AppLocalizations.of(context)!.qaAppointments, onPressed: _openCreateSheet),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: SafeArea(
         child: Column(
@@ -196,8 +196,8 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
                                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
                                 child: const AppEmptyState(
                                   icon: Icons.calendar_month_outlined,
-                                  title: 'Henüz bir randevunuz yok',
-                                  description: 'Teknik destek almak için ilk randevunuzu oluşturun.',
+                                  title: AppLocalizations.of(context)!.emptyAppointments,
+                                  description: AppLocalizations.of(context)!.appointmentsEmptyHint,
                                 ),
                               ),
                             ),
@@ -511,14 +511,14 @@ class _CreateAppointmentSheetState extends State<_CreateAppointmentSheet> {
             const SizedBox(height: 16),
             TextField(
               controller: _subjectController,
-              decoration: const InputDecoration(labelText: 'Konu', hintText: 'Örn: MA8000 devreye alma desteği'),
+              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.subjectField, hintText: AppLocalizations.of(context)!.subjectHint),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: _descriptionController,
               minLines: 2,
               maxLines: 4,
-              decoration: const InputDecoration(labelText: 'Açıklama (opsiyonel)'),
+              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.descriptionOptional),
             ),
             const SizedBox(height: 12),
             ProvinceDistrictPicker(

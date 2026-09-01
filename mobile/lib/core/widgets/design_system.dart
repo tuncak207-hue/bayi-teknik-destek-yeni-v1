@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:io' show Platform;
@@ -269,7 +270,7 @@ class PlatformFormScaffold extends StatelessWidget {
           leading: CupertinoButton(
             padding: EdgeInsets.zero,
             onPressed: () => Navigator.pop(context),
-            child: Text('İptal', style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 16)),
+            child: Text(AppLocalizations.of(context)!.cancel, style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 16)),
           ),
           middle: Text(title, style: TextStyle(color: scheme.onSurface, fontWeight: FontWeight.w600, fontSize: 16)),
           trailing: CupertinoButton(

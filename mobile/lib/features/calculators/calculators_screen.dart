@@ -18,9 +18,9 @@ class _CalculatorsScreenState extends State<CalculatorsScreen> with SingleTicker
   late final TabController _tabController;
 
   static const _tabs = [
-    (icon: Icons.battery_charging_full_outlined, label: 'Akü'),
-    (icon: Icons.videocam_outlined, label: 'Kamera HDD'),
-    (icon: Icons.power_outlined, label: 'PoE'),
+    (icon: Icons.battery_charging_full_outlined, label: AppLocalizations.of(context)!.calcTabBattery),
+    (icon: Icons.videocam_outlined, label: AppLocalizations.of(context)!.calcTabCameraHdd),
+    (icon: Icons.power_outlined, label: AppLocalizations.of(context)!.calcTabPoe),
   ];
 
   @override
@@ -318,10 +318,10 @@ class _BatteryCalculatorState extends State<_BatteryCalculator> {
         PremiumFormSection(
           title: AppLocalizations.of(context)!.calcSystemInfo,
           children: [
-            _UnitField(controller: _standbyController, label: 'Bekleme akımı', unit: 'mA', icon: Icons.bedtime_outlined),
-            _UnitField(controller: _alarmController, label: 'Alarm akımı', unit: 'mA', icon: Icons.notifications_active_outlined),
-            _UnitField(controller: _standbyHoursController, label: 'Bekleme süresi', unit: 'saat', icon: Icons.schedule_outlined),
-            _UnitField(controller: _alarmMinutesController, label: 'Alarm süresi', unit: 'dk', icon: Icons.timer_outlined, isLast: true),
+            _UnitField(controller: _standbyController, label: AppLocalizations.of(context)!.standbyCurrent, unit: 'mA', icon: Icons.bedtime_outlined),
+            _UnitField(controller: _alarmController, label: AppLocalizations.of(context)!.alarmCurrent, unit: 'mA', icon: Icons.notifications_active_outlined),
+            _UnitField(controller: _standbyHoursController, label: AppLocalizations.of(context)!.standbyDuration, unit: 'saat', icon: Icons.schedule_outlined),
+            _UnitField(controller: _alarmMinutesController, label: AppLocalizations.of(context)!.alarmDuration, unit: 'dk', icon: Icons.timer_outlined, isLast: true),
           ],
         ),
         const SizedBox(height: AppSpacing.md),
@@ -397,9 +397,9 @@ class _CameraStorageCalculatorState extends State<_CameraStorageCalculator> {
         PremiumFormSection(
           title: AppLocalizations.of(context)!.calcSystemInfo,
           children: [
-            _UnitField(controller: _cameraCountController, label: 'Kamera sayısı', unit: 'adet', icon: Icons.videocam_outlined),
-            _UnitField(controller: _bitrateController, label: 'Kamera başına bitrate', unit: 'Mbps', icon: Icons.speed_outlined),
-            _UnitField(controller: _retentionController, label: 'Saklama süresi', unit: 'gün', icon: Icons.calendar_month_outlined, isLast: true),
+            _UnitField(controller: _cameraCountController, label: AppLocalizations.of(context)!.cameraCount, unit: 'adet', icon: Icons.videocam_outlined),
+            _UnitField(controller: _bitrateController, label: AppLocalizations.of(context)!.bitratePerCamera, unit: 'Mbps', icon: Icons.speed_outlined),
+            _UnitField(controller: _retentionController, label: AppLocalizations.of(context)!.retentionPeriod, unit: 'gün', icon: Icons.calendar_month_outlined, isLast: true),
           ],
         ),
         const SizedBox(height: AppSpacing.md),
@@ -480,9 +480,9 @@ class _PoeBudgetCalculatorState extends State<_PoeBudgetCalculator> {
         PremiumFormSection(
           title: AppLocalizations.of(context)!.calcDeviceInfo,
           children: [
-            _UnitField(controller: _wattageController, label: 'Cihaz başına güç', unit: 'W', icon: Icons.bolt_outlined),
-            _UnitField(controller: _countController, label: 'Cihaz sayısı', unit: 'adet', icon: Icons.videocam_outlined),
-            _UnitField(controller: _budgetController, label: 'Switch güç bütçesi', unit: 'W', icon: Icons.dns_outlined, isLast: true),
+            _UnitField(controller: _wattageController, label: AppLocalizations.of(context)!.wattagePerDevice, unit: 'W', icon: Icons.bolt_outlined),
+            _UnitField(controller: _countController, label: AppLocalizations.of(context)!.deviceCount, unit: 'adet', icon: Icons.videocam_outlined),
+            _UnitField(controller: _budgetController, label: AppLocalizations.of(context)!.switchPowerBudget, unit: 'W', icon: Icons.dns_outlined, isLast: true),
           ],
         ),
         const SizedBox(height: AppSpacing.md),

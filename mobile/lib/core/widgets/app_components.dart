@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import 'package:shimmer/shimmer.dart';
 import '../theme/app_theme.dart';
 
@@ -501,12 +502,12 @@ class AppErrorState extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.xxs),
           Text(
-            message ?? 'Veriler yüklenemedi. İnternet bağlantınızı kontrol edip tekrar deneyin.',
+            message ?? AppLocalizations.of(context)!.dataLoadFailedGeneric,
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 13.5, color: scheme.onSurfaceVariant, height: 1.4),
           ),
           const SizedBox(height: AppSpacing.md),
-          AppButton.secondary(label: 'Tekrar Dene', onPressed: onRetry, icon: Icons.refresh, fullWidth: false),
+          AppButton.secondary(label: AppLocalizations.of(context)!.retry, onPressed: onRetry, icon: Icons.refresh, fullWidth: false),
           ],
         ),
       ),

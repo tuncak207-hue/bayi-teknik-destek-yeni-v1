@@ -93,7 +93,7 @@ class _BomListScreenState extends State<BomListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      floatingActionButton: StandardFab(label: 'Yeni Liste', onPressed: () => _openBuilder()),
+      floatingActionButton: StandardFab(label: AppLocalizations.of(context)!.newRecord, onPressed: () => _openBuilder()),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: SafeArea(
         child: Column(
@@ -141,8 +141,8 @@ class _BomListScreenState extends State<BomListScreen> {
                                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
                                 child: const AppEmptyState(
                                   icon: Icons.inventory_2_outlined,
-                                  title: 'Henüz bir malzeme listeniz yok',
-                                  description: 'Sağ alttaki butondan yeni bir liste oluşturabilirsiniz.',
+                                  title: AppLocalizations.of(context)!.emptyBom,
+                                  description: AppLocalizations.of(context)!.bomEmptyHint,
                                 ),
                               ),
                             ),
@@ -526,13 +526,13 @@ class _BomBuilderScreenState extends State<BomBuilderScreen> {
                     TextField(
                       controller: _titleController,
                       style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: AppColors.navy),
-                      decoration: const InputDecoration(labelText: 'Liste Başlığı', border: InputBorder.none, isDense: true),
+                      decoration: InputDecoration(labelText: AppLocalizations.of(context)!.listTitle, border: InputBorder.none, isDense: true),
                     ),
                     const SizedBox(height: 4),
                     TextField(
                       controller: _descriptionController,
                       style: const TextStyle(fontSize: 12.5),
-                      decoration: const InputDecoration(labelText: 'Açıklama (opsiyonel)', border: InputBorder.none, isDense: true),
+                      decoration: InputDecoration(labelText: AppLocalizations.of(context)!.descriptionOptional, border: InputBorder.none, isDense: true),
                     ),
                     const Divider(height: 20),
                     Row(
@@ -575,7 +575,7 @@ class _BomBuilderScreenState extends State<BomBuilderScreen> {
                           child: TextField(
                             controller: item.nameController,
                             style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: AppColors.navy),
-                            decoration: const InputDecoration(hintText: 'Malzeme adı', isDense: true, border: InputBorder.none),
+                            decoration: InputDecoration(hintText: AppLocalizations.of(context)!.materialNameHint, isDense: true, border: InputBorder.none),
                           ),
                         ),
                         // Kullanıcı isteği: "adet sayı çıkmıyor... + ve -

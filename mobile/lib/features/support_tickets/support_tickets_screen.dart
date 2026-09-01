@@ -92,7 +92,7 @@ class _SupportTicketsScreenState extends State<SupportTicketsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      floatingActionButton: StandardFab(label: 'Yeni Kayıt', onPressed: () => _openCreate(isEmergency: false)),
+      floatingActionButton: StandardFab(label: AppLocalizations.of(context)!.newRecord, onPressed: () => _openCreate(isEmergency: false)),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: SafeArea(
         child: Column(
@@ -175,7 +175,7 @@ class _SupportTicketsScreenState extends State<SupportTicketsScreen> {
                       padding: const EdgeInsets.only(top: AppSpacing.xl),
                       child: StandardCard(
                         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
-                        child: const AppEmptyState(icon: Icons.build_circle_outlined, title: 'Henüz bir teknik destek kaydınız yok'),
+                        child: AppEmptyState(icon: Icons.build_circle_outlined, title: AppLocalizations.of(context)!.emptySupportTickets),
                       ),
                     )
                   else
@@ -209,7 +209,7 @@ class _SupportTicketsScreenState extends State<SupportTicketsScreen> {
                                   children: [
                                     CardHeaderRow(
                                       title: t['productName'] ?? t['description'] ?? '',
-                                      trailing: isEmergency ? const StatusBadge(label: 'ACİL', tone: AppStatusTone.danger) : null,
+                                      trailing: isEmergency ? StatusBadge(label: AppLocalizations.of(context)!.urgentBadge, tone: AppStatusTone.danger) : null,
                                     ),
                                     const SizedBox(height: 6),
                                     Row(
@@ -369,29 +369,29 @@ class _CreateTicketScreenState extends State<_CreateTicketScreen> {
             ),
           TextField(
             controller: _productNameController,
-            decoration: const InputDecoration(labelText: 'Ürün Adı', hintText: 'Örn: MA8000 Yangın Alarm Paneli'),
+            decoration: InputDecoration(labelText: AppLocalizations.of(context)!.productName, hintText: AppLocalizations.of(context)!.productNameHint),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _productModelController,
-            decoration: const InputDecoration(labelText: 'Model (opsiyonel)'),
+            decoration: InputDecoration(labelText: AppLocalizations.of(context)!.modelOptional),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _serialNumberController,
-            decoration: const InputDecoration(labelText: 'Seri Numarası (opsiyonel)'),
+            decoration: InputDecoration(labelText: AppLocalizations.of(context)!.serialNumberOptional),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _locationController,
-            decoration: const InputDecoration(labelText: 'Konum (opsiyonel)', hintText: 'Örn: İstanbul, Kadıköy'),
+            decoration: InputDecoration(labelText: AppLocalizations.of(context)!.locationOptional, hintText: AppLocalizations.of(context)!.locationHint),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _descriptionController,
             minLines: 3,
             maxLines: 6,
-            decoration: const InputDecoration(labelText: 'Sorunu Açıklayın'),
+            decoration: InputDecoration(labelText: AppLocalizations.of(context)!.describeIssue),
           ),
           const SizedBox(height: 16),
           OutlinedButton.icon(
@@ -770,7 +770,7 @@ class _MeasurementSectionState extends State<_MeasurementSection> {
                   child: DropdownButtonFormField<String>(
                     value: _selectedTypeId,
                     isExpanded: true,
-                    decoration: const InputDecoration(labelText: 'Ölçüm Türü', isDense: true),
+                    decoration: InputDecoration(labelText: AppLocalizations.of(context)!.measurementType, isDense: true),
                     items: _types
                         .map<DropdownMenuItem<String>>((t) => DropdownMenuItem(value: t['id'], child: Text('${t['name']} (${t['unit']})', overflow: TextOverflow.ellipsis)))
                         .toList(),
@@ -783,7 +783,7 @@ class _MeasurementSectionState extends State<_MeasurementSection> {
                   child: TextField(
                     controller: _valueController,
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    decoration: const InputDecoration(labelText: 'Değer', isDense: true),
+                    decoration: InputDecoration(labelText: AppLocalizations.of(context)!.valueField, isDense: true),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -933,11 +933,11 @@ class _SparePartRequestSheetState extends State<_SparePartRequestSheet> {
             style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
           ),
           const SizedBox(height: 16),
-          TextField(controller: _partCodeController, decoration: const InputDecoration(labelText: 'Parça Kodu (opsiyonel)')),
+          TextField(controller: _partCodeController, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.partCodeOptional)),
           const SizedBox(height: 12),
-          TextField(controller: _partNameController, decoration: const InputDecoration(labelText: 'Parça Adı')),
+          TextField(controller: _partNameController, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.partName)),
           const SizedBox(height: 12),
-          TextField(controller: _quantityController, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Miktar')),
+          TextField(controller: _quantityController, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.quantity)),
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
@@ -1088,7 +1088,7 @@ class _CostEntrySheetState extends State<_CostEntrySheet> {
           DropdownButtonFormField<String>(
             value: _category,
             isExpanded: true,
-            decoration: const InputDecoration(labelText: 'Kategori'),
+            decoration: InputDecoration(labelText: AppLocalizations.of(context)!.categoryField),
             items: _categories.entries.map((e) => DropdownMenuItem(value: e.key, child: Text(e.value))).toList(),
             onChanged: (v) => setState(() => _category = v ?? _category),
           ),
@@ -1096,10 +1096,10 @@ class _CostEntrySheetState extends State<_CostEntrySheet> {
           TextField(
             controller: _amountController,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            decoration: const InputDecoration(labelText: 'Tutar (₺)'),
+            decoration: InputDecoration(labelText: AppLocalizations.of(context)!.amountTl),
           ),
           const SizedBox(height: 12),
-          TextField(controller: _descriptionController, decoration: const InputDecoration(labelText: 'Açıklama (opsiyonel)')),
+          TextField(controller: _descriptionController, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.descriptionOptional)),
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
@@ -1228,13 +1228,13 @@ class _KnowledgeEntrySheetState extends State<_KnowledgeEntrySheet> {
             style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
           ),
           const SizedBox(height: 16),
-          TextField(controller: _problemController, minLines: 2, maxLines: 4, decoration: const InputDecoration(labelText: 'Problem')),
+          TextField(controller: _problemController, minLines: 2, maxLines: 4, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.problemField)),
           const SizedBox(height: 12),
-          TextField(controller: _solutionController, minLines: 2, maxLines: 4, decoration: const InputDecoration(labelText: 'Çözüm')),
+          TextField(controller: _solutionController, minLines: 2, maxLines: 4, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.solutionField)),
           const SizedBox(height: 12),
-          TextField(controller: _errorCodeController, decoration: const InputDecoration(labelText: 'Hata Kodu (opsiyonel)')),
+          TextField(controller: _errorCodeController, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.errorCodeOptional)),
           const SizedBox(height: 12),
-          TextField(controller: _partUsedController, decoration: const InputDecoration(labelText: 'Kullanılan Parça (opsiyonel)')),
+          TextField(controller: _partUsedController, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.partUsedOptional)),
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {

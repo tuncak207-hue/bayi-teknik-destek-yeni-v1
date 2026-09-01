@@ -90,8 +90,8 @@ class _OfflineDocumentsScreenState extends State<OfflineDocumentsScreen> {
                           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
                           child: const AppEmptyState(
                             icon: Icons.download_outlined,
-                            title: 'Henüz indirilmiş bir doküman yok',
-                            description: 'Bir dokümanı açıp "Çevrimdışı İndir" ile buraya ekleyebilirsiniz.',
+                            title: AppLocalizations.of(context)!.emptyOfflineDocs,
+                            description: AppLocalizations.of(context)!.offlineDocsEmptyHint,
                           ),
                         ),
                       ),

@@ -7,37 +7,33 @@ class AboutUsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppPageHeader(title: AppLocalizations.of(context)!.screenAboutUs),
+      appBar: AppPageHeader(title: l10n.screenAboutUs),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          const _SectionTitle('Bayi Teknik Destek'),
+          _SectionTitle(l10n.dealerTechSupportTitle),
           const SizedBox(height: 8),
-          const Text(
-            'ENTPA Elektronik Cihazlar Tic. Paz. ve Turizm A.Ş. tarafından '
-            'geliştirilen Bayi Teknik Destek uygulaması; güvenlik sektöründe '
-            'faaliyet gösteren bayilere, yapay zeka destekli teknik doküman '
-            'arama ve bayiler arası iletişim hizmeti sunar.',
-          ),
+          Text(l10n.aboutAppDescription),
           const SizedBox(height: 24),
-          const _SectionTitle('Şirket Bilgileri'),
+          _SectionTitle(l10n.companyInfo),
           const SizedBox(height: 8),
-          const _InfoRow(label: 'Ticaret Unvanı', value: 'ENTPA Elektronik Cihazlar Tic. Paz. ve Turizm A.Ş.'),
-          const _InfoRow(label: 'Adres', value: 'Y. Dudullu OSB, 1. Cadde No:23, 34775 Ümraniye – İstanbul / TR'),
-          const _InfoRow(label: 'E-posta', value: 'info@entpa.com.tr'),
+          // Kullanıcı isteği: "hukuki/resmi şirket bilgileri" — şirket
+          // unvanı, adres ve e-posta bilerek ÇEVRİLMİYOR (resmi tescil
+          // bilgisi, dilden bağımsız sabit kalmalı). Sadece etiketler
+          // (label) çevriliyor.
+          _InfoRow(label: l10n.tradeTitle, value: 'ENTPA Elektronik Cihazlar Tic. Paz. ve Turizm A.Ş.'),
+          _InfoRow(label: l10n.addressLabel, value: 'Y. Dudullu OSB, 1. Cadde No:23, 34775 Ümraniye – İstanbul / TR'),
+          _InfoRow(label: l10n.emailLabel, value: 'info@entpa.com.tr'),
           const SizedBox(height: 24),
-          const _SectionTitle('Sürüm Bilgisi'),
+          _SectionTitle(l10n.versionInfo),
           const SizedBox(height: 8),
-          Text(AppLocalizations.of(context)!.appVersionLabel),
+          Text(l10n.appVersionLabel),
           const SizedBox(height: 32),
-          const Text(
-            'ENTPA, 1980 yılından bu yana üstün Türk mühendisliği ve 35 yıllık bilgi '
-            'birikimini özgün tasarımlarıyla buluşturan ENTES’in ortakları tarafından '
-            '2003 yılında kurulmuştur. Uluslararası ithalatçı ve dağıtıcı kimliğiyle '
-            'öne çıkan ENTPA, 2012 yılının ikinci yarısından itibaren güvenlik '
-            'sektöründe faaliyet göstermektedir.',
-            style: TextStyle(fontSize: 13, height: 1.5, color: Colors.black54),
+          Text(
+            l10n.entpaHistory,
+            style: const TextStyle(fontSize: 13, height: 1.5, color: Colors.black54),
           ),
         ],
       ),

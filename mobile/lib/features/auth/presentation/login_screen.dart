@@ -200,7 +200,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       controller: _passwordController,
                       obscureText: true,
                       decoration: InputDecoration(
-                        labelText: 'Şifre',
+                        labelText: AppLocalizations.of(context)!.passwordFieldShort,
                         prefixIcon: const Icon(Icons.lock_outline),
                         filled: true,
                         fillColor: AppColors.surfaceBase,
@@ -208,10 +208,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.md), borderSide: BorderSide(color: AppColors.outline)),
                         focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.md), borderSide: const BorderSide(color: AppColors.primary, width: 1.4)),
                       ),
-                      validator: (v) => (v == null || v.length < 6) ? 'Şifre en az 6 karakter olmalı' : null,
+                      validator: (v) => (v == null || v.length < 6) ? AppLocalizations.of(context)!.passwordMinLength : null,
                     ),
                     const SizedBox(height: AppSpacing.lg),
-                    AppButton(label: 'Giriş Yap', onPressed: _submit, loading: _loading),
+                    AppButton(label: AppLocalizations.of(context)!.loginAction, onPressed: _submit, loading: _loading),
                     const SizedBox(height: AppSpacing.sm),
                     TextButton(
                       onPressed: () => context.push('/register'),
@@ -230,7 +230,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                     const SizedBox(height: AppSpacing.sm),
                     AppButton.secondary(
-                      label: 'Google ile Giriş Yap',
+                      label: AppLocalizations.of(context)!.loginWithGoogle,
                       onPressed: _submitGoogle,
                       loading: _googleLoading,
                       icon: Icons.g_mobiledata,
@@ -238,7 +238,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     if (_biometricAvailable) ...[
                       const SizedBox(height: AppSpacing.xs),
                       AppButton.secondary(
-                        label: 'Parmak İzi ile Giriş Yap',
+                        label: AppLocalizations.of(context)!.loginWithFingerprint,
                         onPressed: _submitBiometric,
                         loading: _biometricLoading,
                         icon: Icons.fingerprint,

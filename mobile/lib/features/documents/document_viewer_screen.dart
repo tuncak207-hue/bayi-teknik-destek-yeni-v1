@@ -444,7 +444,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                 Expanded(
                   child: TextField(
                     controller: _noteController,
-                    decoration: const InputDecoration(hintText: 'Bir not ekleyin...', isDense: true),
+                    decoration: InputDecoration(hintText: AppLocalizations.of(context)!.addNoteHint, isDense: true),
                     onSubmitted: (_) => _addNote(),
                   ),
                 ),

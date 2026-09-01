@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
 
 /// Tek, premium bir e-posta giriş alanı. Önceden bu alan "kullanıcı
@@ -77,7 +78,7 @@ class EmailSplitFieldState extends State<EmailSplitField> {
           autocorrect: false,
           style: const TextStyle(fontSize: 15, color: Colors.black),
           decoration: InputDecoration(
-            hintText: 'E-posta adresiniz',
+            hintText: AppLocalizations.of(context)!.emailAddressHint,
             hintStyle: TextStyle(fontSize: 15, color: Colors.grey.shade400),
             prefixIcon: Icon(Icons.mail_outline, size: 20, color: _focused ? AppColors.brand : Colors.grey.shade400),
             border: InputBorder.none,

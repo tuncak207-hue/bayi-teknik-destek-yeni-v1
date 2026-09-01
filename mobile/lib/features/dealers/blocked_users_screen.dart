@@ -63,7 +63,7 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
             child: _loading
                 ? const Center(child: CircularProgressIndicator())
                 : _blocked.isEmpty
-                    ? const AppEmptyState(icon: Icons.block, title: 'Engellediğiniz bir bayi yok')
+                    ? AppEmptyState(icon: Icons.block, title: AppLocalizations.of(context)!.notFoundBlockedDealer)
                     : ListView.separated(
                         padding: const EdgeInsets.all(AppSpacing.md),
                         itemCount: _blocked.length,

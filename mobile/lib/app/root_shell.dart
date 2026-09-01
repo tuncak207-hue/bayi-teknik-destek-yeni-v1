@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:dio/dio.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -116,7 +117,7 @@ class _RootShellState extends State<RootShell> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Arama başlatılamadı. Cihazınızda bir telefon uygulaması olduğundan emin olun.')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.callStartFailed)),
         );
       }
     }
@@ -176,20 +177,20 @@ class _RootShellState extends State<RootShell> {
         onDestinationSelected: handleTap,
         backgroundColor: scheme.surface,
         destinations: [
-          const NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home_rounded),
-            label: 'Ana Sayfa',
+          NavigationDestination(
+            icon: const Icon(Icons.home_outlined),
+            selectedIcon: const Icon(Icons.home_rounded),
+            label: AppLocalizations.of(context)!.navHome,
           ),
-          const NavigationDestination(
-            icon: Icon(Icons.auto_awesome_outlined),
-            selectedIcon: Icon(Icons.auto_awesome),
-            label: 'AI Asistan',
+          NavigationDestination(
+            icon: const Icon(Icons.auto_awesome_outlined),
+            selectedIcon: const Icon(Icons.auto_awesome),
+            label: AppLocalizations.of(context)!.navAi,
           ),
           NavigationDestination(
             icon: const Icon(Icons.call_outlined),
             selectedIcon: const Icon(Icons.call),
-            label: 'Destek',
+            label: AppLocalizations.of(context)!.navSupport,
           ),
           NavigationDestination(
             icon: Badge(
@@ -202,12 +203,12 @@ class _RootShellState extends State<RootShell> {
               label: Text(_unreadMessages > 9 ? '9+' : '$_unreadMessages'),
               child: const Icon(Icons.forum_rounded),
             ),
-            label: 'Mesajlar',
+            label: AppLocalizations.of(context)!.navMessages,
           ),
-          const NavigationDestination(
-            icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person_rounded),
-            label: 'Profil',
+          NavigationDestination(
+            icon: const Icon(Icons.person_outline),
+            selectedIcon: const Icon(Icons.person_rounded),
+            label: AppLocalizations.of(context)!.navProfile,
           ),
         ],
       ),

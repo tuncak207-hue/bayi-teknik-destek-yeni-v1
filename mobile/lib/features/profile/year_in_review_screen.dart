@@ -51,11 +51,11 @@ class _YearInReviewScreenState extends State<YearInReviewScreen> {
                     style: const TextStyle(color: Colors.white70, fontSize: 16),
                   ),
                   const SizedBox(height: AppSpacing.lg),
-                  _StatLine(value: '${_data!['questionsAsked']}', label: 'soru sordunuz'),
-                  _StatLine(value: '${_data!['favoritesAdded']}', label: 'doküman/cevap favoriledi niz'),
-                  _StatLine(value: '${_data!['commentsWritten']}', label: 'topluluk yorumu yazdınız'),
+                  _StatLine(value: '${_data!['questionsAsked']}', label: AppLocalizations.of(context)!.statQuestionsAsked),
+                  _StatLine(value: '${_data!['favoritesAdded']}', label: AppLocalizations.of(context)!.statFavoritesAdded),
+                  _StatLine(value: '${_data!['commentsWritten']}', label: AppLocalizations.of(context)!.statCommentsWritten),
                   if (_data!['mostActiveMonth'] != null)
-                    _StatLine(value: _data!['mostActiveMonth'], label: 'en aktif ayınızdı', isText: true),
+                    _StatLine(value: _data!['mostActiveMonth'], label: AppLocalizations.of(context)!.statMostActiveMonth, isText: true),
                   const SizedBox(height: AppSpacing.lg),
                   const Text(
                     'Bu emek, sahadaki işinize değer katıyor. 👏',

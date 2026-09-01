@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import '../data/turkey_locations.dart';
 
 /// İl seçilince ilçe listesi otomatik gelen, dinamik filtrelenen,
@@ -29,7 +30,7 @@ class ProvinceDistrictPicker extends StatelessWidget {
           child: DropdownButtonFormField<String>(
             value: province,
             isExpanded: true,
-            decoration: const InputDecoration(labelText: 'İl', border: InputBorder.none, isDense: true),
+            decoration: InputDecoration(labelText: AppLocalizations.of(context)!.provinceField, border: InputBorder.none, isDense: true),
             items: kTurkeyProvinceDistricts.keys
                 .map((p) => DropdownMenuItem(value: p, child: Text(p, overflow: TextOverflow.ellipsis)))
                 .toList(),
@@ -46,7 +47,7 @@ class ProvinceDistrictPicker extends StatelessWidget {
             value: district,
             isExpanded: true,
             // İl seçilmeden ilçe seçilemez.
-            decoration: InputDecoration(labelText: 'İlçe', border: InputBorder.none, isDense: true, enabled: province != null),
+            decoration: InputDecoration(labelText: AppLocalizations.of(context)!.districtField, border: InputBorder.none, isDense: true, enabled: province != null),
             items: districts.map((d) => DropdownMenuItem(value: d, child: Text(d, overflow: TextOverflow.ellipsis))).toList(),
             onChanged: province == null ? null : onDistrictChanged,
             hint: Text(province == null ? 'Önce il seçin' : 'Seçin', style: TextStyle(color: Colors.grey.shade400, fontSize: 13)),

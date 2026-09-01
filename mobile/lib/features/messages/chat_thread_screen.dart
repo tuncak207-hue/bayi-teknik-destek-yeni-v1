@@ -519,7 +519,7 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
                 controller: _searchController,
                 autofocus: true,
                 decoration: InputDecoration(
-                  hintText: 'Bu sohbette ara...',
+                  hintText: AppLocalizations.of(context)!.searchInChatHint,
                   prefixIcon: _searching
                       ? const Padding(padding: EdgeInsets.all(12), child: SizedBox(height: 16, width: 16, child: CircularProgressIndicator(strokeWidth: 2)))
                       : const Icon(Icons.search),
@@ -752,7 +752,7 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
                   Expanded(
                     child: TextField(
                       controller: _inputController,
-                      decoration: const InputDecoration(hintText: 'Mesaj yazın...'),
+                      decoration: InputDecoration(hintText: AppLocalizations.of(context)!.writeMessageHint),
                       onChanged: (_) => _socket.sendTyping(widget.conversationId),
                       onSubmitted: (_) => _send(),
                     ),
