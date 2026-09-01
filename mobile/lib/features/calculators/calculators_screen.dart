@@ -258,7 +258,7 @@ class _ResultCard extends StatelessWidget {
           Align(
             alignment: Alignment.centerRight,
             child: TextButton.icon(
-              onPressed: () => CalculatorPdfExporter.export(context: context, title: title, result: result!, labels: _kLabels),
+              onPressed: () => CalculatorPdfExporter.export(context: context, title: title ?? AppLocalizations.of(context)!.calculationResult, result: result!, labels: _kLabels(context)),
               icon: const Icon(Icons.picture_as_pdf_outlined, size: 16),
               label: Text(AppLocalizations.of(context)!.getPdfReport),
             ),

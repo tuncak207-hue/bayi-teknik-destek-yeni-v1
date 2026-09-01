@@ -275,7 +275,7 @@ class _AppointmentCard extends StatelessWidget {
                     style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15.5, color: AppColors.navy, letterSpacing: -0.2),
                   ),
                 ),
-                _statusPill(status),
+                _statusPill(context, status),
               ],
             ),
             const SizedBox(height: 10),
@@ -363,7 +363,7 @@ class _AppointmentCard extends StatelessWidget {
     );
   }
 
-  Widget _statusPill(String status) {
+  Widget _statusPill(BuildContext context, String status) {
     final map = <String, (String, Color, IconData)>{
       'PENDING': (AppLocalizations.of(context)!.statusPendingApproval, Colors.orange, Icons.hourglass_empty),
       'CONFIRMED': (AppLocalizations.of(context)!.statusConfirmed, Colors.green, Icons.check_circle_outline),
