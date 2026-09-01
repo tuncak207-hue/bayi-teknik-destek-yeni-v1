@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../../l10n/app_localizations.dart';
 import '../../core/widgets/design_system.dart';
 import 'package:go_router/go_router.dart';
 import 'package:dio/dio.dart';
@@ -79,7 +79,7 @@ class _DealersScreenState extends State<DealersScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: const AppPageHeader(title: AppLocalizations.of(context)!.screenDealers),
+      appBar: AppPageHeader(title: AppLocalizations.of(context)!.screenDealers),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _dealers.isEmpty

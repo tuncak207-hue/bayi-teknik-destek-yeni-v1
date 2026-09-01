@@ -19,7 +19,7 @@ import '../../core/storage/local_category_badge_store.dart';
 import '../announcements/critical_announcement_gate.dart';
 import 'quick_actions_data.dart';
 import '../../core/events/home_scroll_to_top_bus.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../../l10n/app_localizations.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -39,25 +39,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Map<String, int> _categoryBadges = {};
   Map<String, int> _localBadges = {};
   final ScrollController _scrollController = ScrollController();
-  bool _isRefreshing = false;
 
   void _scrollToTop() {
     if (_scrollController.hasClients) {
       _scrollController.animateTo(0, duration: const Duration(milliseconds: 350), curve: Curves.easeOut);
-    }
-  }
-
-  Future<void> _refreshHome() async {
-    if (_isRefreshing) return;
-    setState(() => _isRefreshing = true);
-    try {
-      await Future.wait<void>([
-        _loadStats(),
-        _loadPinnedDocuments(),
-        _loadCategoryBadges(),
-      ]);
-    } finally {
-      if (mounted) setState(() => _isRefreshing = false);
     }
   }
 
@@ -110,19 +95,18 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _loadCategoryBadges() async {
     try {
       final res = await _dio.get('/notifications/unread-counts-by-category');
-      final data = Map<String, dynamic>.from(res.data as Map);
       if (mounted) {
         setState(() => _categoryBadges = {
-              'messages': data['messages'] ?? 0,
-              'community': data['community'] ?? 0,
-              'groups': data['groups'] ?? 0,
-              'appointments': data['appointments'] ?? 0,
-              'training': data['training'] ?? 0,
-              'specialty': data['certification'] ?? 0,
-              'announcements': data['announcements'] ?? 0,
-              'sales_consultant': data['salesConsultant'] ?? 0,
-              'support_tickets': data['supportTickets'] ?? 0,
-              'quotes': data['quotes'] ?? 0,
+              'messages': res.data['messages'] ?? 0,
+              'community': res.data['community'] ?? 0,
+              'groups': res.data['groups'] ?? 0,
+              'appointments': res.data['appointments'] ?? 0,
+              'training': res.data['training'] ?? 0,
+              'specialty': res.data['certification'] ?? 0,
+              'announcements': res.data['announcements'] ?? 0,
+              'sales_consultant': res.data['salesConsultant'] ?? 0,
+              'support_tickets': res.data['supportTickets'] ?? 0,
+              'quotes': res.data['quotes'] ?? 0,
             });
       }
     } catch (_) {}
@@ -223,7 +207,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (!mounted) return;
       if (attempt < 4) {
         await Future.delayed(Duration(milliseconds: 400 * (1 << attempt)));
-        if (mounted) await _loadStats(attempt: attempt + 1);
+        if (mounted) _loadStats(attempt: attempt + 1);
         return;
       }
       setState(() => _statsError = true);
@@ -243,15 +227,8 @@ class _HomeScreenState extends State<HomeScreen> {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: Stack(
-        children: [
-          RefreshIndicator(
-            color: AppColors.brand,
-            displacement: 28,
-            semanticsLabel: 'Ana sayfa yenileniyor',
-            onRefresh: _refreshHome,
-            child: CustomScrollView(
-              controller: _scrollController,
+      body: CustomScrollView(
+        controller: _scrollController,
         slivers: [
           SliverPadding(
             padding: const EdgeInsets.only(top: 8),
@@ -291,7 +268,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: const Icon(Icons.auto_awesome, color: Colors.white, size: 24),
                     ),
                     const SizedBox(width: AppSpacing.sm + 2),
-                    const Expanded(
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -481,20 +458,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ],
-            ),
-          ),
-          if (_isRefreshing)
-            const Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: LinearProgressIndicator(
-                minHeight: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(AppColors.brand),
-                backgroundColor: AppColors.primarySoft,
-              ),
-            ),
-        ],
       ),
     );
   }
@@ -521,6 +484,7 @@ class _StatCard extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppRadius.lg),
             border: Border.all(color: AppColors.outline.withValues(alpha: 0.72)),
+            boxShadow: AppShadows.subtle,
           ),
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs, vertical: AppSpacing.xs),
           child: Stack(
@@ -590,6 +554,7 @@ class _QuickAction extends StatelessWidget {
             color: const Color(0xFFF8F7FC),
             borderRadius: BorderRadius.circular(AppRadius.lg),
             border: Border.all(color: AppColors.outline.withValues(alpha: 0.72)),
+            boxShadow: AppShadows.card,
           ),
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.sm),
           child: Stack(

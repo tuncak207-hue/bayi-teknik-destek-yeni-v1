@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../../l10n/app_localizations.dart';
 import 'package:flutter/cupertino.dart';
 import 'dart:io' show Platform;
 import 'package:dio/dio.dart';
@@ -331,7 +331,7 @@ class _CreateVisitScreenState extends State<_CreateVisitScreen> {
     }
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: const AppPageHeader(title: AppLocalizations.of(context)!.screenNewVisit),
+      appBar: AppPageHeader(title: AppLocalizations.of(context)!.screenNewVisit),
       body: SafeArea(child: _buildForm()),
     );
   }
@@ -559,7 +559,7 @@ class _VisitDetailScreenState extends State<_VisitDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: const AppPageHeader(title: AppLocalizations.of(context)!.screenVisitDetail),
+      appBar: AppPageHeader(title: AppLocalizations.of(context)!.screenVisitDetail),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _visit == null

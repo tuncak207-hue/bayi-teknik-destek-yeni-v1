@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../../l10n/app_localizations.dart';
 import 'package:flutter/cupertino.dart';
 import 'dart:io' show Platform;
 import 'package:dio/dio.dart';
@@ -480,7 +480,7 @@ class _CreateAppointmentSheetState extends State<_CreateAppointmentSheet> {
     }
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const AppPageHeader(title: AppLocalizations.of(context)!.screenNewAppointment),
+      appBar: AppPageHeader(title: AppLocalizations.of(context)!.screenNewAppointment),
       body: SafeArea(child: _buildForm()),
     );
   }

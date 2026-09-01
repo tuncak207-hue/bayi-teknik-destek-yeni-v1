@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../../l10n/app_localizations.dart';
 import 'package:open_filex/open_filex.dart';
 import '../../core/storage/offline_documents_store.dart';
 import '../../core/theme/app_theme.dart';

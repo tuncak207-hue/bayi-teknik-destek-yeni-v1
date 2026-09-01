@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../../l10n/app_localizations.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/design_system.dart';
 import 'quick_actions_data.dart';
@@ -42,7 +42,7 @@ class _ReorderQuickActionsScreenState extends State<ReorderQuickActionsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: const AppPageHeader(title: AppLocalizations.of(context)!.screenReorderQuickActions),
+      appBar: AppPageHeader(title: AppLocalizations.of(context)!.screenReorderQuickActions),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : Column(

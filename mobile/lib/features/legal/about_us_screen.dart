@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../../l10n/app_localizations.dart';
 import '../../core/widgets/design_system.dart';
 
 class AboutUsScreen extends StatelessWidget {
@@ -8,7 +8,7 @@ class AboutUsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppPageHeader(title: AppLocalizations.of(context)!.screenAboutUs),
+      appBar: AppPageHeader(title: AppLocalizations.of(context)!.screenAboutUs),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
