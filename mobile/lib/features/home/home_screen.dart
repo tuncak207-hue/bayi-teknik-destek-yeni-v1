@@ -15,6 +15,7 @@ import '../../core/auth/current_user.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_components.dart';
 import '../../core/storage/stat_badge_tracker.dart';
+import '../../core/storage/local_category_badge_store.dart';
 import '../announcements/critical_announcement_gate.dart';
 import 'quick_actions_data.dart';
 import '../../core/events/home_scroll_to_top_bus.dart';
@@ -35,6 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<dynamic> _pinnedDocuments = [];
   List<QuickActionDef> _quickActionsOrder = kAllQuickActions;
   Map<String, int> _categoryBadges = {};
+  Map<String, int> _localBadges = {};
   final ScrollController _scrollController = ScrollController();
 
   void _scrollToTop() {
@@ -57,6 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
     NotificationBadgeBus.trigger.addListener(_loadCategoryBadges);
     StatsRefreshBus.trigger.addListener(_onStatsRefreshBump);
+    LocalCategoryBadgeStore().trigger.addListener(_loadLocalBadges);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) CriticalAnnouncementGate.checkAndShow(context);
     });
@@ -83,6 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _scrollController.dispose();
     NotificationBadgeBus.trigger.removeListener(_loadCategoryBadges);
     StatsRefreshBus.trigger.removeListener(_onStatsRefreshBump);
+    LocalCategoryBadgeStore().trigger.removeListener(_loadLocalBadges);
     HomeScrollToTopBus.trigger.removeListener(_scrollToTop);
     super.dispose();
   }
@@ -101,9 +105,26 @@ class _HomeScreenState extends State<HomeScreen> {
               'announcements': res.data['announcements'] ?? 0,
               'sales_consultant': res.data['salesConsultant'] ?? 0,
               'support_tickets': res.data['supportTickets'] ?? 0,
+              'quotes': res.data['quotes'] ?? 0,
             });
       }
     } catch (_) {}
+    _loadLocalBadges();
+  }
+
+  // Kullanıcı isteği: "dosya indirdiğimde/favoriye eklediğimde ilgili
+  // kartta rozet olmalı" — bunlar backend'de "okunmadı bildirimi" olarak
+  // izlenmediği için (indirme tamamen yerel, favori ise ayrı bir
+  // istatistik), tamamen cihazda tutulan basit bir sayaçla besleniyor.
+  Future<void> _loadLocalBadges() async {
+    final offlineDocs = await LocalCategoryBadgeStore().get('offline_docs');
+    final favorites = await LocalCategoryBadgeStore().get('favorites');
+    if (mounted) {
+      setState(() => _localBadges = {
+            'offline_docs': offlineDocs,
+            'favorites': favorites,
+          });
+    }
   }
 
   Future<void> _loadPinnedDocuments() async {
@@ -134,7 +155,9 @@ class _HomeScreenState extends State<HomeScreen> {
         action.id == 'training' ||
         action.id == 'specialty' ||
         action.id == 'announcements' ||
-        action.id == 'sales_consultant') {
+        action.id == 'sales_consultant' ||
+        action.id == 'support_tickets' ||
+        action.id == 'quotes') {
       _loadCategoryBadges();
     }
   }
@@ -355,10 +378,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   .map((action) => _QuickAction(
                         icon: action.icon,
                         label: action.label,
-                        badgeCount: _categoryBadges[action.id] ?? 0,
+                        badgeCount: (_categoryBadges[action.id] ?? 0) + (_localBadges[action.id] ?? 0),
                         onTap: () {
                           if (_categoryBadges.containsKey(action.id) && (_categoryBadges[action.id] ?? 0) > 0) {
                             setState(() => _categoryBadges[action.id] = 0);
+                          }
+                          if (_localBadges.containsKey(action.id) && (_localBadges[action.id] ?? 0) > 0) {
+                            setState(() => _localBadges[action.id] = 0);
+                            LocalCategoryBadgeStore().clear(action.id);
                           }
                           _handleQuickActionTap(action);
                         },

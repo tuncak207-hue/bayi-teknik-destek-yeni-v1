@@ -23,7 +23,8 @@ export type NotificationType =
   | 'sla_warning'
   | 'training_suggestion'
   | 'ticket_created'
-  | 'ticket_status_changed';
+  | 'ticket_status_changed'
+  | 'quote_status_changed';
 
 @Injectable()
 export class NotificationsService implements OnModuleInit {
@@ -169,7 +170,7 @@ export class NotificationsService implements OnModuleInit {
    * her biri kendi bildirim türüne göre ayrı ayrı rozet gösterebilsin diye.
    */
   async unreadCountsByCategory(userId: string) {
-    const [messages, community, groups, appointments, training, certification, announcements, salesConsultant, supportTickets] = await Promise.all([
+    const [messages, community, groups, appointments, training, certification, announcements, salesConsultant, supportTickets, quotes] = await Promise.all([
       this.prisma.notification.count({ where: { userId, readAt: null, type: 'new_message' } }),
       this.prisma.notification.count({ where: { userId, readAt: null, type: 'reply' } }),
       this.prisma.notification.count({ where: { userId, readAt: null, type: 'group_message' } }),
@@ -191,8 +192,12 @@ export class NotificationsService implements OnModuleInit {
           type: { in: ['ticket_created', 'ticket_status_changed', 'ticket_assigned', 'ticket_escalated', 'emergency_ticket', 'training_suggestion'] },
         },
       }),
+      // ÖNEMLİ DÜZELTME: "teklif durumu değişince hiçbir yerde rozet
+      // çıkmıyor" — bu kategori hiç yoktu, Teklif Al kartı hiçbir zaman
+      // rozet gösteremiyordu.
+      this.prisma.notification.count({ where: { userId, readAt: null, type: 'quote_status_changed' } }),
     ]);
-    return { messages, community, groups, appointments, training, certification, announcements, salesConsultant, supportTickets };
+    return { messages, community, groups, appointments, training, certification, announcements, salesConsultant, supportTickets, quotes };
   }
 
   async unreadCount(userId: string) {

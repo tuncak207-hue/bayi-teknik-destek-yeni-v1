@@ -8,6 +8,8 @@ import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/design_system.dart';
 import '../../core/storage/offline_documents_store.dart';
+import '../../core/storage/local_category_badge_store.dart';
+import '../../core/events/stats_refresh_bus.dart';
 import '../../core/auth/current_user.dart';
 
 /// Not: PDF, uygulama içinde gömülü bir görüntüleyici yerine cihazın
@@ -109,6 +111,10 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
   Future<void> _toggleFavorite() async {
     final res = await _dio.post('/favorites/documents/${widget.documentId}');
     setState(() => _favorited = res.data['favorited'] == true);
+    // Kullanıcı isteği: "favoriye eklediğimde favoriler kartı anında
+    // güncellenmeli".
+    StatsRefreshBus.bump();
+    if (_favorited) await LocalCategoryBadgeStore().increment('favorites');
   }
 
   Future<void> _openDocument() async {
@@ -174,6 +180,9 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
         model: _document?['model'] ?? '',
         localPath: path,
       );
+      // Kullanıcı isteği: "dosya indirdiğimde İndirilenlerim kartında
+      // rozet olmalı" — anlık, yerel bir rozet sayacı.
+      await LocalCategoryBadgeStore().increment('offline_docs');
 
       setState(() => _localPath = path);
       if (mounted) {

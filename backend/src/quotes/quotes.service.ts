@@ -1,10 +1,15 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../common/prisma/prisma.service';
 import { StorageService } from '../common/storage/storage.service';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class QuotesService {
-  constructor(private prisma: PrismaService, private storage: StorageService) {}
+  constructor(
+    private prisma: PrismaService,
+    private storage: StorageService,
+    private notifications: NotificationsService,
+  ) {}
 
   listPriceItems() {
     return this.prisma.priceListItem.findMany({ orderBy: [{ category: 'asc' }, { name: 'asc' }] });
@@ -261,7 +266,22 @@ export class QuotesService {
     return { success: true };
   }
 
-  updateStatus(id: string, status: string) {
-    return this.prisma.quoteRequest.update({ where: { id }, data: { status: status as any } });
+  // ÖNEMLİ DÜZELTME: "teklif durumu değişince hiçbir bildirim
+  // gönderilmiyor" — diğer tüm modüllerde (randevu, teknik destek,
+  // eğitim vb.) durum değişince bayiye bildirim gidiyordu, teklifte hiç
+  // yoktu. Sadece bayinin ilgileneceği ACCEPTED/REJECTED için gönderiliyor
+  // (DRAFT/SENT, bayinin kendi eylemi olduğu için gereksiz).
+  async updateStatus(id: string, status: string) {
+    const updated = await this.prisma.quoteRequest.update({ where: { id }, data: { status: status as any } });
+    if (status === 'ACCEPTED' || status === 'REJECTED') {
+      await this.notifications.notifyUser(
+        updated.dealerId,
+        'quote_status_changed',
+        status === 'ACCEPTED' ? 'Teklifiniz Onaylandı' : 'Teklifiniz Reddedildi',
+        `"${updated.title}" teklifiniz için durum güncellendi.`,
+        { quoteId: id },
+      );
+    }
+    return updated;
   }
 }

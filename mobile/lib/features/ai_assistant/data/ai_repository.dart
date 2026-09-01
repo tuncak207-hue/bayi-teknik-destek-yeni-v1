@@ -63,7 +63,12 @@ class AiRepository {
     return res.data['id'] as String;
   }
 
-  Future<void> toggleFavorite(String messageId) => _dio.post('/chat/messages/$messageId/favorite');
+  Future<void> toggleFavorite(String messageId) async {
+    await _dio.post('/chat/messages/$messageId/favorite');
+    // Kullanıcı isteği: "favoriye eklediğimde favoriler kartı anında
+    // güncellenmeli" — AI Sorusu ile aynı desende.
+    StatsRefreshBus.bump();
+  }
 
   Future<void> verifyMemory(String memoryId) => _dio.patch('/ai/technical-memory/$memoryId/verify');
 }
