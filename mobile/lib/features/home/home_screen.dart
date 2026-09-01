@@ -92,6 +92,24 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
+  // Kullanıcı isteği: "Ana Sayfa'da aşağıya çekince sayfa yenilemesi
+  // istiyorum, gelmeyen bildirim varsa yenilenince gelsin" — asıl öncelik
+  // zaten anlık soket bildirimleri (bunlar zaten çalışıyor); bu, sadece
+  // soket bir şekilde bağlantıyı kaçırırsa kullanıcının elle "her şeyi
+  // tazele" diyebilmesi için bir yedek/tamamlayıcı mekanizma. Tüm
+  // kartları (istatistikler, rozetler, sabitlenmiş dokümanlar) paralel
+  // olarak yeniden çekiyor.
+  Future<void> _onPullToRefresh() async {
+    // Üst çubuktaki zil ikonu sayısının da tazelenmesi için — bu,
+    // root_shell.dart'taki dinleyiciyi tetikliyor.
+    NotificationBadgeBus.bump();
+    await Future.wait([
+      _loadStats(),
+      _loadCategoryBadges(),
+      _loadPinnedDocuments(),
+    ]);
+  }
+
   Future<void> _loadCategoryBadges() async {
     try {
       final res = await _dio.get('/notifications/unread-counts-by-category');
@@ -227,7 +245,9 @@ class _HomeScreenState extends State<HomeScreen> {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: CustomScrollView(
+      body: RefreshIndicator(
+        onRefresh: _onPullToRefresh,
+        child: CustomScrollView(
         controller: _scrollController,
         slivers: [
           SliverPadding(
@@ -458,6 +478,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ],
+      ),
       ),
     );
   }
