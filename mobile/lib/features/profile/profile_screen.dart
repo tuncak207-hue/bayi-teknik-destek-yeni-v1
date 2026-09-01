@@ -133,6 +133,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final firstNameController = TextEditingController(text: _profile!['firstName']);
     final lastNameController = TextEditingController(text: _profile!['lastName']);
     final phoneController = TextEditingController(text: _profile!['phone']);
+    final companyController = TextEditingController(text: _profile!['company']);
     String? error;
 
     await showDialog(
@@ -149,6 +150,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 'firstName': firstNameController.text.trim(),
                 'lastName': lastNameController.text.trim(),
                 'phone': phoneController.text.trim(),
+                'company': companyController.text.trim(),
               });
               if (dialogContext.mounted) Navigator.pop(dialogContext);
               await _load();
@@ -182,6 +184,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     label: AppLocalizations.of(context)!.phone,
                     icon: Icons.phone_outlined,
                     keyboardType: TextInputType.phone,
+                  ),
+                  const SizedBox(height: 10),
+                  _ProfileDialogField(
+                    controller: companyController,
+                    label: AppLocalizations.of(context)!.companyLabel,
+                    icon: Icons.business_outlined,
                   ),
                 ],
               ),
