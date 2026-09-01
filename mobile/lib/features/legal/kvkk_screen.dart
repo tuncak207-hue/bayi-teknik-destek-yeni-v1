@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../core/widgets/design_system.dart';
 
 /// ENTPA Bayi Teknik Destek uygulaması için çalışma taslağıdır.
@@ -11,7 +12,7 @@ class KvkkScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppPageHeader(title: 'KVKK Aydınlatma Metni'),
+      appBar: const AppPageHeader(title: AppLocalizations.of(context)!.screenKvkk),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: const [

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/cupertino.dart';
 import 'dart:io' show Platform;
 import 'package:dio/dio.dart';
@@ -332,14 +333,14 @@ class _CreateTicketScreenState extends State<_CreateTicketScreen> {
             onPressed: () => Navigator.pop(context),
             child: const Text('İptal', style: TextStyle(color: CupertinoColors.systemGrey, fontSize: 16)),
           ),
-          middle: Text(widget.isEmergency ? 'Acil Teknik Destek' : 'Yeni Teknik Destek Kaydı', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: AppColors.navy)),
+          middle: Text(widget.isEmergency ? AppLocalizations.of(context)!.screenEmergencySupport : AppLocalizations.of(context)!.screenNewSupportTicket, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: AppColors.navy)),
         ),
         child: SafeArea(child: _buildForm()),
       );
     }
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppPageHeader(title: widget.isEmergency ? 'Acil Teknik Destek' : 'Yeni Teknik Destek Kaydı'),
+      appBar: AppPageHeader(title: widget.isEmergency ? AppLocalizations.of(context)!.screenEmergencySupport : AppLocalizations.of(context)!.screenNewSupportTicket),
       body: SafeArea(child: _buildForm()),
     );
   }
@@ -466,7 +467,7 @@ class _TicketDetailScreenState extends State<_TicketDetailScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: const AppPageHeader(title: 'Kayıt Detayı'),
+      appBar: AppPageHeader(title: AppLocalizations.of(context)!.screenRecordDetail),
       body: RefreshIndicator(
         onRefresh: _load,
         child: ListView(

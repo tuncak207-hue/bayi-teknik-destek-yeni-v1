@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:dio/dio.dart';
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
@@ -46,7 +47,7 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppPageHeader(title: 'Engellenen Bayiler'),
+      appBar: AppPageHeader(title: AppLocalizations.of(context)!.blockedDealers),
       backgroundColor: const Color(0xFFFFFFFF),
       body: SafeArea(
         child: Column(

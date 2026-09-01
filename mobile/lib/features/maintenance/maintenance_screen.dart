@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/cupertino.dart';
 import 'dart:io' show Platform;
 import 'dart:typed_data';
@@ -400,7 +401,7 @@ class _CreateMaintenanceScreenState extends State<_CreateMaintenanceScreen> {
     }
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: const AppPageHeader(title: 'Yeni Bakım Kaydı'),
+      appBar: AppPageHeader(title: AppLocalizations.of(context)!.screenNewMaintenance),
       // ÖNEMLİ DÜZELTME: Android'de SafeArea eksikti, alttaki sabit
       // "Kaydet" butonu sistem gezinme çubuğunun arkasında kalıyordu.
       body: SafeArea(child: _buildForm()),

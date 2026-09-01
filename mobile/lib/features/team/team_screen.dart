@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../core/widgets/design_system.dart';
 import 'package:dio/dio.dart';
 import '../../core/api/api_client.dart';
@@ -77,7 +78,7 @@ class _TeamScreenState extends State<TeamScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: const AppPageHeader(title: 'Ekip Üyelerim'),
+      appBar: AppPageHeader(title: AppLocalizations.of(context)!.teamMembers),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _openAddSheet,
         icon: const Icon(Icons.person_add_outlined),

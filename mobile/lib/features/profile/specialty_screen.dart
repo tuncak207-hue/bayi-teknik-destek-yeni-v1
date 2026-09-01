@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:image_picker/image_picker.dart';
@@ -137,7 +138,7 @@ class _SpecialtyScreenState extends State<SpecialtyScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppPageHeader(
-        title: 'Uzmanlık ve Sertifikalar',
+        title: AppLocalizations.of(context)!.screenSpecialty,
         titleBadge: Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(

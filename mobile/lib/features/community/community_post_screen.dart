@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../core/widgets/design_system.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:dio/dio.dart';
@@ -90,7 +91,7 @@ class _CommunityPostScreenState extends State<CommunityPostScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: const AppPageHeader(title: 'Bayilere Sor'),
+      appBar: AppPageHeader(title: AppLocalizations.of(context)!.qaCommunity),
       body: Column(
         children: [
           Expanded(

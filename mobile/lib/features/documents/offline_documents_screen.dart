@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:open_filex/open_filex.dart';
 import '../../core/storage/offline_documents_store.dart';
 import '../../core/theme/app_theme.dart';
@@ -60,7 +61,7 @@ class _OfflineDocumentsScreenState extends State<OfflineDocumentsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppPageHeader(
-        title: 'İndirilenlerim',
+        title: AppLocalizations.of(context)!.qaOfflineDocs,
         titleBadge: Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(

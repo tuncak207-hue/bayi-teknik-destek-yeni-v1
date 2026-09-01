@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:dio/dio.dart';
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/design_system.dart';
 import '../auth/data/auth_repository.dart';
+import '../../core/localization/locale_controller.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -57,6 +59,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
         setState(() => _loadError = 'Profil yüklenemedi. İnternet bağlantınızı kontrol edip tekrar deneyin.');
       }
     }
+  }
+
+  /// Kullanıcı isteği: "İngilizce dil desteği ekle" — uygulama arayüz
+  /// dilini değiştiren basit bir seçim penceresi.
+  Future<void> _openLanguagePicker() async {
+    final current = LocaleController().locale.value?.languageCode;
+    await showDialog(
+      context: context,
+      builder: (dialogContext) => SimpleDialog(
+        title: const Text('Dil Seçin'),
+        children: [
+          _langOption(dialogContext, 'Türkçe', null, current == null),
+          _langOption(dialogContext, 'English', 'en', current == 'en'),
+        ],
+      ),
+    );
+  }
+
+  Widget _langOption(BuildContext dialogContext, String label, String? code, bool selected) {
+    return SimpleDialogOption(
+      onPressed: () {
+        LocaleController().setLocale(code);
+        Navigator.pop(dialogContext);
+      },
+      child: Row(
+        children: [
+          Icon(selected ? Icons.radio_button_checked : Icons.radio_button_unchecked, size: 18, color: selected ? AppColors.brand : Colors.grey),
+          const SizedBox(width: 10),
+          Text(label),
+        ],
+      ),
+    );
   }
 
   Future<void> _logout() async {
@@ -266,7 +300,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     if (_loadError != null) {
       return Scaffold(
-        appBar: const AppPageHeader(title: 'Profil'),
+        appBar: AppPageHeader(title: AppLocalizations.of(context)!.profileTitle),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(AppSpacing.xl),
@@ -311,7 +345,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final scheme = Theme.of(context).colorScheme;
     return Scaffold(
       backgroundColor: scheme.surface,
-      appBar: const AppPageHeader(title: 'Profil'),
+      appBar: AppPageHeader(title: AppLocalizations.of(context)!.profileTitle),
       body: ListView(
         children: [
           Padding(
@@ -408,7 +442,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               children: [
                 // ---- Hesap Bilgileri ----
                 _ProfileSection(
-                  title: 'Hesap Bilgileri',
+                  title: AppLocalizations.of(context)!.accountInfo,
                   children: [
                     _ProfileTile(icon: Icons.phone_outlined, title: _profile!['phone'] ?? ''),
                     _ProfileTile(icon: Icons.email_outlined, title: _profile!['email'] ?? ''),
@@ -419,7 +453,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 if (_badges.isNotEmpty) ...[
                   const SizedBox(height: AppSpacing.md),
                   _ProfileSection(
-                    title: 'Rozetler',
+                    title: AppLocalizations.of(context)!.badges,
                     children: [
                       Padding(
                         padding: const EdgeInsets.fromLTRB(AppSpacing.sm, AppSpacing.xs, AppSpacing.sm, AppSpacing.sm),
@@ -461,11 +495,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 // ---- Tercihler ----
                 const SizedBox(height: AppSpacing.md),
                 _ProfileSection(
-                  title: 'Tercihler',
+                  title: AppLocalizations.of(context)!.preferences,
                   children: [
                     _ProfileSwitchTile(
                       icon: Icons.notifications_outlined,
-                      title: 'Bildirimler',
+                      title: AppLocalizations.of(context)!.notifications,
                       value: _profile!['notificationsEnabled'] ?? true,
                       onChanged: (v) async {
                         await _dio.patch('/users/me/settings', data: {'notificationsEnabled': v});
@@ -475,11 +509,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     _ProfileTile(
                       icon: Icons.language_outlined,
                       title: 'Dil',
-                      trailing: Text(_profile!['language'] == 'tr' ? 'Türkçe' : _profile!['language']),
+                      subtitle: 'Uygulama arayüz dilini değiştirir',
+                      onTap: _openLanguagePicker,
                     ),
                     _ProfileTile(
                       icon: Icons.settings_outlined,
-                      title: 'Ayarlar',
+                      title: AppLocalizations.of(context)!.settings,
                       subtitle: 'Bildirim türleri, sessiz saatler, yazı boyutu',
                       onTap: () => context.push('/settings'),
                     ),
@@ -489,28 +524,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 // ---- Hesap Yönetimi ----
                 const SizedBox(height: AppSpacing.md),
                 _ProfileSection(
-                  title: 'Hesap Yönetimi',
+                  title: AppLocalizations.of(context)!.accountManagement,
                   children: [
                     _ProfileTile(icon: Icons.lock_outline, title: 'Şifre Değiştir', onTap: _openChangePasswordDialog),
                     _ProfileTile(
                       icon: Icons.groups_outlined,
-                      title: 'Ekip Üyelerim',
+                      title: AppLocalizations.of(context)!.teamMembers,
                       subtitle: 'Firma hesabınıza teknisyen ekleyin',
                       onTap: () => context.push('/team'),
                     ),
                     _ProfileTile(
                       icon: Icons.block_outlined,
-                      title: 'Engellenen Bayiler',
+                      title: AppLocalizations.of(context)!.blockedDealers,
                       onTap: () => context.push('/blocked-users'),
                     ),
                     _ProfileTile(
                       icon: Icons.auto_awesome_outlined,
-                      title: 'Bu Yıl Özetim',
+                      title: AppLocalizations.of(context)!.myYearSummary,
                       onTap: () => context.push('/year-in-review'),
                     ),
                     _ProfileTile(
                       icon: Icons.info_outline,
-                      title: 'Hakkında',
+                      title: AppLocalizations.of(context)!.about,
                       onTap: () => context.push('/about'),
                     ),
                   ],
@@ -519,17 +554,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 // ---- Hesap ----
                 const SizedBox(height: AppSpacing.md),
                 _ProfileSection(
-                  title: 'Hesap',
+                  title: AppLocalizations.of(context)!.account,
                   children: [
                     _ProfileTile(
                       icon: Icons.logout,
-                      title: 'Çıkış Yap',
+                      title: AppLocalizations.of(context)!.logout,
                       color: AppColors.navy,
                       onTap: _logout,
                     ),
                     _ProfileTile(
                       icon: Icons.delete_forever_outlined,
-                      title: 'Hesabımı Sil',
+                      title: AppLocalizations.of(context)!.deleteAccount,
                       color: AppColors.navy,
                       onTap: _openDeleteAccountDialog,
                     ),

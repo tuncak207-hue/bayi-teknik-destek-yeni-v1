@@ -98,7 +98,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
         child: Column(
         children: [
           AppPageHeader(
-            title: 'Bayilere Sor',
+            title: AppLocalizations.of(context)!.qaCommunity,
             titleBadge: Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(

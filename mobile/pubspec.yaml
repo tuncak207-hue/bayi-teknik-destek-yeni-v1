@@ -9,6 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   url_launcher: ^6.3.1
 
   # State management
@@ -67,6 +69,9 @@ dev_dependencies:
   flutter_launcher_icons: ^0.13.1
 
 flutter:
+  # Kullanıcı isteği: "İngilizce dil desteği ekle" — ARB tabanlı resmi
+  # Flutter yerelleştirme sistemi.
+  generate: true
   uses-material-design: true
   assets:
     - assets/images/

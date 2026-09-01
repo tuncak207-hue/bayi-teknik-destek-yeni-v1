@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:dio/dio.dart';
 import '../../core/api/api_client.dart';
@@ -107,7 +108,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppPageHeader(title: 'Gruplar'),
+      appBar: const AppPageHeader(title: AppLocalizations.of(context)!.screenGroups),
       backgroundColor: const Color(0xFFFFFFFF),
       body: SafeArea(
         child: Column(

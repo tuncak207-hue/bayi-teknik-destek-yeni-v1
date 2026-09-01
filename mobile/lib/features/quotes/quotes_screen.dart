@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dio/dio.dart';
 import 'package:pdf/pdf.dart';
@@ -413,7 +414,7 @@ class _QuoteBuilderScreenState extends State<_QuoteBuilderScreen> {
     }
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppPageHeader(title: _isEditing ? 'Teklifi Düzenle' : 'Yeni Teklif'),
+      appBar: AppPageHeader(title: _isEditing ? AppLocalizations.of(context)!.screenEditQuote : AppLocalizations.of(context)!.screenNewQuote),
       // ÖNEMLİ DÜZELTME: "Toplam kısmı sayfanın altında kalıyor,
       // görünmüyor" — Android tarafında SafeArea hiç yoktu (sadece iOS
       // tarafında vardı), edge-to-edge modu açıkken içerik sistem

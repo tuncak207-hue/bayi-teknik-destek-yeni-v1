@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:dio/dio.dart';
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
@@ -32,7 +33,7 @@ class _YearInReviewScreenState extends State<YearInReviewScreen> {
     return Scaffold(
       backgroundColor: AppColors.navy,
       appBar: AppPageHeader(
-        title: '${_data?['year'] ?? ''} Özeti',
+        title: '${_data?['year'] ?? ''} ${AppLocalizations.of(context)!.summaryLabel}',
         backgroundColor: AppColors.navy,
         foregroundColor: Colors.white,
       ),

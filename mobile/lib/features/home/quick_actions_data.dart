@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Ana Sayfa'daki Hızlı İşlemler grid'inin gösterebileceği tüm öğeler —
@@ -51,6 +52,55 @@ const List<QuickActionDef> kAllQuickActions = [
 ];
 
 const _kOrderKey = 'quick_actions_order';
+
+/// Kullanıcı isteği: "İngilizce dil desteği ekle" — QuickActionDef.label
+/// sabit (const) bir alan olduğu için doğrudan çeviri barındıramıyor;
+/// ekranda gösterilecek metin bu fonksiyonla, seçili dile göre üretiliyor.
+String localizedQuickActionLabel(BuildContext context, QuickActionDef action) {
+  final l10n = AppLocalizations.of(context)!;
+  switch (action.id) {
+    case 'search':
+      return l10n.qaSearch;
+    case 'messages':
+      return l10n.qaMessages;
+    case 'community':
+      return l10n.qaCommunity;
+    case 'appointments':
+      return l10n.qaAppointments;
+    case 'groups':
+      return l10n.qaGroups;
+    case 'favorites':
+      return l10n.qaFavorites;
+    case 'announcements':
+      return l10n.qaAnnouncements;
+    case 'offline_docs':
+      return l10n.qaOfflineDocs;
+    case 'barcode':
+      return l10n.qaBarcode;
+    case 'commissioning':
+      return l10n.qaCommissioning;
+    case 'maintenance':
+      return l10n.qaMaintenance;
+    case 'bom':
+      return l10n.qaBom;
+    case 'specialty':
+      return l10n.qaSpecialty;
+    case 'sales_consultant':
+      return l10n.qaSalesConsultant;
+    case 'training':
+      return l10n.qaTraining;
+    case 'wallet':
+      return l10n.qaWallet;
+    case 'support_tickets':
+      return l10n.qaSupportTickets;
+    case 'quotes':
+      return l10n.qaQuotes;
+    case 'dealer_visits':
+      return l10n.qaDealerVisits;
+    default:
+      return action.label;
+  }
+}
 
 class QuickActionsOrder {
   /// Kayıtlı sıralamayı okuyup, kAllQuickActions listesini o sıraya göre

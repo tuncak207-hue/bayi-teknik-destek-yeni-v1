@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../core/theme/app_theme.dart';
 
 /// Kullanıcı isteği: "üst menü barı ana menüden bağımsız olmamalı, ana
@@ -57,20 +58,22 @@ class TopNavSliverAppBar extends StatelessWidget {
   /// görünüme sahip olsun diye.
   Widget _buildIconsRow(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 4, 12, 4),
       child: Row(
         children: [
           // Kullanıcı isteği: "en solda, bildirim ikonunun yanında
-          // ENTPA Teknik Mühendislik Platformu yazısı olmalı."
+          // ENTPA Teknik Mühendislik Platformu yazısı olmalı." — ayrıca
+          // "İngilizce dil desteği ekle".
           Expanded(
             child: Text(
-              'ENTPA Teknik Mühendislik Platformu',
+              l10n.entpaSubtitle,
               style: AppText.screenTitle.copyWith(fontSize: 19, fontWeight: FontWeight.w800, letterSpacing: -0.35, overflow: TextOverflow.ellipsis),
             ),
           ),
           IconButton(
-            tooltip: 'Bildirimler',
+            tooltip: l10n.notifications,
             onPressed: onNotificationsTap,
             icon: Badge(
               isLabelVisible: unreadNotifications > 0,

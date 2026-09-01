@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:dio/dio.dart';
 import '../../core/api/api_client.dart';
@@ -193,7 +194,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppPageHeader(title: 'Bildirimler'),
+      appBar: AppPageHeader(title: AppLocalizations.of(context)!.notifications),
       backgroundColor: const Color(0xFFFFFFFF),
       body: SafeArea(
         child: Column(

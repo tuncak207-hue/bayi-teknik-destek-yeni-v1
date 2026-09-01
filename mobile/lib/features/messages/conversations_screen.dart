@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:dio/dio.dart';
 import 'dart:async';
@@ -170,7 +171,7 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
         child: Column(
         children: [
           AppPageHeader(
-            title: _showArchived ? 'Arşivlenmiş Sohbetler' : 'Mesajlar',
+            title: _showArchived ? AppLocalizations.of(context)!.screenArchivedChats : AppLocalizations.of(context)!.screenMessages,
             titleBadge: Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:dio/dio.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -106,7 +107,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppPageHeader(
-        title: 'Barkod/QR ile Doküman Bul',
+        title: AppLocalizations.of(context)!.screenBarcodeScan,
         actions: [
           IconButton(icon: const Icon(Icons.flash_on), onPressed: () => _controller.toggleTorch()),
         ],

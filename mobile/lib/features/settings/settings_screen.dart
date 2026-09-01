@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:dio/dio.dart';
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
@@ -87,7 +88,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.surface,
-      appBar: const AppPageHeader(title: 'Ayarlar'),
+      appBar: AppPageHeader(title: AppLocalizations.of(context)!.settings),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : ListView(

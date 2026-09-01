@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:dio/dio.dart';
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
@@ -37,7 +38,7 @@ class _CalculatorsScreenState extends State<CalculatorsScreen> with SingleTicker
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppPageHeader(title: 'Hesaplayıcılar'),
+      appBar: const AppPageHeader(title: AppLocalizations.of(context)!.screenCalculators),
       backgroundColor: const Color(0xFFFFFFFF),
       body: SafeArea(
         child: Column(

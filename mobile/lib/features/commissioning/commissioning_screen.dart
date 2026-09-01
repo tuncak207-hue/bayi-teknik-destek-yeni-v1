@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/cupertino.dart';
 import 'dart:io' show Platform;
 import 'package:dio/dio.dart';
@@ -391,7 +392,7 @@ class _CommissioningFormScreenState extends State<CommissioningFormScreen> {
         navigationBar: CupertinoNavigationBar(
           backgroundColor: const Color(0xFFFFFFFF),
           border: null,
-          middle: Text(_isEditing ? 'Devreye Alma Raporu' : 'Yeni Devreye Alma Raporu', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
+          middle: Text(_isEditing ? AppLocalizations.of(context)!.screenCommissioningReport : AppLocalizations.of(context)!.screenNewCommissioningReport, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
           trailing: _isEditing ? pdfMenu : null,
         ),
         child: SafeArea(child: _buildBody(progress, hasSavedSignature)),
@@ -401,7 +402,7 @@ class _CommissioningFormScreenState extends State<CommissioningFormScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
       appBar: AppPageHeader(
-        title: _isEditing ? 'Devreye Alma Raporu' : 'Yeni Devreye Alma Raporu',
+        title: _isEditing ? AppLocalizations.of(context)!.screenCommissioningReport : AppLocalizations.of(context)!.screenNewCommissioningReport,
         actions: [if (_isEditing) pdfMenu],
       ),
       body: SafeArea(child: _buildBody(progress, hasSavedSignature)),

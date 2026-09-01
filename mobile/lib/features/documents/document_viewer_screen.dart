@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_filex/open_filex.dart';
@@ -276,7 +277,9 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
       appBar: AppPageHeader(
-        title: widget.page != null ? 'Doküman — Sayfa ${widget.page}' : 'Doküman',
+        title: widget.page != null
+            ? '${AppLocalizations.of(context)!.screenDocument} — ${AppLocalizations.of(context)!.pageLabel} ${widget.page}'
+            : AppLocalizations.of(context)!.screenDocument,
         actions: [
           if (!_loading && _error == null) ...[
             IconButton(

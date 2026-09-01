@@ -19,6 +19,7 @@ import '../../core/storage/local_category_badge_store.dart';
 import '../announcements/critical_announcement_gate.dart';
 import 'quick_actions_data.dart';
 import '../../core/events/home_scroll_to_top_bus.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -223,6 +224,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final navData = RootNavData.current!;
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.background,
       body: CustomScrollView(
@@ -271,12 +273,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'AI Teknik Asistan',
+                            l10n.aiAssistantTitle,
                             style: TextStyle(fontSize: 19, fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: -0.25),
                           ),
                           SizedBox(height: 3),
                           Text(
-                            'Saniyeler içinde teknik cevap alın',
+                            l10n.aiAssistantSubtitle,
                             style: TextStyle(fontSize: 13, color: Colors.white70, fontWeight: FontWeight.w500, height: 1.2),
                           ),
                         ],
@@ -288,7 +290,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const SizedBox(height: AppSpacing.sm),
-            const Text('BU AY', style: AppText.eyebrow),
+            Text(l10n.thisMonth, style: AppText.eyebrow),
             const SizedBox(height: AppSpacing.xs),
             _stats == null
                 ? (_statsError
@@ -303,7 +305,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: _StatCard(
                           icon: Icons.smart_toy_outlined,
                           value: '${_stats!['questionsThisMonth'] ?? 0}',
-                          label: 'AI Sorusu',
+                          label: l10n.statAiQuestions,
                           showBadge: _hasNewBadge['questionsThisMonth'] == true,
                           onTap: () async {
                             await _markStatSeen('questionsThisMonth');
@@ -316,7 +318,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: _StatCard(
                           icon: Icons.bookmark_border,
                           value: '${_stats!['favoritesCount'] ?? 0}',
-                          label: 'Favori',
+                          label: l10n.statFavorites,
                           showBadge: _hasNewBadge['favoritesCount'] == true,
                           onTap: () async {
                             await _markStatSeen('favoritesCount');
@@ -330,7 +332,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: _StatCard(
                           icon: Icons.support_agent_outlined,
                           value: '${_stats!['supportTicketsCount'] ?? 0}',
-                          label: 'Teknik Destek Talebi',
+                          label: l10n.statSupportTickets,
                           showBadge: _hasNewBadge['supportTicketsCount'] == true,
                           onTap: () async {
                             await _markStatSeen('supportTicketsCount');
@@ -344,7 +346,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('HIZLI İŞLEMLER', style: AppText.eyebrow),
+                Text(l10n.quickActions, style: AppText.eyebrow),
                 SizedBox(
                   width: 28,
                   height: 28,
@@ -377,7 +379,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   .where((action) => action.id != 'dealer_visits' || CurrentUser().role == 'SALES' || CurrentUser().role == 'ADMIN')
                   .map((action) => _QuickAction(
                         icon: action.icon,
-                        label: action.label,
+                        label: localizedQuickActionLabel(context, action),
                         badgeCount: (_categoryBadges[action.id] ?? 0) + (_localBadges[action.id] ?? 0),
                         onTap: () {
                           if (_categoryBadges.containsKey(action.id) && (_categoryBadges[action.id] ?? 0) > 0) {

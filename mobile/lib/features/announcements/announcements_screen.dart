@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:dio/dio.dart';
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
@@ -255,7 +256,7 @@ class _AnnouncementDetailScreenState extends State<_AnnouncementDetailScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
       appBar: AppPageHeader(
-        title: 'Duyuru',
+        title: AppLocalizations.of(context)!.screenAnnouncement,
         actions: [
           IconButton(
             icon: _dismissing

@@ -85,7 +85,7 @@ class _SearchScreenState extends State<SearchScreen> {
       body: SafeArea(
         child: Column(
         children: [
-          AppPageHeader(title: widget.documentsOnly ? 'Doküman Ara' : 'Arama'),
+          AppPageHeader(title: widget.documentsOnly ? AppLocalizations.of(context)!.screenSearchDocuments : AppLocalizations.of(context)!.screenSearch),
           Padding(
             padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, AppSpacing.sm),
             child: Container(

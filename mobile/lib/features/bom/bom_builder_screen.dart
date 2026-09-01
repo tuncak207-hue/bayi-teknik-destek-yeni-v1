@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dio/dio.dart';
 import 'package:pdf/pdf.dart';
@@ -465,7 +466,7 @@ class _BomBuilderScreenState extends State<BomBuilderScreen> {
         navigationBar: CupertinoNavigationBar(
           backgroundColor: const Color(0xFFFFFFFF),
           border: null,
-          middle: Text(_isEditing ? 'Malzeme Listesi' : 'Yeni Malzeme Listesi', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
+          middle: Text(_isEditing ? AppLocalizations.of(context)!.screenMaterialList : AppLocalizations.of(context)!.screenNewMaterialList, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
           trailing: _items.isNotEmpty ? pdfMenu : null,
         ),
         child: SafeArea(child: _buildBody()),
@@ -475,7 +476,7 @@ class _BomBuilderScreenState extends State<BomBuilderScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
       appBar: AppPageHeader(
-        title: _isEditing ? 'Malzeme Listesi' : 'Yeni Malzeme Listesi',
+        title: _isEditing ? AppLocalizations.of(context)!.screenMaterialList : AppLocalizations.of(context)!.screenNewMaterialList,
         actions: [if (_items.isNotEmpty) pdfMenu],
       ),
       // ÖNEMLİ DÜZELTME: "Oluştur kısmı sayfanın en altında kalıyor,

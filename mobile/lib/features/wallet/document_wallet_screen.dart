@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:dio/dio.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
@@ -214,7 +215,7 @@ class _DocumentWalletScreenState extends State<DocumentWalletScreen> {
     final grouped = _grouped;
     return Scaffold(
       appBar: AppPageHeader(
-        title: 'Evrak Çantası',
+        title: AppLocalizations.of(context)!.qaWallet,
         titleBadge: Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
