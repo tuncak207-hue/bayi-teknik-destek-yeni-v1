@@ -1,6 +1,6 @@
 import { Body, Controller, Post, Req, Res, UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { Throttle } from '@nestjs/throttler';
+import { JwtService } from '@nestjs/jwt';
 import type { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
@@ -26,19 +26,21 @@ function readCookie(request: Request, name: string) {
 export class AuthController {
   constructor(private authService: AuthService, private jwt: JwtService) {}
 
-  // GÜVENLİK DÜZELTMESİ: Bu uç nokta internete açık ve kimlik doğrulama
-  // gerektirmiyor. Genel throttler (dakikada 100 istek) botların art arda
-  // sahte bayi kaydı oluşturmasını engellemeye yetmiyordu — admin panelde
-  // "Test Firma", "testuser_unique_123@example.com" gibi otomatik üretilmiş
-  // hesaplar birikiyordu. Bu uç noktaya özel, çok daha sıkı bir sınır
-  // (aynı IP'den saatte en fazla 5 kayıt denemesi) ekliyoruz.
-  @Throttle({ default: { limit: 5, ttl: 3600000 } })
+  // Kullanıcı isteği: "bot hesaplar geliyor, bunu engeller misin" — genel
+  // hız sınırı (dakikada 100 istek) kayıt için çok gevşekti; bir bot bu
+  // limitle dakikada 100 sahte hesap açabilirdi. Bu uç nokta artık aynı
+  // IP'den saatte en fazla 5 kayıt denemesine izin veriyor — gerçek bir
+  // bayi bundan fazlasına asla ihtiyaç duymaz, ama toplu bot saldırısını
+  // etkisiz hale getirir.
+  @Throttle({ default: { limit: 5, ttl: 3_600_000 } })
   @Post('register')
   register(@Body() dto: RegisterDto) {
     return this.authService.register(dto);
   }
 
-  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  // Kaba kuvvet (brute-force) şifre denemelerini yavaşlatmak için: aynı
+  // IP'den dakikada en fazla 10 giriş denemesi.
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
   @Post('login')
   async login(@Body() dto: LoginDto, @Res({ passthrough: true }) response: Response) {
     const tokens = await this.authService.login(dto);
