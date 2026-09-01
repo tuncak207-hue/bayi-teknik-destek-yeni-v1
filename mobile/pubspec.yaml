@@ -1,7 +1,7 @@
 name: bayi_teknik_destek
 description: Yangın Alarm & Kamera Bayi Teknik Destek Uygulaması
 publish_to: "none"
-version: 0.1.0+2
+version: 0.1.0+30
 
 environment:
   sdk: ">=3.3.0 <4.0.0"
