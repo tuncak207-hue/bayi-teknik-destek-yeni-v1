@@ -311,10 +311,10 @@ class _DocumentWalletScreenState extends State<DocumentWalletScreen> {
                                           if (v == 'delete') _delete(doc);
                                         },
                                         itemBuilder: (context) => [
-                                          const PopupMenuItem(value: 'view', child: Text(AppLocalizations.of(context)!.view)),
-                                          const PopupMenuItem(value: 'edit', child: Text(AppLocalizations.of(context)!.editNameType)),
-                                          const PopupMenuItem(value: 'share', child: Text(AppLocalizations.of(context)!.share)),
-                                          const PopupMenuItem(value: 'delete', child: Text(AppLocalizations.of(context)!.delete, style: TextStyle(color: AppColors.navy))),
+                                          PopupMenuItem(value: 'view', child: Text(AppLocalizations.of(context)!.view)),
+                                          PopupMenuItem(value: 'edit', child: Text(AppLocalizations.of(context)!.editNameType)),
+                                          PopupMenuItem(value: 'share', child: Text(AppLocalizations.of(context)!.share)),
+                                          PopupMenuItem(value: 'delete', child: Text(AppLocalizations.of(context)!.delete, style: TextStyle(color: AppColors.navy))),
                                         ],
                                       ),
                                 onTap: isBusy ? null : () => _viewDocument(doc),
@@ -370,7 +370,7 @@ class _DocumentMetaSheetState extends State<_DocumentMetaSheet> {
           Text(widget.initialName == null ? 'Belge Bilgileri' : 'Belgeyi Düzenle', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
           const SizedBox(height: AppSpacing.sm),
           TextField(controller: _nameController, decoration: const InputDecoration(labelText: 'Belge Adı', hintText: 'Örn: İSG Eğitim Sertifikası')),
-          const SizedBox(height: AppSpacing.sm),
+          SizedBox(height: AppSpacing.sm),
           Text(AppLocalizations.of(context)!.category, style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AppColors.navy)),
           const SizedBox(height: 6),
           Wrap(

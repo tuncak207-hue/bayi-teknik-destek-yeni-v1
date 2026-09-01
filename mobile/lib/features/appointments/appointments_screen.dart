@@ -501,7 +501,7 @@ class _CreateAppointmentSheetState extends State<_CreateAppointmentSheet> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             SegmentedButton<String>(
-              segments: const [
+              segments: [
                 ButtonSegment(value: 'REMOTE', label: Text(AppLocalizations.of(context)!.phoneVideoCall), icon: Icon(Icons.call_outlined)),
                 ButtonSegment(value: 'ON_SITE', label: Text(AppLocalizations.of(context)!.onSiteVisit), icon: Icon(Icons.location_on_outlined)),
               ],
@@ -551,7 +551,7 @@ class _CreateAppointmentSheetState extends State<_CreateAppointmentSheet> {
             ElevatedButton(
               onPressed: _submitting ? null : _submit,
               child: _submitting
-                  ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                  ? SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                   : Text(AppLocalizations.of(context)!.sendAppointmentRequest),
             ),
           ],

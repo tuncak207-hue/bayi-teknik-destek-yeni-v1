@@ -188,13 +188,13 @@ class _AiChatScreenState extends State<AiChatScreen> {
         expand: false,
         builder: (context, scrollController) => Column(
           children: [
-            const Padding(
+            Padding(
               padding: EdgeInsets.all(16),
               child: Text(AppLocalizations.of(context)!.yourChatHistory, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
             ),
             Expanded(
               child: conversations.isEmpty
-                  ? const Center(child: Text(AppLocalizations.of(context)!.emptyChats))
+                  ? Center(child: Text(AppLocalizations.of(context)!.emptyChats))
                   : ListView.builder(
                       controller: scrollController,
                       itemCount: conversations.length,
@@ -394,7 +394,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
                     child: Image.file(_pendingImage!, width: 56, height: 56, fit: BoxFit.cover),
                   ),
                   const SizedBox(width: 10),
-                  const Expanded(
+                  Expanded(
                     child: Text(AppLocalizations.of(context)!.photoAddedAskQuestion, style: TextStyle(fontSize: 12.5)),
                   ),
                   IconButton(

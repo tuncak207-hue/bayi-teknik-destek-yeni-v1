@@ -321,7 +321,7 @@ class _CreateVisitScreenState extends State<_CreateVisitScreen> {
     if (Platform.isIOS) {
       return CupertinoPageScaffold(
         backgroundColor: const Color(0xFFFFFFFF),
-        navigationBar: const CupertinoNavigationBar(
+        navigationBar: CupertinoNavigationBar(
           backgroundColor: Color(0xFFFFFFFF),
           border: null,
           middle: Text(AppLocalizations.of(context)!.screenNewVisit, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
@@ -405,14 +405,14 @@ class _CreateVisitScreenState extends State<_CreateVisitScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: AppSpacing.sm),
+                SizedBox(height: AppSpacing.sm),
                 TextButton.icon(
                   onPressed: () => setState(() => _showOptional = !_showOptional),
                   icon: Icon(_showOptional ? Icons.remove : Icons.add, size: 18),
                   label: Text(AppLocalizations.of(context)!.addContactPersonHint),
                 ),
                 if (_showOptional) ...[
-                  const SizedBox(height: AppSpacing.xs),
+                  SizedBox(height: AppSpacing.xs),
                   StandardCard(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -422,7 +422,7 @@ class _CreateVisitScreenState extends State<_CreateVisitScreen> {
                         TextField(controller: _contactNameController, decoration: const InputDecoration(labelText: 'Ad Soyad', border: OutlineInputBorder(), isDense: true)),
                         const SizedBox(height: 8),
                         TextField(controller: _contactPhoneController, decoration: const InputDecoration(labelText: 'Telefon', border: OutlineInputBorder(), isDense: true)),
-                        const SizedBox(height: 16),
+                        SizedBox(height: 16),
                         Text(AppLocalizations.of(context)!.followUp, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.navy)),
                         SwitchListTile(
                           contentPadding: EdgeInsets.zero,
@@ -448,7 +448,7 @@ class _CreateVisitScreenState extends State<_CreateVisitScreen> {
                   onPressed: _submitting ? null : _submit,
                   style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(50)),
                   child: _submitting
-                      ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                      ? SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                       : Text(AppLocalizations.of(context)!.saveVisit),
                 ),
               ],
@@ -563,7 +563,7 @@ class _VisitDetailScreenState extends State<_VisitDetailScreen> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _visit == null
-              ? const Center(child: Text(AppLocalizations.of(context)!.visitNotFound))
+              ? Center(child: Text(AppLocalizations.of(context)!.visitNotFound))
               : ListView(
                   padding: const EdgeInsets.all(AppSpacing.md),
                   children: [
@@ -572,7 +572,7 @@ class _VisitDetailScreenState extends State<_VisitDetailScreen> {
                         padding: const EdgeInsets.all(AppSpacing.sm),
                         margin: const EdgeInsets.only(bottom: AppSpacing.sm),
                         decoration: BoxDecoration(color: Colors.green.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(12)),
-                        child: const Row(
+                        child: Row(
                           children: [
                             Icon(Icons.check_circle, color: Colors.green, size: 18),
                             SizedBox(width: 8),
@@ -593,7 +593,7 @@ class _VisitDetailScreenState extends State<_VisitDetailScreen> {
                             '${_visitTypeLabels[_visit!['visitType']] ?? _visit!['visitType']} · ${_visit!['city'] ?? '—'}',
                             style: TextStyle(fontSize: 12.5, color: Colors.grey.shade500),
                           ),
-                          const SizedBox(height: 10),
+                          SizedBox(height: 10),
                           StatusBadge(label: _outcomeLabels[_visit!['outcome']] ?? _visit!['outcome'], tone: AppStatusTone.neutral),
                           const Divider(height: 24),
                           Text(AppLocalizations.of(context)!.meetingNotes, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12.5, color: AppColors.navy)),
@@ -602,7 +602,7 @@ class _VisitDetailScreenState extends State<_VisitDetailScreen> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: AppSpacing.md),
+                    SizedBox(height: AppSpacing.md),
                     Row(
                       children: [
                         Text(AppLocalizations.of(context)!.photos, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: AppColors.navy)),
@@ -610,13 +610,13 @@ class _VisitDetailScreenState extends State<_VisitDetailScreen> {
                         TextButton.icon(
                           onPressed: _uploading ? null : _showPhotoSourceSheet,
                           icon: _uploading
-                              ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2))
+                              ? SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2))
                               : const Icon(Icons.add_a_photo_outlined, size: 16),
                           label: Text(AppLocalizations.of(context)!.add),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     if ((_visit!['attachments'] as List?)?.isEmpty ?? true)
                       Text(AppLocalizations.of(context)!.emptyPhotos, style: TextStyle(fontSize: 12.5, color: Colors.grey.shade400))
                     else

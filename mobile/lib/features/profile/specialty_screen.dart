@@ -155,7 +155,7 @@ class _SpecialtyScreenState extends State<SpecialtyScreen> {
       // ÖNEMLİ DÜZELTME: "sayfanın altında kalıyor" — SafeArea hiç yoktu.
       body: SafeArea(
         child: _loading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator())
           : ListView(
               padding: const EdgeInsets.all(AppSpacing.md),
               children: [
@@ -255,10 +255,10 @@ class _SpecialtyScreenState extends State<SpecialtyScreen> {
                           },
                           itemBuilder: (context) => [
                             if (c['documentUrl'] != null)
-                              const PopupMenuItem(value: 'document', child: Text(AppLocalizations.of(context)!.viewPhoto)),
-                            const PopupMenuItem(value: 'pdf-view', child: Text(AppLocalizations.of(context)!.viewPdf)),
-                            const PopupMenuItem(value: 'pdf-share', child: Text(AppLocalizations.of(context)!.sharePdf)),
-                            const PopupMenuItem(value: 'delete', child: Text(AppLocalizations.of(context)!.delete, style: TextStyle(color: AppColors.navy))),
+                              PopupMenuItem(value: 'document', child: Text(AppLocalizations.of(context)!.viewPhoto)),
+                            PopupMenuItem(value: 'pdf-view', child: Text(AppLocalizations.of(context)!.viewPdf)),
+                            PopupMenuItem(value: 'pdf-share', child: Text(AppLocalizations.of(context)!.sharePdf)),
+                            PopupMenuItem(value: 'delete', child: Text(AppLocalizations.of(context)!.delete, style: TextStyle(color: AppColors.navy))),
                           ],
                         ),
                       ),
@@ -410,7 +410,7 @@ class _AddCertificationSheetState extends State<_AddCertificationSheet> {
           ElevatedButton(
             onPressed: _submitting ? null : _submit,
             child: _submitting
-                ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                ? SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                 : Text(AppLocalizations.of(context)!.save),
           ),
         ],

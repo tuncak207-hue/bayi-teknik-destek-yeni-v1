@@ -176,7 +176,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
                                         if (value == 'leave') _leave(g['id'], g['name'] ?? '');
                                       },
                                       itemBuilder: (context) => [
-                                        const PopupMenuItem(value: 'leave', child: Text(AppLocalizations.of(context)!.leave, style: TextStyle(color: AppColors.navy))),
+                                        PopupMenuItem(value: 'leave', child: Text(AppLocalizations.of(context)!.leave, style: TextStyle(color: AppColors.navy))),
                                       ],
                                     ),
                                 ],

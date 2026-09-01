@@ -34,7 +34,7 @@ class CriticalAnnouncementGate {
             children: [
               const Icon(Icons.warning_amber_rounded, color: AppColors.brand, size: 26),
               const SizedBox(width: 8),
-              const Expanded(
+              Expanded(
                 child: Text(AppLocalizations.of(context)!.criticalAnnouncement, style: TextStyle(color: AppColors.brand, fontWeight: FontWeight.w800)),
               ),
             ],

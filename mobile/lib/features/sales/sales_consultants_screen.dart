@@ -99,7 +99,7 @@ class _SalesConsultantsScreenState extends State<SalesConsultantsScreen> {
                               child: const Icon(Icons.headset_mic_outlined, color: Colors.white, size: 24),
                             ),
                             const SizedBox(width: AppSpacing.sm),
-                            const Expanded(
+                            Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [

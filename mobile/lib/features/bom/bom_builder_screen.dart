@@ -454,8 +454,8 @@ class _BomBuilderScreenState extends State<BomBuilderScreen> {
               if (v == 'share') _exportPdf(andShare: true);
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(value: 'view', child: Text(AppLocalizations.of(context)!.viewPdf)),
-              const PopupMenuItem(value: 'share', child: Text(AppLocalizations.of(context)!.sharePdf)),
+              PopupMenuItem(value: 'view', child: Text(AppLocalizations.of(context)!.viewPdf)),
+              PopupMenuItem(value: 'share', child: Text(AppLocalizations.of(context)!.sharePdf)),
             ],
             icon: const Icon(Icons.picture_as_pdf_outlined),
           );

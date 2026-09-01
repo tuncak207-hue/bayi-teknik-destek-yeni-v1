@@ -467,7 +467,7 @@ class _QuoteBuilderScreenState extends State<_QuoteBuilderScreen> {
                           ],
                         ),
                       ),
-                      const SizedBox(height: AppSpacing.md),
+                      SizedBox(height: AppSpacing.md),
                       if (_catalog.isEmpty)
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 40),
@@ -750,8 +750,8 @@ class _QuoteDetailScreenState extends State<_QuoteDetailScreen> {
                 if (v == 'share') _exportPdf(andShare: true);
               },
               itemBuilder: (context) => [
-                const PopupMenuItem(value: 'view', child: Text(AppLocalizations.of(context)!.viewPdf)),
-                const PopupMenuItem(value: 'share', child: Text(AppLocalizations.of(context)!.sharePdf)),
+                PopupMenuItem(value: 'view', child: Text(AppLocalizations.of(context)!.viewPdf)),
+                PopupMenuItem(value: 'share', child: Text(AppLocalizations.of(context)!.sharePdf)),
               ],
               icon: const Icon(Icons.picture_as_pdf_outlined),
             ),
@@ -768,7 +768,7 @@ class _QuoteDetailScreenState extends State<_QuoteDetailScreen> {
               children: [
                 Text(q['title'] ?? '', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: AppColors.navy)),
                 if ((q['customerName'] ?? '').toString().isNotEmpty) ...[
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(AppLocalizations.of(context)!.customerLabel(q['customerName']), style: TextStyle(fontSize: 12.5, color: Colors.grey.shade600)),
                 ],
                 const Divider(height: 20),

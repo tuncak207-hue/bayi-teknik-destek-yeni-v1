@@ -153,7 +153,7 @@ class _SupportTicketsScreenState extends State<SupportTicketsScreen> {
                               child: const Icon(Icons.warning_rounded, color: Colors.white, size: 24),
                             ),
                             const SizedBox(width: AppSpacing.sm),
-                            const Expanded(
+                            Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -478,7 +478,7 @@ class _TicketDetailScreenState extends State<_TicketDetailScreen> {
                 margin: const EdgeInsets.only(bottom: AppSpacing.sm),
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(color: AppColors.navy.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(AppRadius.xl)),
-                child: const Row(
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(Icons.warning_amber_rounded, size: 14, color: AppColors.navy),
@@ -518,7 +518,7 @@ class _TicketDetailScreenState extends State<_TicketDetailScreen> {
                 child: Row(
                   children: [
                     Icon(Icons.timer_outlined, color: slaStatus['resolutionBreached'] == true ? AppColors.navy : AppColors.brand),
-                    const SizedBox(width: 10),
+                    SizedBox(width: 10),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -550,15 +550,15 @@ class _TicketDetailScreenState extends State<_TicketDetailScreen> {
                 children: [
                   Text(t['productName'] ?? 'Ürün belirtilmedi', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: AppColors.navy)),
                   if ((t['productModel'] ?? '').toString().isNotEmpty) ...[
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     Text(AppLocalizations.of(context)!.modelLabel(t['productModel']), style: TextStyle(fontSize: 12.5, color: Colors.grey.shade600)),
                   ],
                   if ((t['serialNumber'] ?? '').toString().isNotEmpty) ...[
-                    const SizedBox(height: 2),
+                    SizedBox(height: 2),
                     Text(AppLocalizations.of(context)!.serialNoLabel(t['serialNumber']), style: TextStyle(fontSize: 12.5, color: Colors.grey.shade600)),
                   ],
                   if ((t['location'] ?? '').toString().isNotEmpty) ...[
-                    const SizedBox(height: 2),
+                    SizedBox(height: 2),
                     Text(AppLocalizations.of(context)!.locationLabel(t['location']), style: TextStyle(fontSize: 12.5, color: Colors.grey.shade600)),
                   ],
                   const Divider(height: 24),
@@ -793,7 +793,7 @@ class _MeasurementSectionState extends State<_MeasurementSection> {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
           ] else
             Text(AppLocalizations.of(context)!.noMeasurementTypeYet, style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
           if (_measurements.isNotEmpty) ...[
@@ -875,7 +875,7 @@ class _SparePartSectionState extends State<_SparePartSection> {
         children: [
           Row(
             children: [
-              const Expanded(
+              Expanded(
                 child: Text(AppLocalizations.of(context)!.sparePartRequests, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: AppColors.navy)),
               ),
               TextButton.icon(
@@ -1017,7 +1017,7 @@ class _CostSectionState extends State<_CostSection> {
         children: [
           Row(
             children: [
-              const Expanded(
+              Expanded(
                 child: Text(AppLocalizations.of(context)!.costItems, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: AppColors.navy)),
               ),
               TextButton.icon(
@@ -1168,13 +1168,13 @@ class _KnowledgeBaseSectionState extends State<_KnowledgeBaseSection> {
             decoration: BoxDecoration(color: AppColors.navy.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(AppRadius.sm)),
             child: const Icon(Icons.psychology_outlined, color: AppColors.navy, size: 19),
           ),
-          const SizedBox(width: AppSpacing.sm),
+          SizedBox(width: AppSpacing.sm),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(AppLocalizations.of(context)!.addToKnowledgeMemory, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: AppColors.navy)),
-                const SizedBox(height: 2),
+                SizedBox(height: 2),
                 Text(AppLocalizations.of(context)!.saveCaseKnowledgeHint, style: TextStyle(fontSize: 11.5, color: Colors.grey.shade500)),
               ],
             ),
@@ -1184,7 +1184,7 @@ class _KnowledgeBaseSectionState extends State<_KnowledgeBaseSection> {
               : TextButton(
                   onPressed: _submitting ? null : _openForm,
                   child: _submitting
-                      ? const SizedBox(height: 16, width: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                      ? SizedBox(height: 16, width: 16, child: CircularProgressIndicator(strokeWidth: 2))
                       : Text(AppLocalizations.of(context)!.add),
                 ),
         ],

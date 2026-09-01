@@ -277,8 +277,8 @@ class _MaintenanceDetailScreenState extends State<_MaintenanceDetailScreen> {
                 if (v == 'share') _exportPdf(andShare: true);
               },
               itemBuilder: (context) => [
-                const PopupMenuItem(value: 'view', child: Text(AppLocalizations.of(context)!.viewPdf)),
-                const PopupMenuItem(value: 'share', child: Text(AppLocalizations.of(context)!.sharePdf)),
+                PopupMenuItem(value: 'view', child: Text(AppLocalizations.of(context)!.viewPdf)),
+                PopupMenuItem(value: 'share', child: Text(AppLocalizations.of(context)!.sharePdf)),
               ],
               icon: const Icon(Icons.picture_as_pdf_outlined),
             ),
@@ -312,7 +312,7 @@ class _MaintenanceDetailScreenState extends State<_MaintenanceDetailScreen> {
               child: Row(
                 children: [
                   Icon(Icons.draw_outlined, color: Colors.green.shade700, size: 18),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   Text(AppLocalizations.of(context)!.signatureIncludedInPdf, style: TextStyle(fontSize: 12.5)),
                 ],
               ),
@@ -324,7 +324,7 @@ class _MaintenanceDetailScreenState extends State<_MaintenanceDetailScreen> {
               onPressed: _saving ? null : _save,
               style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
               child: _saving
-                  ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                  ? SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                   : Text(AppLocalizations.of(context)!.saveChanges, style: TextStyle(fontWeight: FontWeight.w700)),
             ),
           ),
@@ -391,7 +391,7 @@ class _CreateMaintenanceScreenState extends State<_CreateMaintenanceScreen> {
     if (Platform.isIOS) {
       return CupertinoPageScaffold(
         backgroundColor: const Color(0xFFFFFFFF),
-        navigationBar: const CupertinoNavigationBar(
+        navigationBar: CupertinoNavigationBar(
           backgroundColor: Color(0xFFFFFFFF),
           border: null,
           middle: Text(AppLocalizations.of(context)!.screenNewMaintenance, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
@@ -453,7 +453,7 @@ class _CreateMaintenanceScreenState extends State<_CreateMaintenanceScreen> {
                   child: const Icon(Icons.build_outlined, color: Colors.white, size: 22),
                 ),
                 const SizedBox(width: AppSpacing.sm),
-                const Expanded(
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -500,7 +500,7 @@ class _CreateMaintenanceScreenState extends State<_CreateMaintenanceScreen> {
               children: [
                 Row(
                   children: [
-                    const Expanded(
+                    Expanded(
                       child: Text(AppLocalizations.of(context)!.customerSignature, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: AppColors.navy)),
                     ),
                     Text(AppLocalizations.of(context)!.optionalLabel2, style: TextStyle(fontSize: 11.5, color: Colors.grey.shade400)),
@@ -532,7 +532,7 @@ class _CreateMaintenanceScreenState extends State<_CreateMaintenanceScreen> {
               onPressed: _submitting ? null : _submit,
               style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
               child: _submitting
-                  ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                  ? SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                   : Text(AppLocalizations.of(context)!.save, style: TextStyle(fontWeight: FontWeight.w700)),
             ),
           ),

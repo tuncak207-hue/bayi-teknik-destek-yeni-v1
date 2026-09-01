@@ -221,7 +221,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       if (v == 'clear-all') _clearAll();
                     },
                     itemBuilder: (context) => [
-                      const PopupMenuItem(value: 'clear-all', child: Text(AppLocalizations.of(context)!.deleteAll)),
+                      PopupMenuItem(value: 'clear-all', child: Text(AppLocalizations.of(context)!.deleteAll)),
                     ],
                   ),
               ],

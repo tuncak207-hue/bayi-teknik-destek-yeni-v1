@@ -379,9 +379,9 @@ class _CommissioningFormScreenState extends State<CommissioningFormScreen> {
               if (v == 'delete') _deleteReport();
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(value: 'view', child: Text(AppLocalizations.of(context)!.viewPdf)),
-              const PopupMenuItem(value: 'share', child: Text(AppLocalizations.of(context)!.sharePdf)),
-              const PopupMenuItem(value: 'delete', child: Text(AppLocalizations.of(context)!.deleteReport, style: TextStyle(color: AppColors.navy))),
+              PopupMenuItem(value: 'view', child: Text(AppLocalizations.of(context)!.viewPdf)),
+              PopupMenuItem(value: 'share', child: Text(AppLocalizations.of(context)!.sharePdf)),
+              PopupMenuItem(value: 'delete', child: Text(AppLocalizations.of(context)!.deleteReport, style: TextStyle(color: AppColors.navy))),
             ],
             icon: const Icon(Icons.more_vert),
           );
@@ -474,7 +474,7 @@ class _CommissioningFormScreenState extends State<CommissioningFormScreen> {
                           ],
                         ),
                       ),
-                      const SizedBox(width: AppSpacing.sm),
+                      SizedBox(width: AppSpacing.sm),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -571,7 +571,7 @@ class _CommissioningFormScreenState extends State<CommissioningFormScreen> {
                     children: [
                       Row(
                         children: [
-                          const Expanded(
+                          Expanded(
                             child: Text(AppLocalizations.of(context)!.customerSignature, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: AppColors.navy)),
                           ),
                           Text(AppLocalizations.of(context)!.optionalLabel, style: TextStyle(fontSize: 11.5, color: Colors.grey.shade400)),
@@ -582,11 +582,11 @@ class _CommissioningFormScreenState extends State<CommissioningFormScreen> {
                         Row(
                           children: [
                             Icon(Icons.check_circle, size: 14, color: Colors.green.shade600),
-                            const SizedBox(width: 4),
+                            SizedBox(width: 4),
                             Text(AppLocalizations.of(context)!.signatureAlreadySaved, style: TextStyle(fontSize: 11.5, color: Colors.green.shade700)),
                           ],
                         ),
-                        const SizedBox(height: 6),
+                        SizedBox(height: 6),
                         Text(AppLocalizations.of(context)!.resignHint,
                             style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
                       ],
