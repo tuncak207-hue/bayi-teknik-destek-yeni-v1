@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException, UnauthorizedException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, UnauthorizedException, ForbiddenException, ConflictException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../common/prisma/prisma.service';
 import { NotificationsService } from '../notifications/notifications.service';
@@ -212,11 +212,21 @@ export class UsersService {
     return safe;
   }
 
+  // Kullanıcı isteği: "admin panel kullanıcı adı ve şifremi değiştirmek
+  // istiyorum" — e-posta (kullanıcı adı) artık profil güncellemede
+  // destekleniyor. Aynı e-posta başka bir hesapta kayıtlıysa reddediyoruz
+  // (unique kısıtlaması, veritabanı hatası yerine anlaşılır bir mesajla).
   async updateProfile(
     id: string,
-    data: Partial<{ firstName: string; lastName: string; company: string; phone: string; avatarUrl: string }>,
+    data: Partial<{ firstName: string; lastName: string; company: string; phone: string; avatarUrl: string; email: string }>,
   ) {
     await this.ensureExists(id);
+    if (data.email) {
+      const existing = await this.prisma.user.findUnique({ where: { email: data.email } });
+      if (existing && existing.id !== id) {
+        throw new ConflictException('Bu e-posta başka bir hesap tarafından kullanılıyor.');
+      }
+    }
     return this.prisma.user.update({ where: { id }, data });
   }
 

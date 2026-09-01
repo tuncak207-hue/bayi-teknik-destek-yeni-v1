@@ -1,8 +1,13 @@
 'use client';
 
 import Link from 'next/link';
+import { useState } from 'react';
+import useSWR from 'swr';
+import { api } from '@/lib/api';
 import { Card, CardHeader, Badge } from '@/components/ui';
 import { IconAlertTriangle, IconChart, IconReceipt } from '@/components/icons';
+
+const fetcher = (url: string) => api.get(url).then((r) => r.data);
 
 const settingsLinks = [
   {
@@ -45,7 +50,9 @@ export default function SettingsPage() {
         ))}
       </div>
 
-      <Card>
+      <AccountSettingsCard />
+
+      <Card className="mt-8">
         <CardHeader title="Sistem Bilgisi" subtitle="AI ve altyapı yapılandırması" />
         <div className="px-5 pb-5 space-y-3">
           <InfoRow label="AI Sağlayıcı" value="Backend .env dosyasındaki AI_PROVIDER değişkeni ile belirlenir (anthropic / ollama)." />
@@ -60,6 +67,149 @@ export default function SettingsPage() {
         </div>
       </Card>
     </div>
+  );
+}
+
+/**
+ * Kullanıcı isteği: "admin panel kullanıcı adı ve şifremi değiştirmek
+ * istiyorum" — kendi hesabınızın giriş e-postasını (kullanıcı adı) ve
+ * şifresini buradan değiştirebilirsiniz. İkisi de ayrı formlar: e-posta
+ * değişikliği anında uygulanır, şifre değişikliği mevcut şifrenizi
+ * doğrulamanızı ister (güvenlik için).
+ */
+function AccountSettingsCard() {
+  const { data: me, mutate } = useSWR('/users/me', fetcher);
+
+  const [email, setEmail] = useState('');
+  const [emailSaving, setEmailSaving] = useState(false);
+  const [emailMsg, setEmailMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [newPasswordRepeat, setNewPasswordRepeat] = useState('');
+  const [passwordSaving, setPasswordSaving] = useState(false);
+  const [passwordMsg, setPasswordMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  async function handleEmailSave(e: React.FormEvent) {
+    e.preventDefault();
+    if (!email.trim()) return;
+    setEmailSaving(true);
+    setEmailMsg(null);
+    try {
+      await api.patch('/users/me', { email: email.trim() });
+      setEmailMsg({ type: 'success', text: 'E-posta güncellendi. Bir sonraki girişte yeni e-postanızı kullanın.' });
+      setEmail('');
+      mutate();
+    } catch (err: any) {
+      setEmailMsg({ type: 'error', text: err.response?.data?.message || 'E-posta güncellenemedi.' });
+    } finally {
+      setEmailSaving(false);
+    }
+  }
+
+  async function handlePasswordSave(e: React.FormEvent) {
+    e.preventDefault();
+    setPasswordMsg(null);
+    if (newPassword.length < 8) {
+      setPasswordMsg({ type: 'error', text: 'Yeni şifre en az 8 karakter olmalı.' });
+      return;
+    }
+    if (newPassword !== newPasswordRepeat) {
+      setPasswordMsg({ type: 'error', text: 'Yeni şifreler birbiriyle eşleşmiyor.' });
+      return;
+    }
+    setPasswordSaving(true);
+    try {
+      await api.patch('/users/me/password', { currentPassword, newPassword });
+      setPasswordMsg({ type: 'success', text: 'Şifreniz güncellendi.' });
+      setCurrentPassword('');
+      setNewPassword('');
+      setNewPasswordRepeat('');
+    } catch (err: any) {
+      setPasswordMsg({ type: 'error', text: err.response?.data?.message || 'Şifre güncellenemedi.' });
+    } finally {
+      setPasswordSaving(false);
+    }
+  }
+
+  return (
+    <Card>
+      <CardHeader title="Hesap Ayarları" subtitle="Giriş e-postanızı (kullanıcı adı) ve şifrenizi buradan değiştirebilirsiniz." />
+      <div className="px-5 pb-5 grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* E-posta değiştirme */}
+        <form onSubmit={handleEmailSave} className="space-y-3">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Mevcut e-posta</label>
+            <div className="text-sm text-gray-500 h-10 flex items-center px-3 bg-gray-50 rounded-lg border border-gray-100">
+              {me?.email || '—'}
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Yeni e-posta (kullanıcı adı)</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full rounded-lg border border-gray-200 px-3 h-10 text-sm"
+              placeholder="yeni-eposta@ornek.com"
+            />
+          </div>
+          {emailMsg && (
+            <p className={`text-xs ${emailMsg.type === 'success' ? 'text-green-700' : 'text-red-600'}`}>{emailMsg.text}</p>
+          )}
+          <button
+            type="submit"
+            disabled={emailSaving || !email.trim()}
+            className="bg-[var(--admin-navy)] text-white text-[12.5px] font-semibold rounded-xl px-4 h-10 hover:bg-slate-800 transition disabled:opacity-50"
+          >
+            {emailSaving ? 'Kaydediliyor...' : 'E-postayı Güncelle'}
+          </button>
+        </form>
+
+        {/* Şifre değiştirme */}
+        <form onSubmit={handlePasswordSave} className="space-y-3">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Mevcut şifre</label>
+            <input
+              type="password"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              className="w-full rounded-lg border border-gray-200 px-3 h-10 text-sm"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Yeni şifre</label>
+              <input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="w-full rounded-lg border border-gray-200 px-3 h-10 text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Yeni şifre (tekrar)</label>
+              <input
+                type="password"
+                value={newPasswordRepeat}
+                onChange={(e) => setNewPasswordRepeat(e.target.value)}
+                className="w-full rounded-lg border border-gray-200 px-3 h-10 text-sm"
+              />
+            </div>
+          </div>
+          {passwordMsg && (
+            <p className={`text-xs ${passwordMsg.type === 'success' ? 'text-green-700' : 'text-red-600'}`}>{passwordMsg.text}</p>
+          )}
+          <button
+            type="submit"
+            disabled={passwordSaving || !currentPassword || !newPassword}
+            className="bg-[var(--admin-navy)] text-white text-[12.5px] font-semibold rounded-xl px-4 h-10 hover:bg-slate-800 transition disabled:opacity-50"
+          >
+            {passwordSaving ? 'Kaydediliyor...' : 'Şifreyi Güncelle'}
+          </button>
+        </form>
+      </div>
+    </Card>
   );
 }
 
