@@ -112,7 +112,7 @@ class _CommissioningListScreenState extends State<CommissioningListScreen> {
                               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
                               child: StandardCard(
                                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
-                                child: const AppEmptyState(
+                                child: AppEmptyState(
                                   icon: Icons.checklist_outlined,
                                   title: AppLocalizations.of(context)!.emptyCommissioning,
                                   description: AppLocalizations.of(context)!.commissioningEmptyHint,

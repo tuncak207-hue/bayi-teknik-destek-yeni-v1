@@ -88,7 +88,7 @@ class _OfflineDocumentsScreenState extends State<OfflineDocumentsScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
                         child: StandardCard(
                           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
-                          child: const AppEmptyState(
+                          child: AppEmptyState(
                             icon: Icons.download_outlined,
                             title: AppLocalizations.of(context)!.emptyOfflineDocs,
                             description: AppLocalizations.of(context)!.offlineDocsEmptyHint,

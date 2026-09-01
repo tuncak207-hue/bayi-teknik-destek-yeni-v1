@@ -110,7 +110,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.surface,
-      appBar: const AppPageHeader(
+      appBar: AppPageHeader(
         backgroundColor: Colors.white,
         title: AppLocalizations.of(context)!.dealerRegistration,
       ),

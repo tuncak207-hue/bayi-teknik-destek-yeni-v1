@@ -194,7 +194,7 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
                               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
                               child: StandardCard(
                                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
-                                child: const AppEmptyState(
+                                child: AppEmptyState(
                                   icon: Icons.calendar_month_outlined,
                                   title: AppLocalizations.of(context)!.emptyAppointments,
                                   description: AppLocalizations.of(context)!.appointmentsEmptyHint,

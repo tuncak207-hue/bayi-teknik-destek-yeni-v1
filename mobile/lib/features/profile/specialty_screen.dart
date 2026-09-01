@@ -221,7 +221,7 @@ class _SpecialtyScreenState extends State<SpecialtyScreen> {
                     padding: const EdgeInsets.only(top: AppSpacing.md),
                     child: StandardCard(
                       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
-                      child: const AppEmptyState(
+                      child: AppEmptyState(
                         icon: Icons.verified_outlined,
                         title: AppLocalizations.of(context)!.emptyCertifications,
                         description: AppLocalizations.of(context)!.certificateAddHint,

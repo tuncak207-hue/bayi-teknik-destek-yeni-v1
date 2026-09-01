@@ -17,12 +17,6 @@ class CalculatorsScreen extends StatefulWidget {
 class _CalculatorsScreenState extends State<CalculatorsScreen> with SingleTickerProviderStateMixin {
   late final TabController _tabController;
 
-  static const _tabs = [
-    (icon: Icons.battery_charging_full_outlined, label: AppLocalizations.of(context)!.calcTabBattery),
-    (icon: Icons.videocam_outlined, label: AppLocalizations.of(context)!.calcTabCameraHdd),
-    (icon: Icons.power_outlined, label: AppLocalizations.of(context)!.calcTabPoe),
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -37,6 +31,11 @@ class _CalculatorsScreenState extends State<CalculatorsScreen> with SingleTicker
 
   @override
   Widget build(BuildContext context) {
+    final tabs = [
+      (icon: Icons.battery_charging_full_outlined, label: AppLocalizations.of(context)!.calcTabBattery),
+      (icon: Icons.videocam_outlined, label: AppLocalizations.of(context)!.calcTabCameraHdd),
+      (icon: Icons.power_outlined, label: AppLocalizations.of(context)!.calcTabPoe),
+    ];
     return Scaffold(
       appBar: AppPageHeader(title: AppLocalizations.of(context)!.screenCalculators),
       backgroundColor: const Color(0xFFFFFFFF),
@@ -68,7 +67,7 @@ class _CalculatorsScreenState extends State<CalculatorsScreen> with SingleTicker
                 unselectedLabelColor: Colors.grey.shade500,
                 labelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
                 unselectedLabelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-                tabs: _tabs
+                tabs: tabs
                     .map((t) => Tab(
                           height: 44,
                           child: Row(

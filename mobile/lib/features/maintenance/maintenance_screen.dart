@@ -120,7 +120,7 @@ class _MaintenanceScreenState extends State<MaintenanceScreen> {
                               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
                               child: StandardCard(
                                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
-                                child: const AppEmptyState(
+                                child: AppEmptyState(
                                   icon: Icons.build_outlined,
                                   title: AppLocalizations.of(context)!.emptyMaintenance,
                                   description: AppLocalizations.of(context)!.maintenanceEmptyHint,

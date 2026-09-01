@@ -247,7 +247,7 @@ class _DocumentWalletScreenState extends State<DocumentWalletScreen> {
                               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
                               child: StandardCard(
                                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
-                                child: const AppEmptyState(
+                                child: AppEmptyState(
                                   icon: Icons.folder_open_outlined,
                                   title: AppLocalizations.of(context)!.emptyDocuments,
                                   description: AppLocalizations.of(context)!.walletEmptyHint,

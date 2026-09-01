@@ -151,7 +151,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
                               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
                               child: StandardCard(
                                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
-                                child: const AppEmptyState(
+                                child: AppEmptyState(
                                   icon: Icons.forum_outlined,
                                   title: AppLocalizations.of(context)!.emptyPosts,
                                   description: AppLocalizations.of(context)!.communityEmptyHint,
