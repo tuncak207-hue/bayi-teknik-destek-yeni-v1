@@ -99,8 +99,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   child: ValueListenableBuilder<bool>(
                     valueListenable: ThemeController().biometricLockEnabled,
                     builder: (context, enabled, _) => SwitchListTile(
-                      title: const Text('Parmak İzi ile Açılış Kilidi'),
-                      subtitle: const Text('Uygulama her açıldığında biyometrik onay istenir'),
+                      title: Text(AppLocalizations.of(context)!.fingerprintLock),
+                      subtitle: Text(AppLocalizations.of(context)!.biometricEveryOpenHint),
                       value: enabled,
                       onChanged: (v) async {
                         if (v) {
@@ -108,7 +108,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           if (!available) {
                             if (mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Bu cihazda parmak izi/yüz tanıma desteklenmiyor.')),
+                                SnackBar(content: Text(AppLocalizations.of(context)!.biometricsNotSupported)),
                               );
                             }
                             return;
@@ -135,7 +135,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           valueListenable: ThemeController().fontScale,
                           builder: (context, scale, _) => Column(
                             children: [
-                              Text('Örnek Metin', style: TextStyle(fontSize: 16 * scale)),
+                              Text(AppLocalizations.of(context)!.sampleText, style: TextStyle(fontSize: 16 * scale)),
                               Slider(
                                 value: scale,
                                 min: 0.85,
@@ -164,15 +164,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   child: Column(
                     children: [
                       SwitchListTile(
-                        title: const Text('Sessiz Saatleri Etkinleştir'),
-                        subtitle: const Text('Belirlediğiniz saat aralığında bildirim gelmez'),
+                        title: Text(AppLocalizations.of(context)!.enableQuietHours),
+                        subtitle: Text(AppLocalizations.of(context)!.quietHoursHint),
                         value: _profile?['quietHoursEnabled'] == true,
                         onChanged: (v) => _setQuietHours(enabled: v),
                       ),
                       if (_profile?['quietHoursEnabled'] == true) ...[
                         const Divider(height: 1),
                         ListTile(
-                          title: const Text('Başlangıç'),
+                          title: Text(AppLocalizations.of(context)!.startTime),
                           trailing: Text(
                             _profile?['quietHoursStart'] ?? '22:00',
                             style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.navy),
@@ -180,7 +180,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           onTap: () => _pickTime(true),
                         ),
                         ListTile(
-                          title: const Text('Bitiş'),
+                          title: Text(AppLocalizations.of(context)!.endTime),
                           trailing: Text(
                             _profile?['quietHoursEnd'] ?? '07:00',
                             style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.navy),

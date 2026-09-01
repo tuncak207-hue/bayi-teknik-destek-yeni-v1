@@ -258,7 +258,7 @@ class _ResultCard extends StatelessWidget {
             child: TextButton.icon(
               onPressed: () => CalculatorPdfExporter.export(context: context, title: title, result: result!, labels: _kLabels),
               icon: const Icon(Icons.picture_as_pdf_outlined, size: 16),
-              label: const Text('PDF Rapor Al'),
+              label: Text(AppLocalizations.of(context)!.getPdfReport),
             ),
           ),
         ],
@@ -316,7 +316,7 @@ class _BatteryCalculatorState extends State<_BatteryCalculator> {
         ),
         const SizedBox(height: AppSpacing.md),
         PremiumFormSection(
-          title: 'Sistem Bilgileri',
+          title: AppLocalizations.of(context)!.calcSystemInfo,
           children: [
             _UnitField(controller: _standbyController, label: 'Bekleme akımı', unit: 'mA', icon: Icons.bedtime_outlined),
             _UnitField(controller: _alarmController, label: 'Alarm akımı', unit: 'mA', icon: Icons.notifications_active_outlined),
@@ -332,14 +332,14 @@ class _BatteryCalculatorState extends State<_BatteryCalculator> {
             style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
             child: _calculating
                 ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                : const Text('Hesapla', style: TextStyle(fontWeight: FontWeight.w700)),
+                : Text(AppLocalizations.of(context)!.calculate, style: TextStyle(fontWeight: FontWeight.w700)),
           ),
         ),
         const SizedBox(height: AppSpacing.md),
         _ResultCard(
           result: _result,
           error: _error,
-          title: 'Akü Kapasitesi Hesabı',
+          title: AppLocalizations.of(context)!.calcBatteryCapacity,
           headlineKey: 'recommendedBatteryAh',
           headlineSuffix: ' Ah',
         ),
@@ -395,7 +395,7 @@ class _CameraStorageCalculatorState extends State<_CameraStorageCalculator> {
         ),
         const SizedBox(height: AppSpacing.md),
         PremiumFormSection(
-          title: 'Sistem Bilgileri',
+          title: AppLocalizations.of(context)!.calcSystemInfo,
           children: [
             _UnitField(controller: _cameraCountController, label: 'Kamera sayısı', unit: 'adet', icon: Icons.videocam_outlined),
             _UnitField(controller: _bitrateController, label: 'Kamera başına bitrate', unit: 'Mbps', icon: Icons.speed_outlined),
@@ -410,14 +410,14 @@ class _CameraStorageCalculatorState extends State<_CameraStorageCalculator> {
             style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
             child: _calculating
                 ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                : const Text('Hesapla', style: TextStyle(fontWeight: FontWeight.w700)),
+                : Text(AppLocalizations.of(context)!.calculate, style: TextStyle(fontWeight: FontWeight.w700)),
           ),
         ),
         const SizedBox(height: AppSpacing.md),
         _ResultCard(
           result: _result,
           error: _error,
-          title: 'Kamera HDD Hesabı',
+          title: AppLocalizations.of(context)!.calcCameraHdd,
           headlineKey: 'recommendedHddTb',
           headlineSuffix: ' TB',
         ),
@@ -478,7 +478,7 @@ class _PoeBudgetCalculatorState extends State<_PoeBudgetCalculator> {
         ),
         const SizedBox(height: AppSpacing.md),
         PremiumFormSection(
-          title: 'Cihaz Bilgileri',
+          title: AppLocalizations.of(context)!.calcDeviceInfo,
           children: [
             _UnitField(controller: _wattageController, label: 'Cihaz başına güç', unit: 'W', icon: Icons.bolt_outlined),
             _UnitField(controller: _countController, label: 'Cihaz sayısı', unit: 'adet', icon: Icons.videocam_outlined),
@@ -493,14 +493,14 @@ class _PoeBudgetCalculatorState extends State<_PoeBudgetCalculator> {
             style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
             child: _calculating
                 ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                : const Text('Hesapla', style: TextStyle(fontWeight: FontWeight.w700)),
+                : Text(AppLocalizations.of(context)!.calculate, style: TextStyle(fontWeight: FontWeight.w700)),
           ),
         ),
         const SizedBox(height: AppSpacing.md),
         _ResultCard(
           result: _result,
           error: _error,
-          title: 'PoE Güç Bütçesi Hesabı',
+          title: AppLocalizations.of(context)!.calcPoeBudget,
           headlineKey: 'utilizationPercent',
           headlineSuffix: '%',
           statusKey: 'withinBudget',

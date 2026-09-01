@@ -58,7 +58,7 @@ class _QuotesScreenState extends State<QuotesScreen> {
       if (url == null) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Henüz bir fiyat listesi PDF\'i yüklenmedi.')),
+            SnackBar(content: Text(AppLocalizations.of(context)!.noPriceListPdfYet)),
           );
         }
         return;
@@ -69,7 +69,7 @@ class _QuotesScreenState extends State<QuotesScreen> {
       await DocumentPdfExporter.view(File(path));
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Fiyat listesi açılamadı.')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.priceListOpenFailed)));
       }
     }
   }
@@ -78,11 +78,11 @@ class _QuotesScreenState extends State<QuotesScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Teklifi Sil'),
+        title: Text(AppLocalizations.of(context)!.deleteQuote),
         content: Text('"${quote['title']}" silinecek. Emin misiniz?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
-          TextButton(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('Sil', style: TextStyle(color: AppColors.navy))),
+          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(AppLocalizations.of(context)!.cancel)),
+          TextButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(AppLocalizations.of(context)!.delete, style: TextStyle(color: AppColors.navy))),
         ],
       ),
     );
@@ -353,7 +353,7 @@ class _QuoteBuilderScreenState extends State<_QuoteBuilderScreen> {
 
   Future<void> _submit() async {
     if (_cart.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Lütfen en az bir kalem seçin.')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.pleaseSelectAtLeastOneItem)));
       return;
     }
     setState(() => _submitting = true);
@@ -471,7 +471,7 @@ class _QuoteBuilderScreenState extends State<_QuoteBuilderScreen> {
                       if (_catalog.isEmpty)
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 40),
-                          child: Text('Admin panelden henüz fiyat listesi tanımlanmadı.', style: TextStyle(color: Colors.grey.shade500), textAlign: TextAlign.center),
+                          child: Text(AppLocalizations.of(context)!.noPriceListYet, style: TextStyle(color: Colors.grey.shade500), textAlign: TextAlign.center),
                         )
                       else ...[
                         Container(
@@ -613,7 +613,7 @@ class _QuoteBuilderScreenState extends State<_QuoteBuilderScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('Toplam', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+                          Text(AppLocalizations.of(context)!.total, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
                           Text('${_total.toStringAsFixed(2)} €', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 20, color: AppColors.brand)),
                         ],
                       ),
@@ -682,10 +682,10 @@ class _QuoteDetailScreenState extends State<_QuoteDetailScreen> {
                       pw.TableRow(
                         decoration: const pw.BoxDecoration(color: PdfColors.grey100),
                         children: [
-                          pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text('Malzeme', style: pw.TextStyle(fontWeight: pw.FontWeight.bold))),
-                          pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text('Miktar', style: pw.TextStyle(fontWeight: pw.FontWeight.bold))),
-                          pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text('Birim Fiyat', style: pw.TextStyle(fontWeight: pw.FontWeight.bold))),
-                          pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text('Tutar', style: pw.TextStyle(fontWeight: pw.FontWeight.bold))),
+                          pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text(AppLocalizations.of(context)!.material, style: pw.TextStyle(fontWeight: pw.FontWeight.bold))),
+                          pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text(AppLocalizations.of(context)!.quantity, style: pw.TextStyle(fontWeight: pw.FontWeight.bold))),
+                          pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text(AppLocalizations.of(context)!.unitPrice, style: pw.TextStyle(fontWeight: pw.FontWeight.bold))),
+                          pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text(AppLocalizations.of(context)!.amount, style: pw.TextStyle(fontWeight: pw.FontWeight.bold))),
                         ],
                       ),
                       ...items.map((item) => pw.TableRow(
@@ -750,8 +750,8 @@ class _QuoteDetailScreenState extends State<_QuoteDetailScreen> {
                 if (v == 'share') _exportPdf(andShare: true);
               },
               itemBuilder: (context) => [
-                const PopupMenuItem(value: 'view', child: Text('PDF Görüntüle')),
-                const PopupMenuItem(value: 'share', child: Text('PDF Paylaş')),
+                const PopupMenuItem(value: 'view', child: Text(AppLocalizations.of(context)!.viewPdf)),
+                const PopupMenuItem(value: 'share', child: Text(AppLocalizations.of(context)!.sharePdf)),
               ],
               icon: const Icon(Icons.picture_as_pdf_outlined),
             ),
@@ -769,7 +769,7 @@ class _QuoteDetailScreenState extends State<_QuoteDetailScreen> {
                 Text(q['title'] ?? '', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: AppColors.navy)),
                 if ((q['customerName'] ?? '').toString().isNotEmpty) ...[
                   const SizedBox(height: 4),
-                  Text('Müşteri: ${q['customerName']}', style: TextStyle(fontSize: 12.5, color: Colors.grey.shade600)),
+                  Text(AppLocalizations.of(context)!.customerLabel(q['customerName']), style: TextStyle(fontSize: 12.5, color: Colors.grey.shade600)),
                 ],
                 const Divider(height: 20),
                 ...items.map((item) => Padding(
@@ -785,7 +785,7 @@ class _QuoteDetailScreenState extends State<_QuoteDetailScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('Genel Toplam', style: TextStyle(fontWeight: FontWeight.w800)),
+                    Text(AppLocalizations.of(context)!.grandTotal, style: TextStyle(fontWeight: FontWeight.w800)),
                     Text('${(q['totalAmount'] as num).toStringAsFixed(2)} €', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: AppColors.brand)),
                   ],
                 ),

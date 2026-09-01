@@ -164,7 +164,7 @@ class _AnnouncementsScreenState extends State<AnnouncementsScreen> {
                                                 margin: const EdgeInsets.only(left: 6),
                                                 padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                                                 decoration: BoxDecoration(color: AppColors.brand, borderRadius: BorderRadius.circular(AppRadius.xl)),
-                                                child: const Text('YENİ', style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w800, color: Colors.white)),
+                                                child: Text(AppLocalizations.of(context)!.newLabel, style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w800, color: Colors.white)),
                                               ),
                                           ],
                                         ),
@@ -222,13 +222,13 @@ class _AnnouncementDetailScreenState extends State<_AnnouncementDetailScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Duyuruyu Kaldır'),
-        content: const Text('Bu duyuru kendi listenizden kaldırılacak. Emin misiniz?'),
+        title: Text(AppLocalizations.of(context)!.removeAnnouncement),
+        content: Text(AppLocalizations.of(context)!.removeAnnouncementConfirm),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
+          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(AppLocalizations.of(context)!.cancel)),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Kaldır', style: TextStyle(color: AppColors.navy)),
+            child: Text(AppLocalizations.of(context)!.remove, style: TextStyle(color: AppColors.navy)),
           ),
         ],
       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
 
@@ -34,7 +35,7 @@ class CriticalAnnouncementGate {
               const Icon(Icons.warning_amber_rounded, color: AppColors.brand, size: 26),
               const SizedBox(width: 8),
               const Expanded(
-                child: Text('Kritik Duyuru', style: TextStyle(color: AppColors.brand, fontWeight: FontWeight.w800)),
+                child: Text(AppLocalizations.of(context)!.criticalAnnouncement, style: TextStyle(color: AppColors.brand, fontWeight: FontWeight.w800)),
               ),
             ],
           ),
@@ -60,7 +61,7 @@ class CriticalAnnouncementGate {
                   await dio.post('/announcements/${announcement['id']}/acknowledge');
                   if (dialogContext.mounted) Navigator.pop(dialogContext);
                 },
-                child: const Text('Okudum, Anladım'),
+                child: Text(AppLocalizations.of(context)!.readUnderstood),
               ),
             ),
           ],

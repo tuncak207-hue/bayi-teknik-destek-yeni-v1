@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../l10n/app_localizations.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:dio/dio.dart';
@@ -152,7 +153,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                   ],
                 ] else ...[
                   const SizedBox(height: 4),
-                  const Text('Kaynak', style: TextStyle(fontSize: 11, color: Colors.grey, fontWeight: FontWeight.w600)),
+                  Text(AppLocalizations.of(context)!.source, style: TextStyle(fontSize: 11, color: Colors.grey, fontWeight: FontWeight.w600)),
                   ...message.citations.map((c) => CitationCard(citation: c)),
                 ],
               ],

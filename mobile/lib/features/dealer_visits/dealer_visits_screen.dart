@@ -324,7 +324,7 @@ class _CreateVisitScreenState extends State<_CreateVisitScreen> {
         navigationBar: const CupertinoNavigationBar(
           backgroundColor: Color(0xFFFFFFFF),
           border: null,
-          middle: Text('Yeni Ziyaret', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+          middle: Text(AppLocalizations.of(context)!.screenNewVisit, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
         ),
         child: SafeArea(child: _buildForm()),
       );
@@ -409,7 +409,7 @@ class _CreateVisitScreenState extends State<_CreateVisitScreen> {
                 TextButton.icon(
                   onPressed: () => setState(() => _showOptional = !_showOptional),
                   icon: Icon(_showOptional ? Icons.remove : Icons.add, size: 18),
-                  label: const Text('Görüşülen kişi / takip bilgisi ekle (isteğe bağlı)'),
+                  label: Text(AppLocalizations.of(context)!.addContactPersonHint),
                 ),
                 if (_showOptional) ...[
                   const SizedBox(height: AppSpacing.xs),
@@ -417,16 +417,16 @@ class _CreateVisitScreenState extends State<_CreateVisitScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Görüşülen Kişi', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.navy)),
+                        Text(AppLocalizations.of(context)!.contactPerson, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.navy)),
                         const SizedBox(height: 8),
                         TextField(controller: _contactNameController, decoration: const InputDecoration(labelText: 'Ad Soyad', border: OutlineInputBorder(), isDense: true)),
                         const SizedBox(height: 8),
                         TextField(controller: _contactPhoneController, decoration: const InputDecoration(labelText: 'Telefon', border: OutlineInputBorder(), isDense: true)),
                         const SizedBox(height: 16),
-                        const Text('Takip', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.navy)),
+                        Text(AppLocalizations.of(context)!.followUp, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.navy)),
                         SwitchListTile(
                           contentPadding: EdgeInsets.zero,
-                          title: const Text('Takip gerekiyor', style: TextStyle(fontSize: 13)),
+                          title: Text(AppLocalizations.of(context)!.followUpNeeded, style: TextStyle(fontSize: 13)),
                           value: _needsFollowUp,
                           onChanged: (v) => setState(() => _needsFollowUp = v),
                         ),
@@ -449,7 +449,7 @@ class _CreateVisitScreenState extends State<_CreateVisitScreen> {
                   style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(50)),
                   child: _submitting
                       ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                      : const Text('Ziyareti Kaydet'),
+                      : Text(AppLocalizations.of(context)!.saveVisit),
                 ),
               ],
             );
@@ -506,7 +506,7 @@ class _VisitDetailScreenState extends State<_VisitDetailScreen> {
       await _load();
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Fotoğraf eklenemedi, tekrar deneyin.')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.photoAddFailed)));
       }
     } finally {
       if (mounted) setState(() => _uploading = false);
@@ -521,7 +521,7 @@ class _VisitDetailScreenState extends State<_VisitDetailScreen> {
           children: [
             ListTile(
               leading: const Icon(Icons.camera_alt_outlined),
-              title: const Text('Fotoğraf Çek'),
+              title: Text(AppLocalizations.of(context)!.takePhotoAction),
               onTap: () {
                 Navigator.pop(context);
                 _addPhoto(ImageSource.camera);
@@ -529,7 +529,7 @@ class _VisitDetailScreenState extends State<_VisitDetailScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.photo_library_outlined),
-              title: const Text('Galeriden Seç'),
+              title: Text(AppLocalizations.of(context)!.chooseFromGallery),
               onTap: () {
                 Navigator.pop(context);
                 _addPhoto(ImageSource.gallery);
@@ -563,7 +563,7 @@ class _VisitDetailScreenState extends State<_VisitDetailScreen> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _visit == null
-              ? const Center(child: Text('Ziyaret bulunamadı.'))
+              ? const Center(child: Text(AppLocalizations.of(context)!.visitNotFound))
               : ListView(
                   padding: const EdgeInsets.all(AppSpacing.md),
                   children: [
@@ -576,7 +576,7 @@ class _VisitDetailScreenState extends State<_VisitDetailScreen> {
                           children: [
                             Icon(Icons.check_circle, color: Colors.green, size: 18),
                             SizedBox(width: 8),
-                            Expanded(child: Text('Ziyaret kaydedildi. İsterseniz fotoğraf ekleyebilirsiniz.', style: TextStyle(fontSize: 12.5))),
+                            Expanded(child: Text(AppLocalizations.of(context)!.visitSavedAddPhotoHint, style: TextStyle(fontSize: 12.5))),
                           ],
                         ),
                       ),
@@ -596,7 +596,7 @@ class _VisitDetailScreenState extends State<_VisitDetailScreen> {
                           const SizedBox(height: 10),
                           StatusBadge(label: _outcomeLabels[_visit!['outcome']] ?? _visit!['outcome'], tone: AppStatusTone.neutral),
                           const Divider(height: 24),
-                          const Text('Görüşme Notları', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12.5, color: AppColors.navy)),
+                          Text(AppLocalizations.of(context)!.meetingNotes, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12.5, color: AppColors.navy)),
                           const SizedBox(height: 6),
                           Text(_visit!['notes'] ?? '', style: const TextStyle(fontSize: 13, height: 1.4)),
                         ],
@@ -605,20 +605,20 @@ class _VisitDetailScreenState extends State<_VisitDetailScreen> {
                     const SizedBox(height: AppSpacing.md),
                     Row(
                       children: [
-                        const Text('Fotoğraflar', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: AppColors.navy)),
+                        Text(AppLocalizations.of(context)!.photos, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: AppColors.navy)),
                         const Spacer(),
                         TextButton.icon(
                           onPressed: _uploading ? null : _showPhotoSourceSheet,
                           icon: _uploading
                               ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2))
                               : const Icon(Icons.add_a_photo_outlined, size: 16),
-                          label: const Text('Ekle'),
+                          label: Text(AppLocalizations.of(context)!.add),
                         ),
                       ],
                     ),
                     const SizedBox(height: 8),
                     if ((_visit!['attachments'] as List?)?.isEmpty ?? true)
-                      Text('Henüz fotoğraf eklenmedi.', style: TextStyle(fontSize: 12.5, color: Colors.grey.shade400))
+                      Text(AppLocalizations.of(context)!.emptyPhotos, style: TextStyle(fontSize: 12.5, color: Colors.grey.shade400))
                     else
                       GridView.builder(
                         shrinkWrap: true,

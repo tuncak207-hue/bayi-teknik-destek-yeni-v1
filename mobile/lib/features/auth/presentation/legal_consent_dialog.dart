@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
 Future<bool> showLegalConsentDialog(BuildContext context) async {
@@ -10,17 +11,17 @@ Future<bool> showLegalConsentDialog(BuildContext context) async {
     barrierDismissible: false,
     builder: (dialogContext) => StatefulBuilder(
       builder: (context, setState) => AlertDialog(
-        title: const Text('Yasal metin onayı'),
+        title: Text(AppLocalizations.of(context)!.legalConsentTitle),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('Kayıt olabilmek için aşağıdaki iki metni okuyup ayrı ayrı kabul etmeniz gerekir.'),
+              Text(AppLocalizations.of(context)!.legalConsentHint),
               CheckboxListTile(
                 contentPadding: EdgeInsets.zero,
                 value: kvkkAccepted,
                 onChanged: (value) => setState(() => kvkkAccepted = value ?? false),
-                title: const Text('KVKK Aydınlatma Metni’ni okudum ve kabul ediyorum.'),
+                title: Text(AppLocalizations.of(context)!.kvkkAgree),
                 secondary: IconButton(
                   tooltip: 'KVKK metnini aç',
                   icon: const Icon(Icons.open_in_new),
@@ -31,7 +32,7 @@ Future<bool> showLegalConsentDialog(BuildContext context) async {
                 contentPadding: EdgeInsets.zero,
                 value: privacyAccepted,
                 onChanged: (value) => setState(() => privacyAccepted = value ?? false),
-                title: const Text('Gizlilik Politikası’nı okudum ve kabul ediyorum.'),
+                title: Text(AppLocalizations.of(context)!.privacyPolicyAgree),
                 secondary: IconButton(
                   tooltip: 'Gizlilik Politikasını aç',
                   icon: const Icon(Icons.open_in_new),
@@ -44,13 +45,13 @@ Future<bool> showLegalConsentDialog(BuildContext context) async {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: const Text('Vazgeç'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           FilledButton(
             onPressed: kvkkAccepted && privacyAccepted
                 ? () => Navigator.of(dialogContext).pop(true)
                 : null,
-            child: const Text('Kabul et ve devam et'),
+            child: Text(AppLocalizations.of(context)!.acceptAndContinue),
           ),
         ],
       ),

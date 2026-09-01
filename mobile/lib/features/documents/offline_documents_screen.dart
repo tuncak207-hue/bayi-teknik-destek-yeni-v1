@@ -39,7 +39,7 @@ class _OfflineDocumentsScreenState extends State<OfflineDocumentsScreen> {
     if (!await File(path).exists()) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Dosya cihazda bulunamadı, tekrar indirmeniz gerekebilir.')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.fileNotFoundRedownload)),
         );
       }
       return;

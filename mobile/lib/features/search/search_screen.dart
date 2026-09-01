@@ -6,7 +6,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/design_system.dart';
-import '../../l10n/app_localizations.dart';
 
 enum _SearchScope { all, documents, dealers, posts }
 
@@ -160,7 +159,7 @@ class _SearchScreenState extends State<SearchScreen> {
                             children: [
                               Row(
                                 children: [
-                                  const Text('SON ARAMALAR', style: AppText.eyebrow),
+                                  Text(AppLocalizations.of(context)!.recentSearches, style: AppText.eyebrow),
                                   const SizedBox(width: AppSpacing.xs),
                                   Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -175,7 +174,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                   ),
                                 ],
                               ),
-                              TextButton(onPressed: _clearRecentSearches, child: const Text('Temizle', style: TextStyle(fontSize: 12.5))),
+                              TextButton(onPressed: _clearRecentSearches, child: Text(AppLocalizations.of(context)!.clear, style: TextStyle(fontSize: 12.5))),
                             ],
                           ),
                           const SizedBox(height: 8),
@@ -243,7 +242,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                 children: [
                                   Icon(Icons.search_off, size: 44, color: Colors.grey.shade300),
                                   const SizedBox(height: 10),
-                                  Text('Sonuç bulunamadı.', style: TextStyle(color: Colors.grey.shade500, fontSize: 13)),
+                                  Text(AppLocalizations.of(context)!.noResultsFound, style: TextStyle(color: Colors.grey.shade500, fontSize: 13)),
                                 ],
                               ),
                             ),

@@ -81,7 +81,7 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
                               subtitle: Text('${u['firstName']} ${u['lastName']}'),
                               trailing: OutlinedButton(
                                 onPressed: () => _unblock(u['id']),
-                                child: const Text('Engeli Kaldır'),
+                                child: Text(AppLocalizations.of(context)!.unblock),
                               ),
                             ),
                           );

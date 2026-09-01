@@ -54,7 +54,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Sonuç Bulunamadı'),
+        title: Text(AppLocalizations.of(context)!.noResultsFoundTitle),
         content: Text('"$code" ile eşleşen bir doküman bulunamadı.'),
         actions: [
           TextButton(
@@ -62,7 +62,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
               Navigator.pop(context);
               _resumeScanning();
             },
-            child: const Text('Tekrar Tara'),
+            child: Text(AppLocalizations.of(context)!.scanAgain),
           ),
         ],
       ),

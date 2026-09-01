@@ -157,9 +157,9 @@ class _SupportTicketsScreenState extends State<SupportTicketsScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Acil Teknik Destek', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 16)),
+                                  Text(AppLocalizations.of(context)!.screenEmergencySupport, style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 16)),
                                   SizedBox(height: 2),
-                                  Text('Tek tuşla acil kayıt oluştur', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                                  Text(AppLocalizations.of(context)!.oneTapEmergencyRecord, style: TextStyle(color: Colors.white70, fontSize: 12)),
                                 ],
                               ),
                             ),
@@ -266,12 +266,12 @@ class _CreateTicketScreenState extends State<_CreateTicketScreen> {
           children: [
             ListTile(
               leading: const Icon(Icons.photo_camera_outlined),
-              title: const Text('Kamera ile çek'),
+              title: Text(AppLocalizations.of(context)!.takePhoto),
               onTap: () => Navigator.pop(context, ImageSource.camera),
             ),
             ListTile(
               leading: const Icon(Icons.photo_library_outlined),
-              title: const Text('Galeriden Seç'),
+              title: Text(AppLocalizations.of(context)!.chooseFromGallery),
               onTap: () => Navigator.pop(context, ImageSource.gallery),
             ),
           ],
@@ -291,7 +291,7 @@ class _CreateTicketScreenState extends State<_CreateTicketScreen> {
   Future<void> _submit() async {
     if (_descriptionController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Lütfen sorunu kısaca açıklayın.')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.pleaseDescribeIssue)),
       );
       return;
     }
@@ -331,7 +331,7 @@ class _CreateTicketScreenState extends State<_CreateTicketScreen> {
           leading: CupertinoButton(
             padding: EdgeInsets.zero,
             onPressed: () => Navigator.pop(context),
-            child: const Text('İptal', style: TextStyle(color: CupertinoColors.systemGrey, fontSize: 16)),
+            child: Text(AppLocalizations.of(context)!.cancel, style: TextStyle(color: CupertinoColors.systemGrey, fontSize: 16)),
           ),
           middle: Text(widget.isEmergency ? AppLocalizations.of(context)!.screenEmergencySupport : AppLocalizations.of(context)!.screenNewSupportTicket, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: AppColors.navy)),
         ),
@@ -483,7 +483,7 @@ class _TicketDetailScreenState extends State<_TicketDetailScreen> {
                   children: [
                     Icon(Icons.warning_amber_rounded, size: 14, color: AppColors.navy),
                     SizedBox(width: 6),
-                    Text('ACİL KAYIT', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AppColors.navy)),
+                    Text(AppLocalizations.of(context)!.emergencyRecordShort, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AppColors.navy)),
                   ],
                 ),
               ),
@@ -523,7 +523,7 @@ class _TicketDetailScreenState extends State<_TicketDetailScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Çözüm Süresi (SLA)', style: TextStyle(fontSize: 11.5, color: Colors.grey, fontWeight: FontWeight.w600)),
+                          Text(AppLocalizations.of(context)!.resolutionTimeSla, style: TextStyle(fontSize: 11.5, color: Colors.grey, fontWeight: FontWeight.w600)),
                           Text(
                             _formatRemaining(slaStatus['resolutionRemainingMinutes']),
                             style: TextStyle(
@@ -551,15 +551,15 @@ class _TicketDetailScreenState extends State<_TicketDetailScreen> {
                   Text(t['productName'] ?? 'Ürün belirtilmedi', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: AppColors.navy)),
                   if ((t['productModel'] ?? '').toString().isNotEmpty) ...[
                     const SizedBox(height: 4),
-                    Text('Model: ${t['productModel']}', style: TextStyle(fontSize: 12.5, color: Colors.grey.shade600)),
+                    Text(AppLocalizations.of(context)!.modelLabel(t['productModel']), style: TextStyle(fontSize: 12.5, color: Colors.grey.shade600)),
                   ],
                   if ((t['serialNumber'] ?? '').toString().isNotEmpty) ...[
                     const SizedBox(height: 2),
-                    Text('Seri No: ${t['serialNumber']}', style: TextStyle(fontSize: 12.5, color: Colors.grey.shade600)),
+                    Text(AppLocalizations.of(context)!.serialNoLabel(t['serialNumber']), style: TextStyle(fontSize: 12.5, color: Colors.grey.shade600)),
                   ],
                   if ((t['location'] ?? '').toString().isNotEmpty) ...[
                     const SizedBox(height: 2),
-                    Text('Konum: ${t['location']}', style: TextStyle(fontSize: 12.5, color: Colors.grey.shade600)),
+                    Text(AppLocalizations.of(context)!.locationLabel(t['location']), style: TextStyle(fontSize: 12.5, color: Colors.grey.shade600)),
                   ],
                   const Divider(height: 24),
                   Text(t['description'] ?? '', style: const TextStyle(fontSize: 14, height: 1.5)),
@@ -676,7 +676,7 @@ class _BeforeAfterPhotoSectionState extends State<_BeforeAfterPhotoSection> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Önce / Sonra Fotoğraf', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: AppColors.navy)),
+          Text(AppLocalizations.of(context)!.beforeAfterPhoto, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: AppColors.navy)),
           const SizedBox(height: 12),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -741,7 +741,7 @@ class _MeasurementSectionState extends State<_MeasurementSection> {
       await _load();
       if (res.data['isOutOfRange'] == true && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('⚠️ Girilen değer kabul edilebilir aralığın dışında!'), backgroundColor: AppColors.navy),
+          SnackBar(content: Text(AppLocalizations.of(context)!.valueOutOfRange), backgroundColor: AppColors.navy),
         );
       }
     } finally {
@@ -761,7 +761,7 @@ class _MeasurementSectionState extends State<_MeasurementSection> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Teknik Ölçümler', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: AppColors.navy)),
+          Text(AppLocalizations.of(context)!.technicalMeasurements, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: AppColors.navy)),
           const SizedBox(height: 12),
           if (_types.isNotEmpty) ...[
             Row(
@@ -795,7 +795,7 @@ class _MeasurementSectionState extends State<_MeasurementSection> {
             ),
             const SizedBox(height: 12),
           ] else
-            Text('Admin panelden henüz ölçüm türü tanımlanmamış.', style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
+            Text(AppLocalizations.of(context)!.noMeasurementTypeYet, style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
           if (_measurements.isNotEmpty) ...[
             const Divider(height: 20),
             ..._measurements.map((m) {
@@ -876,17 +876,17 @@ class _SparePartSectionState extends State<_SparePartSection> {
           Row(
             children: [
               const Expanded(
-                child: Text('Yedek Parça Talepleri', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: AppColors.navy)),
+                child: Text(AppLocalizations.of(context)!.sparePartRequests, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: AppColors.navy)),
               ),
               TextButton.icon(
                 onPressed: _openRequestForm,
                 icon: const Icon(Icons.add, size: 16),
-                label: const Text('Talep Oluştur', style: TextStyle(fontSize: 12.5)),
+                label: Text(AppLocalizations.of(context)!.createRequest, style: TextStyle(fontSize: 12.5)),
               ),
             ],
           ),
           if (_requests.isEmpty)
-            Text('Henüz parça talebi yok.', style: TextStyle(fontSize: 12, color: Colors.grey.shade500))
+            Text(AppLocalizations.of(context)!.emptyPartRequests, style: TextStyle(fontSize: 12, color: Colors.grey.shade500))
           else
             ..._requests.map((r) => Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4),
@@ -925,7 +925,7 @@ class _SparePartRequestSheetState extends State<_SparePartRequestSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text('Yedek Parça Talebi', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+          Text(AppLocalizations.of(context)!.sparePartRequest, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
           const SizedBox(height: 6),
           // Ürün/model/seri no otomatik aktarılıyor — kullanıcı tekrar girmiyor.
           Text(
@@ -948,7 +948,7 @@ class _SparePartRequestSheetState extends State<_SparePartRequestSheet> {
                 'quantity': int.tryParse(_quantityController.text.trim()) ?? 1,
               });
             },
-            child: const Text('Talebi Gönder'),
+            child: Text(AppLocalizations.of(context)!.submitRequest),
           ),
         ],
       ),
@@ -1018,17 +1018,17 @@ class _CostSectionState extends State<_CostSection> {
           Row(
             children: [
               const Expanded(
-                child: Text('Maliyet Kalemleri', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: AppColors.navy)),
+                child: Text(AppLocalizations.of(context)!.costItems, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: AppColors.navy)),
               ),
               TextButton.icon(
                 onPressed: _openCostForm,
                 icon: const Icon(Icons.add, size: 16),
-                label: const Text('Kalem Ekle', style: TextStyle(fontSize: 12.5)),
+                label: Text(AppLocalizations.of(context)!.addItem, style: TextStyle(fontSize: 12.5)),
               ),
             ],
           ),
           if (_costs.isEmpty)
-            Text('Henüz maliyet kaydı yok.', style: TextStyle(fontSize: 12, color: Colors.grey.shade500))
+            Text(AppLocalizations.of(context)!.emptyCosts, style: TextStyle(fontSize: 12, color: Colors.grey.shade500))
           else ...[
             ..._costs.map((c) => Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4),
@@ -1043,7 +1043,7 @@ class _CostSectionState extends State<_CostSection> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Toplam', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13)),
+                Text(AppLocalizations.of(context)!.total, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13)),
                 Text('${total.toStringAsFixed(2)} ₺', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: AppColors.navy)),
               ],
             ),
@@ -1083,7 +1083,7 @@ class _CostEntrySheetState extends State<_CostEntrySheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text('Maliyet Kalemi Ekle', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+          Text(AppLocalizations.of(context)!.addCostItem, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
           const SizedBox(height: 16),
           DropdownButtonFormField<String>(
             value: _category,
@@ -1111,7 +1111,7 @@ class _CostEntrySheetState extends State<_CostEntrySheet> {
                 'description': _descriptionController.text.trim(),
               });
             },
-            child: const Text('Ekle'),
+            child: Text(AppLocalizations.of(context)!.add),
           ),
         ],
       ),
@@ -1173,9 +1173,9 @@ class _KnowledgeBaseSectionState extends State<_KnowledgeBaseSection> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Bilgi Hafızasına Ekle', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: AppColors.navy)),
+                Text(AppLocalizations.of(context)!.addToKnowledgeMemory, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: AppColors.navy)),
                 const SizedBox(height: 2),
-                Text('Bu vakadan öğrendiklerinizi kaydedin, AI gelecekte kullansın.', style: TextStyle(fontSize: 11.5, color: Colors.grey.shade500)),
+                Text(AppLocalizations.of(context)!.saveCaseKnowledgeHint, style: TextStyle(fontSize: 11.5, color: Colors.grey.shade500)),
               ],
             ),
           ),
@@ -1185,7 +1185,7 @@ class _KnowledgeBaseSectionState extends State<_KnowledgeBaseSection> {
                   onPressed: _submitting ? null : _openForm,
                   child: _submitting
                       ? const SizedBox(height: 16, width: 16, child: CircularProgressIndicator(strokeWidth: 2))
-                      : const Text('Ekle'),
+                      : Text(AppLocalizations.of(context)!.add),
                 ),
         ],
       ),
@@ -1221,7 +1221,7 @@ class _KnowledgeEntrySheetState extends State<_KnowledgeEntrySheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text('Saha Tecrübesi Kaydet', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+          Text(AppLocalizations.of(context)!.saveFieldExperience, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
           const SizedBox(height: 6),
           Text(
             '${widget.ticket['productName'] ?? ''} ${widget.ticket['productModel'] ?? ''}',
@@ -1248,7 +1248,7 @@ class _KnowledgeEntrySheetState extends State<_KnowledgeEntrySheet> {
                 'partUsed': _partUsedController.text.trim(),
               });
             },
-            child: const Text('Kaydet'),
+            child: Text(AppLocalizations.of(context)!.save),
           ),
         ],
       ),

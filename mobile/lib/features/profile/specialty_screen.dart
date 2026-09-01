@@ -86,7 +86,7 @@ class _SpecialtyScreenState extends State<SpecialtyScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Belge açılamadı.')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.documentOpenFailed)),
         );
       }
     }
@@ -159,7 +159,7 @@ class _SpecialtyScreenState extends State<SpecialtyScreen> {
           : ListView(
               padding: const EdgeInsets.all(AppSpacing.md),
               children: [
-                const Text('Uzmanlık Alanları', style: TextStyle(fontWeight: FontWeight.w700, color: AppColors.navy)),
+                Text(AppLocalizations.of(context)!.specialtyAreas, style: TextStyle(fontWeight: FontWeight.w700, color: AppColors.navy)),
                 const SizedBox(height: 4),
                 Text(
                   'Bayiler listesinde sizinle ilgili gösterilir.',
@@ -194,7 +194,7 @@ class _SpecialtyScreenState extends State<SpecialtyScreen> {
                   children: [
                     Row(
                       children: [
-                        const Text('Sertifikalar', style: TextStyle(fontWeight: FontWeight.w700, color: AppColors.navy)),
+                        Text(AppLocalizations.of(context)!.certificates, style: TextStyle(fontWeight: FontWeight.w700, color: AppColors.navy)),
                         const SizedBox(width: AppSpacing.xs),
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -212,7 +212,7 @@ class _SpecialtyScreenState extends State<SpecialtyScreen> {
                     TextButton.icon(
                       onPressed: _openAddCertSheet,
                       icon: const Icon(Icons.add, size: 16),
-                      label: const Text('Ekle'),
+                      label: Text(AppLocalizations.of(context)!.add),
                     ),
                   ],
                 ),
@@ -255,10 +255,10 @@ class _SpecialtyScreenState extends State<SpecialtyScreen> {
                           },
                           itemBuilder: (context) => [
                             if (c['documentUrl'] != null)
-                              const PopupMenuItem(value: 'document', child: Text('Fotoğrafı Görüntüle')),
-                            const PopupMenuItem(value: 'pdf-view', child: Text('PDF Görüntüle')),
-                            const PopupMenuItem(value: 'pdf-share', child: Text('PDF Paylaş')),
-                            const PopupMenuItem(value: 'delete', child: Text('Sil', style: TextStyle(color: AppColors.navy))),
+                              const PopupMenuItem(value: 'document', child: Text(AppLocalizations.of(context)!.viewPhoto)),
+                            const PopupMenuItem(value: 'pdf-view', child: Text(AppLocalizations.of(context)!.viewPdf)),
+                            const PopupMenuItem(value: 'pdf-share', child: Text(AppLocalizations.of(context)!.sharePdf)),
+                            const PopupMenuItem(value: 'delete', child: Text(AppLocalizations.of(context)!.delete, style: TextStyle(color: AppColors.navy))),
                           ],
                         ),
                       ),
@@ -304,12 +304,12 @@ class _AddCertificationSheetState extends State<_AddCertificationSheet> {
           children: [
             ListTile(
               leading: const Icon(Icons.photo_camera_outlined),
-              title: const Text('Kamera ile çek'),
+              title: Text(AppLocalizations.of(context)!.takePhoto),
               onTap: () => Navigator.pop(context, 'camera'),
             ),
             ListTile(
               leading: const Icon(Icons.photo_library_outlined),
-              title: const Text('Galeriden Seç'),
+              title: Text(AppLocalizations.of(context)!.chooseFromGallery),
               onTap: () => Navigator.pop(context, 'gallery'),
             ),
           ],
@@ -331,7 +331,7 @@ class _AddCertificationSheetState extends State<_AddCertificationSheet> {
   Future<void> _submit() async {
     if (_brandController.text.trim().isEmpty || _titleController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Lütfen marka ve unvan alanlarını doldurun.'), backgroundColor: AppColors.navy),
+        SnackBar(content: Text(AppLocalizations.of(context)!.pleaseFillBrandTitle), backgroundColor: AppColors.navy),
       );
       return;
     }
@@ -380,7 +380,7 @@ class _AddCertificationSheetState extends State<_AddCertificationSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text('Yeni Sertifika', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+          Text(AppLocalizations.of(context)!.newCertificate, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
           const SizedBox(height: AppSpacing.sm),
           TextField(controller: _brandController, decoration: const InputDecoration(labelText: 'Marka (örn. Honeywell)')),
           const SizedBox(height: AppSpacing.xs),
@@ -411,7 +411,7 @@ class _AddCertificationSheetState extends State<_AddCertificationSheet> {
             onPressed: _submitting ? null : _submit,
             child: _submitting
                 ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                : const Text('Kaydet'),
+                : Text(AppLocalizations.of(context)!.save),
           ),
         ],
       ),

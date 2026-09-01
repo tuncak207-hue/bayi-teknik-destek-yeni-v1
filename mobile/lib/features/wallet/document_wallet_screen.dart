@@ -64,12 +64,12 @@ class _DocumentWalletScreenState extends State<DocumentWalletScreen> {
           children: [
             ListTile(
               leading: const Icon(Icons.photo_camera_outlined),
-              title: const Text('Kamera ile çek'),
+              title: Text(AppLocalizations.of(context)!.takePhoto),
               onTap: () => Navigator.pop(context, 'camera'),
             ),
             ListTile(
               leading: const Icon(Icons.photo_library_outlined),
-              title: const Text('Galeriden Seç'),
+              title: Text(AppLocalizations.of(context)!.chooseFromGallery),
               onTap: () => Navigator.pop(context, 'gallery'),
             ),
           ],
@@ -150,7 +150,7 @@ class _DocumentWalletScreenState extends State<DocumentWalletScreen> {
       await OpenFilex.open(path);
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Belge açılamadı.')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.documentOpenFailed)));
       }
     } finally {
       if (mounted) setState(() => _busyId = null);
@@ -189,11 +189,11 @@ class _DocumentWalletScreenState extends State<DocumentWalletScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Belgeyi Sil'),
+        title: Text(AppLocalizations.of(context)!.deleteDocument),
         content: Text('"${doc['name']}" kalıcı olarak silinecek. Emin misiniz?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
-          TextButton(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('Sil', style: TextStyle(color: AppColors.navy))),
+          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(AppLocalizations.of(context)!.cancel)),
+          TextButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(AppLocalizations.of(context)!.delete, style: TextStyle(color: AppColors.navy))),
         ],
       ),
     );
@@ -311,10 +311,10 @@ class _DocumentWalletScreenState extends State<DocumentWalletScreen> {
                                           if (v == 'delete') _delete(doc);
                                         },
                                         itemBuilder: (context) => [
-                                          const PopupMenuItem(value: 'view', child: Text('Görüntüle')),
-                                          const PopupMenuItem(value: 'edit', child: Text('Adı/Türü Düzenle')),
-                                          const PopupMenuItem(value: 'share', child: Text('Paylaş')),
-                                          const PopupMenuItem(value: 'delete', child: Text('Sil', style: TextStyle(color: AppColors.navy))),
+                                          const PopupMenuItem(value: 'view', child: Text(AppLocalizations.of(context)!.view)),
+                                          const PopupMenuItem(value: 'edit', child: Text(AppLocalizations.of(context)!.editNameType)),
+                                          const PopupMenuItem(value: 'share', child: Text(AppLocalizations.of(context)!.share)),
+                                          const PopupMenuItem(value: 'delete', child: Text(AppLocalizations.of(context)!.delete, style: TextStyle(color: AppColors.navy))),
                                         ],
                                       ),
                                 onTap: isBusy ? null : () => _viewDocument(doc),
@@ -371,7 +371,7 @@ class _DocumentMetaSheetState extends State<_DocumentMetaSheet> {
           const SizedBox(height: AppSpacing.sm),
           TextField(controller: _nameController, decoration: const InputDecoration(labelText: 'Belge Adı', hintText: 'Örn: İSG Eğitim Sertifikası')),
           const SizedBox(height: AppSpacing.sm),
-          const Text('Kategori', style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AppColors.navy)),
+          Text(AppLocalizations.of(context)!.category, style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AppColors.navy)),
           const SizedBox(height: 6),
           Wrap(
             spacing: 8,
@@ -390,7 +390,7 @@ class _DocumentMetaSheetState extends State<_DocumentMetaSheet> {
               if (_nameController.text.trim().isEmpty) return;
               Navigator.pop(context, {'name': _nameController.text.trim(), 'category': _category});
             },
-            child: const Text('Kaydet'),
+            child: Text(AppLocalizations.of(context)!.save),
           ),
         ],
       ),

@@ -271,7 +271,7 @@ class _CommissioningFormScreenState extends State<CommissioningFormScreen> {
         _brandController.text.trim().isEmpty ||
         _modelController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Lütfen saha adı, marka ve model bilgilerini girin.')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.pleaseFillSiteInfo)),
       );
       return;
     }
@@ -317,11 +317,11 @@ class _CommissioningFormScreenState extends State<CommissioningFormScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Raporu Sil'),
-        content: const Text('Bu devreye alma raporunu kalıcı olarak silmek istediğinize emin misiniz?'),
+        title: Text(AppLocalizations.of(context)!.deleteReport),
+        content: Text(AppLocalizations.of(context)!.deleteReportConfirm),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
-          TextButton(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('Sil', style: TextStyle(color: AppColors.navy))),
+          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(AppLocalizations.of(context)!.cancel)),
+          TextButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(AppLocalizations.of(context)!.delete, style: TextStyle(color: AppColors.navy))),
         ],
       ),
     );
@@ -379,9 +379,9 @@ class _CommissioningFormScreenState extends State<CommissioningFormScreen> {
               if (v == 'delete') _deleteReport();
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(value: 'view', child: Text('PDF Görüntüle')),
-              const PopupMenuItem(value: 'share', child: Text('PDF Paylaş')),
-              const PopupMenuItem(value: 'delete', child: Text('Raporu Sil', style: TextStyle(color: AppColors.navy))),
+              const PopupMenuItem(value: 'view', child: Text(AppLocalizations.of(context)!.viewPdf)),
+              const PopupMenuItem(value: 'share', child: Text(AppLocalizations.of(context)!.sharePdf)),
+              const PopupMenuItem(value: 'delete', child: Text(AppLocalizations.of(context)!.deleteReport, style: TextStyle(color: AppColors.navy))),
             ],
             icon: const Icon(Icons.more_vert),
           );
@@ -479,7 +479,7 @@ class _CommissioningFormScreenState extends State<CommissioningFormScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text('Kontrol Listesi', style: TextStyle(color: AppColors.navy, fontWeight: FontWeight.w800, fontSize: 16)),
+                            Text(AppLocalizations.of(context)!.checklist, style: TextStyle(color: AppColors.navy, fontWeight: FontWeight.w800, fontSize: 16)),
                             const SizedBox(height: 3),
                             Text('$_checkedCount / ${_items.length} madde tamamlandı', style: TextStyle(color: Colors.grey.shade500, fontSize: 12)),
                           ],
@@ -572,9 +572,9 @@ class _CommissioningFormScreenState extends State<CommissioningFormScreen> {
                       Row(
                         children: [
                           const Expanded(
-                            child: Text('Müşteri İmzası', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: AppColors.navy)),
+                            child: Text(AppLocalizations.of(context)!.customerSignature, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: AppColors.navy)),
                           ),
-                          Text('(opsiyonel)', style: TextStyle(fontSize: 11.5, color: Colors.grey.shade400)),
+                          Text(AppLocalizations.of(context)!.optionalLabel, style: TextStyle(fontSize: 11.5, color: Colors.grey.shade400)),
                         ],
                       ),
                       if (hasSavedSignature) ...[
@@ -583,11 +583,11 @@ class _CommissioningFormScreenState extends State<CommissioningFormScreen> {
                           children: [
                             Icon(Icons.check_circle, size: 14, color: Colors.green.shade600),
                             const SizedBox(width: 4),
-                            Text('Bu raporda kayıtlı bir imza var.', style: TextStyle(fontSize: 11.5, color: Colors.green.shade700)),
+                            Text(AppLocalizations.of(context)!.signatureAlreadySaved, style: TextStyle(fontSize: 11.5, color: Colors.green.shade700)),
                           ],
                         ),
                         const SizedBox(height: 6),
-                        Text('Yeniden imza almak isterseniz aşağıya çizin — kaydedince öncekinin yerine geçer.',
+                        Text(AppLocalizations.of(context)!.resignHint,
                             style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
                       ],
                       const SizedBox(height: AppSpacing.sm),
@@ -603,7 +603,7 @@ class _CommissioningFormScreenState extends State<CommissioningFormScreen> {
                         child: TextButton.icon(
                           onPressed: () => _signatureKey.currentState?.clear(),
                           icon: const Icon(Icons.refresh, size: 15),
-                          label: const Text('Temizle'),
+                          label: Text(AppLocalizations.of(context)!.clear),
                         ),
                       ),
                     ],

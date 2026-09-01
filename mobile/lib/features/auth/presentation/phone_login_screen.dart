@@ -100,7 +100,7 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
           context: context,
           barrierDismissible: false,
           builder: (_) => AlertDialog(
-            title: const Text('Kayıt Alındı'),
+            title: Text(AppLocalizations.of(context)!.registrationReceived),
             content: Text(pendingMessage),
             actions: [
               TextButton(
@@ -108,7 +108,7 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
                   Navigator.pop(context);
                   context.go('/login');
                 },
-                child: const Text('Tamam'),
+                child: Text(AppLocalizations.of(context)!.ok),
               ),
             ],
           ),
@@ -167,7 +167,7 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
                       onPressed: _loading ? null : _sendCode,
                       child: _loading
                           ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                          : const Text('Kod Gönder'),
+                          : Text(AppLocalizations.of(context)!.sendCode),
                     ),
                   ] else ...[
                     Text(
@@ -185,12 +185,12 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
                       onPressed: _loading ? null : _verifyCode,
                       child: _loading
                           ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                          : const Text('Doğrula ve Giriş Yap'),
+                          : Text(AppLocalizations.of(context)!.verifyAndLogin),
                     ),
                     const SizedBox(height: AppSpacing.xs),
                     TextButton(
                       onPressed: _loading ? null : () => setState(() => _verificationId = null),
-                      child: const Text('Numarayı Değiştir'),
+                      child: Text(AppLocalizations.of(context)!.changeNumber),
                     ),
                   ],
                 ],

@@ -138,7 +138,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
       final result = await OpenFilex.open(pathToOpen);
       if (result.type != ResultType.done && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Dosya açılamadı: ${result.message}')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.fileOpenFailedDetail(result.message ?? ''))),
         );
       }
     } catch (e) {
@@ -152,7 +152,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
       }
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Doküman açılırken bir hata oluştu: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.documentOpenErrorDetail('$e'))),
         );
       }
     } finally {
@@ -188,13 +188,13 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
       setState(() => _localPath = path);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Doküman indirildi, artık internetsiz açılabilir.')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.documentDownloadedOffline)),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('İndirme başarısız oldu.')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.downloadFailed)),
         );
       }
     } finally {
@@ -229,7 +229,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Geçmiş Versiyonlar', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.navy)),
+              Text(AppLocalizations.of(context)!.previousVersions, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.navy)),
               const SizedBox(height: AppSpacing.sm),
               ...versions.map((v) {
                 final isCurrent = v['isCurrent'] == true;
@@ -239,7 +239,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                     isCurrent ? Icons.check_circle : Icons.history,
                     color: isCurrent ? Colors.green : Colors.grey.shade500,
                   ),
-                  title: Text('Versiyon ${v['version'] ?? '?'}${isCurrent ? ' (Güncel)' : ''}'),
+                  title: Text('${AppLocalizations.of(context)!.versionLabel('${v['version'] ?? '?'}')}${isCurrent ? AppLocalizations.of(context)!.currentSuffix : ''}'),
                   subtitle: v['createdAt'] != null ? Text(v['createdAt'].toString().substring(0, 10)) : null,
                   trailing: const Icon(Icons.open_in_new, size: 18),
                   onTap: () async {
@@ -266,7 +266,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Bu versiyon açılamadı.')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.versionOpenFailed)),
         );
       }
     }
@@ -355,7 +355,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                             ),
                             if (widget.page != null) ...[
                               const SizedBox(height: AppSpacing.sm),
-                              Chip(label: Text('İlgili sayfa: ${widget.page}')),
+                              Chip(label: Text(AppLocalizations.of(context)!.relatedPageLabel('${widget.page}'))),
                             ],
                             const SizedBox(height: AppSpacing.md),
                             SizedBox(
@@ -402,7 +402,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
                                 child: TextButton.icon(
                                   onPressed: _showVersionHistory,
                                   icon: const Icon(Icons.history, size: 18),
-                                  label: Text('Geçmiş Versiyonlar (${(_document!['versions'] as List).length})'),
+                                  label: Text(AppLocalizations.of(context)!.previousVersionsCountLabel((_document!['versions'] as List).length)),
                                 ),
                               ),
                             ],
@@ -437,7 +437,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Notlar', style: TextStyle(fontWeight: FontWeight.w700, color: AppColors.navy)),
+            Text(AppLocalizations.of(context)!.notes, style: TextStyle(fontWeight: FontWeight.w700, color: AppColors.navy)),
             const SizedBox(height: AppSpacing.xs),
             Row(
               children: [

@@ -29,7 +29,7 @@ class AboutUsScreen extends StatelessWidget {
           const SizedBox(height: 24),
           const _SectionTitle('Sürüm Bilgisi'),
           const SizedBox(height: 8),
-          const Text('Uygulama Sürümü: 0.1.0'),
+          Text(AppLocalizations.of(context)!.appVersionLabel),
           const SizedBox(height: 32),
           const Text(
             'ENTPA, 1980 yılından bu yana üstün Türk mühendisliği ve 35 yıllık bilgi '

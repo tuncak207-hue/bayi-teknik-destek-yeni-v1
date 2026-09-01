@@ -67,13 +67,13 @@ class _BomListScreenState extends State<BomListScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Listeyi Sil'),
+        title: Text(AppLocalizations.of(context)!.deleteList),
         content: Text('"${list['title']}" kalıcı olarak silinecek. Emin misiniz?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
+          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(AppLocalizations.of(context)!.cancel)),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Sil', style: TextStyle(color: AppColors.navy)),
+            child: Text(AppLocalizations.of(context)!.delete, style: TextStyle(color: AppColors.navy)),
           ),
         ],
       ),
@@ -312,7 +312,7 @@ class _BomBuilderScreenState extends State<BomBuilderScreen> {
     // önceden uyarılıyor hem de gerçek hata mesajı gösteriliyor.
     if (title.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Lütfen bir liste başlığı yazın.'), backgroundColor: AppColors.navy),
+        SnackBar(content: Text(AppLocalizations.of(context)!.pleaseEnterListTitle), backgroundColor: AppColors.navy),
       );
       return;
     }
@@ -398,9 +398,9 @@ class _BomBuilderScreenState extends State<BomBuilderScreen> {
                       pw.TableRow(
                         decoration: const pw.BoxDecoration(color: PdfColors.grey100),
                         children: [
-                          pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text('Malzeme', style: pw.TextStyle(fontWeight: pw.FontWeight.bold))),
-                          pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text('Miktar', style: pw.TextStyle(fontWeight: pw.FontWeight.bold))),
-                          pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text('Birim', style: pw.TextStyle(fontWeight: pw.FontWeight.bold))),
+                          pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text(AppLocalizations.of(context)!.material, style: pw.TextStyle(fontWeight: pw.FontWeight.bold))),
+                          pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text(AppLocalizations.of(context)!.quantity, style: pw.TextStyle(fontWeight: pw.FontWeight.bold))),
+                          pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text(AppLocalizations.of(context)!.unit, style: pw.TextStyle(fontWeight: pw.FontWeight.bold))),
                         ],
                       ),
                       ..._items.map((item) => pw.TableRow(
@@ -454,8 +454,8 @@ class _BomBuilderScreenState extends State<BomBuilderScreen> {
               if (v == 'share') _exportPdf(andShare: true);
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(value: 'view', child: Text('PDF Görüntüle')),
-              const PopupMenuItem(value: 'share', child: Text('PDF Paylaş')),
+              const PopupMenuItem(value: 'view', child: Text(AppLocalizations.of(context)!.viewPdf)),
+              const PopupMenuItem(value: 'share', child: Text(AppLocalizations.of(context)!.sharePdf)),
             ],
             icon: const Icon(Icons.picture_as_pdf_outlined),
           );
@@ -602,7 +602,7 @@ class _BomBuilderScreenState extends State<BomBuilderScreen> {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 30),
                   child: Center(
-                    child: Text('Henüz malzeme eklenmedi.', style: TextStyle(color: Colors.grey.shade400, fontSize: 13)),
+                    child: Text(AppLocalizations.of(context)!.emptyMaterials, style: TextStyle(color: Colors.grey.shade400, fontSize: 13)),
                   ),
                 ),
             ],
@@ -622,7 +622,7 @@ class _BomBuilderScreenState extends State<BomBuilderScreen> {
                   onPressed: _addItem,
                   style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 13)),
                   icon: const Icon(Icons.add, size: 18),
-                  label: const Text('Malzeme Ekle'),
+                  label: Text(AppLocalizations.of(context)!.addMaterial),
                 ),
               ),
               const SizedBox(height: AppSpacing.xs),

@@ -52,7 +52,7 @@ class _SalesConsultantsScreenState extends State<SalesConsultantsScreen> {
       await launchUrl(uri);
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Arama başlatılamadı.')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.searchStartFailed)));
       }
     }
   }
@@ -103,9 +103,9 @@ class _SalesConsultantsScreenState extends State<SalesConsultantsScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Satış Destek Hattı', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 16)),
+                                  Text(AppLocalizations.of(context)!.salesSupportLine, style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 16)),
                                   SizedBox(height: 3),
-                                  Text('Fiyat, ürün ve proje soruları için ekibimize ulaşın', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                                  Text(AppLocalizations.of(context)!.salesContactHint, style: TextStyle(color: Colors.white70, fontSize: 12)),
                                 ],
                               ),
                             ),

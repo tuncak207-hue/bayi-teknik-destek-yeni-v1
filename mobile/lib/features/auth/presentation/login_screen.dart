@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:dio/dio.dart';
@@ -31,7 +32,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (!_formKey.currentState!.validate()) return;
     if (_email == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Lütfen e-posta kullanıcı adı ve uzantı alanlarının ikisini de doldurun.')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.pleaseFillEmailUsernameDomain)),
       );
       return;
     }
@@ -111,9 +112,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           context: context,
           barrierDismissible: false,
           builder: (_) => AlertDialog(
-            title: const Text('Kayıt Alındı'),
+            title: Text(AppLocalizations.of(context)!.registrationReceived),
             content: Text(pendingMessage),
-            actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Tamam'))],
+            actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text(AppLocalizations.of(context)!.ok))],
           ),
         );
       } else {
@@ -214,7 +215,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     const SizedBox(height: AppSpacing.sm),
                     TextButton(
                       onPressed: () => context.push('/register'),
-                      child: const Text('Hesabınız yok mu? Kayıt olun'),
+                      child: Text(AppLocalizations.of(context)!.noAccountRegister),
                     ),
                     const SizedBox(height: AppSpacing.sm),
                     Row(
@@ -222,7 +223,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         Expanded(child: Divider(color: AppColors.outline)),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Text('veya', style: TextStyle(color: AppColors.textMuted, fontSize: 12)),
+                          child: Text(AppLocalizations.of(context)!.or, style: TextStyle(color: AppColors.textMuted, fontSize: 12)),
                         ),
                         Expanded(child: Divider(color: AppColors.outline)),
                       ],

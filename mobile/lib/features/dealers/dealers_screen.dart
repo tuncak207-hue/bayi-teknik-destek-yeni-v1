@@ -55,13 +55,13 @@ class _DealersScreenState extends State<DealersScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Bayiyi Engelle'),
-        content: Text('$company adlı bayiyi engellemek istediğinize emin misiniz? Artık birbirinize mesaj gönderemezsiniz.'),
+        title: Text(AppLocalizations.of(context)!.blockDealer),
+        content: Text(AppLocalizations.of(context)!.blockDealerConfirm(company)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
+          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(AppLocalizations.of(context)!.cancel)),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Engelle', style: TextStyle(color: AppColors.navy)),
+            child: Text(AppLocalizations.of(context)!.block, style: TextStyle(color: AppColors.navy)),
           ),
         ],
       ),
@@ -71,7 +71,7 @@ class _DealersScreenState extends State<DealersScreen> {
     DealersRefreshBus.bump();
     _load();
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$company engellendi.')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.dealerBlocked(company))));
     }
   }
 
@@ -175,7 +175,7 @@ class _DealersScreenState extends State<DealersScreen> {
                                   if (value == 'block') _blockDealer(d['id'], company);
                                 },
                                 itemBuilder: (context) => [
-                                  const PopupMenuItem(value: 'block', child: Text('Engelle')),
+                                  PopupMenuItem(value: 'block', child: Text(AppLocalizations.of(context)!.block)),
                                 ],
                               ),
                             ],

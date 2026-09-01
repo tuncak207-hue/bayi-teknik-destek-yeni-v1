@@ -64,13 +64,13 @@ class _CommunityPostScreenState extends State<CommunityPostScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Yorumu Sil'),
-        content: const Text('Bu yorumu silmek istediğinize emin misiniz?'),
+        title: Text(AppLocalizations.of(context)!.deleteComment),
+        content: Text(AppLocalizations.of(context)!.deleteCommentConfirm),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
+          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(AppLocalizations.of(context)!.cancel)),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Sil', style: TextStyle(color: AppColors.navy)),
+            child: Text(AppLocalizations.of(context)!.delete, style: TextStyle(color: AppColors.navy)),
           ),
         ],
       ),
@@ -119,14 +119,14 @@ class _CommunityPostScreenState extends State<CommunityPostScreen> {
                 const SizedBox(height: AppSpacing.md),
                 Row(
                   children: [
-                    Text('Yorumlar (${comments.length})', style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.navy)),
+                    Text(AppLocalizations.of(context)!.commentsCountLabel(comments.length), style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.navy)),
                     const Spacer(),
                     OutlinedButton.icon(
                       onPressed: _askingAi ? null : _askAi,
                       icon: _askingAi
                           ? const SizedBox(height: 14, width: 14, child: CircularProgressIndicator(strokeWidth: 2))
                           : const Icon(Icons.smart_toy_outlined, size: 16),
-                      label: const Text('AI\'dan Yardım İste'),
+                      label: Text(AppLocalizations.of(context)!.askAiForHelp),
                       style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6)),
                     ),
                   ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import '../../core/theme/app_theme.dart';
@@ -120,7 +121,7 @@ class _VoiceQuickQuestionSheetState extends State<VoiceQuickQuestionSheet> {
             const SizedBox(height: AppSpacing.sm),
             Text(_errorText ?? 'Bir hata oluştu.', textAlign: TextAlign.center),
             const SizedBox(height: AppSpacing.md),
-            OutlinedButton(onPressed: () => Navigator.pop(context), child: const Text('Kapat')),
+            OutlinedButton(onPressed: () => Navigator.pop(context), child: Text(AppLocalizations.of(context)!.close)),
           ] else ...[
             Container(
               width: 84,
@@ -156,9 +157,9 @@ class _VoiceQuickQuestionSheetState extends State<VoiceQuickQuestionSheet> {
               ),
             const SizedBox(height: AppSpacing.md),
             if (_state == _SheetState.listening)
-              TextButton(onPressed: _send, child: const Text('Bitirdim, Gönder'))
+              TextButton(onPressed: _send, child: Text(AppLocalizations.of(context)!.finishedSend))
             else if (_state != _SheetState.sending)
-              TextButton(onPressed: _cancel, child: const Text('Vazgeç')),
+              TextButton(onPressed: _cancel, child: Text(AppLocalizations.of(context)!.cancel)),
           ],
         ],
       ),

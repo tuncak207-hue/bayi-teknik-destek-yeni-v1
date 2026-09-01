@@ -68,7 +68,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     await showDialog(
       context: context,
       builder: (dialogContext) => SimpleDialog(
-        title: const Text('Dil Seçin'),
+        title: Text(AppLocalizations.of(context)!.selectLanguage),
         children: [
           _langOption(dialogContext, 'Türkçe', null, current == null),
           _langOption(dialogContext, 'English', 'en', current == 'en'),
@@ -130,7 +130,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               await _load();
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Profil güncellendi.')),
+                  SnackBar(content: Text(AppLocalizations.of(context)!.profileUpdated)),
                 );
               }
             } on DioException catch (e) {
@@ -139,7 +139,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           }
 
           return AlertDialog(
-            title: const Text('Profili Düzenle'),
+            title: Text(AppLocalizations.of(context)!.editProfile),
             content: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -163,8 +163,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Vazgeç')),
-              ElevatedButton(onPressed: submit, child: const Text('Kaydet')),
+              TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(AppLocalizations.of(context)!.cancel)),
+              ElevatedButton(onPressed: submit, child: Text(AppLocalizations.of(context)!.save)),
             ],
           );
         },
@@ -199,7 +199,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               if (dialogContext.mounted) Navigator.pop(dialogContext);
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Şifreniz güncellendi.')),
+                  SnackBar(content: Text(AppLocalizations.of(context)!.passwordUpdated)),
                 );
               }
             } on DioException catch (e) {
@@ -208,7 +208,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           }
 
           return AlertDialog(
-            title: const Text('Şifre Değiştir'),
+            title: Text(AppLocalizations.of(context)!.changePassword),
             content: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -239,8 +239,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Vazgeç')),
-              ElevatedButton(onPressed: submit, child: const Text('Kaydet')),
+              TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(AppLocalizations.of(context)!.cancel)),
+              ElevatedButton(onPressed: submit, child: Text(AppLocalizations.of(context)!.save)),
             ],
           );
         },
@@ -254,7 +254,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder: (dialogContext) => StatefulBuilder(
         builder: (dialogContext, setDialogState) {
           return AlertDialog(
-            title: const Text('Hesabı Sil'),
+            title: Text(AppLocalizations.of(context)!.deleteAccountShort),
             content: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -269,7 +269,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
+              TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(AppLocalizations.of(context)!.cancel)),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: AppColors.navy),
                 onPressed: () async {
@@ -282,7 +282,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     );
                   }
                 },
-                child: const Text('Hesabımı Sil'),
+                child: Text(AppLocalizations.of(context)!.deleteAccount),
               ),
             ],
           );
@@ -316,7 +316,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     setState(() => _loadError = null);
                     _load();
                   },
-                  child: const Text('Tekrar Dene'),
+                  child: Text(AppLocalizations.of(context)!.retry),
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 // Oturum artık geçersizse (örn. hesap silindi/veritabanı
@@ -325,7 +325,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 // yapabilmesi için buraya da bir yol bırakıyoruz.
                 TextButton(
                   onPressed: _logout,
-                  child: const Text('Çıkış Yap ve Tekrar Giriş Yap'),
+                  child: Text(AppLocalizations.of(context)!.logoutAndReLogin),
                 ),
               ],
             ),
@@ -430,7 +430,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
                   ),
                   icon: const Icon(Icons.edit_outlined, size: 15),
-                  label: const Text('Profili Düzenle', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                  label: Text(AppLocalizations.of(context)!.editProfile, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
                 ),
               ],
             ),

@@ -10,7 +10,6 @@ import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_components.dart';
 import '../../core/widgets/design_system.dart';
 import '../../core/events/notification_badge_bus.dart';
-import '../../l10n/app_localizations.dart';
 
 // Gruplarla tutarlı olsun diye aynı kategori isimlerini kullanıyoruz.
 const _kTags = ['Yangın Alarm', 'Kamera', 'Honeywell', 'Hanwha', 'Teknik Destek'];
@@ -73,13 +72,13 @@ class _CommunityScreenState extends State<CommunityScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Gönderiyi Sil'),
-        content: const Text('Bu gönderiyi (ve tüm yorumlarını) silmek istediğinize emin misiniz?'),
+        title: Text(AppLocalizations.of(context)!.deletePost),
+        content: Text(AppLocalizations.of(context)!.deletePostConfirm),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
+          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(AppLocalizations.of(context)!.cancel)),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Sil', style: TextStyle(color: AppColors.navy)),
+            child: Text(AppLocalizations.of(context)!.delete, style: TextStyle(color: AppColors.navy)),
           ),
         ],
       ),
@@ -336,7 +335,7 @@ class _CreatePostSheetState extends State<_CreatePostSheet> {
         leading: CupertinoButton(
           padding: EdgeInsets.zero,
           onPressed: () => Navigator.pop(context),
-          child: const Text('İptal', style: TextStyle(color: CupertinoColors.systemGrey, fontSize: 16)),
+          child: Text(AppLocalizations.of(context)!.cancel, style: TextStyle(color: CupertinoColors.systemGrey, fontSize: 16)),
         ),
         middle: Text(_isEditing ? 'Gönderiyi Düzenle' : 'Soru Paylaş', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
         trailing: CupertinoButton(

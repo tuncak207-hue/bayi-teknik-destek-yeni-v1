@@ -49,13 +49,13 @@ class _TeamScreenState extends State<TeamScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Ekip Üyesini Kaldır'),
-        content: const Text('Bu kullanıcı hesabı kalıcı olarak silinecek. Emin misiniz?'),
+        title: Text(AppLocalizations.of(context)!.removeTeamMember),
+        content: Text(AppLocalizations.of(context)!.deleteUserConfirm),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
+          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(AppLocalizations.of(context)!.cancel)),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Kaldır', style: TextStyle(color: AppColors.navy)),
+            child: Text(AppLocalizations.of(context)!.remove, style: TextStyle(color: AppColors.navy)),
           ),
         ],
       ),
@@ -82,7 +82,7 @@ class _TeamScreenState extends State<TeamScreen> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _openAddSheet,
         icon: const Icon(Icons.person_add_outlined),
-        label: const Text('Üye Ekle'),
+        label: Text(AppLocalizations.of(context)!.addMember),
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
@@ -196,7 +196,7 @@ class _AddTeamMemberSheetState extends State<_AddTeamMemberSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text('Yeni Ekip Üyesi', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+          Text(AppLocalizations.of(context)!.newTeamMember, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
           const SizedBox(height: AppSpacing.sm),
           if (_error != null)
             Padding(
@@ -215,7 +215,7 @@ class _AddTeamMemberSheetState extends State<_AddTeamMemberSheet> {
             onPressed: _submitting ? null : _submit,
             child: _submitting
                 ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                : const Text('Ekle'),
+                : Text(AppLocalizations.of(context)!.add),
           ),
         ],
       ),

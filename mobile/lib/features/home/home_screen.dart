@@ -397,7 +397,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: AppSpacing.xs),
             if (_pinnedDocuments.isNotEmpty) ...[
-              const Text('Sabitlenmiş Dokümanlar', style: AppText.sectionTitle),
+              Text(AppLocalizations.of(context)!.pinnedDocuments, style: AppText.sectionTitle),
               const SizedBox(height: AppSpacing.sm),
               SizedBox(
                 height: 88,
@@ -677,7 +677,7 @@ class _TodayForMeSectionState extends State<_TodayForMeSection> {
             children: [
               const Icon(Icons.today_outlined, size: 16, color: AppColors.brand),
               const SizedBox(width: 6),
-              const Text('Bugün Benim İçin', style: AppText.eyebrow),
+              Text(AppLocalizations.of(context)!.todayForMe, style: AppText.eyebrow),
             ],
           ),
           const SizedBox(height: 8),

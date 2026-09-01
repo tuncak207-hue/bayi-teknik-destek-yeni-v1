@@ -100,13 +100,13 @@ class _AiChatScreenState extends State<AiChatScreen> {
       await _repository.verifyMemory(msg.memoryId!);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Cevap doğrulandı — bundan sonra bu soru için AI daha hızlı cevap verecek.')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.answerVerifiedHint)),
       );
     } catch (_) {
       if (!mounted) return;
       setState(() => _messages[index] = msg.copyWith(memoryIsVerified: false));
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Doğrulama başarısız oldu, tekrar deneyin.'), backgroundColor: AppColors.navy),
+        SnackBar(content: Text(AppLocalizations.of(context)!.verificationFailedRetry), backgroundColor: AppColors.navy),
       );
     }
   }
@@ -156,12 +156,12 @@ class _AiChatScreenState extends State<AiChatScreen> {
       });
       _socket.joinConversation(newId);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Yeni bir sohbet başlattınız.')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.newChatStarted)),
       );
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Yeni sohbet başlatılamadı, tekrar deneyin.'), backgroundColor: AppColors.navy),
+        SnackBar(content: Text(AppLocalizations.of(context)!.newChatStartFailed), backgroundColor: AppColors.navy),
       );
     }
   }
@@ -173,7 +173,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Geçmiş yüklenemedi.'), backgroundColor: AppColors.navy),
+        SnackBar(content: Text(AppLocalizations.of(context)!.historyLoadFailed), backgroundColor: AppColors.navy),
       );
       return;
     }
@@ -190,11 +190,11 @@ class _AiChatScreenState extends State<AiChatScreen> {
           children: [
             const Padding(
               padding: EdgeInsets.all(16),
-              child: Text('Sohbet Geçmişiniz', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+              child: Text(AppLocalizations.of(context)!.yourChatHistory, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
             ),
             Expanded(
               child: conversations.isEmpty
-                  ? const Center(child: Text('Henüz bir sohbetiniz yok.'))
+                  ? const Center(child: Text(AppLocalizations.of(context)!.emptyChats))
                   : ListView.builder(
                       controller: scrollController,
                       itemCount: conversations.length,
@@ -211,7 +211,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(fontWeight: isActive ? FontWeight.w800 : FontWeight.w500),
                           ),
-                          trailing: isActive ? const Text('Şu an burada', style: TextStyle(fontSize: 11, color: Colors.green)) : null,
+                          trailing: isActive ? Text(AppLocalizations.of(context)!.youAreHereNow, style: TextStyle(fontSize: 11, color: Colors.green)) : null,
                           onTap: () => Navigator.pop(sheetContext, c['id'] as String),
                         );
                       },
@@ -303,12 +303,12 @@ class _AiChatScreenState extends State<AiChatScreen> {
           children: [
             ListTile(
               leading: const Icon(Icons.photo_camera_outlined),
-              title: const Text('Kamera ile çek'),
+              title: Text(AppLocalizations.of(context)!.takePhoto),
               onTap: () => Navigator.pop(context, ImageSource.camera),
             ),
             ListTile(
               leading: const Icon(Icons.photo_library_outlined),
-              title: const Text('Galeriden Seç'),
+              title: Text(AppLocalizations.of(context)!.chooseFromGallery),
               onTap: () => Navigator.pop(context, ImageSource.gallery),
             ),
           ],
@@ -395,7 +395,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
                   ),
                   const SizedBox(width: 10),
                   const Expanded(
-                    child: Text('Fotoğraf eklendi — isterseniz bir soru yazıp gönderin.', style: TextStyle(fontSize: 12.5)),
+                    child: Text(AppLocalizations.of(context)!.photoAddedAskQuestion, style: TextStyle(fontSize: 12.5)),
                   ),
                   IconButton(
                     icon: const Icon(Icons.close, size: 18),

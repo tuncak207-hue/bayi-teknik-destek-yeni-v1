@@ -175,13 +175,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Tüm Bildirimleri Sil'),
-        content: const Text('Tüm bildirimleriniz kalıcı olarak silinecek. Emin misiniz?'),
+        title: Text(AppLocalizations.of(context)!.deleteAllNotifications),
+        content: Text(AppLocalizations.of(context)!.deleteAllNotificationsConfirm),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
+          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(AppLocalizations.of(context)!.cancel)),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Tümünü Sil', style: TextStyle(color: AppColors.navy)),
+            child: Text(AppLocalizations.of(context)!.deleteAll, style: TextStyle(color: AppColors.navy)),
           ),
         ],
       ),
@@ -213,7 +213,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 if (_notifications.any((n) => n['readAt'] == null))
                   TextButton(
                     onPressed: _markAllRead,
-                    child: const Text('Tümünü Okundu İşaretle', style: TextStyle(color: AppColors.brand, fontSize: 12.5)),
+                    child: Text(AppLocalizations.of(context)!.markAllAsRead, style: TextStyle(color: AppColors.brand, fontSize: 12.5)),
                   ),
                 if (_notifications.isNotEmpty)
                   PopupMenuButton<String>(
@@ -221,7 +221,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       if (v == 'clear-all') _clearAll();
                     },
                     itemBuilder: (context) => [
-                      const PopupMenuItem(value: 'clear-all', child: Text('Tümünü Sil')),
+                      const PopupMenuItem(value: 'clear-all', child: Text(AppLocalizations.of(context)!.deleteAll)),
                     ],
                   ),
               ],

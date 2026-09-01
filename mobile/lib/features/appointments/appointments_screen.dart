@@ -43,13 +43,13 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Randevuyu İptal Et'),
+        title: Text(AppLocalizations.of(context)!.cancelAppointment),
         content: Text('"${appointment['subject']}" randevusunu iptal etmek istediğinize emin misiniz?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
+          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(AppLocalizations.of(context)!.cancel)),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('İptal Et', style: TextStyle(color: AppColors.navy)),
+            child: Text(AppLocalizations.of(context)!.cancelAction, style: TextStyle(color: AppColors.navy)),
           ),
         ],
       ),
@@ -63,13 +63,13 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Randevuyu Sil'),
+        title: Text(AppLocalizations.of(context)!.deleteAppointment),
         content: Text('"${appointment['subject']}" randevusu kalıcı olarak silinecek. Emin misiniz?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
+          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(AppLocalizations.of(context)!.cancel)),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Sil', style: TextStyle(color: AppColors.navy)),
+            child: Text(AppLocalizations.of(context)!.delete, style: TextStyle(color: AppColors.navy)),
           ),
         ],
       ),
@@ -124,13 +124,13 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
       _load();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Randevu tarihi güncellendi.')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.appointmentDateUpdated)),
         );
       }
     } on DioException catch (e) {
       if (e.response?.statusCode == 409 && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Bu saat az önce başka bir bayi tarafından alındı. Lütfen tekrar deneyin.')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.slotTakenRetry)),
         );
       }
     }
@@ -341,19 +341,19 @@ class _AppointmentCard extends StatelessWidget {
                   TextButton.icon(
                     onPressed: onEdit,
                     icon: const Icon(Icons.edit_calendar_outlined, size: 15, color: AppColors.navy),
-                    label: const Text('Düzenle', style: TextStyle(color: AppColors.navy)),
+                    label: Text(AppLocalizations.of(context)!.edit, style: TextStyle(color: AppColors.navy)),
                   ),
                   if (status == 'PENDING')
                     TextButton.icon(
                       onPressed: onCancel,
                       icon: const Icon(Icons.close, size: 15, color: Colors.orange),
-                      label: const Text('İptal Et', style: TextStyle(color: Colors.orange)),
+                      label: Text(AppLocalizations.of(context)!.cancelAction, style: TextStyle(color: Colors.orange)),
                     ),
                 ],
                 TextButton.icon(
                   onPressed: onDelete,
                   icon: const Icon(Icons.delete_outline, size: 15, color: AppColors.navy),
-                  label: const Text('Sil', style: TextStyle(color: AppColors.navy)),
+                  label: Text(AppLocalizations.of(context)!.delete, style: TextStyle(color: AppColors.navy)),
                 ),
               ],
             ),
@@ -451,7 +451,7 @@ class _CreateAppointmentSheetState extends State<_CreateAppointmentSheet> {
     } on DioException catch (e) {
       if (e.response?.statusCode == 409 && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Bu saat az önce başka bir bayi tarafından alındı. Lütfen başka bir saat seçin.')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.slotTakenReselect)),
         );
         setState(() => _selectedTime = null);
       }
@@ -471,9 +471,9 @@ class _CreateAppointmentSheetState extends State<_CreateAppointmentSheet> {
           leading: CupertinoButton(
             padding: EdgeInsets.zero,
             onPressed: () => Navigator.pop(context),
-            child: const Text('İptal', style: TextStyle(color: CupertinoColors.systemGrey, fontSize: 16)),
+            child: Text(AppLocalizations.of(context)!.cancel, style: TextStyle(color: CupertinoColors.systemGrey, fontSize: 16)),
           ),
-          middle: const Text('Yeni Randevu Talebi', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+          middle: Text(AppLocalizations.of(context)!.screenNewAppointment, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
         ),
         child: SafeArea(child: _buildForm()),
       );
@@ -502,8 +502,8 @@ class _CreateAppointmentSheetState extends State<_CreateAppointmentSheet> {
           children: [
             SegmentedButton<String>(
               segments: const [
-                ButtonSegment(value: 'REMOTE', label: Text('Telefon/Görüntülü'), icon: Icon(Icons.call_outlined)),
-                ButtonSegment(value: 'ON_SITE', label: Text('Sahada Ziyaret'), icon: Icon(Icons.location_on_outlined)),
+                ButtonSegment(value: 'REMOTE', label: Text(AppLocalizations.of(context)!.phoneVideoCall), icon: Icon(Icons.call_outlined)),
+                ButtonSegment(value: 'ON_SITE', label: Text(AppLocalizations.of(context)!.onSiteVisit), icon: Icon(Icons.location_on_outlined)),
               ],
               selected: {_type},
               onSelectionChanged: (s) => setState(() => _type = s.first),
@@ -544,7 +544,7 @@ class _CreateAppointmentSheetState extends State<_CreateAppointmentSheet> {
                 child: TextButton.icon(
                   onPressed: _pickTime,
                   icon: const Icon(Icons.access_time, size: 16),
-                  label: const Text('Saati Değiştir'),
+                  label: Text(AppLocalizations.of(context)!.changeTime),
                 ),
               ),
             const SizedBox(height: 20),
@@ -552,7 +552,7 @@ class _CreateAppointmentSheetState extends State<_CreateAppointmentSheet> {
               onPressed: _submitting ? null : _submit,
               child: _submitting
                   ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                  : const Text('Randevu Talebi Gönder'),
+                  : Text(AppLocalizations.of(context)!.sendAppointmentRequest),
             ),
           ],
         ),

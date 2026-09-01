@@ -49,13 +49,13 @@ class _GroupsScreenState extends State<GroupsScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Gruptan Ayrıl'),
+        title: Text(AppLocalizations.of(context)!.leaveGroup),
         content: Text('"$groupName" grubundan ayrılmak istediğinize emin misiniz?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
+          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(AppLocalizations.of(context)!.cancel)),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Ayrıl', style: TextStyle(color: AppColors.navy)),
+            child: Text(AppLocalizations.of(context)!.leave, style: TextStyle(color: AppColors.navy)),
           ),
         ],
       ),
@@ -81,7 +81,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
       if (!mounted) return;
       if (conversationId == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Bu grubun sohbeti açılamadı, lütfen tekrar deneyin.')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.groupChatOpenFailed)),
         );
         return;
       }
@@ -89,7 +89,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Sohbet açılamadı, internet bağlantınızı kontrol edin.')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.chatOpenFailedCheckConnection)),
         );
       }
     } finally {
@@ -176,7 +176,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
                                         if (value == 'leave') _leave(g['id'], g['name'] ?? '');
                                       },
                                       itemBuilder: (context) => [
-                                        const PopupMenuItem(value: 'leave', child: Text('Ayrıl', style: TextStyle(color: AppColors.navy))),
+                                        const PopupMenuItem(value: 'leave', child: Text(AppLocalizations.of(context)!.leave, style: TextStyle(color: AppColors.navy))),
                                       ],
                                     ),
                                 ],
@@ -202,7 +202,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
                                   width: double.infinity,
                                   padding: const EdgeInsets.symmetric(vertical: 7),
                                   decoration: BoxDecoration(color: AppColors.infoColor, borderRadius: BorderRadius.circular(9)),
-                                  child: const Text('Katıl', textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w700)),
+                                  child: Text(AppLocalizations.of(context)!.join, textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w700)),
                                 )
                               else
                                 Container(

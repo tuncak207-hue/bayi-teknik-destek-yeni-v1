@@ -109,13 +109,13 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Sohbeti Sil'),
-        content: const Text('Bu sohbet listenizden kaldırılacak. Karşı taraf tekrar mesaj gönderirse yeniden görünür.'),
+        title: Text(AppLocalizations.of(context)!.deleteChat),
+        content: Text(AppLocalizations.of(context)!.chatWillBeRemovedHint),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
+          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(AppLocalizations.of(context)!.cancel)),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Sil', style: TextStyle(color: AppColors.navy)),
+            child: Text(AppLocalizations.of(context)!.delete, style: TextStyle(color: AppColors.navy)),
           ),
         ],
       ),
@@ -222,7 +222,7 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
           if (_searchResults != null)
             Expanded(
               child: _searchResults!.isEmpty
-                  ? Center(child: Text('Bayi bulunamadı.', style: TextStyle(color: Colors.grey.shade500)))
+                  ? Center(child: Text(AppLocalizations.of(context)!.dealerNotFound, style: TextStyle(color: Colors.grey.shade500)))
                   : ListView.builder(
                       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
                       itemCount: _searchResults!.length,

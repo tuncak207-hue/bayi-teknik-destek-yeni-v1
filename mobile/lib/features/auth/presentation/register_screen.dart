@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../l10n/app_localizations.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -52,13 +53,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     if (!_formKey.currentState!.validate()) return;
     if (_email == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Lütfen e-posta kullanıcı adı ve uzantı alanlarının ikisini de doldurun.')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.pleaseFillEmailUsernameDomain)),
       );
       return;
     }
     if (!_kvkkAccepted || !_privacyAccepted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Devam etmek için KVKK Aydınlatma Metni ve Gizlilik Politikası onaylarını vermeniz gerekiyor.')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.kvkkConsentRequired)),
       );
       return;
     }
@@ -82,7 +83,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         context: context,
         barrierDismissible: false,
         builder: (_) => AlertDialog(
-          title: const Text('Kayıt Alındı'),
+          title: Text(AppLocalizations.of(context)!.registrationReceived),
           content: Text(message),
           actions: [
             TextButton(
@@ -90,7 +91,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 Navigator.pop(context);
                 context.go('/login');
               },
-              child: const Text('Tamam'),
+              child: Text(AppLocalizations.of(context)!.ok),
             ),
           ],
         ),
@@ -242,12 +243,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                               width: 20,
                               child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                             )
-                          : const Text('Kayıt Ol'),
+                          : Text(AppLocalizations.of(context)!.registerAction),
                     ),
                     const SizedBox(height: AppSpacing.xs),
                     TextButton(
                       onPressed: () => context.go('/login'),
-                      child: const Text('Zaten hesabınız var mı? Giriş yapın'),
+                      child: Text(AppLocalizations.of(context)!.alreadyHaveAccount),
                     ),
                   ],
                 ),

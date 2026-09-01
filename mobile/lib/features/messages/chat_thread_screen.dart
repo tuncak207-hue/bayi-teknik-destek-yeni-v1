@@ -1,4 +1,5 @@
 import 'dart:async';
+import '../../l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
@@ -268,13 +269,13 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Mesajı Sil'),
-        content: const Text('Bu mesajı silmek istediğinize emin misiniz?'),
+        title: Text(AppLocalizations.of(context)!.deleteMessage),
+        content: Text(AppLocalizations.of(context)!.deleteMessageConfirm),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
+          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(AppLocalizations.of(context)!.cancel)),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Sil', style: TextStyle(color: AppColors.navy)),
+            child: Text(AppLocalizations.of(context)!.delete, style: TextStyle(color: AppColors.navy)),
           ),
         ],
       ),
@@ -299,13 +300,13 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Mesajı Sil'),
-        content: const Text('Bu mesaj sadece sizin sohbetinizden kaldırılacak, karşı tarafta silinmeyecek. Onaylıyor musunuz?'),
+        title: Text(AppLocalizations.of(context)!.deleteMessage),
+        content: Text(AppLocalizations.of(context)!.removeMessageConfirm),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
+          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(AppLocalizations.of(context)!.cancel)),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Sil', style: TextStyle(color: AppColors.navy)),
+            child: Text(AppLocalizations.of(context)!.delete, style: TextStyle(color: AppColors.navy)),
           ),
         ],
       ),
@@ -316,7 +317,7 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
       setState(() => _messages.removeWhere((m) => m['id'] == messageId));
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Mesaj kaldırılamadı, tekrar deneyin.')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.messageRemoveFailed)));
       }
     }
   }
@@ -329,13 +330,13 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
     final newContent = await showDialog<String>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Mesajı Düzenle'),
+        title: Text(AppLocalizations.of(context)!.editMessage),
         content: TextField(controller: controller, maxLines: 4, autofocus: true),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Vazgeç')),
+          TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(AppLocalizations.of(context)!.cancel)),
           ElevatedButton(
             onPressed: () => Navigator.pop(dialogContext, controller.text.trim()),
-            child: const Text('Kaydet'),
+            child: Text(AppLocalizations.of(context)!.save),
           ),
         ],
       ),
@@ -386,7 +387,7 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
             const Divider(height: 1),
             ListTile(
               leading: const Icon(Icons.reply_outlined),
-              title: const Text('Yanıtla'),
+              title: Text(AppLocalizations.of(context)!.reply),
               onTap: () {
                 Navigator.pop(context);
                 setState(() => _replyingTo = message);
@@ -395,7 +396,7 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
             if (isMine) ...[
               ListTile(
                 leading: const Icon(Icons.edit_outlined),
-                title: const Text('Düzenle'),
+                title: Text(AppLocalizations.of(context)!.edit),
                 onTap: () {
                   Navigator.pop(context);
                   _editMessage(message);
@@ -403,7 +404,7 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
               ),
               ListTile(
                 leading: const Icon(Icons.delete_outline, color: AppColors.navy),
-                title: const Text('Sil', style: TextStyle(color: AppColors.navy)),
+                title: Text(AppLocalizations.of(context)!.delete, style: TextStyle(color: AppColors.navy)),
                 onTap: () {
                   Navigator.pop(context);
                   _deleteMessage(message['id']);
@@ -412,7 +413,7 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
             ] else
               ListTile(
                 leading: const Icon(Icons.delete_outline, color: AppColors.navy),
-                title: const Text('Sil (sadece benden)', style: TextStyle(color: AppColors.navy)),
+                title: Text(AppLocalizations.of(context)!.deleteForMeOnly, style: TextStyle(color: AppColors.navy)),
                 onTap: () {
                   Navigator.pop(context);
                   _hideMessageForMe(message['id']);
@@ -439,12 +440,12 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
           children: [
             ListTile(
               leading: const Icon(Icons.photo_camera_outlined),
-              title: const Text('Kamera ile çek'),
+              title: Text(AppLocalizations.of(context)!.takePhoto),
               onTap: () => Navigator.pop(context, ImageSource.camera),
             ),
             ListTile(
               leading: const Icon(Icons.photo_library_outlined),
-              title: const Text('Galeriden seç'),
+              title: Text(AppLocalizations.of(context)!.chooseFromGalleryLower),
               onTap: () => Navigator.pop(context, ImageSource.gallery),
             ),
           ],
@@ -469,7 +470,7 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Dosya gönderilemedi.')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.fileSendFailed)),
         );
       }
     } finally {
@@ -529,7 +530,7 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
           if (_searchMode && _searchResults != null)
             Expanded(
               child: _searchResults!.isEmpty
-                  ? Center(child: Text('Sonuç bulunamadı.', style: TextStyle(color: Colors.grey.shade500)))
+                  ? Center(child: Text(AppLocalizations.of(context)!.noResultsFound, style: TextStyle(color: Colors.grey.shade500)))
                   : ListView.builder(
                       itemCount: _searchResults!.length,
                       itemBuilder: (context, index) {
@@ -720,7 +721,7 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Yanıtlanıyor', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.navy)),
+                        Text(AppLocalizations.of(context)!.replyingTo, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.navy)),
                         Text(
                           _replyingTo!['content'] ?? '',
                           maxLines: 1,
@@ -836,7 +837,7 @@ class _AttachmentFileChipState extends State<_AttachmentFileChip> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Dosya açılamadı.')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.fileOpenFailed)),
         );
       }
     } finally {
