@@ -401,7 +401,14 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
     } catch (e) {
       if (!mounted) return;
       Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Çeviri başarısız oldu.')));
+      // Kullanıcı isteği: "çeviri başarısız oldu dedi" — asıl hatayı
+      // görebilmek için DioException detayını da gösteriyoruz (geçici
+      // teşhis amaçlı, sorunun kaynağını netleştirmek için).
+      String detail = e.toString();
+      if (e is DioException) {
+        detail = e.response?.data?['message']?.toString() ?? e.response?.statusCode?.toString() ?? e.message ?? detail;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Çeviri başarısız oldu: $detail')));
     }
   }
 
@@ -554,7 +561,12 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
         title: widget.title,
         actions: [
           ...widget.extraAppBarActions,
-          if (_participantNames.length == 2)
+          // NOT: _participantNames'in kendi kullanıcıyı da içerip
+          // içermediği garanti değil (backend'e göre değişebilir) — bu
+          // yüzden "1 ya da 2" aralığını kabul ediyoruz: birebir sohbet
+          // her iki durumda da bu aralıkta kalır, sadece 3+ (grup) hariç
+          // tutulur.
+          if (_participantNames.isNotEmpty && _participantNames.length <= 2)
             IconButton(
               icon: const Icon(Icons.videocam_outlined),
               tooltip: 'Görüntülü Ara',

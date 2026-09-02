@@ -42,8 +42,14 @@ class _TrainingQuizScreenState extends State<TrainingQuizScreen> {
         _loading = false;
       });
     } catch (e) {
+      // Kullanıcı isteği: "sınav yüklenemedi dedi" — asıl hatayı görebilmek
+      // için detayı da gösteriyoruz (geçici teşhis amaçlı).
+      String detail = e.toString();
+      if (e is DioException) {
+        detail = e.response?.data?['message']?.toString() ?? e.response?.statusCode?.toString() ?? e.message ?? detail;
+      }
       setState(() {
-        _error = 'Sınav yüklenemedi, lütfen tekrar deneyin.';
+        _error = 'Sınav yüklenemedi: $detail';
         _loading = false;
       });
     }
