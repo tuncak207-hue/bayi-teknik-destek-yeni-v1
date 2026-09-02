@@ -15,6 +15,8 @@ import '../features/messages/chat_thread_screen.dart';
 import '../features/profile/profile_screen.dart';
 import '../features/documents/document_viewer_screen.dart';
 import '../features/documents/barcode_scanner_screen.dart';
+import '../features/commissioning/device_history_screen.dart';
+import '../features/commissioning/bulk_export_screen.dart';
 import '../features/team/team_screen.dart';
 import '../features/maintenance/maintenance_screen.dart';
 import '../features/bom/bom_builder_screen.dart';
@@ -90,6 +92,8 @@ final appRouter = GoRouter(
     GoRoute(path: '/dealer-visits', builder: (context, state) => const DealerVisitsScreen()),
     GoRoute(path: '/settings', builder: (context, state) => const SettingsScreen()),
     GoRoute(path: '/barcode-scanner', builder: (context, state) => const BarcodeScannerScreen()),
+    GoRoute(path: '/device-history', builder: (context, state) => const DeviceHistoryScreen()),
+    GoRoute(path: '/bulk-export', builder: (context, state) => const BulkExportScreen()),
     GoRoute(path: '/team', builder: (context, state) => const TeamScreen()),
     GoRoute(path: '/maintenance', builder: (context, state) => const MaintenanceScreen()),
     GoRoute(path: '/bom-builder', builder: (context, state) => const BomListScreen()),

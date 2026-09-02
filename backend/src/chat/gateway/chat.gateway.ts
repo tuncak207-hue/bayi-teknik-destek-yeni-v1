@@ -116,4 +116,69 @@ export class ChatGateway implements OnGatewayConnection {
   emitBroadcast(event: string) {
     this.server.emit(event);
   }
+
+  // ================= CANLI VİDEO DESTEK (WebRTC Sinyalleşme) =================
+  /** Arayan taraf, hedef kullanıcıya arama daveti + SDP teklifini gönderir. */
+  @SubscribeMessage('call:invite')
+  async onCallInvite(
+    @MessageBody() data: { targetUserId: string; offer: unknown; callId: string },
+    @ConnectedSocket() socket: Socket,
+  ) {
+    const callerId = socket.data.userId as string | undefined;
+    if (!callerId || !data?.targetUserId || !data?.offer || !data?.callId) return;
+    const caller = await this.prisma.user.findUnique({
+      where: { id: callerId },
+      select: { firstName: true, lastName: true, company: true },
+    });
+    this.server.to(`user:${data.targetUserId}`).emit('call:incoming', {
+      callId: data.callId,
+      callerId,
+      callerName: caller ? `${caller.firstName} ${caller.lastName}` : 'Bilinmeyen',
+      callerCompany: caller?.company ?? '',
+      offer: data.offer,
+    });
+  }
+
+  @SubscribeMessage('call:accept')
+  onCallAccept(
+    @MessageBody() data: { callerId: string; callId: string; answer: unknown },
+    @ConnectedSocket() socket: Socket,
+  ) {
+    const answererId = socket.data.userId as string | undefined;
+    if (!answererId || !data?.callerId || !data?.callId || !data?.answer) return;
+    this.server.to(`user:${data.callerId}`).emit('call:accepted', {
+      callId: data.callId,
+      answererId,
+      answer: data.answer,
+    });
+  }
+
+  @SubscribeMessage('call:reject')
+  onCallReject(@MessageBody() data: { callerId: string; callId: string; reason?: string }) {
+    if (!data?.callerId || !data?.callId) return;
+    this.server.to(`user:${data.callerId}`).emit('call:rejected', {
+      callId: data.callId,
+      reason: data.reason ?? 'declined',
+    });
+  }
+
+  @SubscribeMessage('call:ice-candidate')
+  onCallIceCandidate(
+    @MessageBody() data: { targetUserId: string; callId: string; candidate: unknown },
+    @ConnectedSocket() socket: Socket,
+  ) {
+    const fromUserId = socket.data.userId as string | undefined;
+    if (!fromUserId || !data?.targetUserId || !data?.callId || !data?.candidate) return;
+    this.server.to(`user:${data.targetUserId}`).emit('call:ice-candidate', {
+      callId: data.callId,
+      fromUserId,
+      candidate: data.candidate,
+    });
+  }
+
+  @SubscribeMessage('call:end')
+  onCallEnd(@MessageBody() data: { targetUserId: string; callId: string }) {
+    if (!data?.targetUserId || !data?.callId) return;
+    this.server.to(`user:${data.targetUserId}`).emit('call:ended', { callId: data.callId });
+  }
 }

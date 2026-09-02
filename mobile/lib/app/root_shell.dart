@@ -11,6 +11,8 @@ import '../core/events/messages_badge_bus.dart';
 import '../core/events/notification_badge_bus.dart';
 import '../core/events/home_scroll_to_top_bus.dart';
 import '../core/notifications/notification_sound_service.dart';
+import '../core/calls/video_call_service.dart';
+import '../features/calls/video_call_screen.dart';
 
 // ENTPA Mühendislik Hizmeti'nin destek hattı — alt menüdeki "ENTPA'yı Ara"
 // butonuna dokununca bu numara aranır.
@@ -53,6 +55,17 @@ class _RootShellState extends State<RootShell> {
     // burada (birleşik üst menüde) — çift başlık şeridi sorununu çözmek
     // için Ana Sayfa'nın AppBar'ı tamamen kaldırıldı.
     NotificationBadgeBus.trigger.addListener(_loadUnreadNotifications);
+    VideoCallService().startListening();
+    VideoCallService().onIncomingCall.listen((data) {
+      final navContext = context;
+      if (!navContext.mounted) return;
+      Navigator.of(navContext, rootNavigator: true).push(
+        MaterialPageRoute(
+          builder: (_) => VideoCallScreen(remoteName: data['callerName'] ?? 'Bilinmeyen', isIncoming: true),
+          fullscreenDialog: true,
+        ),
+      );
+    });
   }
 
   Future<void> _loadUnreadNotifications() async {

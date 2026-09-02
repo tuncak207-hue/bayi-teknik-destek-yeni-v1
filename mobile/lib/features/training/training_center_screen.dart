@@ -10,6 +10,7 @@ import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_components.dart';
 import '../../core/widgets/design_system.dart';
 import '../../core/events/notification_badge_bus.dart';
+import 'training_quiz_screen.dart';
 
 /// Eğitim Merkezi — bayilerin video ve doküman (PDF) eğitim içeriklerini
 /// düzenli, kategorilere ayrılmış şekilde görüntüleyebildiği ekran.
@@ -273,6 +274,25 @@ class _TrainingCenterScreenState extends State<TrainingCenterScreen> {
                                                   onComplete: () => _markCompleted(c['id']),
                                                 ),
                                               ],
+                                              const SizedBox(height: 8),
+                                              InkWell(
+                                                onTap: () async {
+                                                  final passed = await Navigator.of(context).push<bool>(
+                                                    MaterialPageRoute(
+                                                      builder: (_) => TrainingQuizScreen(trainingId: c['id'], trainingTitle: c['title'] ?? ''),
+                                                    ),
+                                                  );
+                                                  if (passed == true) _load();
+                                                },
+                                                child: Row(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    Icon(Icons.quiz_outlined, size: 14, color: AppColors.brand),
+                                                    const SizedBox(width: 4),
+                                                    Text('Sınava Gir', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.brand)),
+                                                  ],
+                                                ),
+                                              ),
                                             ],
                                           ),
                                         ),

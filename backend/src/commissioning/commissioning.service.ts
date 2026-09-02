@@ -31,6 +31,7 @@ export class CommissioningService {
     siteName: string;
     panelBrand: string;
     panelModel: string;
+    serialNumber?: string;
     items: Array<{ label: string; checked: boolean }>;
     notes?: string;
   }) {
@@ -41,11 +42,40 @@ export class CommissioningService {
         siteName: params.siteName,
         panelBrand: params.panelBrand,
         panelModel: params.panelModel,
+        serialNumber: params.serialNumber,
         items: params.items,
         notes: params.notes,
         completedAt: allChecked ? new Date() : null,
       },
     });
+  }
+
+  /**
+   * Kullanıcı isteği: "Dijital Cihaz Pasaportu" — QR kodu taranan cihazın
+   * TÜM geçmişini (devreye alma + bağlı bakım kayıtları + teknik destek
+   * talepleri) tarih sırasıyla döner. BİLİNÇLİ OLARAK dealerId kontrolü
+   * YAPILMIYOR — "yıllar sonra bile, başka bir bayi olsa bile" geçmişi
+   * görebilmesi gerekiyor (kullanıcı isteği). Sadece giriş yapmış (JWT
+   * doğrulanmış) bir kullanıcı olması yeterli — tamamen herkese açık
+   * değil, ama bayi sınırlaması da yok.
+   */
+  async getByQrCode(qrCode: string) {
+    const report = await this.prisma.commissioningReport.findUnique({
+      where: { deviceQrCode: qrCode },
+      include: {
+        dealer: { select: { firstName: true, lastName: true, company: true } },
+        maintenanceRecords: {
+          orderBy: { performedAt: 'desc' },
+          include: { createdBy: { select: { firstName: true, lastName: true, company: true } } },
+        },
+        supportTickets: {
+          orderBy: { createdAt: 'desc' },
+          select: { id: true, description: true, status: true, priority: true, createdAt: true },
+        },
+      },
+    });
+    if (!report) throw new NotFoundException('Bu QR koda ait bir cihaz kaydı bulunamadı.');
+    return report;
   }
 
   listForDealer(dealerId: string) {

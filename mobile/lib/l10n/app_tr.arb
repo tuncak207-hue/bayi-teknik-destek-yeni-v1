@@ -247,6 +247,9 @@
 
   "companyLabel": "Şirket",
 
+  "pendingActionsTitle": "Bekleyen İşleriniz",
+  "pendingActionsSubtitle": "Cevap bekleyen teklif, imza bekleyen rapor ve okunmamış bildirimler",
+
   "trainingCompleted": "Tamamlandı",
   "trainingExpired": "Süre doldu, tamamlanmadı",
   "trainingRemainingTime": "Kalan süre",

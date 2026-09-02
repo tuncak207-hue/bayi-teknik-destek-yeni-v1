@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'api_config.dart';
 import '../auth/token_storage.dart';
@@ -20,12 +21,23 @@ class SocketService {
   // uyarısı vb.) için — Firebase push yapılandırılmamışsa bile uygulama
   // açıkken anlık ulaşmasını sağlayan birincil kanal.
   final _notificationController = StreamController<Map<String, dynamic>>.broadcast();
+  // Canlı video destek (WebRTC) sinyalleşme olayları.
+  final _callIncomingController = StreamController<Map<String, dynamic>>.broadcast();
+  final _callAcceptedController = StreamController<Map<String, dynamic>>.broadcast();
+  final _callRejectedController = StreamController<Map<String, dynamic>>.broadcast();
+  final _callIceCandidateController = StreamController<Map<String, dynamic>>.broadcast();
+  final _callEndedController = StreamController<Map<String, dynamic>>.broadcast();
 
   /// Her yeni mesajda (AI veya kullanıcı) tetiklenir. Dinleyen ekran
   /// conversationId'ye göre kendi listesini filtrelemeli.
   Stream<Map<String, dynamic>> get onMessage => _messageController.stream;
   Stream<String> get onTyping => _typingController.stream;
   Stream<Map<String, dynamic>> get onNotification => _notificationController.stream;
+  Stream<Map<String, dynamic>> get onCallIncoming => _callIncomingController.stream;
+  Stream<Map<String, dynamic>> get onCallAccepted => _callAcceptedController.stream;
+  Stream<Map<String, dynamic>> get onCallRejected => _callRejectedController.stream;
+  Stream<Map<String, dynamic>> get onCallIceCandidate => _callIceCandidateController.stream;
+  Stream<Map<String, dynamic>> get onCallEnded => _callEndedController.stream;
   // Kullanıcı isteği: "slayt eklediğimde/pasif yaptığımda uygulama açık
   // bile olsa hemen gelmeli/gitmeli" — admin panelden slayt
   // ekleme/güncelleme/silme olduğunda backend'in TÜM bağlı istemcilere
@@ -56,7 +68,7 @@ class SocketService {
 
     _socket!.onConnect((_) {
       // ignore: avoid_print
-      print('[socket] bağlandı');
+      debugPrint('[socket] bağlandı');
     });
 
     _socket!.on('message:new', (data) {
@@ -84,14 +96,30 @@ class SocketService {
       _slidesUpdatedController.add(null);
     });
 
+    _socket!.on('call:incoming', (data) {
+      if (data is Map) _callIncomingController.add(Map<String, dynamic>.from(data));
+    });
+    _socket!.on('call:accepted', (data) {
+      if (data is Map) _callAcceptedController.add(Map<String, dynamic>.from(data));
+    });
+    _socket!.on('call:rejected', (data) {
+      if (data is Map) _callRejectedController.add(Map<String, dynamic>.from(data));
+    });
+    _socket!.on('call:ice-candidate', (data) {
+      if (data is Map) _callIceCandidateController.add(Map<String, dynamic>.from(data));
+    });
+    _socket!.on('call:ended', (data) {
+      if (data is Map) _callEndedController.add(Map<String, dynamic>.from(data));
+    });
+
     _socket!.onDisconnect((_) {
       // ignore: avoid_print
-      print('[socket] bağlantı kesildi');
+      debugPrint('[socket] bağlantı kesildi');
     });
 
     _socket!.onConnectError((err) {
       // ignore: avoid_print
-      print('[socket] bağlantı hatası: $err');
+      debugPrint('[socket] bağlantı hatası: $err');
     });
 
     _socket!.connect();
@@ -107,6 +135,27 @@ class SocketService {
 
   void sendTyping(String conversationId) {
     _socket?.emit('typing', {'conversationId': conversationId});
+  }
+
+  // ---- Canlı video destek (WebRTC sinyalleşme) ----
+  void sendCallInvite({required String targetUserId, required String callId, required Map<String, dynamic> offer}) {
+    _socket?.emit('call:invite', {'targetUserId': targetUserId, 'callId': callId, 'offer': offer});
+  }
+
+  void sendCallAccept({required String callerId, required String callId, required Map<String, dynamic> answer}) {
+    _socket?.emit('call:accept', {'callerId': callerId, 'callId': callId, 'answer': answer});
+  }
+
+  void sendCallReject({required String callerId, required String callId, String? reason}) {
+    _socket?.emit('call:reject', {'callerId': callerId, 'callId': callId, 'reason': reason});
+  }
+
+  void sendCallIceCandidate({required String targetUserId, required String callId, required Map<String, dynamic> candidate}) {
+    _socket?.emit('call:ice-candidate', {'targetUserId': targetUserId, 'callId': callId, 'candidate': candidate});
+  }
+
+  void sendCallEnd({required String targetUserId, required String callId}) {
+    _socket?.emit('call:end', {'targetUserId': targetUserId, 'callId': callId});
   }
 
   void disconnect() {

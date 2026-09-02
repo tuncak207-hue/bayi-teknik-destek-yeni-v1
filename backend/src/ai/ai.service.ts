@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { RagSearchService, RetrievedChunk } from '../rag/rag-search.service';
 import { KnowledgeBaseService } from '../knowledge-base/knowledge-base.service';
 import { TechnicalMemoryService } from './technical-memory.service';
@@ -86,6 +86,8 @@ Kaynakça ayrıca sistem tarafından otomatik ekleneceği için sen "Kaynak:" b�
 
 @Injectable()
 export class AiService {
+  private readonly logger = new Logger(AiService.name);
+
   constructor(
     private ragSearch: RagSearchService,
     private knowledgeBase: KnowledgeBaseService,
@@ -121,7 +123,7 @@ export class AiService {
       });
 
       if (memoryMatch.tier === 'VERIFIED' && memoryMatch.entry) {
-        this.technicalMemory.incrementUsage(memoryMatch.entry.id).catch(() => {});
+        this.technicalMemory.incrementUsage(memoryMatch.entry.id).catch((err) => this.logger.warn(`Kullanım sayacı güncellenemedi: ${err}`));
         return {
           answerMarkdown: memoryMatch.entry.answerMarkdown,
           confidence: 'HIGH',
@@ -253,5 +255,23 @@ export class AiService {
     const confidence = (match?.[1]?.toUpperCase() as 'HIGH' | 'LOW') || 'LOW';
     const cleaned = text.replace(/CONFIDENCE:\s*(HIGH|LOW)/i, '').trim();
     return { text: cleaned, confidence };
+  }
+
+  // ================= ÇOK DİLLİ ANLIK ÇEVİRİ (Sohbet İçi) =================
+  // Ayrı bir çeviri API'si/anahtarı eklemeden, zaten kullandığımız AI
+  // sağlayıcıdan yararlanıyoruz.
+  async translate(text: string, targetLanguage: string): Promise<{ translatedText: string }> {
+    const result = await this.provider.complete(
+      [
+        {
+          role: 'system',
+          content: `Sen bir çeviri asistanısın. Kullanıcının verdiği metni ${targetLanguage} diline çevir.
+SADECE çeviriyi döndür — hiçbir açıklama, tırnak işareti veya ek metin ekleme.`,
+        },
+        { role: 'user', content: text },
+      ],
+      { maxTokens: 800, temperature: 0.1 },
+    );
+    return { translatedText: result.text.trim() };
   }
 }

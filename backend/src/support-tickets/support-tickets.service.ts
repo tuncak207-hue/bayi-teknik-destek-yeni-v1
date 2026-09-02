@@ -89,6 +89,7 @@ export class SupportTicketsService {
       location?: string;
       description: string;
       isEmergency?: boolean;
+      commissioningReportId?: string;
     },
   ) {
     const isEmergency = params.isEmergency === true;
@@ -107,6 +108,7 @@ export class SupportTicketsService {
         priority,
         slaResponseMinutes: sla.response,
         slaResolutionMinutes: sla.resolution,
+        commissioningReportId: params.commissioningReportId,
       },
     });
 
