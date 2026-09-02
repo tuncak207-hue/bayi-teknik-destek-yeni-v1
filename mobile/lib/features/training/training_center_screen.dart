@@ -402,14 +402,28 @@ class _TrainingCompletionRow extends StatelessWidget {
     if (status == 'EXPIRED') {
       return _StatusChip(icon: Icons.cancel_outlined, color: AppColors.danger, label: l10n.trainingExpired);
     }
-    // PENDING — geri sayaç + buton
+    // PENDING — geri sayaç + buton. Kullanıcı isteği: "yazılar üst üste
+    // binmiş gibi" — yan yana (Row+Spacer) yerine alt alta (Column)
+    // düzene geçirildi, dar ekranlarda asla sıkışmaz/çakışmaz.
     final remaining = deadline != null ? formatRemaining(deadline!) : '';
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(Icons.hourglass_bottom, size: 14, color: Colors.orange.shade700),
-        const SizedBox(width: 4),
-        Text('${l10n.trainingRemainingTime}: $remaining', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.orange.shade700)),
-        const Spacer(),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.hourglass_bottom, size: 14, color: Colors.orange.shade700),
+            const SizedBox(width: 4),
+            Flexible(
+              child: Text(
+                '${l10n.trainingRemainingTime}: $remaining',
+                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.orange.shade700),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 6),
         Material(
           color: AppColors.brand,
           borderRadius: BorderRadius.circular(10),
