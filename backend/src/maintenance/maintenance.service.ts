@@ -18,7 +18,7 @@ export class MaintenanceService {
     });
   }
 
-  create(userId: string, data: { siteName: string; systemDescription?: string; notes: string; performedAt?: string; commissioningReportId?: string }) {
+  create(userId: string, data: { siteName: string; systemDescription?: string; notes: string; performedAt?: string }) {
     return this.prisma.maintenanceRecord.create({
       data: {
         createdByUserId: userId,
@@ -26,7 +26,6 @@ export class MaintenanceService {
         systemDescription: data.systemDescription,
         notes: data.notes,
         performedAt: data.performedAt ? new Date(data.performedAt) : new Date(),
-        commissioningReportId: data.commissioningReportId,
       },
     });
   }

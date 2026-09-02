@@ -8,9 +8,6 @@
     <!-- Android 13+ bildirimleri ve sesli soru özelliği için runtime izinleri. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <!-- Canlı video destek (flutter_webrtc) için ses yönlendirme izni -->
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-    <uses-permission android:name="android.permission.BLUETOOTH" />
     <application
         android:label="bayi_teknik_destek"
         android:name="${applicationName}"

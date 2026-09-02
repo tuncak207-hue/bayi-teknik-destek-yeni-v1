@@ -11,8 +11,6 @@ import '../../core/auth/current_user.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/design_system.dart';
 import '../../core/events/messages_badge_bus.dart';
-import '../../core/calls/video_call_service.dart';
-import '../calls/video_call_screen.dart';
 
 class ChatThreadScreen extends StatefulWidget {
   final String conversationId;
@@ -121,7 +119,7 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
       }
     } catch (e) {
       // ignore: avoid_print
-      debugPrint('[chat] Katılımcı bilgisi alınamadı: $e');
+      print('[chat] Katılımcı bilgisi alınamadı: $e');
     }
   }
 
@@ -359,59 +357,6 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
     }
   }
 
-  /// Kullanıcı isteği: "Çok Dilli Anlık Çeviri (Sohbet İçi)" — farklı ana
-  /// dile sahip bayiler/mühendisler arasında sohbeti kolaylaştırır.
-  Future<void> _showTranslation(dynamic message) async {
-    const languages = ['İngilizce', 'Arapça', 'Rusça', 'Almanca', 'Fransızca'];
-    final targetLanguage = await showModalBottomSheet<String>(
-      context: context,
-      builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Padding(
-              padding: EdgeInsets.all(AppSpacing.sm),
-              child: Text('Hangi dile çevrilsin?', style: TextStyle(fontWeight: FontWeight.w700)),
-            ),
-            ...languages.map((l) => ListTile(title: Text(l), onTap: () => Navigator.pop(context, l))),
-          ],
-        ),
-      ),
-    );
-    if (targetLanguage == null || !mounted) return;
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => const Center(child: CircularProgressIndicator()),
-    );
-
-    try {
-      final res = await _dio.post('/ai/translate', data: {'text': message['content'] ?? '', 'targetLanguage': targetLanguage});
-      if (!mounted) return;
-      Navigator.pop(context); // yükleniyor dialogunu kapat
-      showDialog(
-        context: context,
-        builder: (_) => AlertDialog(
-          title: Text('$targetLanguage Çevirisi'),
-          content: Text(res.data['translatedText'] ?? ''),
-          actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Kapat'))],
-        ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      Navigator.pop(context);
-      // Kullanıcı isteği: "çeviri başarısız oldu dedi" — asıl hatayı
-      // görebilmek için DioException detayını da gösteriyoruz (geçici
-      // teşhis amaçlı, sorunun kaynağını netleştirmek için).
-      String detail = e.toString();
-      if (e is DioException) {
-        detail = e.response?.data?['message']?.toString() ?? e.response?.statusCode?.toString() ?? e.message ?? detail;
-      }
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Çeviri başarısız oldu: $detail')));
-    }
-  }
-
   void _showMessageActions(dynamic message) {
     final isMine = _isMine(message);
     showModalBottomSheet(
@@ -440,14 +385,6 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
               ),
             ),
             const Divider(height: 1),
-            ListTile(
-              leading: const Icon(Icons.translate_outlined),
-              title: const Text('Çevir'),
-              onTap: () {
-                Navigator.pop(context);
-                _showTranslation(message);
-              },
-            ),
             ListTile(
               leading: const Icon(Icons.reply_outlined),
               title: Text(AppLocalizations.of(context)!.reply),
@@ -561,30 +498,6 @@ class _ChatThreadScreenState extends State<ChatThreadScreen> {
         title: widget.title,
         actions: [
           ...widget.extraAppBarActions,
-          // NOT: _participantNames'in kendi kullanıcıyı da içerip
-          // içermediği garanti değil (backend'e göre değişebilir) — bu
-          // yüzden "1 ya da 2" aralığını kabul ediyoruz: birebir sohbet
-          // her iki durumda da bu aralıkta kalır, sadece 3+ (grup) hariç
-          // tutulur.
-          if (_participantNames.isNotEmpty && _participantNames.length <= 2)
-            IconButton(
-              icon: const Icon(Icons.videocam_outlined),
-              tooltip: 'Görüntülü Ara',
-              onPressed: () {
-                final myId = CurrentUser().id;
-                final otherEntry = _participantNames.entries.firstWhere(
-                  (e) => e.key != myId,
-                  orElse: () => _participantNames.entries.first,
-                );
-                VideoCallService().startCall(otherEntry.key);
-                Navigator.of(context, rootNavigator: true).push(
-                  MaterialPageRoute(
-                    builder: (_) => VideoCallScreen(remoteName: otherEntry.value),
-                    fullscreenDialog: true,
-                  ),
-                );
-              },
-            ),
           IconButton(
             icon: Icon(_searchMode ? Icons.close : Icons.search),
             onPressed: () => setState(() {

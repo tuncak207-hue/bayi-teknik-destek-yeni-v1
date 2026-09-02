@@ -41,31 +41,6 @@ export class DashboardService {
     };
   }
 
-  /**
-   * Kullanıcı isteği: "Bekleyen İşler Sayaç Rozeti" — Ana Sayfa'da tek bir
-   * toplam sayı olarak, kullanıcının dikkatini bekleyen TÜM aksiyonları
-   * (cevap bekleyen teklif, imza bekleyen rapor, okunmamış bildirim)
-   * gösterir. Hiçbir yeni veri modeli gerekmiyor — mevcut tablolardan
-   * sayılıyor.
-   */
-  async pendingActionsCount(dealerId: string) {
-    const [pendingQuotes, unsignedMaintenance, unsignedCommissioning, unreadNotifications] = await Promise.all([
-      this.prisma.quoteRequest.count({ where: { dealerId, status: 'SENT' } }),
-      this.prisma.maintenanceRecord.count({ where: { createdByUserId: dealerId, signatureUrl: null } }),
-      this.prisma.commissioningReport.count({ where: { dealerId, signatureUrl: null } }),
-      this.prisma.notification.count({ where: { userId: dealerId, readAt: null } }),
-    ]);
-    return {
-      total: pendingQuotes + unsignedMaintenance + unsignedCommissioning + unreadNotifications,
-      breakdown: {
-        pendingQuotes,
-        unsignedMaintenance,
-        unsignedCommissioning,
-        unreadNotifications,
-      },
-    };
-  }
-
   async adminPriorities() {
     const [emergencyTickets, escalatedTickets, pendingAppointments, openTicketsAll] = await Promise.all([
       this.prisma.supportTicket.findMany({

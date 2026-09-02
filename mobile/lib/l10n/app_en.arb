@@ -247,9 +247,6 @@
 
   "companyLabel": "Company",
 
-  "pendingActionsTitle": "Your Pending Actions",
-  "pendingActionsSubtitle": "Quotes awaiting response, reports awaiting signature and unread notifications",
-
   "trainingCompleted": "Completed",
   "trainingExpired": "Time expired, not completed",
   "trainingRemainingTime": "Remaining time",

@@ -21,8 +21,6 @@ const List<QuickActionDef> kAllQuickActions = [
   // yanıltıcı bir etiketti. Alt menüdeki "AI" sekmesi zaten tek, doğru
   // giriş noktası.
   QuickActionDef(id: 'search', icon: Icons.search, label: 'Ara', route: '/search'),
-  QuickActionDef(id: 'device_history', icon: Icons.qr_code_2, label: 'Cihaz Geçmişi', route: '/device-history'),
-  QuickActionDef(id: 'bulk_export', icon: Icons.folder_zip_outlined, label: 'Toplu PDF', route: '/bulk-export'),
   QuickActionDef(id: 'messages', icon: Icons.chat_bubble_outline, label: 'Mesajlar', route: '/messages'),
   // "Fotoğraf Gönder" kaldırıldı — kullanıcı isteği. Fotoğraf/galeri
   // seçimi artık doğrudan AI Sor ekranının içinde (kamera + galeri

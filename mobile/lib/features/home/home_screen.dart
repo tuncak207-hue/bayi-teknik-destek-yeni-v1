@@ -127,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
               'quotes': res.data['quotes'] ?? 0,
             });
       }
-    } catch (e) { debugPrint('[home_screen.dart] İstatistik/rozet verisi yüklenemedi: $e'); }
+    } catch (_) {}
     _loadLocalBadges();
   }
 
@@ -150,7 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       final res = await _dio.get('/favorites/pinned');
       if (mounted) setState(() => _pinnedDocuments = res.data);
-    } catch (e) { debugPrint('[home_screen.dart] Sabitlenmiş dokümanlar yüklenemedi: $e'); }
+    } catch (_) {}
   }
 
   Future<void> _loadQuickActionsOrder() async {
@@ -198,7 +198,7 @@ class _HomeScreenState extends State<HomeScreen> {
             });
           }
         }
-      } catch (e) { debugPrint('[home_screen.dart] Yerel rozet verisi işlenemedi: $e'); }
+      } catch (_) {}
     }
     try {
       final res = await _dio.get('/stats/me');
@@ -220,7 +220,7 @@ class _HomeScreenState extends State<HomeScreen> {
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('home_stats_$userKey', jsonEncode(data));
         }
-      } catch (e) { debugPrint('[home_screen.dart] İstatistik önbelleği kaydedilemedi: $e'); }
+      } catch (_) {}
     } catch (_) {
       if (!mounted) return;
       if (attempt < 4) {
@@ -661,7 +661,6 @@ class _TodayForMeSection extends StatefulWidget {
 class _TodayForMeSectionState extends State<_TodayForMeSection> {
   final Dio _dio = ApiClient().dio;
   Map<String, dynamic>? _summary;
-  int _pendingActionsTotal = 0;
 
   @override
   void initState() {
@@ -673,13 +672,7 @@ class _TodayForMeSectionState extends State<_TodayForMeSection> {
     try {
       final res = await _dio.get('/dashboard/for-me');
       if (mounted) setState(() => _summary = res.data);
-    } catch (e) { debugPrint('[home_screen.dart] Bugün Benim İçin özeti yüklenemedi: $e'); }
-    // Kullanıcı isteği: "Bekleyen İşler Sayaç Rozeti" — cevap bekleyen
-    // teklif, imza bekleyen rapor ve okunmamış bildirimlerin toplamı.
-    try {
-      final res = await _dio.get('/dashboard/pending-actions-count');
-      if (mounted) setState(() => _pendingActionsTotal = res.data['total'] ?? 0);
-    } catch (e) { debugPrint('[home_screen.dart] Bekleyen işler sayacı yüklenemedi: $e'); }
+    } catch (_) {}
   }
 
   @override
@@ -689,50 +682,10 @@ class _TodayForMeSectionState extends State<_TodayForMeSection> {
     final openTickets = _summary!['openTicketsCount'] ?? 0;
     final slaRisk = _summary!['slaRiskTicketsCount'] ?? 0;
 
-    if (appointments.isEmpty && openTickets == 0 && slaRisk == 0 && _pendingActionsTotal == 0) return const SizedBox.shrink();
+    if (appointments.isEmpty && openTickets == 0 && slaRisk == 0) return const SizedBox.shrink();
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.md),
-      child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (_pendingActionsTotal > 0)
-          Container(
-            margin: const EdgeInsets.only(bottom: AppSpacing.md),
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 10),
-            decoration: BoxDecoration(
-              color: Colors.orange.shade50,
-              borderRadius: BorderRadius.circular(AppRadius.lg),
-              border: Border.all(color: Colors.orange.shade200),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 30,
-                  height: 30,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(color: Colors.orange.shade600, shape: BoxShape.circle),
-                  child: Text('$_pendingActionsTotal', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 13)),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(AppLocalizations.of(context)!.pendingActionsTitle, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13, color: AppColors.navy)),
-                      Text(
-                        AppLocalizations.of(context)!.pendingActionsSubtitle,
-                        style: TextStyle(fontSize: 11, color: Colors.orange.shade900.withValues(alpha: 0.8)),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        Container(
+    return Container(
+      margin: const EdgeInsets.only(bottom: AppSpacing.md),
       padding: const EdgeInsets.all(AppSpacing.sm),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -762,9 +715,6 @@ class _TodayForMeSectionState extends State<_TodayForMeSection> {
           ),
         ],
       ),
-        ),
-      ],
-    ),
     );
   }
 

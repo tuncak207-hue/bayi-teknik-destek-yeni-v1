@@ -132,7 +132,6 @@ model User {
   announcementAcknowledgements AnnouncementAcknowledgement[]
   commissioningReports    CommissioningReport[]
   trainingCompletions     TrainingCompletion[]
-  trainingQuizAttempts    TrainingQuizAttempt[]
 
   @@map("users")
 }
@@ -458,10 +457,6 @@ model MaintenanceRecord {
   signatureUrl        String? // Müşteri imzası (R2'de saklanan görsel anahtarı)
   performedAt         DateTime  @default(now())
   createdAt           DateTime  @default(now())
-  // Dijital Cihaz Pasaportu — bu bakım kaydı belirli bir devreye alınmış
-  // cihaza (CommissioningReport) bağlanabilir, cihazın QR kodu taranarak.
-  commissioningReportId String?
-  commissioningReport    CommissioningReport? @relation(fields: [commissioningReportId], references: [id], onDelete: SetNull)
 
   createdBy User @relation(fields: [createdByUserId], references: [id], onDelete: Cascade)
 
@@ -515,33 +510,9 @@ model TrainingContent {
   requiresCompletion Boolean @default(false)
   deadlineHours      Int     @default(24) // tamamlama için verilen süre (saat)
 
-  // Kullanıcı isteği: "AI Sınav/Sertifikasyon Motoru" — eğitim içeriğinden
-  // AI'nin ürettiği sorular, tekrar tekrar üretmek yerine BİR KEZ
-  // üretilip burada saklanıyor (tüm kullanıcılar aynı sınavı görür,
-  // tutarlılık + maliyet tasarrufu). [{ question, options: string[4],
-  // correctIndex }] formatında.
-  quizQuestions Json?
-
   completions TrainingCompletion[]
-  quizAttempts  TrainingQuizAttempt[]
 
   @@map("training_contents")
-}
-
-/// Bir kullanıcının bir eğitim sınavına girme kaydı — puanı, geçip
-/// geçmediği. Kullanıcı isteği: "AI Sınav/Sertifikasyon Motoru" — geçme
-/// puanını (%70) aşan kullanıcı "Sertifikalı" sayılır.
-model TrainingQuizAttempt {
-  id          String   @id @default(uuid())
-  trainingId  String
-  training    TrainingContent @relation(fields: [trainingId], references: [id], onDelete: Cascade)
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  score       Int      // yüzde (0-100)
-  passed      Boolean
-  completedAt DateTime @default(now())
-
-  @@map("training_quiz_attempts")
 }
 
 /// Bir kullanıcının belirli bir eğitim içeriğini "tamamladım" olarak
@@ -683,13 +654,6 @@ model CommissioningReport {
   siteName          String
   panelBrand        String
   panelModel        String
-  // Kullanıcı isteği: "Dijital Cihaz Pasaportu" — devreye alınan cihazı
-  // benzersiz şekilde tanımlayan seri numarası ve QR kod. QR kod, cihazın
-  // üzerine yapıştırılan fiziksel bir etikette kullanılır — yıllar sonra
-  // bile herhangi bir teknisyen (başka bir bayi olsa dahi) bu kodu
-  // tarayarak cihazın TÜM geçmişini (bakım, arıza, garanti) görebilir.
-  serialNumber      String?
-  deviceQrCode      String   @unique @default(cuid())
   items             Json     // [{ label: string, checked: boolean }]
   notes             String?
   // Müşteri bilgileri — PDF'te eksiksiz görünmesi için (isim + imza).
@@ -700,8 +664,6 @@ model CommissioningReport {
   updatedAt         DateTime @updatedAt
 
   dealer User @relation(fields: [dealerId], references: [id], onDelete: Cascade)
-  maintenanceRecords MaintenanceRecord[]
-  supportTickets     SupportTicket[]
 
   @@index([dealerId, createdAt])
   @@map("commissioning_reports")
@@ -748,10 +710,6 @@ model SupportTicket {
   escalationLevel      Int          @default(0)
   createdAt          DateTime       @default(now())
   updatedAt          DateTime       @updatedAt
-  // Dijital Cihaz Pasaportu — bu talep belirli bir devreye alınmış cihaza
-  // (CommissioningReport) bağlanabilir, cihazın QR kodu taranarak.
-  commissioningReportId String?
-  commissioningReport    CommissioningReport? @relation(fields: [commissioningReportId], references: [id], onDelete: SetNull)
 
   dealer           User  @relation("TicketDealer", fields: [dealerId], references: [id], onDelete: Cascade)
   assignedEngineer User? @relation("TicketEngineer", fields: [assignedEngineerId], references: [id], onDelete: SetNull)

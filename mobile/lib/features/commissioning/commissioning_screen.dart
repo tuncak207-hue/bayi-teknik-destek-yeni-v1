@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import '../../l10n/app_localizations.dart';
 import 'package:flutter/cupertino.dart';
 import 'dart:io' show Platform;
@@ -61,39 +60,6 @@ class _CommissioningListScreenState extends State<CommissioningListScreen> {
     final d = DateTime.tryParse(iso ?? '');
     if (d == null) return '';
     return '${d.day.toString().padLeft(2, '0')}.${d.month.toString().padLeft(2, '0')}.${d.year}';
-  }
-
-  /// Kullanıcı isteği: "Dijital Cihaz Pasaportu" — bu raporun QR kodunu
-  /// büyük göstererek, kullanıcının fotoğrafını çekip yazdırıp cihazın
-  /// üzerine yapıştırmasını sağlar.
-  void _showQrDialog(BuildContext context, dynamic report) {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Cihaz QR Kodu'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              '${report['panelBrand']} ${report['panelModel']} — ${report['siteName']}',
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 12, color: Colors.grey),
-            ),
-            const SizedBox(height: 16),
-            QrImageView(data: report['deviceQrCode'], size: 220),
-            const SizedBox(height: 12),
-            const Text(
-              'Bu kodu yazdırıp cihazın üzerine yapıştırın — herhangi bir teknisyen tarayarak cihazın tüm geçmişini görebilir.',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 11.5, color: Colors.grey),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Kapat')),
-        ],
-      ),
-    );
   }
 
   @override
@@ -201,9 +167,9 @@ class _CommissioningListScreenState extends State<CommissioningListScreen> {
                                         value: progress,
                                         strokeWidth: 3,
                                         backgroundColor: const Color(0xFFEFF1F4),
-                                        valueColor: AlwaysStoppedAnimation(isComplete ? AppColors.success : AppColors.brand),
+                                        valueColor: AlwaysStoppedAnimation(isComplete ? Colors.green : AppColors.brand),
                                       ),
-                                      Icon(isComplete ? Icons.check : null, size: 13, color: AppColors.success),
+                                      Icon(isComplete ? Icons.check : null, size: 13, color: Colors.green),
                                     ],
                                   ),
                                 ),
@@ -228,14 +194,6 @@ class _CommissioningListScreenState extends State<CommissioningListScreen> {
                               children: [
                                 CardFooterMeta(icon: Icons.checklist_rtl, label: '$checkedCount/${items.length}'),
                                 const Spacer(),
-                                if (r['deviceQrCode'] != null)
-                                  InkWell(
-                                    onTap: () => _showQrDialog(context, r),
-                                    child: const Padding(
-                                      padding: EdgeInsets.only(right: 6),
-                                      child: Icon(Icons.qr_code_2, size: 16, color: AppColors.brand),
-                                    ),
-                                  ),
                                 Text(_formatDate(r['createdAt']), style: TextStyle(fontSize: 10.5, color: Colors.grey.shade400)),
                               ],
                             ),
@@ -271,9 +229,6 @@ class _CommissioningFormScreenState extends State<CommissioningFormScreen> {
   late final _siteNameController = TextEditingController(text: widget.existingReport?['siteName'] ?? '');
   late final _brandController = TextEditingController(text: widget.existingReport?['panelBrand'] ?? '');
   late final _modelController = TextEditingController(text: widget.existingReport?['panelModel'] ?? '');
-  // Kullanıcı isteği: "Dijital Cihaz Pasaportu" — cihazın benzersiz seri
-  // numarası, QR kod ile eşleşen kimliğinin okunabilir tarafı.
-  late final _serialNumberController = TextEditingController(text: widget.existingReport?['serialNumber'] ?? '');
   late final _notesController = TextEditingController(text: widget.existingReport?['notes'] ?? '');
   late final _customerController = TextEditingController(text: widget.existingReport?['customerName'] ?? '');
   final _signatureKey = GlobalKey<SignaturePadState>();
@@ -326,7 +281,6 @@ class _CommissioningFormScreenState extends State<CommissioningFormScreen> {
         'siteName': _siteNameController.text.trim(),
         'panelBrand': _brandController.text.trim(),
         'panelModel': _modelController.text.trim(),
-        'serialNumber': _serialNumberController.text.trim(),
         'items': _items,
         'notes': _notesController.text.trim(),
         'customerName': _customerController.text.trim(),
@@ -484,7 +438,6 @@ class _CommissioningFormScreenState extends State<CommissioningFormScreen> {
                     PremiumField(controller: _siteNameController, label: AppLocalizations.of(context)!.siteBuildingName, icon: Icons.location_on_outlined),
                     PremiumField(controller: _brandController, label: AppLocalizations.of(context)!.panelBrand, icon: Icons.memory_outlined),
                     PremiumField(controller: _modelController, label: AppLocalizations.of(context)!.panelModel, icon: Icons.tag_outlined),
-                    PremiumField(controller: _serialNumberController, label: 'Seri Numarası (opsiyonel)', icon: Icons.qr_code_2),
                     PremiumField(controller: _customerController, label: AppLocalizations.of(context)!.customerNameOptional, icon: Icons.person_outline, isLast: true),
                   ],
                 ),
@@ -512,11 +465,11 @@ class _CommissioningFormScreenState extends State<CommissioningFormScreen> {
                               value: progress,
                               strokeWidth: 5,
                               backgroundColor: const Color(0xFFEFF1F4),
-                              valueColor: AlwaysStoppedAnimation(progress == 1.0 ? AppColors.success : AppColors.brand),
+                              valueColor: AlwaysStoppedAnimation(progress == 1.0 ? Colors.green : AppColors.brand),
                             ),
                             Text(
                               '${(progress * 100).round()}%',
-                              style: TextStyle(color: progress == 1.0 ? AppColors.success : AppColors.navy, fontWeight: FontWeight.w800, fontSize: 13),
+                              style: TextStyle(color: progress == 1.0 ? Colors.green.shade700 : AppColors.navy, fontWeight: FontWeight.w800, fontSize: 13),
                             ),
                           ],
                         ),
@@ -548,9 +501,9 @@ class _CommissioningFormScreenState extends State<CommissioningFormScreen> {
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
                       decoration: BoxDecoration(
-                        color: checked ? AppColors.success.withValues(alpha: 0.06) : Colors.white,
+                        color: checked ? Colors.green.withValues(alpha: 0.06) : Colors.white,
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: checked ? AppColors.success.withValues(alpha: 0.25) : Colors.transparent, width: 1.2),
+                        border: Border.all(color: checked ? Colors.green.withValues(alpha: 0.25) : Colors.transparent, width: 1.2),
                         boxShadow: checked
                             ? []
                             : [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 8, offset: const Offset(0, 2))],
@@ -569,10 +522,10 @@ class _CommissioningFormScreenState extends State<CommissioningFormScreen> {
                                   width: 26,
                                   height: 26,
                                   decoration: BoxDecoration(
-                                    color: checked ? AppColors.success : Colors.white,
+                                    color: checked ? Colors.green.shade600 : Colors.white,
                                     shape: BoxShape.circle,
-                                    border: Border.all(color: checked ? AppColors.success : Colors.grey.shade300, width: 1.6),
-                                    boxShadow: checked ? [BoxShadow(color: AppColors.success.withValues(alpha: 0.35), blurRadius: 6)] : [],
+                                    border: Border.all(color: checked ? Colors.green.shade600 : Colors.grey.shade300, width: 1.6),
+                                    boxShadow: checked ? [BoxShadow(color: Colors.green.withValues(alpha: 0.35), blurRadius: 6)] : [],
                                   ),
                                   child: checked ? const Icon(Icons.check, size: 16, color: Colors.white) : null,
                                 ),
@@ -628,9 +581,9 @@ class _CommissioningFormScreenState extends State<CommissioningFormScreen> {
                         const SizedBox(height: 6),
                         Row(
                           children: [
-                            Icon(Icons.check_circle, size: 14, color: AppColors.success),
+                            Icon(Icons.check_circle, size: 14, color: Colors.green.shade600),
                             SizedBox(width: 4),
-                            Text(AppLocalizations.of(context)!.signatureAlreadySaved, style: TextStyle(fontSize: 11.5, color: AppColors.success)),
+                            Text(AppLocalizations.of(context)!.signatureAlreadySaved, style: TextStyle(fontSize: 11.5, color: Colors.green.shade700)),
                           ],
                         ),
                         SizedBox(height: 6),

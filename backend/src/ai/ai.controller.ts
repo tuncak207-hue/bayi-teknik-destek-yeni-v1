@@ -1,5 +1,4 @@
 import { Controller, Post, Get, Patch, Body, Param, Query, UseGuards, Req, UseInterceptors, UploadedFile, ForbiddenException, BadRequestException } from '@nestjs/common';
-import { Throttle } from '@nestjs/throttler';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard, Roles } from '../auth/guards/jwt-auth.guard';
@@ -10,7 +9,6 @@ import { ConversationsService } from '../chat/conversations.service';
 import { MessagesService } from '../chat/messages.service';
 import { ChatGateway } from '../chat/gateway/chat.gateway';
 import { PrismaService } from '../common/prisma/prisma.service';
-import { AuthenticatedRequest } from '../common/types/authenticated-request';
 
 @UseGuards(JwtAuthGuard)
 @Controller('ai')
@@ -30,12 +28,12 @@ export class AiController {
    * konuşması oluşturur. Eski konuşma değişmeden, kendi kaydında kalır.
    */
   @Post('conversations/new')
-  async createNewConversation(@Req() req: AuthenticatedRequest) {
+  async createNewConversation(@Req() req: any) {
     return this.conversations.createNewAiConversation(req.user.sub);
   }
 
   @Post('ask')
-  async ask(@Req() req: AuthenticatedRequest, @Body() dto: AskAiDto) {
+  async ask(@Req() req: any, @Body() dto: AskAiDto) {
     const conversationId =
       dto.conversationId ?? (await this.conversations.createAiConversation(req.user.sub)).id;
 
@@ -84,7 +82,6 @@ export class AiController {
     return { previousQuestion: lastUser.content, previousAnswer: lastAi.content };
   }
 
-  @Throttle({ default: { limit: 20, ttl: 60_000 } })
   @Post('ask-with-image')
   @UseInterceptors(
     FileInterceptor('image', {
@@ -96,7 +93,7 @@ export class AiController {
     }),
   )
   async askWithImage(
-    @Req() req: AuthenticatedRequest,
+    @Req() req: any,
     @Body() dto: AskAiDto,
     @UploadedFile() image: Express.Multer.File,
   ) {
@@ -150,7 +147,7 @@ export class AiController {
   // kullanıcı (JwtAuthGuard zaten sınıf seviyesinde uygulanıyor) bir
   // AI cevabını "doğru" olarak işaretleyebilir.
   @Patch('technical-memory/:id/verify')
-  verifyMemory(@Req() req: AuthenticatedRequest, @Param('id') id: string) {
+  verifyMemory(@Req() req: any, @Param('id') id: string) {
     return this.technicalMemory.verify(id, req.user.sub);
   }
 
@@ -166,14 +163,5 @@ export class AiController {
   @Patch('technical-memory/:id/active')
   setMemoryActive(@Param('id') id: string, @Body() body: { isActive: boolean }) {
     return this.technicalMemory.setActive(id, body.isActive);
-  }
-
-  // Kullanıcı isteği: "Çok Dilli Anlık Çeviri (Sohbet İçi)" — ayrı bir
-  // çeviri servisi/API anahtarı eklemek yerine, zaten kullandığımız AI
-  // sağlayıcıyı ("bu metni X diline çevir" promptuyla) kullanıyoruz.
-  @Throttle({ default: { limit: 30, ttl: 60_000 } })
-  @Post('translate')
-  translate(@Body() body: { text: string; targetLanguage: string }) {
-    return this.aiService.translate(body.text, body.targetLanguage);
   }
 }
