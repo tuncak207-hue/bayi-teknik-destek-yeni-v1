@@ -1,0 +1,1118 @@
+// Bayi Teknik Destek - Prisma Schema
+// Postgres + pgvector extension required.
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  // Runtime: transaction pooler (6543); migrations: session pooler (5432).
+  url        = env("DATABASE_URL")
+  directUrl  = env("DIRECT_URL")
+  extensions = [vector]
+}
+
+// ---------- ENUMS ----------
+
+enum UserRole {
+  DEALER
+  ADMIN
+  SALES // Satış danışmanı — bayiler kendisine doğrudan soru sorabilir
+  ENGINEER // Mühendis — teknik destek kayıtlarına atanabilen, saha operasyonu yürüten rol
+}
+
+enum UserStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+  DELETED
+}
+
+enum DocumentStatus {
+  PROCESSING
+  READY
+  ERROR
+}
+
+enum ConversationType {
+  AI
+  DIRECT
+  GROUP
+}
+
+enum MessageSender {
+  USER
+  AI
+}
+
+enum ConfidenceLevel {
+  HIGH // dokümandan doğrulanmış
+  LOW  // genel bilgi / doğrulanmamış
+}
+
+enum MessageFeedback {
+  UP
+  DOWN
+}
+
+// ---------- USERS ----------
+
+model User {
+  id            String     @id @default(uuid())
+  firstName     String
+  lastName      String
+  company       String
+  phone         String
+  email         String     @unique
+  passwordHash  String
+  avatarUrl     String?
+  role          UserRole   @default(DEALER)
+  status        UserStatus @default(PENDING)
+  language      String     @default("tr")
+  darkMode      Boolean    @default(false)
+  notificationsEnabled Boolean @default(true)
+  // Bildirim tercihleri: hangi türde bildirimin push olarak gönderileceği
+  // (örn. {"new_message": true, "announcement": false, ...}). Boş/eksikse
+  // tüm türler varsayılan olarak açık kabul edilir.
+  notificationPreferences Json @default("{}")
+  // Sessiz saatler (Do Not Disturb): bu aralıkta push gönderilmez, ama
+  // uygulama içi bildirim kaydı yine oluşturulur.
+  quietHoursEnabled Boolean @default(false)
+  quietHoursStart   String? // "HH:mm" formatında, örn. "22:00"
+  quietHoursEnd     String? // "HH:mm" formatında, örn. "07:00"
+  fcmTokens     String[]   @default([])
+  chatBannedUntil DateTime? // Doluysa, bu tarihe kadar kullanıcı mesaj gönderemez (admin tarafından süreli konuşma yasağı)
+  // Çoklu kullanıcılı bayi hesabı: bu dolu ise bu kullanıcı, başka bir
+  // "ana" hesabın (firma sahibinin) alt kullanıcısıdır — firma adını ve
+  // bazı yetkileri ana hesaptan devralır. Boşsa bu, bağımsız/ana bir hesaptır.
+  parentUserId  String?
+  // Profil uzmanlık etiketleri — örn. ["Yangın Alarm", "Honeywell"].
+  // Bayiler listesinde ve aramada kimin hangi konuda deneyimli olduğunu
+  // göstermek için.
+  specialtyTags String[] @default([])
+  lastLoginAt   DateTime? // Pasif bayi tespiti için — her başarılı girişte güncellenir
+  // Kayıt sırasında kabul edilen hukuki metinlerin izlenebilir onay kayıtları.
+  kvkkAcceptedAt         DateTime?
+  kvkkConsentVersion     String?
+  privacyAcceptedAt      DateTime?
+  privacyConsentVersion  String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  parentUser   User?  @relation("TeamMembers", fields: [parentUserId], references: [id], onDelete: SetNull)
+  teamMembers  User[] @relation("TeamMembers")
+
+  conversations       ConversationParticipant[]
+  messages             Message[]
+  favorites             Favorite[]
+  messageReactions      MessageReaction[]
+  documentNotes         DocumentNote[]
+  maintenanceRecords    MaintenanceRecord[]
+  certifications        Certification[]
+  bomLists              BomList[]
+  walletDocuments       WalletDocument[]
+  ticketsCreated        SupportTicket[]  @relation("TicketDealer")
+  ticketsAssigned       SupportTicket[]  @relation("TicketEngineer")
+  sparePartRequests     SparePartRequest[]
+  knowledgeEntries      KnowledgeEntry[]
+  quoteRequests         QuoteRequest[]
+  auditLogs             AuditLog[]
+  visitsAsSalesperson   DealerVisit[]      @relation("SalespersonVisits")
+  visitsAsDealer        DealerVisit[]      @relation("DealerVisitsReceived")
+  verifiedAnswers       TechnicalAnswerMemory[]
+  communityPosts        CommunityPost[]
+  communityComments     CommunityComment[]
+  notifications         Notification[]
+  groupMemberships      GroupMember[]
+  blockedByMe            Block[] @relation("BlockedBy")
+  blockedMe               Block[] @relation("BlockedUser")
+  appointments            Appointment[]
+  announcementAcknowledgements AnnouncementAcknowledgement[]
+  commissioningReports    CommissioningReport[]
+  trainingCompletions     TrainingCompletion[]
+
+  @@map("users")
+}
+
+model Block {
+  id          String   @id @default(uuid())
+  blockerId   String
+  blockedId   String
+  createdAt   DateTime @default(now())
+
+  blocker User @relation("BlockedBy", fields: [blockerId], references: [id])
+  blocked User @relation("BlockedUser", fields: [blockedId], references: [id])
+
+  @@unique([blockerId, blockedId])
+  @@map("blocks")
+}
+
+// ---------- HOME SLAYTLARI (dönen tanıtım slaytları) ----------
+// Kullanıcı isteği: "uygulama açılırken ekranda slayt dönsün, bu
+// slaytları sürekli değiştirebilir durumda olayım." Admin panelden
+// yönetilen, mobilde otomatik dönen bir tanıtım/duyuru slayt bandı.
+model Slide {
+  id        String   @id @default(uuid())
+  imageUrl  String
+  // Kullanıcı isteği: "slayt video olarak da dönebilsin" — dosyanın
+  // görsel mi video mu olduğunu belirtir, mobil buna göre Image ya da
+  // VideoPlayer widget'ı kullanır. Geriye dönük uyumluluk için varsayılan
+  // "IMAGE" — önceden yüklenmiş tüm slaytlar otomatik görsel kalır.
+  mediaType String   @default("IMAGE") // "IMAGE" | "VIDEO"
+  title     String?
+  subtitle  String?
+  linkUrl   String? // dokunulunca açılacak isteğe bağlı bir bağlantı (örn. bir doküman ya da dış URL)
+  order     Int      @default(0) // gösterim sırası, küçükten büyüğe
+  isActive  Boolean  @default(true) // kapalıysa mobilde gösterilmez ama silinmez
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("slides")
+}
+
+// ---------- DOCUMENTS ----------
+
+model Document {
+  id          String         @id @default(uuid())
+  brand       String
+  model       String
+  title       String
+  status      DocumentStatus @default(PROCESSING)
+  fileUrl     String
+  fileType    String
+  errorMessage String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  versions DocumentVersion[]
+
+  @@index([brand, model])
+  @@map("documents")
+}
+
+model DocumentVersion {
+  id          String   @id @default(uuid())
+  documentId  String
+  version     String
+  isCurrent   Boolean  @default(true)
+  fileUrl     String
+  pageCount   Int?
+  createdAt   DateTime @default(now())
+
+  document Document        @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  chunks   DocumentChunk[]
+
+  @@map("document_versions")
+}
+
+// One row per extracted chunk of text, with its own vector embedding (pgvector).
+model DocumentChunk {
+  id                String   @id @default(uuid())
+  documentVersionId String
+  page              Int
+  chunkIndex        Int
+  content           String
+  // pgvector kolonu - manual/002_fix_vector_dimension.sql ile 1024 boyuta ayarlanır.
+  // 1024 = Voyage AI "voyage-3" modelinin çıktı boyutu. Farklı bir embedding
+  // modeli kullanırsanız (örn. OpenAI text-embedding-3-small = 1536 boyut) bu
+  // sayıyı ve manual SQL dosyasını buna göre güncelleyin.
+  embedding         Unsupported("vector(1024)")?
+  createdAt         DateTime @default(now())
+
+  documentVersion DocumentVersion @relation(fields: [documentVersionId], references: [id], onDelete: Cascade)
+  citations       MessageCitation[]
+
+  @@index([documentVersionId, page])
+  @@map("document_chunks")
+}
+
+// ---------- CONVERSATIONS / CHAT ----------
+
+model Conversation {
+  id        String           @id @default(uuid())
+  type      ConversationType
+  title     String? // e.g. group name; null for AI/direct
+  groupId   String?          @unique
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  group        Group?                     @relation(fields: [groupId], references: [id])
+  participants ConversationParticipant[]
+  messages     Message[]
+
+  @@map("conversations")
+}
+
+model ConversationParticipant {
+  id             String   @id @default(uuid())
+  conversationId String
+  userId         String
+  lastReadAt     DateTime?
+  // WhatsApp tarzı "sohbeti sil": geçmişi yok etmeden, sadece bu
+  // kullanıcının Mesajlar listesinden gizler. Karşı taraf yeniden mesaj
+  // gönderirse (ya da ben tekrar mesajlaşmaya başlarsam) otomatik olarak
+  // tekrar görünür hale gelir.
+  hiddenAt       DateTime?
+  // Kullanıcı isteği: "mesajlara arşivleme ekle" — sohbet silinmez,
+  // ana listeden çıkıp Arşiv bölümüne taşınır. Karşı taraf yeni mesaj
+  // gönderirse otomatik olarak ana listeye geri döner (hiddenAt ile
+  // aynı mantık).
+  archivedAt     DateTime?
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([conversationId, userId])
+  @@map("conversation_participants")
+}
+
+model Message {
+  id             String        @id @default(uuid())
+  conversationId String
+  senderId       String? // null when senderType = AI
+  senderType     MessageSender @default(USER)
+  content        String
+  attachmentUrl  String?
+  attachmentType String? // image | pdf | audio | file
+  replyToId      String?
+  confidence     ConfidenceLevel?
+  feedback       MessageFeedback? // bayinin AI cevabına verdiği 👍/👎
+  // Kullanıcı isteği: "doğrulama sürekli kalmalı" — bu AI mesajının
+  // hangi Teknik Hafıza kaydına bağlı olduğunu KALICI olarak saklıyoruz.
+  // Böylece uygulama kapatılıp açılsa, konuşma yeniden yüklense bile
+  // doğrulama ikonu ve durumu doğru şekilde gösterilebiliyor.
+  technicalMemoryId String?
+  createdAt      DateTime      @default(now())
+  editedAt       DateTime? // Mesaj düzenlendiyse dolu — mobilde "(düzenlendi)" göstermek için
+
+  conversation Conversation      @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User?             @relation(fields: [senderId], references: [id])
+  replyTo      Message?          @relation("Reply", fields: [replyToId], references: [id])
+  replies      Message[]         @relation("Reply")
+  citations    MessageCitation[]
+  reactions    MessageReaction[]
+  favorites    Favorite[]
+  hiddenFor    MessageHiddenFor[]
+
+  @@index([conversationId, createdAt])
+  @@map("messages")
+}
+
+// Bir kullanıcının, kendi göndermediği (karşı tarafın gönderdiği) bir
+// mesajı "benim için sil" yaparak kendi görünümünden gizlemesi —
+// mesaj karşı tarafta silinmez, sadece bu kullanıcıya gösterilmez.
+model MessageHiddenFor {
+  id        String   @id @default(uuid())
+  messageId String
+  userId    String
+  createdAt DateTime @default(now())
+
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@unique([messageId, userId])
+  @@map("message_hidden_for")
+}
+
+// Links an AI message to the exact document chunks it cited (source display + click-through).
+model MessageCitation {
+  id              String @id @default(uuid())
+  messageId       String
+  documentChunkId String
+  page            Int
+
+  message       Message       @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  // ÖNEMLİ DÜZELTME: Önceden bu ilişkide bir silme kuralı yoktu (varsayılan
+  // RESTRICT) — bir dokümanı silmeye çalıştığınızda, o dokümandan alıntı
+  // yapılmış eski bir AI mesajı varsa silme işlemi "Foreign key constraint
+  // violated" hatasıyla başarısız oluyordu. Artık doküman/chunk silinince
+  // eski alıntı kaydı da otomatik silinir (mesajın kendisi silinmez, sadece
+  // o mesajdaki kaynak gösterimi kaybolur).
+  documentChunk DocumentChunk @relation(fields: [documentChunkId], references: [id], onDelete: Cascade)
+
+  @@map("message_citations")
+}
+
+// ---------- GROUPS ----------
+
+model Group {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+
+  conversation Conversation?
+  members      GroupMember[]
+
+  @@map("groups")
+}
+
+model GroupMember {
+  id       String   @id @default(uuid())
+  groupId  String
+  userId   String
+  joinedAt DateTime @default(now())
+
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId])
+  @@map("group_members")
+}
+
+// ---------- COMMUNITY ("Bayilere Sor") ----------
+
+model CommunityPost {
+  id        String   @id @default(uuid())
+  authorId  String
+  title     String
+  body      String
+  tag       String? // e.g. product/brand tag
+  createdAt DateTime @default(now())
+
+  author   User               @relation(fields: [authorId], references: [id])
+  comments CommunityComment[]
+
+  @@map("community_posts")
+}
+
+model CommunityComment {
+  id        String   @id @default(uuid())
+  postId    String
+  authorId  String
+  body      String
+  isAI      Boolean  @default(false) // AI-assisted answer, still labeled "Bayi deneyimi" context
+  createdAt DateTime @default(now())
+
+  post   CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author User          @relation(fields: [authorId], references: [id])
+
+  @@map("community_comments")
+}
+
+// ---------- MISC ----------
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String // new_message | group_message | reply | announcement | account_approved | new_document
+  title     String
+  body      String
+  data      Json?
+  readAt    DateTime?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+model Favorite {
+  id         String   @id @default(uuid())
+  userId     String
+  messageId  String?
+  documentId String?
+  pinned     Boolean  @default(false) // Ana Sayfa'da sabitlenmiş favoriler bölümünde göstermek için
+  createdAt  DateTime @default(now())
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  message Message? @relation(fields: [messageId], references: [id])
+
+  @@map("favorites")
+}
+
+model MessageReaction {
+  id        String   @id @default(uuid())
+  messageId String
+  userId    String
+  emoji     String
+  createdAt DateTime @default(now())
+
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([messageId, userId]) // bir kullanıcı bir mesaja tek tepki bırakabilir (değiştirebilir)
+  @@map("message_reactions")
+}
+
+model DocumentNote {
+  id         String   @id @default(uuid())
+  documentId String
+  userId     String
+  content    String
+  createdAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("document_notes")
+}
+
+model MaintenanceRecord {
+  id                  String    @id @default(uuid())
+  createdByUserId     String
+  siteName            String // Bina/tesis adı (serbest metin)
+  systemDescription   String? // Kurulu sistemin kısa açıklaması
+  notes               String
+  signatureUrl        String? // Müşteri imzası (R2'de saklanan görsel anahtarı)
+  performedAt         DateTime  @default(now())
+  createdAt           DateTime  @default(now())
+
+  createdBy User @relation(fields: [createdByUserId], references: [id], onDelete: Cascade)
+
+  @@map("maintenance_records")
+}
+
+enum TrainingContentType {
+  VIDEO
+  DOCUMENT
+}
+
+enum WalletDocumentCategory {
+  ISG
+  CERTIFICATE
+  TRAINING
+  AUTHORIZATION
+  OTHER
+}
+
+model WalletDocument {
+  id        String                 @id @default(uuid())
+  userId    String
+  name      String
+  category  WalletDocumentCategory @default(OTHER)
+  fileUrl   String // R2 depolama anahtarı
+  createdAt DateTime               @default(now())
+  updatedAt DateTime               @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, category])
+  @@map("wallet_documents")
+}
+
+model TrainingContent {
+  id          String              @id @default(uuid())
+  title       String
+  description String?
+  type        TrainingContentType
+  category    String? // Örn. "Yangın Alarm", "Kamera Sistemleri" — düzenli listelemek için
+  // Yüklenen bir dosyaysa R2 depolama anahtarı, harici bir video/kaynaksa
+  // tam https URL'i — hangisi olduğu 'http' ile başlayıp başlamamasına göre ayırt edilir.
+  fileUrl     String
+  createdAt   DateTime            @default(now())
+
+  // Kullanıcı isteği: "eğitimi tamamlamak için 1 gün verelim, geri
+  // sayaç işlesin, izleyen kişi tamamladım desin, süre biterse
+  // tamamlanmadı bilgisi düşsün, admin kim izledi kim izlemedi bilsin."
+  // Admin, eğitim eklerken bunu isteğe bağlı açabiliyor — her eğitim
+  // için zorunlu değil.
+  requiresCompletion Boolean @default(false)
+  deadlineHours      Int     @default(24) // tamamlama için verilen süre (saat)
+
+  completions TrainingCompletion[]
+
+  @@map("training_contents")
+}
+
+/// Bir kullanıcının belirli bir eğitim içeriğini "tamamladım" olarak
+/// işaretlediği kaydı tutar. Süresi geçmiş ama bu kayıt hiç oluşmamışsa
+/// (kullanıcı hiç tıklamadıysa) durum "tamamlanmadı" olarak hesaplanır —
+/// bunun için ayrı bir alan/iş (cron) gerekmez, deadline'a göre anlık
+/// hesaplanır (bkz. training.service.ts).
+model TrainingCompletion {
+  id          String   @id @default(uuid())
+  trainingId  String
+  training    TrainingContent @relation(fields: [trainingId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  completedAt DateTime @default(now())
+
+  @@unique([trainingId, userId])
+  @@map("training_completions")
+}
+
+model BomList {
+  id          String   @id @default(uuid())
+  userId      String
+  title       String
+  description String?
+  // Proje adresi — il/ilçe olarak ayrı tutuluyor (kullanıcı isteği).
+  province    String?
+  district    String?
+  // [{ name: string, quantity: string, unit: string }]
+  items       Json
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("bom_lists")
+}
+
+model Certification {
+  id            String    @id @default(uuid())
+  userId        String
+  brand         String // Örn. "Honeywell", "Hanwha"
+  title         String // Örn. "Yetkili Servis Sertifikası"
+  issuedAt      DateTime?
+  expiresAt     DateTime?
+  documentUrl   String? // Sertifikanın fotoğrafı/taraması (R2'de saklanan anahtar)
+  // Süre yaklaşınca (30 gün kala) bir kez bildirim gönderildiğinde işaretlenir
+  // — aynı uyarının her gün tekrar tekrar gönderilmesini önler.
+  expiryNotifiedAt DateTime?
+  createdAt     DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("certifications")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  adminId    String
+  action     String // örn. "dealer_approved", "document_deleted", "announcement_created"
+  targetType String? // örn. "user", "document", "announcement"
+  targetId   String?
+  detail     String?
+  createdAt  DateTime @default(now())
+
+  admin User @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@map("audit_logs")
+}
+
+model Announcement {
+  id         String   @id @default(uuid())
+  title      String
+  body       String
+  isCritical Boolean  @default(false) // true ise bayi uygulamayı açtığında zorunlu onay ekranı gösterilir
+  createdAt  DateTime @default(now())
+
+  acknowledgements AnnouncementAcknowledgement[]
+
+  @@map("announcements")
+}
+
+model AnnouncementAcknowledgement {
+  id             String   @id @default(uuid())
+  announcementId String
+  userId         String
+  acknowledgedAt DateTime @default(now())
+  // Kullanıcı bu duyuruyu kendi listesinden kaldırdıysa (sildiyse) true —
+  // duyurunun kendisi silinmez, sadece bu kullanıcının görünümünden çıkar.
+  dismissed      Boolean  @default(false)
+  // Kullanıcı isteği: en güncel duyuru kartta belirgin (öne çıkan)
+  // gösterilsin, tıklayınca belirginlik gitsin — bu alan "ne zaman
+  // okundu" bilgisini tutuyor, null ise henüz okunmamış demektir.
+  readAt         DateTime?
+
+  announcement Announcement @relation(fields: [announcementId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([announcementId, userId])
+  @@map("announcement_acknowledgements")
+}
+
+enum AppointmentStatus {
+  PENDING   // bayi talep etti, admin henüz cevap vermedi
+  CONFIRMED // admin onayladı
+  CANCELLED // admin veya bayi iptal etti
+  COMPLETED // randevu gerçekleşti
+}
+
+enum AppointmentType {
+  ON_SITE // sahada ziyaret
+  REMOTE  // telefon/görüntülü destek
+}
+
+model Appointment {
+  id             String            @id @default(uuid())
+  dealerId       String
+  type           AppointmentType   @default(REMOTE)
+  subject        String
+  description    String?
+  province       String?
+  district       String?
+  preferredStart DateTime
+  preferredEnd   DateTime?
+  status         AppointmentStatus @default(PENDING)
+  adminNote      String? // admin'in onay/red/reschedule notu
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  dealer User @relation(fields: [dealerId], references: [id], onDelete: Cascade)
+
+  @@index([dealerId, status])
+  @@map("appointments")
+}
+
+model CommissioningReport {
+  id                String   @id @default(uuid())
+  dealerId          String
+  siteName          String
+  panelBrand        String
+  panelModel        String
+  items             Json     // [{ label: string, checked: boolean }]
+  notes             String?
+  // Müşteri bilgileri — PDF'te eksiksiz görünmesi için (isim + imza).
+  customerName      String?
+  signatureUrl       String? // Müşteri imzası (R2'de saklanan görsel anahtarı)
+  completedAt       DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  dealer User @relation(fields: [dealerId], references: [id], onDelete: Cascade)
+
+  @@index([dealerId, createdAt])
+  @@map("commissioning_reports")
+}
+
+// ============================================================
+// TEKNİK DESTEK MODÜLÜ (Faz 1) — tamamen yeni, mevcut hiçbir
+// modele/tabloya dokunmadan eklenmiştir.
+// ============================================================
+
+enum TicketPriority {
+  LOW
+  NORMAL
+  HIGH
+  EMERGENCY
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+  ESCALATED
+}
+
+model SupportTicket {
+  id                 String         @id @default(uuid())
+  dealerId           String
+  assignedEngineerId String?
+  productName        String?
+  productModel       String?
+  serialNumber       String?
+  location           String?
+  description        String
+  priority           TicketPriority @default(NORMAL)
+  status             TicketStatus   @default(OPEN)
+  // Acil moddan/kayıt sırasında eklenen fotoğraf-video (R2 anahtarları, JSON dizi).
+  attachmentUrls     Json?
+  isEmergency        Boolean        @default(false)
+  // --- SLA & Eskalasyon (Faz 2) ---
+  slaResponseMinutes   Int?
+  slaResolutionMinutes Int?
+  firstRespondedAt     DateTime?
+  escalationLevel      Int          @default(0)
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+
+  dealer           User  @relation("TicketDealer", fields: [dealerId], references: [id], onDelete: Cascade)
+  assignedEngineer User? @relation("TicketEngineer", fields: [assignedEngineerId], references: [id], onDelete: SetNull)
+  escalations      TicketEscalation[]
+  photos           TicketPhoto[]
+  measurements     TicketMeasurement[]
+  sparePartRequests SparePartRequest[]
+  costs             TicketCost[]
+
+  @@index([dealerId, createdAt])
+  @@index([status, priority])
+  @@map("support_tickets")
+}
+
+/// Her eskalasyonun kalıcı geçmişi (kullanıcı isteği: "her eskalasyon
+/// kayıt geçmişinde tutulmalı").
+model TicketEscalation {
+  id        String   @id @default(uuid())
+  ticketId  String
+  level     Int
+  reason    String
+  createdAt DateTime @default(now())
+
+  ticket SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@map("ticket_escalations")
+}
+
+/// Öncelik bazında SLA süreleri — admin panelden ayarlanabilir
+/// (kullanıcı isteği: "eskalasyon seviyeleri admin tarafından
+/// ayarlanabilsin"). Tanımlı değilse mantıklı varsayılanlar kullanılır.
+model SlaSetting {
+  id                String         @id @default(uuid())
+  priority          TicketPriority @unique
+  responseMinutes   Int
+  resolutionMinutes Int
+
+  @@map("sla_settings")
+}
+
+// ============================================================
+// FAZ 3: Önce/Sonra Fotoğraf + Teknik Ölçüm Sistemi
+// ============================================================
+
+enum TicketPhotoType {
+  BEFORE
+  AFTER
+}
+
+model TicketPhoto {
+  id        String          @id @default(uuid())
+  ticketId  String
+  type      TicketPhotoType
+  url       String
+  createdAt DateTime        @default(now())
+
+  ticket SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+  @@map("ticket_photos")
+}
+
+/// Admin tarafından tanımlanan ölçüm türleri (kullanıcı isteği: "ölçüm
+/// türleri admin tarafından tanımlanabilsin").
+model MeasurementType {
+  id        String   @id @default(uuid())
+  name      String
+  unit      String
+  minValue  Float?
+  maxValue  Float?
+  createdAt DateTime @default(now())
+
+  measurements TicketMeasurement[]
+
+  @@map("measurement_types")
+}
+
+model TicketMeasurement {
+  id                String   @id @default(uuid())
+  ticketId          String
+  measurementTypeId String
+  // Ölçümün hangi ürün/seri numarasına ait olduğu — geçmişi ürün/seri
+  // bazında görebilmek için ticket'tan bağımsız da sorgulanabilsin diye
+  // burada da (denormalize) tutuluyor.
+  serialNumber      String?
+  value             Float
+  isOutOfRange      Boolean  @default(false)
+  createdAt         DateTime @default(now())
+
+  ticket          SupportTicket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  measurementType MeasurementType @relation(fields: [measurementTypeId], references: [id])
+
+  @@index([ticketId])
+  @@index([serialNumber])
+  @@map("ticket_measurements")
+}
+
+// ============================================================
+// FAZ 4: Yedek Parça Talebi + Maliyet Analizi
+// ============================================================
+
+enum SparePartStatus {
+  REQUESTED
+  APPROVED
+  ORDERED
+  DELIVERED
+  REJECTED
+}
+
+/// Kullanıcı isteği: "ürün, model, seri numarası, parça kodu, miktar ve
+/// arıza kaydı otomatik aktarılsın, kullanıcı aynı bilgileri tekrar
+/// girmek zorunda kalmasın" — ürün/model/seri no burada tekrar
+/// TUTULMUYOR, ilişkili SupportTicket'tan okunuyor.
+model SparePartRequest {
+  id            String          @id @default(uuid())
+  ticketId      String
+  partCode      String?
+  partName      String
+  quantity      Int             @default(1)
+  status        SparePartStatus @default(REQUESTED)
+  requestedById String
+  createdAt     DateTime        @default(now())
+
+  ticket      SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  requestedBy User          @relation(fields: [requestedById], references: [id])
+
+  @@index([ticketId])
+  @@map("spare_part_requests")
+}
+
+enum TicketCostCategory {
+  ENGINEER_TIME
+  SITE_VISIT
+  TRAVEL
+  ACCOMMODATION
+  SPARE_PART
+  LABOR
+}
+
+model TicketCost {
+  id          String             @id @default(uuid())
+  ticketId    String
+  category    TicketCostCategory
+  description String?
+  amount      Float
+  createdAt   DateTime           @default(now())
+
+  ticket SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+  @@map("ticket_costs")
+}
+
+// ============================================================
+// FAZ 5: Kişiselleştirilmiş Bildirim + Akıllı Eğitim Önerisi
+// ============================================================
+
+/// Aynı bayiye aynı ürün için tekrar tekrar eğitim önerisi gitmesini
+/// önlemek için — bir öneri gönderildiğinde burada işaretlenir.
+model TrainingSuggestionLog {
+  id          String   @id @default(uuid())
+  dealerId    String
+  productName String
+  suggestedAt DateTime @default(now())
+
+  @@unique([dealerId, productName])
+  @@map("training_suggestion_logs")
+}
+
+// ============================================================
+// FAZ 8: Teknik Bilgi Hafızası — mühendislerin saha tecrübesi girişi,
+// AI'ın gelecekte benzer sorularda kullanabilmesi için embed edilir.
+// ============================================================
+
+model KnowledgeEntry {
+  id           String   @id @default(uuid())
+  engineerId   String
+  problem      String
+  solution     String
+  productName  String?
+  productModel String?
+  errorCode    String?
+  partUsed     String?
+  photoUrl     String?
+  description  String?
+  embedding    Unsupported("vector(1024)")?
+  createdAt    DateTime @default(now())
+
+  engineer User @relation(fields: [engineerId], references: [id], onDelete: Cascade)
+
+  @@index([productName])
+  @@map("knowledge_entries")
+}
+
+// ============================================================
+// TEKLİF AL MODÜLÜ — yeni, mevcut hiçbir modele dokunmadan eklenmiştir.
+// ============================================================
+
+/// Admin tarafından yönetilen fiyat/malzeme kataloğu — teklif
+/// hesaplamalarının kaynağı.
+model PriceListItem {
+  id        String   @id @default(uuid())
+  name      String
+  category  String?
+  brand     String?
+  code      String?
+  unit      String
+  unitPrice Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("price_list_items")
+}
+
+/// Admin'in yüklediği referans fiyat listesi PDF'i — tek satırlık
+/// (singleton), her yüklemede üzerine yazılır.
+model PriceListDocument {
+  id        Int      @id @default(1)
+  fileUrl   String?
+  updatedAt DateTime @updatedAt
+
+  @@map("price_list_document")
+}
+
+enum QuoteStatus {
+  DRAFT
+  SENT
+  ACCEPTED
+  REJECTED
+}
+
+model QuoteRequest {
+  id            String      @id @default(uuid())
+  dealerId      String
+  customerName  String?
+  customerPhone String?
+  title         String
+  province      String?
+  district      String?
+  // [{ name, unit, quantity, unitPrice, subtotal }]
+  items         Json
+  totalAmount   Float
+  status        QuoteStatus @default(DRAFT)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  dealer User @relation(fields: [dealerId], references: [id], onDelete: Cascade)
+
+  @@index([dealerId, createdAt])
+  @@map("quote_requests")
+}
+
+// ============================================================
+// BAYİ ZİYARETLERİ — Satış ekibinin saha ziyaret takip modülü
+// ============================================================
+
+enum VisitType {
+  DEALER_VISIT // Bayi ziyareti
+  PROJECT_MEETING // Proje görüşmesi
+  PRODUCT_INTRO // Ürün tanıtımı
+  TECHNICAL_MEETING // Teknik görüşme
+  QUOTE_MEETING // Teklif görüşmesi
+  TRAINING // Eğitim
+  COLLECTION // Tahsilat / ticari görüşme
+  OTHER
+}
+
+enum VisitTopic {
+  NEW_PROJECT
+  EXISTING_PROJECT
+  PRODUCT_REQUEST
+  PRICE_QUOTE
+  TECHNICAL_SUPPORT
+  NEW_PRODUCT_INTRO
+  TRAINING
+  BUSINESS_DEVELOPMENT
+  GENERAL
+  OTHER
+}
+
+enum VisitOutcome {
+  POSITIVE // Olumlu
+  QUOTE_PENDING // Teklif bekliyor
+  PROJECT_CREATED // Proje oluştu
+  ORDER_PENDING // Sipariş bekleniyor
+  FOLLOW_UP_NEEDED // Takip gerekli
+  NEGATIVE // Olumsuz
+  NOT_HAPPENED // Görüşme gerçekleşmedi
+  OTHER
+}
+
+enum ProjectType {
+  HOTEL
+  HOSPITAL
+  MALL
+  FACTORY
+  SCHOOL
+  RESIDENTIAL
+  GOVERNMENT
+  OFFICE
+  OTHER
+}
+
+model DealerVisit {
+  id            String    @id @default(uuid())
+  salespersonId String
+  dealerId      String?
+  dealerNameFreeText String? // bayi henüz sistemde kayıtlı değilse serbest metin
+  city          String?
+  visitDate     DateTime
+  visitType     VisitType
+
+  // Görüşme bilgileri
+  contactName  String?
+  contactTitle String?
+  contactPhone String?
+  contactEmail String?
+  topic        VisitTopic?
+
+  outcome VisitOutcome
+  notes   String // Görüşme notları — zorunlu
+
+  // Proje / Fırsat bilgisi (opsiyonel)
+  hasProject          Boolean     @default(false)
+  projectName          String?
+  projectType          ProjectType?
+  estimatedAmount      Float?
+  estimatedOrderDate   DateTime?
+  relatedProducts      String?
+  competitorBrand      String?
+  winProbability       Int? // 25/50/75/90/100
+  projectDescription   String?
+
+  // Takip / Aksiyon
+  needsFollowUp    Boolean   @default(false)
+  followUpDate     DateTime?
+  followUpAction   String?
+  followUpOwner    String?
+  followUpNote     String?
+  followUpDone     Boolean   @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  salesperson User               @relation("SalespersonVisits", fields: [salespersonId], references: [id], onDelete: Cascade)
+  dealer      User?              @relation("DealerVisitsReceived", fields: [dealerId], references: [id], onDelete: SetNull)
+  attachments DealerVisitFile[]
+
+  @@index([salespersonId, visitDate])
+  @@index([dealerId, visitDate])
+  @@index([needsFollowUp, followUpDate])
+  @@map("dealer_visits")
+}
+
+model DealerVisitFile {
+  id        String   @id @default(uuid())
+  visitId   String
+  fileName  String
+  fileKey   String // R2 depolama anahtarı
+  mimeType  String
+  createdAt DateTime @default(now())
+
+  visit DealerVisit @relation(fields: [visitId], references: [id], onDelete: Cascade)
+
+  @@map("dealer_visit_files")
+}
+
+// ============================================================
+// AI TEKNİK SORU HAFIZASI — semantik cevap önbellekleme katmanı
+// ============================================================
+
+model TechnicalAnswerMemory {
+  id             String   @id @default(uuid())
+  question       String // orijinal soru metni
+  answerMarkdown String
+  embedding      Unsupported("vector(1024)")?
+
+  // Ürün/model kontrolü — kullanıcı isteği: "Cevap başka bir cihaz/model
+  // için oluşturulduysa doğrudan kullanılmamalı."
+  productName   String?
+  productModel  String?
+  productSeries String?
+
+  // Bu cevabı oluştururken kullanılan kaynaklar (RAG chunk'ları) —
+  // "Kaynakları Gör" butonu için.
+  citations Json?
+
+  // Güvenlik ve doğruluk
+  verifiedByEngineerId String?
+  lastVerifiedAt        DateTime?
+  // Bir doküman güncellendiğinde ilgili kayıtlar bu bayrakla işaretlenir
+  // — kullanıcı isteği: "eski cevaplar otomatik olarak 'yeniden
+  // doğrulama gerekli' durumuna alınmalı."
+  needsReverification Boolean @default(false)
+  isActive            Boolean @default(true)
+  usageCount          Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  verifiedByEngineer User? @relation(fields: [verifiedByEngineerId], references: [id], onDelete: SetNull)
+
+  @@index([productName, productModel])
+  @@index([isActive])
+  @@map("technical_answer_memory")
+}
