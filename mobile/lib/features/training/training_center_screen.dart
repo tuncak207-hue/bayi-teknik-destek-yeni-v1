@@ -301,11 +301,20 @@ class _VideoPlayerScreenState extends State<_VideoPlayerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(backgroundColor: Colors.black, foregroundColor: Colors.white, title: Text(widget.title)),
+      // Kullanıcı isteği: "arka fon uygulamanın arka fonu olmalı, simsiyah
+      // olmamalı, video adı ve geri ok işareti belirgin olmalı" — önceden
+      // tamamen siyah + beyaz yazıydı, artık uygulamanın kendi (açık) fon
+      // rengiyle, koyu/belirgin yazı ve ikonlarla gösteriliyor.
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        backgroundColor: AppColors.background,
+        foregroundColor: AppColors.navy,
+        elevation: 0,
+        title: Text(widget.title, style: const TextStyle(color: AppColors.navy, fontWeight: FontWeight.w700)),
+      ),
       body: Center(
         child: _error != null
-            ? Text(_error!, style: const TextStyle(color: Colors.white))
+            ? Text(_error!, style: const TextStyle(color: AppColors.navy))
             : _initialized
                 ? AspectRatio(
                     aspectRatio: _controller.value.aspectRatio,
@@ -317,7 +326,7 @@ class _VideoPlayerScreenState extends State<_VideoPlayerScreen> {
                       ],
                     ),
                   )
-                : const CircularProgressIndicator(color: Colors.white),
+                : const CircularProgressIndicator(color: AppColors.brand),
       ),
       floatingActionButton: _initialized
           ? FloatingActionButton(
