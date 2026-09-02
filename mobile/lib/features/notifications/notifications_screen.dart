@@ -204,12 +204,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Expanded(
-                  child: Text(
-                    'Bildirimler',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: AppColors.navy, letterSpacing: -0.6, height: 1.1),
-                  ),
-                ),
+                // Kullanıcı isteği: "bildirim ikonuna tıklandığında iki
+                // tane bildirimler yazısı çıkıyor" — bu, AppBar'daki
+                // başlıkla ÇAKIŞAN, fazladan bir başlıktı. Kaldırıldı;
+                // "tümünü okundu yap" ve menü butonu artık sağa yaslı.
+                const Spacer(),
                 if (_notifications.any((n) => n['readAt'] == null))
                   TextButton(
                     onPressed: _markAllRead,
