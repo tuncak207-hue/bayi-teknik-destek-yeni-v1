@@ -247,6 +247,13 @@
 
   "companyLabel": "Şirket",
 
+  "trainingCompleted": "Tamamlandı",
+  "trainingExpired": "Süre doldu, tamamlanmadı",
+  "trainingRemainingTime": "Kalan süre",
+  "markTrainingCompleted": "Eğitimi Tamamladım",
+  "trainingCompletionStatus": "Tamamlama Durumu",
+  "trainingNoRecord": "Bu eğitimi henüz tamamlamadı",
+
   "aiAssistantTitle": "AI Teknik Asistan",
   "aiAssistantSubtitle": "Saniyeler içinde teknik cevap alın",
 

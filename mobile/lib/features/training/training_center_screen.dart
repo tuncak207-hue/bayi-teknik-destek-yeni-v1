@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../l10n/app_localizations.dart';
 import 'package:dio/dio.dart';
@@ -25,11 +26,37 @@ class _TrainingCenterScreenState extends State<TrainingCenterScreen> {
   bool _loading = true;
   String? _downloadingId;
 
+  Timer? _tickTimer;
+
   @override
   void initState() {
     super.initState();
     _load();
     _dio.post('/notifications/mark-category-read/training').then((_) => NotificationBadgeBus.bump());
+    // Kullanıcı isteği: "geri sayaç işlesin" — ekranı periyodik olarak
+    // yeniden çizdirip kalan süreyi güncel tutuyoruz.
+    _tickTimer = Timer.periodic(const Duration(seconds: 30), (_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _tickTimer?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _markCompleted(String id) async {
+    await _dio.post('/training/$id/complete');
+    await _load();
+  }
+
+  String _formatRemaining(DateTime deadline) {
+    final diff = deadline.difference(DateTime.now());
+    if (diff.isNegative) return '0 sa 0 dk';
+    final hours = diff.inHours;
+    final minutes = diff.inMinutes % 60;
+    return '$hours sa $minutes dk';
   }
 
   Future<void> _load() async {
@@ -237,6 +264,15 @@ class _TrainingCenterScreenState extends State<TrainingCenterScreen> {
                                                   style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w800, color: isVideo ? AppColors.brand : AppColors.navy, letterSpacing: 0.5),
                                                 ),
                                               ),
+                                              if (c['status'] != null) ...[
+                                                const SizedBox(height: 8),
+                                                _TrainingCompletionRow(
+                                                  status: c['status'] as String,
+                                                  deadline: c['deadline'] != null ? DateTime.parse(c['deadline']) : null,
+                                                  formatRemaining: _formatRemaining,
+                                                  onComplete: () => _markCompleted(c['id']),
+                                                ),
+                                              ],
                                             ],
                                           ),
                                         ),
@@ -335,6 +371,77 @@ class _VideoPlayerScreenState extends State<_VideoPlayerScreen> {
               child: Icon(_controller.value.isPlaying ? Icons.pause : Icons.play_arrow, color: Colors.white),
             )
           : null,
+    );
+  }
+}
+
+/// Kullanıcı isteği: "1 gün içerisinde eğitimi tamamladım butonuna
+/// tıklasın, süre biterse tamamlanmadı bilgisi düşsün" — liste
+/// öğesinin altında görünen durum satırı: tamamlandıysa yeşil rozet,
+/// süre dolduysa kırmızı rozet, devam ediyorsa turuncu geri sayaç +
+/// "Eğitimi Tamamladım" butonu.
+class _TrainingCompletionRow extends StatelessWidget {
+  final String status; // 'COMPLETED' | 'PENDING' | 'EXPIRED'
+  final DateTime? deadline;
+  final String Function(DateTime) formatRemaining;
+  final VoidCallback onComplete;
+
+  const _TrainingCompletionRow({
+    required this.status,
+    required this.deadline,
+    required this.formatRemaining,
+    required this.onComplete,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    if (status == 'COMPLETED') {
+      return _StatusChip(icon: Icons.check_circle, color: AppColors.success, label: l10n.trainingCompleted);
+    }
+    if (status == 'EXPIRED') {
+      return _StatusChip(icon: Icons.cancel_outlined, color: AppColors.danger, label: l10n.trainingExpired);
+    }
+    // PENDING — geri sayaç + buton
+    final remaining = deadline != null ? formatRemaining(deadline!) : '';
+    return Row(
+      children: [
+        Icon(Icons.hourglass_bottom, size: 14, color: Colors.orange.shade700),
+        const SizedBox(width: 4),
+        Text('${l10n.trainingRemainingTime}: $remaining', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.orange.shade700)),
+        const Spacer(),
+        Material(
+          color: AppColors.brand,
+          borderRadius: BorderRadius.circular(10),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(10),
+            onTap: onComplete,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              child: Text(l10n.markTrainingCompleted, style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w800, color: Colors.white)),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _StatusChip extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final String label;
+  const _StatusChip({required this.icon, required this.color, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 14, color: color),
+        const SizedBox(width: 4),
+        Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: color)),
+      ],
     );
   }
 }

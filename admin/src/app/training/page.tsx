@@ -22,6 +22,13 @@ export default function TrainingPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [editingContent, setEditingContent] = useState<any>(null);
+  const [completionsForId, setCompletionsForId] = useState<string | null>(null);
+
+  // Kullanıcı isteği: "eğitimi tamamlamak için 1 gün verelim, geri sayaç
+  // işlesin... admin panelinde kim izledi kim izlemedi bilelim." Her
+  // eğitim için zorunlu değil — admin burada isteğe bağlı açıyor.
+  const [requiresCompletion, setRequiresCompletion] = useState(false);
+  const [deadlineHours, setDeadlineHours] = useState(24);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -41,6 +48,8 @@ export default function TrainingPage() {
       formData.append('description', description);
       formData.append('type', type);
       formData.append('category', category);
+      formData.append('requiresCompletion', String(requiresCompletion));
+      formData.append('deadlineHours', String(deadlineHours));
       if (sourceMode === 'file' && file) formData.append('file', file);
       if (sourceMode === 'url') formData.append('url', url.trim());
 
@@ -53,6 +62,8 @@ export default function TrainingPage() {
       setCategory('');
       setUrl('');
       setFile(null);
+      setRequiresCompletion(false);
+      setDeadlineHours(24);
       setShowForm(false);
       mutate();
     } catch (err: any) {
@@ -145,6 +156,36 @@ export default function TrainingPage() {
             </div>
           </div>
 
+          {/* Tamamlama Takibi */}
+          <div className="mb-5 p-4 bg-amber-50/60 border border-amber-100 rounded-xl">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={requiresCompletion}
+                onChange={(e) => setRequiresCompletion(e.target.checked)}
+                className="w-4 h-4"
+              />
+              <span className="text-[13px] font-semibold text-gray-700">Tamamlama takibi gereksin</span>
+            </label>
+            <p className="text-[11.5px] text-gray-500 mt-1 ml-6">
+              Açarsanız, bayiler belirlediğiniz süre içinde &quot;Tamamladım&quot; demeli. Süre dolarsa ve tamamlamamışsa, burada
+              &quot;tamamlanmadı&quot; olarak görünür.
+            </p>
+            {requiresCompletion && (
+              <div className="mt-3 ml-6">
+                <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-1.5">Süre (saat)</label>
+                <input
+                  type="number"
+                  min={1}
+                  value={deadlineHours}
+                  onChange={(e) => setDeadlineHours(Number(e.target.value) || 24)}
+                  className="w-28 border border-slate-200 bg-white rounded-lg px-3 py-1.5 text-sm"
+                />
+                <span className="text-[11.5px] text-gray-400 ml-2">(varsayılan 24 saat = 1 gün)</span>
+              </div>
+            )}
+          </div>
+
           <div className="mb-5">
             <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-2">Kaynak</label>
             <div className="flex gap-2 p-1 bg-[#F2F3F5] rounded-xl mb-3">
@@ -166,11 +207,6 @@ export default function TrainingPage() {
               <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-200 rounded-xl py-8 cursor-pointer hover:border-navy/30 hover:bg-navy/[0.02] transition">
                 <IconUpload width={22} height={22} className="text-gray-400" />
                 <span className="text-[13px] text-gray-500 font-medium">{file ? file.name : 'Dosya seçmek için tıklayın'}</span>
-                {/* ÖNEMLİ: "accept" özelliği kaldırıldı — kullanıcı isteği:
-                    hem video hem doküman TÜM formatlarda kabul edilmeli.
-                    Backend zaten hiçbir mimetype kısıtlaması yapmıyor,
-                    burada sadece dosya seçici penceresini kısıtlayan
-                    "accept" ipucunu tamamen açık bıraktık. */}
                 <span className="text-[11px] text-gray-400">Her format kabul edilir (mp4, mov, pdf, docx, xlsx, pptx, jpg...)</span>
                 <input type="file" onChange={(e) => setFile(e.target.files?.[0] ?? null)} className="hidden" />
               </label>
@@ -207,9 +243,6 @@ export default function TrainingPage() {
                 key={c.id}
                 className="group bg-white rounded-lg border border-gray-100 shadow-[0_1px_2px_rgba(15,23,42,0.04)] shadow-gray-100/50 overflow-hidden hover:shadow-md hover:shadow-gray-200/60 transition-shadow"
               >
-                {/* Kurs/kütüphane kartı gibi renkli, büyük bir "kapak" alanı
-                    — önceki tasarımda sadece küçük bir ikon rozeti vardı,
-                    bu haliyle çok daha görsel ve "premium" duruyor. */}
                 <div
                   className="h-28 flex items-center justify-center relative"
                   style={{
@@ -228,6 +261,11 @@ export default function TrainingPage() {
                   <span className="absolute top-3 right-3 text-[9.5px] font-bold text-white/90 bg-white/15 backdrop-blur-sm px-2 py-1 rounded-full tracking-wide">
                     {isVideo ? 'VİDEO' : 'DOKÜMAN'}
                   </span>
+                  {c.requiresCompletion && (
+                    <span className="absolute top-3 left-3 text-[9.5px] font-bold text-amber-900 bg-amber-300 px-2 py-1 rounded-full tracking-wide">
+                      TAKİPLİ
+                    </span>
+                  )}
                 </div>
                 <div className="p-4">
                   <p className="font-semibold text-[14px] text-gray-800 leading-snug line-clamp-2 min-h-[36px]">{c.title}</p>
@@ -239,6 +277,11 @@ export default function TrainingPage() {
                       <span className="text-[10.5px] text-gray-300">{new Date(c.createdAt).toLocaleDateString('tr-TR')}</span>
                     )}
                     <div className="flex gap-2">
+                      {c.requiresCompletion && (
+                        <button onClick={() => setCompletionsForId(c.id)} className="text-blue-500 hover:text-blue-700 transition text-xs font-medium">
+                          Kim İzledi?
+                        </button>
+                      )}
                       <button onClick={() => setEditingContent(c)} className="text-gray-300 hover:text-navy transition text-xs font-medium">
                         Düzenle
                       </button>
@@ -261,6 +304,55 @@ export default function TrainingPage() {
           </div>
         </div>
       )}
+
+      {completionsForId && (
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4" onClick={() => setCompletionsForId(null)}>
+          <div className="bg-white rounded-lg w-full max-w-lg p-6 max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <CompletionsView trainingId={completionsForId} onClose={() => setCompletionsForId(null)} />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** Kullanıcı isteği: "admin panelinde kim izledi kim izlemedi bilelim" */
+function CompletionsView({ trainingId, onClose }: { trainingId: string; onClose: () => void }) {
+  const { data } = useSWR(`/training/${trainingId}/completions`, fetcher, { refreshInterval: 5000 });
+
+  if (!data) return <p className="text-sm text-gray-400">Yükleniyor...</p>;
+
+  const statusLabel: Record<string, { label: string; className: string }> = {
+    COMPLETED: { label: 'Tamamladı', className: 'bg-green-50 text-green-700' },
+    PENDING: { label: 'Süresi Devam Ediyor', className: 'bg-amber-50 text-amber-700' },
+    EXPIRED: { label: 'Tamamlanmadı (süre doldu)', className: 'bg-red-50 text-red-700' },
+  };
+
+  return (
+    <div>
+      <h3 className="text-sm font-bold text-navy mb-1">{data.training.title}</h3>
+      <p className="text-xs text-gray-400 mb-4">
+        Süre: {data.training.deadlineHours} saat · Toplam {data.rows.length} bayi
+      </p>
+      <div className="space-y-2">
+        {data.rows.map((r: any) => {
+          const s = statusLabel[r.status] || { label: r.status, className: 'bg-gray-50 text-gray-500' };
+          return (
+            <div key={r.id} className="flex items-center justify-between p-3 rounded-lg border border-gray-100">
+              <div>
+                <p className="text-[13px] font-semibold text-gray-800">
+                  {r.firstName} {r.lastName}
+                </p>
+                <p className="text-[11.5px] text-gray-400">{r.company}</p>
+              </div>
+              <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${s.className}`}>{s.label}</span>
+            </div>
+          );
+        })}
+      </div>
+      <button onClick={onClose} className="w-full mt-5 text-sm font-medium text-gray-600 border border-gray-200 rounded-xl py-2.5 hover:bg-gray-50 transition">
+        Kapat
+      </button>
     </div>
   );
 }

@@ -131,6 +131,7 @@ model User {
   appointments            Appointment[]
   announcementAcknowledgements AnnouncementAcknowledgement[]
   commissioningReports    CommissioningReport[]
+  trainingCompletions     TrainingCompletion[]
 
   @@map("users")
 }
@@ -501,7 +502,34 @@ model TrainingContent {
   fileUrl     String
   createdAt   DateTime            @default(now())
 
+  // Kullanıcı isteği: "eğitimi tamamlamak için 1 gün verelim, geri
+  // sayaç işlesin, izleyen kişi tamamladım desin, süre biterse
+  // tamamlanmadı bilgisi düşsün, admin kim izledi kim izlemedi bilsin."
+  // Admin, eğitim eklerken bunu isteğe bağlı açabiliyor — her eğitim
+  // için zorunlu değil.
+  requiresCompletion Boolean @default(false)
+  deadlineHours      Int     @default(24) // tamamlama için verilen süre (saat)
+
+  completions TrainingCompletion[]
+
   @@map("training_contents")
+}
+
+/// Bir kullanıcının belirli bir eğitim içeriğini "tamamladım" olarak
+/// işaretlediği kaydı tutar. Süresi geçmiş ama bu kayıt hiç oluşmamışsa
+/// (kullanıcı hiç tıklamadıysa) durum "tamamlanmadı" olarak hesaplanır —
+/// bunun için ayrı bir alan/iş (cron) gerekmez, deadline'a göre anlık
+/// hesaplanır (bkz. training.service.ts).
+model TrainingCompletion {
+  id          String   @id @default(uuid())
+  trainingId  String
+  training    TrainingContent @relation(fields: [trainingId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  completedAt DateTime @default(now())
+
+  @@unique([trainingId, userId])
+  @@map("training_completions")
 }
 
 model BomList {

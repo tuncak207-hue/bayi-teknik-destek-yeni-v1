@@ -247,6 +247,13 @@
 
   "companyLabel": "Company",
 
+  "trainingCompleted": "Completed",
+  "trainingExpired": "Time expired, not completed",
+  "trainingRemainingTime": "Remaining time",
+  "markTrainingCompleted": "Mark as Completed",
+  "trainingCompletionStatus": "Completion Status",
+  "trainingNoRecord": "Has not completed this training yet",
+
   "aiAssistantTitle": "AI Technical Assistant",
   "aiAssistantSubtitle": "Get technical answers in seconds",
 
