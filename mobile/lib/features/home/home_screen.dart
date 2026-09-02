@@ -437,6 +437,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+                          border: Border.all(color: AppColors.outlineStrong),
                           boxShadow: AppShadows.subtle,
                         ),
                         child: Column(
@@ -504,7 +505,7 @@ class _StatCard extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppRadius.lg),
-            border: Border.all(color: AppColors.outline.withValues(alpha: 0.72)),
+            border: Border.all(color: AppColors.outlineStrong),
             boxShadow: AppShadows.subtle,
           ),
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs, vertical: AppSpacing.xs),
@@ -574,7 +575,7 @@ class _QuickAction extends StatelessWidget {
           decoration: BoxDecoration(
             color: const Color(0xFFF8F7FC),
             borderRadius: BorderRadius.circular(AppRadius.lg),
-            border: Border.all(color: AppColors.outline.withValues(alpha: 0.72)),
+            border: Border.all(color: AppColors.outlineStrong),
             boxShadow: AppShadows.card,
           ),
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.sm),
@@ -689,6 +690,7 @@ class _TodayForMeSectionState extends State<_TodayForMeSection> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(AppRadius.lg),
+        border: Border.all(color: AppColors.outlineStrong),
         boxShadow: AppShadows.subtle,
       ),
       child: Column(

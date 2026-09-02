@@ -93,6 +93,12 @@ class _SearchScreenState extends State<SearchScreen> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(14),
+                // Kullanıcı isteği: "arama ekranındaki doküman/marka/model
+                // kutusu, mesajlardaki gibi belirgin olmalı" — mesajlar
+                // ekranı temadan gelen gri kenarlığı kullanıyordu, burada
+                // sadece gölge vardı, kenarlık yoktu. Artık aynı belirgin
+                // gri kenarlık eklendi.
+                border: Border.all(color: Colors.grey.shade300),
                 boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 8, offset: const Offset(0, 2))],
               ),
               child: TextField(

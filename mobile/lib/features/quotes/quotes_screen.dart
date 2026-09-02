@@ -271,7 +271,15 @@ class _QuoteBuilderScreen extends StatefulWidget {
 
 class _QuoteBuilderScreenState extends State<_QuoteBuilderScreen> {
   final Dio _dio = ApiClient().dio;
-  late final _titleController = TextEditingController(text: widget.existingQuote?['title'] ?? 'Yangın Sistemi Teklifi');
+  // Kullanıcı isteği: "teklif başlığı içindeki yazı silinebilir olmalı,
+  // üzerine tıklayıp bir şey yazdığımda silinmeli" — önceden yeni teklif
+  // açılırken "Yangın Sistemi Teklifi" GERÇEK bir metin olarak alana
+  // yerleşiyordu (ipucu değil), kullanıcı önce elle silmek zorunda
+  // kalıyordu. Artık yeni teklifte alan BOŞ başlıyor, varsayılan başlık
+  // sadece soluk bir İPUCU (hint) olarak görünüyor — yazmaya başlayınca
+  // otomatik kayboluyor. Var olan bir teklifi düzenlerken gerçek başlık
+  // yine olduğu gibi gösteriliyor.
+  late final _titleController = TextEditingController(text: widget.existingQuote?['title'] ?? '');
   late final _customerNameController = TextEditingController(text: widget.existingQuote?['customerName'] ?? '');
   late final _customerPhoneController = TextEditingController(text: widget.existingQuote?['customerPhone'] ?? '');
   String? _district;
@@ -359,7 +367,7 @@ class _QuoteBuilderScreenState extends State<_QuoteBuilderScreen> {
     setState(() => _submitting = true);
     try {
       final payload = {
-        'title': _titleController.text.trim(),
+        'title': _titleController.text.trim().isEmpty ? 'Yangın Sistemi Teklifi' : _titleController.text.trim(),
         'customerName': _customerNameController.text.trim(),
         'customerPhone': _customerPhoneController.text.trim(),
         'province': _province,
@@ -444,7 +452,7 @@ class _QuoteBuilderScreenState extends State<_QuoteBuilderScreen> {
                             TextField(
                               controller: _titleController,
                               style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: AppColors.navy),
-                              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.quoteTitle, border: InputBorder.none, isDense: true),
+                              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.quoteTitle, hintText: 'Yangın Sistemi Teklifi', border: InputBorder.none, isDense: true),
                             ),
                             const Divider(height: 16),
                             TextField(
