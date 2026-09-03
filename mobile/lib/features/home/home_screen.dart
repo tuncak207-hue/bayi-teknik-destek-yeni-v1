@@ -532,6 +532,7 @@ class _GreetingHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final name = user.firstName?.trim();
     final displayName = name == null || name.isEmpty ? 'ENTPA' : name;
     final hour = DateTime.now().hour;
