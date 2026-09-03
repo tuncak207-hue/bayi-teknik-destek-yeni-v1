@@ -4,10 +4,10 @@ import '../features/splash/splash_screen.dart';
 import '../features/auth/presentation/login_screen.dart';
 import '../features/auth/presentation/register_screen.dart';
 import '../features/home/home_screen.dart';
-import '../features/ai_assistant/ai_chat_screen.dart';
+import '../features/wallet/document_wallet_screen.dart';
 import '../features/sales/sales_consultants_screen.dart';
 import '../features/training/training_center_screen.dart';
-import '../features/wallet/document_wallet_screen.dart';
+import '../features/ai_assistant/ai_chat_screen.dart';
 import '../features/support_tickets/support_tickets_screen.dart';
 import '../features/quotes/quotes_screen.dart';
 import '../features/messages/conversations_screen.dart';
@@ -133,8 +133,16 @@ final appRouter = GoRouter(
         // — artık sekmenin kendisi doğrudan sürekli sohbet ekranı
         // (AiChatScreen). Ayrı bir ekrana gitmediği için önceki
         // "key reservation" çökmesi de bir daha yaşanmaz.
-        StatefulShellBranch(routes: [GoRoute(path: '/ai', builder: (c, s) => const AiChatScreen())]),
+        // ÖNEMLİ DEĞİŞİKLİK (kart tasarımı kılavuzu, Adım 7): AI artık
+        // sürekli bir alt menü sekmesi değil — Ana Sayfa'nın üst
+        // çubuğundaki AI kutusundan erişiliyor (bkz. home_screen.dart).
+        // Alt menü tam olarak 4 sekmeye indirildi: Ana Sayfa, Mesajlar,
+        // Dokümanlar (Evrak Çantası), Profil. AI sohbetine hâlâ
+        // /ai-quick, /ai-send, /ai-photo ve /ai/conversation/:id
+        // rotalarından push ile erişilebiliyor — sadece kalıcı sekme
+        // kaldırıldı.
         StatefulShellBranch(routes: [GoRoute(path: '/messages', builder: (c, s) => const ConversationsScreen())]),
+        StatefulShellBranch(routes: [GoRoute(path: '/wallet-tab', builder: (c, s) => const DocumentWalletScreen())]),
         StatefulShellBranch(routes: [GoRoute(path: '/profile', builder: (c, s) => const ProfileScreen())]),
       ],
     ),

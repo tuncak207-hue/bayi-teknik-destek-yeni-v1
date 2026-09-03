@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../l10n/app_localizations.dart';
 import 'package:flutter/cupertino.dart';
 import 'dart:io' show Platform;
 import 'package:dio/dio.dart';
@@ -8,8 +7,11 @@ import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_components.dart';
 import '../../core/widgets/section_header.dart';
 import '../../core/widgets/design_system.dart';
+import '../../core/widgets/app_info_card.dart';
 import '../../core/events/notification_badge_bus.dart';
 import '../../core/widgets/province_district_picker.dart';
+
+
 
 class AppointmentsScreen extends StatefulWidget {
   const AppointmentsScreen({super.key});
@@ -43,13 +45,13 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: Text(AppLocalizations.of(context)!.cancelAppointment),
+        title: const Text('Randevuyu İptal Et'),
         content: Text('"${appointment['subject']}" randevusunu iptal etmek istediğinize emin misiniz?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(AppLocalizations.of(context)!.cancel)),
+          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: Text(AppLocalizations.of(context)!.cancelAction, style: TextStyle(color: AppColors.navy)),
+            child: const Text('İptal Et', style: TextStyle(color: AppColors.navy)),
           ),
         ],
       ),
@@ -63,13 +65,13 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: Text(AppLocalizations.of(context)!.deleteAppointment),
+        title: const Text('Randevuyu Sil'),
         content: Text('"${appointment['subject']}" randevusu kalıcı olarak silinecek. Emin misiniz?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(AppLocalizations.of(context)!.cancel)),
+          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: Text(AppLocalizations.of(context)!.delete, style: TextStyle(color: AppColors.navy)),
+            child: const Text('Sil', style: TextStyle(color: AppColors.navy)),
           ),
         ],
       ),
@@ -124,13 +126,13 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
       _load();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.appointmentDateUpdated)),
+          const SnackBar(content: Text('Randevu tarihi güncellendi.')),
         );
       }
     } on DioException catch (e) {
       if (e.response?.statusCode == 409 && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.slotTakenRetry)),
+          const SnackBar(content: Text('Bu saat az önce başka bir bayi tarafından alındı. Lütfen tekrar deneyin.')),
         );
       }
     }
@@ -148,7 +150,7 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      floatingActionButton: StandardFab(label: AppLocalizations.of(context)!.qaAppointments, onPressed: _openCreateSheet),
+      floatingActionButton: StandardFab(label: 'Randevu Al', onPressed: _openCreateSheet),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: SafeArea(
         child: Column(
@@ -194,10 +196,10 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
                               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
                               child: StandardCard(
                                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
-                                child: AppEmptyState(
+                                child: const AppEmptyState(
                                   icon: Icons.calendar_month_outlined,
-                                  title: AppLocalizations.of(context)!.emptyAppointments,
-                                  description: AppLocalizations.of(context)!.appointmentsEmptyHint,
+                                  title: 'Henüz bir randevunuz yok',
+                                  description: 'Teknik destek almak için ilk randevunuzu oluşturun.',
                                 ),
                               ),
                             ),
@@ -243,132 +245,78 @@ class _AppointmentCard extends StatelessWidget {
     final start = DateTime.tryParse(appointment['preferredStart'] ?? '');
     final isCancelled = status == 'CANCELLED';
 
+    final hasNote = (appointment['adminNote'] ?? '').toString().isNotEmpty;
+    final hasDescription = (appointment['description'] ?? '').toString().isNotEmpty;
+    final locationLabel = [appointment['district'], appointment['province']]
+        .where((s) => s != null && s.toString().isNotEmpty)
+        .join(', ');
+
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-      child: StandardCard(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Column(
+      child: AppInfoCard(
+        head: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [AppColors.navy.withValues(alpha: 0.10), AppColors.brand.withValues(alpha: 0.10)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(
-                    type == 'ON_SITE' ? Icons.location_on_outlined : Icons.call_outlined,
-                    size: 18,
-                    color: AppColors.navy,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    appointment['subject'] ?? '',
-                    style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15.5, color: AppColors.navy, letterSpacing: -0.2),
-                  ),
-                ),
-                _statusPill(context, status),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                Icon(Icons.category_outlined, size: 14, color: Colors.grey.shade500),
-                const SizedBox(width: 4),
-                Text(type == 'ON_SITE' ? 'Sahada Ziyaret' : 'Telefon/Görüntülü Destek',
-                    style: TextStyle(fontSize: 12.5, color: Colors.grey.shade700)),
-              ],
-            ),
-            if (start != null) ...[
-              const SizedBox(height: 4),
-              Row(
-                children: [
-                  Icon(Icons.schedule, size: 14, color: Colors.grey.shade500),
-                  const SizedBox(width: 4),
-                  Text(
-                    '${start.day.toString().padLeft(2, '0')}.${start.month.toString().padLeft(2, '0')}.${start.year}  ·  '
+            AppDateBlock(date: start),
+            const SizedBox(width: 14),
+            Expanded(
+              child: AppInfoCardHead(
+                title: appointment['subject'] ?? '',
+                meta: [
+                  type == 'ON_SITE' ? 'Sahada Ziyaret' : 'Telefon/Görüntülü Destek',
+                  if (start != null)
                     '${start.hour.toString().padLeft(2, '0')}:${start.minute.toString().padLeft(2, '0')}',
-                    style: const TextStyle(fontSize: 13, color: AppColors.navy, fontWeight: FontWeight.w600),
-                  ),
+                  if (locationLabel.isNotEmpty) locationLabel,
                 ],
+                badge: _statusPill(status),
               ),
-            ],
-            if ((appointment['description'] ?? '').toString().isNotEmpty) ...[
-              const SizedBox(height: 10),
-              Text(appointment['description'], style: const TextStyle(fontSize: 13, height: 1.4)),
-            ],
-            if ((appointment['province'] ?? '').toString().isNotEmpty) ...[
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Icon(Icons.location_on_outlined, size: 13, color: Colors.grey.shade400),
-                  const SizedBox(width: 4),
-                  Text(
-                    [appointment['district'], appointment['province']].where((s) => s != null && s.toString().isNotEmpty).join(', '),
-                    style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
-                  ),
-                ],
-              ),
-            ],
-            if ((appointment['adminNote'] ?? '').toString().isNotEmpty) ...[
-              const SizedBox(height: 10),
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(10)),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(Icons.info_outline, size: 14, color: Colors.grey.shade500),
-                    const SizedBox(width: 6),
-                    Expanded(child: Text(appointment['adminNote'], style: const TextStyle(fontSize: 12.5))),
-                  ],
-                ),
-              ),
-            ],
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                if (!isCancelled) ...[
-                  TextButton.icon(
-                    onPressed: onEdit,
-                    icon: const Icon(Icons.edit_calendar_outlined, size: 15, color: AppColors.navy),
-                    label: Text(AppLocalizations.of(context)!.edit, style: TextStyle(color: AppColors.navy)),
-                  ),
-                  if (status == 'PENDING')
-                    TextButton.icon(
-                      onPressed: onCancel,
-                      icon: const Icon(Icons.close, size: 15, color: Colors.orange),
-                      label: Text(AppLocalizations.of(context)!.cancelAction, style: TextStyle(color: Colors.orange)),
-                    ),
-                ],
-                TextButton.icon(
-                  onPressed: onDelete,
-                  icon: const Icon(Icons.delete_outline, size: 15, color: AppColors.navy),
-                  label: Text(AppLocalizations.of(context)!.delete, style: TextStyle(color: AppColors.navy)),
-                ),
-              ],
             ),
+          ],
+        ),
+        body: (hasDescription || hasNote)
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (hasDescription)
+                    AppInfoCardSummary(appointment['description'], maxLines: 4),
+                  if (hasNote) ...[
+                    if (hasDescription) const SizedBox(height: 10),
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(10)),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(Icons.info_outline, size: 14, color: Colors.grey.shade500),
+                          const SizedBox(width: 6),
+                          Expanded(child: Text(appointment['adminNote'], style: const TextStyle(fontSize: 12.5))),
+                        ],
+                      ),
+                    ),
+                  ],
+                ],
+              )
+            : null,
+        actions: AppInfoCardActions(
+          buttons: [
+            if (!isCancelled) ...[
+              AppButton.secondary(label: 'Düzenle', onPressed: onEdit, fullWidth: false),
+              if (status == 'PENDING')
+                AppButton.secondary(label: 'İptal Et', onPressed: onCancel, fullWidth: false),
+            ],
+            AppButton.destructive(label: 'Sil', onPressed: onDelete, fullWidth: false),
           ],
         ),
       ),
     );
   }
 
-  Widget _statusPill(BuildContext context, String status) {
+  Widget _statusPill(String status) {
     final map = <String, (String, Color, IconData)>{
-      'PENDING': (AppLocalizations.of(context)!.statusPendingApproval, Colors.orange, Icons.hourglass_empty),
-      'CONFIRMED': (AppLocalizations.of(context)!.statusConfirmed, Colors.green, Icons.check_circle_outline),
-      'CANCELLED': (AppLocalizations.of(context)!.statusCancelled, Colors.grey, Icons.cancel_outlined),
-      'COMPLETED': (AppLocalizations.of(context)!.statusCompleted, Colors.blue, Icons.task_alt),
+      'PENDING': ('Onay Bekliyor', Colors.orange, Icons.hourglass_empty),
+      'CONFIRMED': ('Onaylandı', Colors.green, Icons.check_circle_outline),
+      'CANCELLED': ('İptal Edildi', Colors.grey, Icons.cancel_outlined),
+      'COMPLETED': ('Tamamlandı', Colors.blue, Icons.task_alt),
     };
     final entry = map[status] ?? (status, Colors.grey, Icons.circle);
     return StatusPill(label: entry.$1, color: entry.$2, icon: entry.$3);
@@ -451,7 +399,7 @@ class _CreateAppointmentSheetState extends State<_CreateAppointmentSheet> {
     } on DioException catch (e) {
       if (e.response?.statusCode == 409 && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.slotTakenReselect)),
+          const SnackBar(content: Text('Bu saat az önce başka bir bayi tarafından alındı. Lütfen başka bir saat seçin.')),
         );
         setState(() => _selectedTime = null);
       }
@@ -471,16 +419,16 @@ class _CreateAppointmentSheetState extends State<_CreateAppointmentSheet> {
           leading: CupertinoButton(
             padding: EdgeInsets.zero,
             onPressed: () => Navigator.pop(context),
-            child: Text(AppLocalizations.of(context)!.cancel, style: TextStyle(color: CupertinoColors.systemGrey, fontSize: 16)),
+            child: const Text('İptal', style: TextStyle(color: CupertinoColors.systemGrey, fontSize: 16)),
           ),
-          middle: Text(AppLocalizations.of(context)!.screenNewAppointment, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+          middle: const Text('Yeni Randevu Talebi', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
         ),
         child: SafeArea(child: _buildForm()),
       );
     }
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppPageHeader(title: AppLocalizations.of(context)!.screenNewAppointment),
+      appBar: const AppPageHeader(title: 'Yeni Randevu Talebi'),
       body: SafeArea(child: _buildForm()),
     );
   }
@@ -501,9 +449,9 @@ class _CreateAppointmentSheetState extends State<_CreateAppointmentSheet> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             SegmentedButton<String>(
-              segments: [
-                ButtonSegment(value: 'REMOTE', label: Text(AppLocalizations.of(context)!.phoneVideoCall), icon: Icon(Icons.call_outlined)),
-                ButtonSegment(value: 'ON_SITE', label: Text(AppLocalizations.of(context)!.onSiteVisit), icon: Icon(Icons.location_on_outlined)),
+              segments: const [
+                ButtonSegment(value: 'REMOTE', label: Text('Telefon/Görüntülü'), icon: Icon(Icons.call_outlined)),
+                ButtonSegment(value: 'ON_SITE', label: Text('Sahada Ziyaret'), icon: Icon(Icons.location_on_outlined)),
               ],
               selected: {_type},
               onSelectionChanged: (s) => setState(() => _type = s.first),
@@ -511,14 +459,14 @@ class _CreateAppointmentSheetState extends State<_CreateAppointmentSheet> {
             const SizedBox(height: 16),
             TextField(
               controller: _subjectController,
-              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.subjectField, hintText: AppLocalizations.of(context)!.subjectHint),
+              decoration: const InputDecoration(labelText: 'Konu', hintText: 'Örn: MA8000 devreye alma desteği'),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: _descriptionController,
               minLines: 2,
               maxLines: 4,
-              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.descriptionOptional),
+              decoration: const InputDecoration(labelText: 'Açıklama (opsiyonel)'),
             ),
             const SizedBox(height: 12),
             ProvinceDistrictPicker(
@@ -544,15 +492,15 @@ class _CreateAppointmentSheetState extends State<_CreateAppointmentSheet> {
                 child: TextButton.icon(
                   onPressed: _pickTime,
                   icon: const Icon(Icons.access_time, size: 16),
-                  label: Text(AppLocalizations.of(context)!.changeTime),
+                  label: const Text('Saati Değiştir'),
                 ),
               ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _submitting ? null : _submit,
               child: _submitting
-                  ? SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                  : Text(AppLocalizations.of(context)!.sendAppointmentRequest),
+                  ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                  : const Text('Randevu Talebi Gönder'),
             ),
           ],
         ),

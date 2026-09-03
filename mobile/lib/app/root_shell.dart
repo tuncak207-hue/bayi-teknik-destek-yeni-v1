@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import '../l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:dio/dio.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'top_nav_bar.dart';
+import '../core/theme/app_theme.dart';
 import '../core/api/api_client.dart';
 import '../core/api/socket_service.dart';
 import '../core/auth/current_user.dart';
@@ -88,9 +88,9 @@ class _RootShellState extends State<RootShell> {
     if (senderType != 'USER') return;
     if (senderId == null || senderId == CurrentUser().id) return;
     // Kullanıcı zaten Mesajlar sekmesindeyse rozeti artırmaya gerek yok.
-    // Not: alt menüde artık 4 gerçek sekme var (Ana Sayfa, AI, Mesajlar,
-    // Profil) — Mesajlar'ın dal indeksi 2.
-    if (widget.navigationShell.currentIndex == 2) return;
+    // Not: alt menü Adım 7 ile 4 sekmeye indirildi: 0=Ana Sayfa,
+    // 1=Mesajlar, 2=Dokümanlar, 3=Profil.
+    if (widget.navigationShell.currentIndex == 1) return;
     // ÖNEMLİ: Önceden burada yerel olarak "+1" ekleniyordu — soket
     // bağlantısı yeniden kurulduğunda veya aynı olay birden fazla kez
     // tetiklendiğinde sayı yanlış artabiliyordu ("1 mesaj geldi ama 2
@@ -110,6 +110,10 @@ class _RootShellState extends State<RootShell> {
     NotificationBadgeBus.bump();
   }
 
+  /// Adım 7 ile bu artık alt menüden çağrılmıyor (menü 4 sekmeye indirildi).
+  /// Fonksiyon ve numara kasıtlı olarak silinmedi — ENTPA'yı arama kısayolu
+  /// ileride uygun bir ekrana (örn. Teknik Destek üst çubuğu) taşınabilir.
+  // ignore: unused_element
   Future<void> _callSupport() async {
     final uri = Uri(scheme: 'tel', path: kEntpaSupportPhoneNumber);
     try {
@@ -117,7 +121,7 @@ class _RootShellState extends State<RootShell> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.callStartFailed)),
+          const SnackBar(content: Text('Arama başlatılamadı. Cihazınızda bir telefon uygulaması olduğundan emin olun.')),
         );
       }
     }
@@ -125,29 +129,20 @@ class _RootShellState extends State<RootShell> {
 
   @override
   Widget build(BuildContext context) {
-    // Alt menüde 5 buton var ama sadece 4'ü gerçek bir ekrana (dal) karşılık
-    // geliyor — "ENTPA'yı Ara" bir eylem, sekme değil. Bu yüzden görünen
-    // buton sırası (0..4) ile gerçek dal indeksleri (0..3) arasında elle
-    // bir eşleme tutuyoruz.
-    // Görünen sıra: 0=Ana Sayfa, 1=AI, 2=ENTPA'yı Ara (dal değil), 3=Mesajlar, 4=Profil
-    // Dal sırası:   0=Ana Sayfa, 1=AI,                              2=Mesajlar, 3=Profil
-    const branchForDestination = {0: 0, 1: 1, 3: 2, 4: 3};
-    const destinationForBranch = {0: 0, 1: 1, 2: 3, 3: 4};
-    final selectedDestination = destinationForBranch[widget.navigationShell.currentIndex] ?? 0;
+    // Adım 7 (kart tasarımı kılavuzu): alt menü artık tam olarak 4 gerçek
+    // sekmeye karşılık geliyor — eskiden buradaki ekstra "ENTPA'yı Ara"
+    // eylemi ve "AI" sekmesi için elle tutulan görünen-sıra/dal-sırası
+    // eşlemesine artık gerek yok, 1:1 karşılık geliyor.
+    final selectedDestination = widget.navigationShell.currentIndex;
 
     void handleTap(int index) {
-      if (index == 2) {
-        _callSupport();
-        return;
-      }
-      final branchIndex = branchForDestination[index]!;
-      if (branchIndex == 2) setState(() => _unreadMessages = 0);
-      if (branchIndex == 0 && widget.navigationShell.currentIndex == 0) {
+      if (index == 0 && widget.navigationShell.currentIndex == 0) {
         HomeScrollToTopBus.fire();
       }
+      if (index == 1) setState(() => _unreadMessages = 0);
       widget.navigationShell.goBranch(
-        branchIndex,
-        initialLocation: branchIndex == widget.navigationShell.currentIndex,
+        index,
+        initialLocation: index == widget.navigationShell.currentIndex,
       );
     }
 
@@ -168,49 +163,100 @@ class _RootShellState extends State<RootShell> {
     // KENDİ CustomScrollView'ının ilk sliver'ı olarak gömüyor — bu
     // sayede menü, o ekranın kaydırma fiziğinin GERÇEK bir parçası
     // oluyor (SliverAppBar floating+snap), taklit bir dinleyici değil.
-    final scheme = Theme.of(context).colorScheme;
     return Scaffold(
       body: widget.navigationShell,
       extendBody: false,
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: selectedDestination,
-        onDestinationSelected: handleTap,
-        backgroundColor: scheme.surface,
-        destinations: [
-          NavigationDestination(
-            icon: const Icon(Icons.home_outlined),
-            selectedIcon: const Icon(Icons.home_rounded),
-            label: AppLocalizations.of(context)!.navHome,
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          border: Border(top: BorderSide(color: AppColors.outline)),
+        ),
+        padding: const EdgeInsets.fromLTRB(8, 8, 8, 10),
+        child: SafeArea(
+          top: false,
+          child: Row(
+            children: [
+              _NavTab(
+                icon: Icons.home_outlined,
+                selectedIcon: Icons.home_rounded,
+                label: 'Ana Sayfa',
+                selected: selectedDestination == 0,
+                onTap: () => handleTap(0),
+              ),
+              _NavTab(
+                icon: Icons.chat_bubble_outline,
+                selectedIcon: Icons.chat_bubble_rounded,
+                label: 'Mesajlar',
+                selected: selectedDestination == 1,
+                onTap: () => handleTap(1),
+                badgeCount: _unreadMessages,
+              ),
+              _NavTab(
+                icon: Icons.description_outlined,
+                selectedIcon: Icons.description_rounded,
+                label: 'Dokümanlar',
+                selected: selectedDestination == 2,
+                onTap: () => handleTap(2),
+              ),
+              _NavTab(
+                icon: Icons.person_outline,
+                selectedIcon: Icons.person_rounded,
+                label: 'Profil',
+                selected: selectedDestination == 3,
+                onTap: () => handleTap(3),
+              ),
+            ],
           ),
-          NavigationDestination(
-            icon: const Icon(Icons.auto_awesome_outlined),
-            selectedIcon: const Icon(Icons.auto_awesome),
-            label: AppLocalizations.of(context)!.navAi,
+        ),
+      ),
+    );
+  }
+}
+
+/// Alt menü sekmesi — 22px ikon + 10.5/w600 etiket. Aktifken
+/// `AppColors.primary`, pasifken `AppColors.textMuted`.
+class _NavTab extends StatelessWidget {
+  final IconData icon;
+  final IconData selectedIcon;
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+  final int badgeCount;
+
+  const _NavTab({
+    required this.icon,
+    required this.selectedIcon,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+    this.badgeCount = 0,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final color = selected ? AppColors.primary : AppColors.textMuted;
+    return Expanded(
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 6),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Badge(
+                isLabelVisible: badgeCount > 0,
+                label: Text(badgeCount > 9 ? '9+' : '$badgeCount'),
+                child: Icon(selected ? selectedIcon : icon, size: 22, color: color),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                label,
+                style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w600, color: color),
+              ),
+            ],
           ),
-          NavigationDestination(
-            icon: const Icon(Icons.call_outlined),
-            selectedIcon: const Icon(Icons.call),
-            label: AppLocalizations.of(context)!.navSupport,
-          ),
-          NavigationDestination(
-            icon: Badge(
-              isLabelVisible: _unreadMessages > 0,
-              label: Text(_unreadMessages > 9 ? '9+' : '$_unreadMessages'),
-              child: const Icon(Icons.forum_outlined),
-            ),
-            selectedIcon: Badge(
-              isLabelVisible: _unreadMessages > 0,
-              label: Text(_unreadMessages > 9 ? '9+' : '$_unreadMessages'),
-              child: const Icon(Icons.forum_rounded),
-            ),
-            label: AppLocalizations.of(context)!.navMessages,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.person_outline),
-            selectedIcon: const Icon(Icons.person_rounded),
-            label: AppLocalizations.of(context)!.navProfile,
-          ),
-        ],
+        ),
       ),
     );
   }

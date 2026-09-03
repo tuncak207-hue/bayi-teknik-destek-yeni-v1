@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../l10n/app_localizations.dart';
 import 'package:shimmer/shimmer.dart';
 import '../theme/app_theme.dart';
 
@@ -475,7 +474,12 @@ class AppErrorState extends StatelessWidget {
   final String? message;
   final VoidCallback onRetry;
 
-  const AppErrorState({super.key, this.message, required this.onRetry});
+  /// Sunucu tarafından dönen istek kimliği (varsa). Verildiğinde,
+  /// destek talebi açarken referans verilebilecek şekilde monospace
+  /// 11.5 punto ile gösterilir.
+  final String? requestId;
+
+  const AppErrorState({super.key, this.message, required this.onRetry, this.requestId});
 
   @override
   Widget build(BuildContext context) {
@@ -496,19 +500,61 @@ class AppErrorState extends StatelessWidget {
             child: Icon(Icons.wifi_off_rounded, size: 28, color: scheme.error),
           ),
           const SizedBox(height: AppSpacing.sm),
+          const AppBadge(label: 'Hata', tone: AppBadgeTone.error),
+          const SizedBox(height: AppSpacing.xs),
           Text(
             'Bir şeyler ters gitti',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: scheme.onSurface),
           ),
           const SizedBox(height: AppSpacing.xxs),
           Text(
-            message ?? AppLocalizations.of(context)!.dataLoadFailedGeneric,
+            message ?? 'Veriler yüklenemedi. İnternet bağlantınızı kontrol edip tekrar deneyin.',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 13.5, color: scheme.onSurfaceVariant, height: 1.4),
           ),
           const SizedBox(height: AppSpacing.md),
-          AppButton.secondary(label: AppLocalizations.of(context)!.retry, onPressed: onRetry, icon: Icons.refresh, fullWidth: false),
+          AppButton.secondary(label: 'Tekrar Dene', onPressed: onRetry, icon: Icons.refresh, fullWidth: false),
+          if (requestId != null) ...[
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              'İstek No: $requestId',
+              style: TextStyle(fontSize: 11.5, fontFamily: 'monospace', color: scheme.onSurfaceVariant),
+            ),
           ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ============================================================
+// APP SKELETON (Adım 9) — statik gri bloklar, nabız animasyonu YOK.
+// Mevcut AppLoadingState (shimmer) korunuyor; bu, kart tasarımı
+// kılavuzunun istediği "hiç animasyonsuz" alternatif.
+// ============================================================
+
+class AppSkeletonList extends StatelessWidget {
+  final int lines;
+  final double lineHeight;
+  const AppSkeletonList({super.key, this.lines = 4, this.lineHeight = 72});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final color = isDark ? const Color(0xFF1E2A38) : const Color(0xFFF0F1F8);
+    return Semantics(
+      container: true,
+      liveRegion: true,
+      label: 'Yükleniyor',
+      child: Column(
+        children: List.generate(
+          lines,
+          (i) => Container(
+            margin: const EdgeInsets.only(bottom: AppSpacing.xs),
+            height: lineHeight,
+            decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(AppRadius.lg)),
+          ),
         ),
       ),
     );

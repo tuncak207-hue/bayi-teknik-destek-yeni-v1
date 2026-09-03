@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../l10n/app_localizations.dart';
 import 'package:flutter/cupertino.dart';
 import 'dart:io' show Platform;
 import 'package:dio/dio.dart';
@@ -8,31 +7,7 @@ import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_components.dart';
 import '../../core/widgets/design_system.dart';
-
-// Kullanıcı isteği: "hala Türkçe" — bu iki harita, dosyada 3 farklı State
-// sınıfında tekrar tanımlıydı; artık tek bir yerden, seçili dile göre
-// üretiliyor.
-Map<String, String> _outcomeLabels(BuildContext context) => {
-      'POSITIVE': AppLocalizations.of(context)!.outcomePositive,
-      'QUOTE_PENDING': AppLocalizations.of(context)!.outcomeQuotePending,
-      'PROJECT_CREATED': AppLocalizations.of(context)!.outcomeProjectCreated,
-      'ORDER_PENDING': AppLocalizations.of(context)!.outcomeOrderPending,
-      'FOLLOW_UP_NEEDED': AppLocalizations.of(context)!.outcomeFollowUpNeeded,
-      'NEGATIVE': AppLocalizations.of(context)!.outcomeNegative,
-      'NOT_HAPPENED': AppLocalizations.of(context)!.outcomeNotHappened,
-      'OTHER': AppLocalizations.of(context)!.outcomeOther,
-    };
-
-Map<String, String> _visitTypeLabels(BuildContext context) => {
-      'DEALER_VISIT': AppLocalizations.of(context)!.visitTypeDealerVisit,
-      'PROJECT_MEETING': AppLocalizations.of(context)!.visitTypeProjectMeeting,
-      'PRODUCT_INTRO': AppLocalizations.of(context)!.visitTypeProductIntro,
-      'TECHNICAL_MEETING': AppLocalizations.of(context)!.visitTypeTechnicalMeeting,
-      'QUOTE_MEETING': AppLocalizations.of(context)!.visitTypeQuoteMeeting,
-      'TRAINING': AppLocalizations.of(context)!.visitTypeTraining,
-      'COLLECTION': AppLocalizations.of(context)!.visitTypeCollection,
-      'OTHER': AppLocalizations.of(context)!.visitTypeOther,
-    };
+import '../../core/widgets/app_info_card.dart';
 
 class DealerVisitsScreen extends StatefulWidget {
   const DealerVisitsScreen({super.key});
@@ -45,6 +20,28 @@ class _DealerVisitsScreenState extends State<DealerVisitsScreen> {
   final Dio _dio = ApiClient().dio;
   List<dynamic> _visits = [];
   bool _loading = true;
+
+  static const _outcomeLabels = {
+    'POSITIVE': 'Olumlu',
+    'QUOTE_PENDING': 'Teklif Bekliyor',
+    'PROJECT_CREATED': 'Proje Oluştu',
+    'ORDER_PENDING': 'Sipariş Bekleniyor',
+    'FOLLOW_UP_NEEDED': 'Takip Gerekli',
+    'NEGATIVE': 'Olumsuz',
+    'NOT_HAPPENED': 'Görüşme Gerçekleşmedi',
+    'OTHER': 'Diğer',
+  };
+
+  static const _visitTypeLabels = {
+    'DEALER_VISIT': 'Bayi Ziyareti',
+    'PROJECT_MEETING': 'Proje Görüşmesi',
+    'PRODUCT_INTRO': 'Ürün Tanıtımı',
+    'TECHNICAL_MEETING': 'Teknik Görüşme',
+    'QUOTE_MEETING': 'Teklif Görüşmesi',
+    'TRAINING': 'Eğitim',
+    'COLLECTION': 'Tahsilat / Ticari Görüşme',
+    'OTHER': 'Diğer',
+  };
 
   @override
   void initState() {
@@ -101,13 +98,13 @@ class _DealerVisitsScreenState extends State<DealerVisitsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      floatingActionButton: StandardFab(label: AppLocalizations.of(context)!.screenNewVisit, onPressed: _openCreate),
+      floatingActionButton: StandardFab(label: 'Yeni Ziyaret', onPressed: _openCreate),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: SafeArea(
         child: _loading
           ? const Center(child: CircularProgressIndicator())
           : _visits.isEmpty
-              ? AppEmptyState(icon: Icons.location_on_outlined, title: AppLocalizations.of(context)!.emptyVisits, description: AppLocalizations.of(context)!.firstVisitReportHint)
+              ? const AppEmptyState(icon: Icons.location_on_outlined, title: 'Henüz ziyaret kaydınız yok', description: 'Sağ alttaki butondan ilk ziyaret raporunuzu oluşturun.')
               : RefreshIndicator(
                   onRefresh: _load,
                   child: ListView.builder(
@@ -135,32 +132,37 @@ class _DealerVisitsScreenState extends State<DealerVisitsScreen> {
                       }
                       final v = _visits[index - 1];
                       final needsFollowUp = v['needsFollowUp'] == true && v['followUpDone'] != true;
+                      final visitDate = DateTime.tryParse(v['visitDate'] ?? '');
                       return Container(
                         margin: const EdgeInsets.only(bottom: AppSpacing.xs),
-                        child: StandardCard(
-                          padding: const EdgeInsets.all(AppSpacing.sm),
+                        child: AppInfoCard(
                           onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(builder: (_) => _VisitDetailScreen(visitId: v['id'])),
                           ).then((_) => _load()),
-                          child: Column(
+                          head: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              CardHeaderRow(
-                                title: v['dealer']?['company'] ?? v['dealerNameFreeText'] ?? 'Bayi belirtilmedi',
-                                subtitle: '${_visitTypeLabels(context)[v['visitType']] ?? v['visitType']} · ${v['city'] ?? '—'}',
-                              ),
-                              const SizedBox(height: 8),
-                              Row(
-                                children: [
-                                  StatusBadge(label: _outcomeLabels(context)[v['outcome']] ?? v['outcome'], tone: _outcomeTone(v['outcome'])),
-                                  if (needsFollowUp) ...[
-                                    const SizedBox(width: 6),
-                                    StatusBadge(label: AppLocalizations.of(context)!.followUp, tone: AppStatusTone.pending),
+                              AppDateBlock(date: visitDate),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: AppInfoCardHead(
+                                  title: v['dealer']?['company'] ?? v['dealerNameFreeText'] ?? 'Bayi belirtilmedi',
+                                  meta: [
+                                    _visitTypeLabels[v['visitType']] ?? v['visitType'],
+                                    v['city'] ?? '—',
                                   ],
-                                  const Spacer(),
-                                  CardFooterMeta(icon: Icons.event_outlined, label: _formatDate(v['visitDate'])),
-                                ],
+                                  badge: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      StatusBadge(label: _outcomeLabels[v['outcome']] ?? v['outcome'], tone: _outcomeTone(v['outcome'])),
+                                      if (needsFollowUp) ...[
+                                        const SizedBox(height: 4),
+                                        const StatusBadge(label: 'Takip', tone: AppStatusTone.pending),
+                                      ],
+                                    ],
+                                  ),
+                                ),
                               ),
                             ],
                           ),
@@ -204,6 +206,28 @@ class _CreateVisitScreenState extends State<_CreateVisitScreen> {
   bool _loadingDealers = true;
   bool _submitting = false;
   String? _error;
+
+  static const _visitTypeLabels = {
+    'DEALER_VISIT': 'Bayi Ziyareti',
+    'PROJECT_MEETING': 'Proje Görüşmesi',
+    'PRODUCT_INTRO': 'Ürün Tanıtımı',
+    'TECHNICAL_MEETING': 'Teknik Görüşme',
+    'QUOTE_MEETING': 'Teklif Görüşmesi',
+    'TRAINING': 'Eğitim',
+    'COLLECTION': 'Tahsilat / Ticari Görüşme',
+    'OTHER': 'Diğer',
+  };
+
+  static const _outcomeLabels = {
+    'POSITIVE': 'Olumlu',
+    'QUOTE_PENDING': 'Teklif Bekliyor',
+    'PROJECT_CREATED': 'Proje Oluştu',
+    'ORDER_PENDING': 'Sipariş Bekleniyor',
+    'FOLLOW_UP_NEEDED': 'Takip Gerekli',
+    'NEGATIVE': 'Olumsuz',
+    'NOT_HAPPENED': 'Görüşme Gerçekleşmedi',
+    'OTHER': 'Diğer',
+  };
 
   @override
   void initState() {
@@ -302,17 +326,17 @@ class _CreateVisitScreenState extends State<_CreateVisitScreen> {
     if (Platform.isIOS) {
       return CupertinoPageScaffold(
         backgroundColor: const Color(0xFFFFFFFF),
-        navigationBar: CupertinoNavigationBar(
+        navigationBar: const CupertinoNavigationBar(
           backgroundColor: Color(0xFFFFFFFF),
           border: null,
-          middle: Text(AppLocalizations.of(context)!.screenNewVisit, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+          middle: Text('Yeni Ziyaret', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
         ),
         child: SafeArea(child: _buildForm()),
       );
     }
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppPageHeader(title: AppLocalizations.of(context)!.screenNewVisit),
+      appBar: const AppPageHeader(title: 'Yeni Ziyaret'),
       body: SafeArea(child: _buildForm()),
     );
   }
@@ -343,7 +367,7 @@ class _CreateVisitScreenState extends State<_CreateVisitScreen> {
                       DropdownButtonFormField<String>(
                         value: _dealerId,
                         isExpanded: true,
-                        decoration: InputDecoration(labelText: AppLocalizations.of(context)!.selectDealer, border: OutlineInputBorder()),
+                        decoration: const InputDecoration(labelText: 'Bayi Seçin', border: OutlineInputBorder()),
                         items: _dealers
                             .map<DropdownMenuItem<String>>(
                                 (d) => DropdownMenuItem(value: d['id'] as String, child: Text(d['company'] ?? '', overflow: TextOverflow.ellipsis)))
@@ -353,27 +377,27 @@ class _CreateVisitScreenState extends State<_CreateVisitScreen> {
                       const SizedBox(height: 8),
                       TextField(
                         controller: _dealerFreeTextController,
-                        decoration: InputDecoration(labelText: AppLocalizations.of(context)!.orTypeDealerName, border: OutlineInputBorder(), isDense: true),
+                        decoration: const InputDecoration(labelText: 'Ya da listede yoksa bayi adı yazın', border: OutlineInputBorder(), isDense: true),
                       ),
                       const SizedBox(height: 12),
                       TextField(
                         controller: _cityController,
-                        decoration: InputDecoration(labelText: AppLocalizations.of(context)!.cityField, border: OutlineInputBorder(), isDense: true),
+                        decoration: const InputDecoration(labelText: 'Şehir', border: OutlineInputBorder(), isDense: true),
                       ),
                       const SizedBox(height: 12),
                       DropdownButtonFormField<String>(
                         value: _visitType,
                         isExpanded: true,
-                        decoration: InputDecoration(labelText: AppLocalizations.of(context)!.visitType, border: OutlineInputBorder()),
-                        items: _visitTypeLabels(context).entries.map((e) => DropdownMenuItem(value: e.key, child: Text(e.value))).toList(),
+                        decoration: const InputDecoration(labelText: 'Ziyaret Türü', border: OutlineInputBorder()),
+                        items: _visitTypeLabels.entries.map((e) => DropdownMenuItem(value: e.key, child: Text(e.value))).toList(),
                         onChanged: (v) => setState(() => _visitType = v!),
                       ),
                       const SizedBox(height: 12),
                       DropdownButtonFormField<String>(
                         value: _outcome,
                         isExpanded: true,
-                        decoration: InputDecoration(labelText: AppLocalizations.of(context)!.visitOutcome, border: OutlineInputBorder()),
-                        items: _outcomeLabels(context).entries.map((e) => DropdownMenuItem(value: e.key, child: Text(e.value))).toList(),
+                        decoration: const InputDecoration(labelText: 'Ziyaret Sonucu', border: OutlineInputBorder()),
+                        items: _outcomeLabels.entries.map((e) => DropdownMenuItem(value: e.key, child: Text(e.value))).toList(),
                         onChanged: (v) => setState(() => _outcome = v!),
                       ),
                       const SizedBox(height: 12),
@@ -381,33 +405,33 @@ class _CreateVisitScreenState extends State<_CreateVisitScreen> {
                         controller: _notesController,
                         minLines: 3,
                         maxLines: 6,
-                        decoration: InputDecoration(labelText: AppLocalizations.of(context)!.meetingNotes, hintText: AppLocalizations.of(context)!.meetingNotesHint, border: OutlineInputBorder()),
+                        decoration: const InputDecoration(labelText: 'Görüşme Notları', hintText: 'Görüşmenin detaylarını yazın...', border: OutlineInputBorder()),
                       ),
                     ],
                   ),
                 ),
-                SizedBox(height: AppSpacing.sm),
+                const SizedBox(height: AppSpacing.sm),
                 TextButton.icon(
                   onPressed: () => setState(() => _showOptional = !_showOptional),
                   icon: Icon(_showOptional ? Icons.remove : Icons.add, size: 18),
-                  label: Text(AppLocalizations.of(context)!.addContactPersonHint),
+                  label: const Text('Görüşülen kişi / takip bilgisi ekle (isteğe bağlı)'),
                 ),
                 if (_showOptional) ...[
-                  SizedBox(height: AppSpacing.xs),
+                  const SizedBox(height: AppSpacing.xs),
                   StandardCard(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(AppLocalizations.of(context)!.contactPerson, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.navy)),
+                        const Text('Görüşülen Kişi', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.navy)),
                         const SizedBox(height: 8),
-                        TextField(controller: _contactNameController, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.fullName, border: OutlineInputBorder(), isDense: true)),
+                        TextField(controller: _contactNameController, decoration: const InputDecoration(labelText: 'Ad Soyad', border: OutlineInputBorder(), isDense: true)),
                         const SizedBox(height: 8),
-                        TextField(controller: _contactPhoneController, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.phone, border: OutlineInputBorder(), isDense: true)),
-                        SizedBox(height: 16),
-                        Text(AppLocalizations.of(context)!.followUp, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.navy)),
+                        TextField(controller: _contactPhoneController, decoration: const InputDecoration(labelText: 'Telefon', border: OutlineInputBorder(), isDense: true)),
+                        const SizedBox(height: 16),
+                        const Text('Takip', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.navy)),
                         SwitchListTile(
                           contentPadding: EdgeInsets.zero,
-                          title: Text(AppLocalizations.of(context)!.followUpNeeded, style: TextStyle(fontSize: 13)),
+                          title: const Text('Takip gerekiyor', style: TextStyle(fontSize: 13)),
                           value: _needsFollowUp,
                           onChanged: (v) => setState(() => _needsFollowUp = v),
                         ),
@@ -418,7 +442,7 @@ class _CreateVisitScreenState extends State<_CreateVisitScreen> {
                             label: Text(_followUpDate == null ? 'Takip Tarihi Seç' : '${_followUpDate!.day}.${_followUpDate!.month}.${_followUpDate!.year}'),
                           ),
                           const SizedBox(height: 8),
-                          TextField(controller: _followUpActionController, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.followUpAction, border: OutlineInputBorder(), isDense: true)),
+                          TextField(controller: _followUpActionController, decoration: const InputDecoration(labelText: 'Yapılacak işlem', border: OutlineInputBorder(), isDense: true)),
                         ],
                       ],
                     ),
@@ -429,8 +453,8 @@ class _CreateVisitScreenState extends State<_CreateVisitScreen> {
                   onPressed: _submitting ? null : _submit,
                   style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(50)),
                   child: _submitting
-                      ? SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                      : Text(AppLocalizations.of(context)!.saveVisit),
+                      ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                      : const Text('Ziyareti Kaydet'),
                 ),
               ],
             );
@@ -452,6 +476,9 @@ class _VisitDetailScreenState extends State<_VisitDetailScreen> {
   Map<String, dynamic>? _visit;
   bool _loading = true;
   bool _uploading = false;
+
+  static const _outcomeLabels = _DealerVisitsScreenState._outcomeLabels;
+  static const _visitTypeLabels = _DealerVisitsScreenState._visitTypeLabels;
 
   @override
   void initState() {
@@ -484,7 +511,7 @@ class _VisitDetailScreenState extends State<_VisitDetailScreen> {
       await _load();
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.photoAddFailed)));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Fotoğraf eklenemedi, tekrar deneyin.')));
       }
     } finally {
       if (mounted) setState(() => _uploading = false);
@@ -499,7 +526,7 @@ class _VisitDetailScreenState extends State<_VisitDetailScreen> {
           children: [
             ListTile(
               leading: const Icon(Icons.camera_alt_outlined),
-              title: Text(AppLocalizations.of(context)!.takePhotoAction),
+              title: const Text('Fotoğraf Çek'),
               onTap: () {
                 Navigator.pop(context);
                 _addPhoto(ImageSource.camera);
@@ -507,7 +534,7 @@ class _VisitDetailScreenState extends State<_VisitDetailScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.photo_library_outlined),
-              title: Text(AppLocalizations.of(context)!.chooseFromGallery),
+              title: const Text('Galeriden Seç'),
               onTap: () {
                 Navigator.pop(context);
                 _addPhoto(ImageSource.gallery);
@@ -537,11 +564,11 @@ class _VisitDetailScreenState extends State<_VisitDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppPageHeader(title: AppLocalizations.of(context)!.screenVisitDetail),
+      appBar: const AppPageHeader(title: 'Ziyaret Detayı'),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _visit == null
-              ? Center(child: Text(AppLocalizations.of(context)!.visitNotFound))
+              ? const Center(child: Text('Ziyaret bulunamadı.'))
               : ListView(
                   padding: const EdgeInsets.all(AppSpacing.md),
                   children: [
@@ -550,11 +577,11 @@ class _VisitDetailScreenState extends State<_VisitDetailScreen> {
                         padding: const EdgeInsets.all(AppSpacing.sm),
                         margin: const EdgeInsets.only(bottom: AppSpacing.sm),
                         decoration: BoxDecoration(color: Colors.green.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(12)),
-                        child: Row(
+                        child: const Row(
                           children: [
                             Icon(Icons.check_circle, color: Colors.green, size: 18),
                             SizedBox(width: 8),
-                            Expanded(child: Text(AppLocalizations.of(context)!.visitSavedAddPhotoHint, style: TextStyle(fontSize: 12.5))),
+                            Expanded(child: Text('Ziyaret kaydedildi. İsterseniz fotoğraf ekleyebilirsiniz.', style: TextStyle(fontSize: 12.5))),
                           ],
                         ),
                       ),
@@ -568,35 +595,35 @@ class _VisitDetailScreenState extends State<_VisitDetailScreen> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            '${_visitTypeLabels(context)[_visit!['visitType']] ?? _visit!['visitType']} · ${_visit!['city'] ?? '—'}',
+                            '${_visitTypeLabels[_visit!['visitType']] ?? _visit!['visitType']} · ${_visit!['city'] ?? '—'}',
                             style: TextStyle(fontSize: 12.5, color: Colors.grey.shade500),
                           ),
-                          SizedBox(height: 10),
-                          StatusBadge(label: _outcomeLabels(context)[_visit!['outcome']] ?? _visit!['outcome'], tone: AppStatusTone.neutral),
+                          const SizedBox(height: 10),
+                          StatusBadge(label: _outcomeLabels[_visit!['outcome']] ?? _visit!['outcome'], tone: AppStatusTone.neutral),
                           const Divider(height: 24),
-                          Text(AppLocalizations.of(context)!.meetingNotes, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12.5, color: AppColors.navy)),
+                          const Text('Görüşme Notları', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12.5, color: AppColors.navy)),
                           const SizedBox(height: 6),
                           Text(_visit!['notes'] ?? '', style: const TextStyle(fontSize: 13, height: 1.4)),
                         ],
                       ),
                     ),
-                    SizedBox(height: AppSpacing.md),
+                    const SizedBox(height: AppSpacing.md),
                     Row(
                       children: [
-                        Text(AppLocalizations.of(context)!.photos, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: AppColors.navy)),
+                        const Text('Fotoğraflar', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: AppColors.navy)),
                         const Spacer(),
                         TextButton.icon(
                           onPressed: _uploading ? null : _showPhotoSourceSheet,
                           icon: _uploading
-                              ? SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2))
+                              ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2))
                               : const Icon(Icons.add_a_photo_outlined, size: 16),
-                          label: Text(AppLocalizations.of(context)!.add),
+                          label: const Text('Ekle'),
                         ),
                       ],
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     if ((_visit!['attachments'] as List?)?.isEmpty ?? true)
-                      Text(AppLocalizations.of(context)!.emptyPhotos, style: TextStyle(fontSize: 12.5, color: Colors.grey.shade400))
+                      Text('Henüz fotoğraf eklenmedi.', style: TextStyle(fontSize: 12.5, color: Colors.grey.shade400))
                     else
                       GridView.builder(
                         shrinkWrap: true,

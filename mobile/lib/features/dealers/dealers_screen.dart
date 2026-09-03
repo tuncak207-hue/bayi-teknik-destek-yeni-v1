@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../l10n/app_localizations.dart';
 import '../../core/widgets/design_system.dart';
 import 'package:go_router/go_router.dart';
 import 'package:dio/dio.dart';
 import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_components.dart';
+import '../../core/widgets/app_info_card.dart';
 import '../../core/events/dealers_refresh_bus.dart';
 
 /// Bayiler — tüm onaylanmış bayilerin listelendiği, birine dokununca özel
@@ -55,13 +55,13 @@ class _DealersScreenState extends State<DealersScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: Text(AppLocalizations.of(context)!.blockDealer),
-        content: Text(AppLocalizations.of(context)!.blockDealerConfirm(company)),
+        title: const Text('Bayiyi Engelle'),
+        content: Text('$company adlı bayiyi engellemek istediğinize emin misiniz? Artık birbirinize mesaj gönderemezsiniz.'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(AppLocalizations.of(context)!.cancel)),
+          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: Text(AppLocalizations.of(context)!.block, style: TextStyle(color: AppColors.navy)),
+            child: const Text('Engelle', style: TextStyle(color: AppColors.navy)),
           ),
         ],
       ),
@@ -71,7 +71,7 @@ class _DealersScreenState extends State<DealersScreen> {
     DealersRefreshBus.bump();
     _load();
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.dealerBlocked(company))));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$company engellendi.')));
     }
   }
 
@@ -79,7 +79,7 @@ class _DealersScreenState extends State<DealersScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppPageHeader(title: AppLocalizations.of(context)!.screenDealers),
+      appBar: const AppPageHeader(title: 'Bayiler'),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _dealers.isEmpty
@@ -90,8 +90,8 @@ class _DealersScreenState extends State<DealersScreen> {
                       const SizedBox(height: 60),
                       AppEmptyState(
                         icon: Icons.groups_outlined,
-                        title: AppLocalizations.of(context)!.emptyDealers,
-                        description: AppLocalizations.of(context)!.otherDealersHint,
+                        title: 'Henüz başka bir bayi yok',
+                        description: 'Onaylanmış diğer bayiler burada listelenecek.',
                       ),
                     ],
                   ),
@@ -127,59 +127,48 @@ class _DealersScreenState extends State<DealersScreen> {
                       }
                       final d = _dealers[index - 1];
                       final company = (d['company'] as String?) ?? '';
-                      final initial = company.isNotEmpty ? company.characters.first.toUpperCase() : '?';
-                      return Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: AppColors.divider),
-                          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 3))],
-                        ),
-                        child: ListTile(
-                          contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 6),
-                          leading: d['avatarUrl'] != null
-                              ? CircleAvatar(radius: 24, backgroundImage: NetworkImage(d['avatarUrl']))
-                              : Container(
-                                  width: 48,
-                                  height: 48,
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [AppColors.navy.withValues(alpha: 0.12), AppColors.brand.withValues(alpha: 0.12)],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
+                      return AppInfoCard(
+                        head: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            d['avatarUrl'] != null
+                                ? ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: Image.network(d['avatarUrl'], width: 44, height: 44, fit: BoxFit.cover),
+                                  )
+                                : AppInitialBox(label: company),
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: AppInfoCardHead(
+                                title: company,
+                                meta: ['${d['firstName']} ${d['lastName']}'],
+                                badge: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    IconButton.filled(
+                                      onPressed: () => _startChat(d['id']),
+                                      icon: const Icon(Icons.chat_bubble_outline, size: 17),
+                                      style: IconButton.styleFrom(
+                                        backgroundColor: AppColors.navy.withValues(alpha: 0.08),
+                                        foregroundColor: AppColors.navy,
+                                        padding: const EdgeInsets.all(8),
+                                      ),
+                                      tooltip: 'Özel mesaj gönder',
                                     ),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Center(
-                                    child: Text(initial, style: const TextStyle(color: AppColors.navy, fontWeight: FontWeight.w800, fontSize: 17)),
-                                  ),
+                                    PopupMenuButton<String>(
+                                      icon: const Icon(Icons.more_vert, size: 18, color: Colors.grey),
+                                      onSelected: (value) {
+                                        if (value == 'block') _blockDealer(d['id'], company);
+                                      },
+                                      itemBuilder: (context) => [
+                                        const PopupMenuItem(value: 'block', child: Text('Engelle')),
+                                      ],
+                                    ),
+                                  ],
                                 ),
-                          title: Text(company, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: AppColors.navy, letterSpacing: -0.2)),
-                          subtitle: Text('${d['firstName']} ${d['lastName']}', style: TextStyle(color: Colors.grey.shade500, fontSize: 12.5, fontWeight: FontWeight.w500)),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton.filled(
-                                onPressed: () => _startChat(d['id']),
-                                icon: const Icon(Icons.chat_bubble_outline, size: 17),
-                                style: IconButton.styleFrom(
-                                  backgroundColor: AppColors.navy.withValues(alpha: 0.08),
-                                  foregroundColor: AppColors.navy,
-                                  padding: const EdgeInsets.all(8),
-                                ),
-                                tooltip: 'Özel mesaj gönder',
                               ),
-                              PopupMenuButton<String>(
-                                icon: const Icon(Icons.more_vert, size: 18, color: Colors.grey),
-                                onSelected: (value) {
-                                  if (value == 'block') _blockDealer(d['id'], company);
-                                },
-                                itemBuilder: (context) => [
-                                  PopupMenuItem(value: 'block', child: Text(AppLocalizations.of(context)!.block)),
-                                ],
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       );
                     },

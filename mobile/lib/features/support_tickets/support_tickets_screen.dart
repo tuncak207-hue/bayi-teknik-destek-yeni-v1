@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../l10n/app_localizations.dart';
 import 'package:flutter/cupertino.dart';
 import 'dart:io' show Platform;
 import 'package:dio/dio.dart';
@@ -8,16 +7,8 @@ import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_components.dart';
 import '../../core/widgets/design_system.dart';
+import '../../core/widgets/app_info_card.dart';
 import '../../core/events/notification_badge_bus.dart';
-
-Map<String, String> _costCategoryLabels(BuildContext context) => {
-      'ENGINEER_TIME': AppLocalizations.of(context)!.costEngineerTime,
-      'SITE_VISIT': AppLocalizations.of(context)!.costSiteVisit,
-      'TRAVEL': AppLocalizations.of(context)!.costTravel,
-      'ACCOMMODATION': AppLocalizations.of(context)!.costAccommodation,
-      'SPARE_PART': AppLocalizations.of(context)!.costSparePart,
-      'LABOR': AppLocalizations.of(context)!.costLabor,
-    };
 
 class SupportTicketsScreen extends StatefulWidget {
   const SupportTicketsScreen({super.key});
@@ -73,12 +64,12 @@ class _SupportTicketsScreenState extends State<SupportTicketsScreen> {
   }
 
   String _statusText(String status) {
-    final map = {
-      'OPEN': AppLocalizations.of(context)!.statusOpen,
-      'IN_PROGRESS': AppLocalizations.of(context)!.statusInProgress,
-      'RESOLVED': AppLocalizations.of(context)!.statusResolved,
-      'CLOSED': AppLocalizations.of(context)!.statusClosed,
-      'ESCALATED': AppLocalizations.of(context)!.statusEscalated,
+    const map = {
+      'OPEN': 'Açık',
+      'IN_PROGRESS': 'İşlemde',
+      'RESOLVED': 'Çözüldü',
+      'CLOSED': 'Kapatıldı',
+      'ESCALATED': 'Yükseltildi',
     };
     return map[status] ?? status;
   }
@@ -101,7 +92,7 @@ class _SupportTicketsScreenState extends State<SupportTicketsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      floatingActionButton: StandardFab(label: AppLocalizations.of(context)!.newRecord, onPressed: () => _openCreate(isEmergency: false)),
+      floatingActionButton: StandardFab(label: 'Yeni Kayıt', onPressed: () => _openCreate(isEmergency: false)),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: SafeArea(
         child: Column(
@@ -144,13 +135,13 @@ class _SupportTicketsScreenState extends State<SupportTicketsScreen> {
                   Material(
                     color: Colors.transparent,
                     child: InkWell(
-                      borderRadius: BorderRadius.circular(AppRadius.xl),
+                      borderRadius: BorderRadius.circular(20),
                       onTap: () => _openCreate(isEmergency: true),
                       child: Container(
                         padding: const EdgeInsets.all(AppSpacing.md),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(colors: [AppColors.brand, AppColors.brand.withValues(alpha: 0.8)]),
-                          borderRadius: BorderRadius.circular(AppRadius.xl),
+                          borderRadius: BorderRadius.circular(20),
                           boxShadow: [BoxShadow(color: AppColors.brand.withValues(alpha: 0.35), blurRadius: 18, offset: const Offset(0, 6))],
                         ),
                         child: Row(
@@ -158,17 +149,17 @@ class _SupportTicketsScreenState extends State<SupportTicketsScreen> {
                             Container(
                               width: 46,
                               height: 46,
-                              decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(AppRadius.sm)),
+                              decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(14)),
                               child: const Icon(Icons.warning_rounded, color: Colors.white, size: 24),
                             ),
                             const SizedBox(width: AppSpacing.sm),
-                            Expanded(
+                            const Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(AppLocalizations.of(context)!.screenEmergencySupport, style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 16)),
+                                  Text('Acil Teknik Destek', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 16)),
                                   SizedBox(height: 2),
-                                  Text(AppLocalizations.of(context)!.oneTapEmergencyRecord, style: TextStyle(color: Colors.white70, fontSize: 12)),
+                                  Text('Tek tuşla acil kayıt oluştur', style: TextStyle(color: Colors.white70, fontSize: 12)),
                                 ],
                               ),
                             ),
@@ -184,7 +175,7 @@ class _SupportTicketsScreenState extends State<SupportTicketsScreen> {
                       padding: const EdgeInsets.only(top: AppSpacing.xl),
                       child: StandardCard(
                         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
-                        child: AppEmptyState(icon: Icons.build_circle_outlined, title: AppLocalizations.of(context)!.emptySupportTickets),
+                        child: const AppEmptyState(icon: Icons.build_circle_outlined, title: 'Henüz bir teknik destek kaydınız yok'),
                       ),
                     )
                   else
@@ -192,19 +183,24 @@ class _SupportTicketsScreenState extends State<SupportTicketsScreen> {
                       final isEmergency = t['isEmergency'] == true;
                       return Container(
                         margin: const EdgeInsets.only(bottom: AppSpacing.xs),
-                        child: StandardCard(
+                        child: AppInfoCard(
                           onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(builder: (_) => _TicketDetailScreen(ticketId: t['id'])),
                           ),
-                          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
-                          border: isEmergency ? Border.all(color: AppColors.navy.withValues(alpha: 0.35), width: 1.5) : null,
-                          child: Row(
+                          border: isEmergency
+                              ? Border.all(color: AppColors.navy.withValues(alpha: 0.35), width: 1.5)
+                              : null,
+                          head: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Container(
                                 width: 40,
                                 height: 40,
-                                decoration: BoxDecoration(color: _priorityColor(t['priority']).withValues(alpha: 0.1), borderRadius: BorderRadius.circular(AppRadius.sm)),
+                                decoration: BoxDecoration(
+                                  color: _priorityColor(t['priority']).withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
                                 child: Icon(
                                   isEmergency ? Icons.warning_amber_rounded : Icons.build_outlined,
                                   color: _priorityColor(t['priority']),
@@ -213,22 +209,19 @@ class _SupportTicketsScreenState extends State<SupportTicketsScreen> {
                               ),
                               const SizedBox(width: AppSpacing.sm),
                               Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    CardHeaderRow(
-                                      title: t['productName'] ?? t['description'] ?? '',
-                                      trailing: isEmergency ? StatusBadge(label: AppLocalizations.of(context)!.urgentBadge, tone: AppStatusTone.danger) : null,
-                                    ),
-                                    const SizedBox(height: 6),
-                                    Row(
-                                      children: [
-                                        StatusBadge(label: _statusText(t['status']), tone: _statusTone(t['status'])),
-                                        const SizedBox(width: 8),
-                                        CardFooterMeta(icon: Icons.schedule_outlined, label: _formatDate(t['createdAt'])),
+                                child: AppInfoCardHead(
+                                  title: t['productName'] ?? t['description'] ?? '',
+                                  meta: [_formatDate(t['createdAt'])],
+                                  badge: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      if (isEmergency) ...[
+                                        const StatusBadge(label: 'ACİL', tone: AppStatusTone.danger),
+                                        const SizedBox(height: 4),
                                       ],
-                                    ),
-                                  ],
+                                      StatusBadge(label: _statusText(t['status']), tone: _statusTone(t['status'])),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ],
@@ -275,12 +268,12 @@ class _CreateTicketScreenState extends State<_CreateTicketScreen> {
           children: [
             ListTile(
               leading: const Icon(Icons.photo_camera_outlined),
-              title: Text(AppLocalizations.of(context)!.takePhoto),
+              title: const Text('Kamera ile çek'),
               onTap: () => Navigator.pop(context, ImageSource.camera),
             ),
             ListTile(
               leading: const Icon(Icons.photo_library_outlined),
-              title: Text(AppLocalizations.of(context)!.chooseFromGallery),
+              title: const Text('Galeriden Seç'),
               onTap: () => Navigator.pop(context, ImageSource.gallery),
             ),
           ],
@@ -300,7 +293,7 @@ class _CreateTicketScreenState extends State<_CreateTicketScreen> {
   Future<void> _submit() async {
     if (_descriptionController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.pleaseDescribeIssue)),
+        const SnackBar(content: Text('Lütfen sorunu kısaca açıklayın.')),
       );
       return;
     }
@@ -340,16 +333,16 @@ class _CreateTicketScreenState extends State<_CreateTicketScreen> {
           leading: CupertinoButton(
             padding: EdgeInsets.zero,
             onPressed: () => Navigator.pop(context),
-            child: Text(AppLocalizations.of(context)!.cancel, style: TextStyle(color: CupertinoColors.systemGrey, fontSize: 16)),
+            child: const Text('İptal', style: TextStyle(color: CupertinoColors.systemGrey, fontSize: 16)),
           ),
-          middle: Text(widget.isEmergency ? AppLocalizations.of(context)!.screenEmergencySupport : AppLocalizations.of(context)!.screenNewSupportTicket, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: AppColors.navy)),
+          middle: Text(widget.isEmergency ? 'Acil Teknik Destek' : 'Yeni Teknik Destek Kaydı', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: AppColors.navy)),
         ),
         child: SafeArea(child: _buildForm()),
       );
     }
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppPageHeader(title: widget.isEmergency ? AppLocalizations.of(context)!.screenEmergencySupport : AppLocalizations.of(context)!.screenNewSupportTicket),
+      appBar: AppPageHeader(title: widget.isEmergency ? 'Acil Teknik Destek' : 'Yeni Teknik Destek Kaydı'),
       body: SafeArea(child: _buildForm()),
     );
   }
@@ -362,7 +355,7 @@ class _CreateTicketScreenState extends State<_CreateTicketScreen> {
             Container(
               margin: const EdgeInsets.only(bottom: AppSpacing.md),
               padding: const EdgeInsets.all(AppSpacing.sm),
-              decoration: BoxDecoration(color: AppColors.navy.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(AppRadius.sm)),
+              decoration: BoxDecoration(color: AppColors.navy.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(14)),
               child: Row(
                 children: [
                   const Icon(Icons.warning_amber_rounded, color: AppColors.navy, size: 18),
@@ -378,29 +371,29 @@ class _CreateTicketScreenState extends State<_CreateTicketScreen> {
             ),
           TextField(
             controller: _productNameController,
-            decoration: InputDecoration(labelText: AppLocalizations.of(context)!.productName, hintText: AppLocalizations.of(context)!.productNameHint),
+            decoration: const InputDecoration(labelText: 'Ürün Adı', hintText: 'Örn: MA8000 Yangın Alarm Paneli'),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _productModelController,
-            decoration: InputDecoration(labelText: AppLocalizations.of(context)!.modelOptional),
+            decoration: const InputDecoration(labelText: 'Model (opsiyonel)'),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _serialNumberController,
-            decoration: InputDecoration(labelText: AppLocalizations.of(context)!.serialNumberOptional),
+            decoration: const InputDecoration(labelText: 'Seri Numarası (opsiyonel)'),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _locationController,
-            decoration: InputDecoration(labelText: AppLocalizations.of(context)!.locationOptional, hintText: AppLocalizations.of(context)!.locationHint),
+            decoration: const InputDecoration(labelText: 'Konum (opsiyonel)', hintText: 'Örn: İstanbul, Kadıköy'),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _descriptionController,
             minLines: 3,
             maxLines: 6,
-            decoration: InputDecoration(labelText: AppLocalizations.of(context)!.describeIssue),
+            decoration: const InputDecoration(labelText: 'Sorunu Açıklayın'),
           ),
           const SizedBox(height: 16),
           OutlinedButton.icon(
@@ -476,7 +469,7 @@ class _TicketDetailScreenState extends State<_TicketDetailScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppPageHeader(title: AppLocalizations.of(context)!.screenRecordDetail),
+      appBar: const AppPageHeader(title: 'Kayıt Detayı'),
       body: RefreshIndicator(
         onRefresh: _load,
         child: ListView(
@@ -486,13 +479,13 @@ class _TicketDetailScreenState extends State<_TicketDetailScreen> {
               Container(
                 margin: const EdgeInsets.only(bottom: AppSpacing.sm),
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(color: AppColors.navy.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(AppRadius.xl)),
-                child: Row(
+                decoration: BoxDecoration(color: AppColors.navy.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(20)),
+                child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(Icons.warning_amber_rounded, size: 14, color: AppColors.navy),
                     SizedBox(width: 6),
-                    Text(AppLocalizations.of(context)!.emergencyRecordShort, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AppColors.navy)),
+                    Text('ACİL KAYIT', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AppColors.navy)),
                   ],
                 ),
               ),
@@ -500,7 +493,7 @@ class _TicketDetailScreenState extends State<_TicketDetailScreen> {
               Container(
                 margin: const EdgeInsets.only(bottom: AppSpacing.sm),
                 padding: const EdgeInsets.all(AppSpacing.sm),
-                decoration: BoxDecoration(color: Colors.orange.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(AppRadius.sm)),
+                decoration: BoxDecoration(color: Colors.orange.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(14)),
                 child: Row(
                   children: [
                     const Icon(Icons.trending_up, color: Colors.orange, size: 18),
@@ -521,18 +514,18 @@ class _TicketDetailScreenState extends State<_TicketDetailScreen> {
                 margin: const EdgeInsets.only(bottom: AppSpacing.md),
                 decoration: BoxDecoration(
                   color: slaStatus['resolutionBreached'] == true ? AppColors.navy.withValues(alpha: 0.06) : Colors.white,
-                  borderRadius: BorderRadius.circular(AppRadius.lg),
-                  boxShadow: AppShadows.subtle,
+                  borderRadius: BorderRadius.circular(18),
+                  boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 2))],
                 ),
                 child: Row(
                   children: [
                     Icon(Icons.timer_outlined, color: slaStatus['resolutionBreached'] == true ? AppColors.navy : AppColors.brand),
-                    SizedBox(width: 10),
+                    const SizedBox(width: 10),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(AppLocalizations.of(context)!.resolutionTimeSla, style: TextStyle(fontSize: 11.5, color: Colors.grey, fontWeight: FontWeight.w600)),
+                          const Text('Çözüm Süresi (SLA)', style: TextStyle(fontSize: 11.5, color: Colors.grey, fontWeight: FontWeight.w600)),
                           Text(
                             _formatRemaining(slaStatus['resolutionRemainingMinutes']),
                             style: TextStyle(
@@ -547,33 +540,16 @@ class _TicketDetailScreenState extends State<_TicketDetailScreen> {
                   ],
                 ),
               ),
-            Container(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(AppRadius.lg),
-                boxShadow: AppShadows.subtle,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(t['productName'] ?? 'Ürün belirtilmedi', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: AppColors.navy)),
-                  if ((t['productModel'] ?? '').toString().isNotEmpty) ...[
-                    SizedBox(height: 4),
-                    Text(AppLocalizations.of(context)!.modelLabel(t['productModel']), style: TextStyle(fontSize: 12.5, color: Colors.grey.shade600)),
-                  ],
-                  if ((t['serialNumber'] ?? '').toString().isNotEmpty) ...[
-                    SizedBox(height: 2),
-                    Text(AppLocalizations.of(context)!.serialNoLabel(t['serialNumber']), style: TextStyle(fontSize: 12.5, color: Colors.grey.shade600)),
-                  ],
-                  if ((t['location'] ?? '').toString().isNotEmpty) ...[
-                    SizedBox(height: 2),
-                    Text(AppLocalizations.of(context)!.locationLabel(t['location']), style: TextStyle(fontSize: 12.5, color: Colors.grey.shade600)),
-                  ],
-                  const Divider(height: 24),
-                  Text(t['description'] ?? '', style: const TextStyle(fontSize: 14, height: 1.5)),
+            AppInfoCard(
+              head: AppInfoCardHead(
+                title: t['productName'] ?? 'Ürün belirtilmedi',
+                meta: [
+                  if ((t['productModel'] ?? '').toString().isNotEmpty) 'Model: ${t['productModel']}',
+                  if ((t['serialNumber'] ?? '').toString().isNotEmpty) 'Seri No: ${t['serialNumber']}',
+                  if ((t['location'] ?? '').toString().isNotEmpty) 'Konum: ${t['location']}',
                 ],
               ),
+              body: AppInfoCardSummary(t['description'] ?? '', maxLines: 6),
             ),
             const SizedBox(height: AppSpacing.md),
             _BeforeAfterPhotoSection(ticketId: widget.ticketId),
@@ -649,18 +625,18 @@ class _BeforeAfterPhotoSectionState extends State<_BeforeAfterPhotoSection> {
             runSpacing: 6,
             children: [
               ...photos.map((p) => ClipRRect(
-                    borderRadius: BorderRadius.circular(AppRadius.sm),
+                    borderRadius: BorderRadius.circular(10),
                     child: Image.network(p['signedUrl'], width: 64, height: 64, fit: BoxFit.cover),
                   )),
               InkWell(
                 onTap: _uploading ? null : () => _addPhoto(type),
-                borderRadius: BorderRadius.circular(AppRadius.sm),
+                borderRadius: BorderRadius.circular(10),
                 child: Container(
                   width: 64,
                   height: 64,
                   decoration: BoxDecoration(
                     color: color.withValues(alpha: 0.06),
-                    borderRadius: BorderRadius.circular(AppRadius.sm),
+                    borderRadius: BorderRadius.circular(10),
                     border: Border.all(color: color.withValues(alpha: 0.25)),
                   ),
                   child: Icon(Icons.add_a_photo_outlined, size: 20, color: color),
@@ -679,13 +655,13 @@ class _BeforeAfterPhotoSectionState extends State<_BeforeAfterPhotoSection> {
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-        boxShadow: AppShadows.subtle,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 2))],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(AppLocalizations.of(context)!.beforeAfterPhoto, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: AppColors.navy)),
+          const Text('Önce / Sonra Fotoğraf', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: AppColors.navy)),
           const SizedBox(height: 12),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -750,7 +726,7 @@ class _MeasurementSectionState extends State<_MeasurementSection> {
       await _load();
       if (res.data['isOutOfRange'] == true && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.valueOutOfRange), backgroundColor: AppColors.navy),
+          const SnackBar(content: Text('⚠️ Girilen değer kabul edilebilir aralığın dışında!'), backgroundColor: AppColors.navy),
         );
       }
     } finally {
@@ -764,13 +740,13 @@ class _MeasurementSectionState extends State<_MeasurementSection> {
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-        boxShadow: AppShadows.subtle,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 2))],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(AppLocalizations.of(context)!.technicalMeasurements, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: AppColors.navy)),
+          const Text('Teknik Ölçümler', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: AppColors.navy)),
           const SizedBox(height: 12),
           if (_types.isNotEmpty) ...[
             Row(
@@ -779,7 +755,7 @@ class _MeasurementSectionState extends State<_MeasurementSection> {
                   child: DropdownButtonFormField<String>(
                     value: _selectedTypeId,
                     isExpanded: true,
-                    decoration: InputDecoration(labelText: AppLocalizations.of(context)!.measurementType, isDense: true),
+                    decoration: const InputDecoration(labelText: 'Ölçüm Türü', isDense: true),
                     items: _types
                         .map<DropdownMenuItem<String>>((t) => DropdownMenuItem(value: t['id'], child: Text('${t['name']} (${t['unit']})', overflow: TextOverflow.ellipsis)))
                         .toList(),
@@ -792,7 +768,7 @@ class _MeasurementSectionState extends State<_MeasurementSection> {
                   child: TextField(
                     controller: _valueController,
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    decoration: InputDecoration(labelText: AppLocalizations.of(context)!.valueField, isDense: true),
+                    decoration: const InputDecoration(labelText: 'Değer', isDense: true),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -802,9 +778,9 @@ class _MeasurementSectionState extends State<_MeasurementSection> {
                 ),
               ],
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
           ] else
-            Text(AppLocalizations.of(context)!.noMeasurementTypeYet, style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
+            Text('Admin panelden henüz ölçüm türü tanımlanmamış.', style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
           if (_measurements.isNotEmpty) ...[
             const Divider(height: 20),
             ..._measurements.map((m) {
@@ -876,26 +852,26 @@ class _SparePartSectionState extends State<_SparePartSection> {
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-        boxShadow: AppShadows.subtle,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 2))],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Expanded(
-                child: Text(AppLocalizations.of(context)!.sparePartRequests, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: AppColors.navy)),
+              const Expanded(
+                child: Text('Yedek Parça Talepleri', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: AppColors.navy)),
               ),
               TextButton.icon(
                 onPressed: _openRequestForm,
                 icon: const Icon(Icons.add, size: 16),
-                label: Text(AppLocalizations.of(context)!.createRequest, style: TextStyle(fontSize: 12.5)),
+                label: const Text('Talep Oluştur', style: TextStyle(fontSize: 12.5)),
               ),
             ],
           ),
           if (_requests.isEmpty)
-            Text(AppLocalizations.of(context)!.emptyPartRequests, style: TextStyle(fontSize: 12, color: Colors.grey.shade500))
+            Text('Henüz parça talebi yok.', style: TextStyle(fontSize: 12, color: Colors.grey.shade500))
           else
             ..._requests.map((r) => Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4),
@@ -934,7 +910,7 @@ class _SparePartRequestSheetState extends State<_SparePartRequestSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(AppLocalizations.of(context)!.sparePartRequest, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+          const Text('Yedek Parça Talebi', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
           const SizedBox(height: 6),
           // Ürün/model/seri no otomatik aktarılıyor — kullanıcı tekrar girmiyor.
           Text(
@@ -942,11 +918,11 @@ class _SparePartRequestSheetState extends State<_SparePartRequestSheet> {
             style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
           ),
           const SizedBox(height: 16),
-          TextField(controller: _partCodeController, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.partCodeOptional)),
+          TextField(controller: _partCodeController, decoration: const InputDecoration(labelText: 'Parça Kodu (opsiyonel)')),
           const SizedBox(height: 12),
-          TextField(controller: _partNameController, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.partName)),
+          TextField(controller: _partNameController, decoration: const InputDecoration(labelText: 'Parça Adı')),
           const SizedBox(height: 12),
-          TextField(controller: _quantityController, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.quantity)),
+          TextField(controller: _quantityController, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Miktar')),
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
@@ -957,7 +933,7 @@ class _SparePartRequestSheetState extends State<_SparePartRequestSheet> {
                 'quantity': int.tryParse(_quantityController.text.trim()) ?? 1,
               });
             },
-            child: Text(AppLocalizations.of(context)!.submitRequest),
+            child: const Text('Talebi Gönder'),
           ),
         ],
       ),
@@ -978,6 +954,15 @@ class _CostSection extends StatefulWidget {
 class _CostSectionState extends State<_CostSection> {
   final Dio _dio = ApiClient().dio;
   List<dynamic> _costs = [];
+
+  static const _categoryLabels = {
+    'ENGINEER_TIME': 'Mühendis Çalışma Süresi',
+    'SITE_VISIT': 'Saha Ziyareti',
+    'TRAVEL': 'Yol',
+    'ACCOMMODATION': 'Konaklama',
+    'SPARE_PART': 'Yedek Parça',
+    'LABOR': 'İşçilik',
+  };
 
   @override
   void initState() {
@@ -1009,32 +994,32 @@ class _CostSectionState extends State<_CostSection> {
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-        boxShadow: AppShadows.subtle,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 2))],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Expanded(
-                child: Text(AppLocalizations.of(context)!.costItems, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: AppColors.navy)),
+              const Expanded(
+                child: Text('Maliyet Kalemleri', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: AppColors.navy)),
               ),
               TextButton.icon(
                 onPressed: _openCostForm,
                 icon: const Icon(Icons.add, size: 16),
-                label: Text(AppLocalizations.of(context)!.addItem, style: TextStyle(fontSize: 12.5)),
+                label: const Text('Kalem Ekle', style: TextStyle(fontSize: 12.5)),
               ),
             ],
           ),
           if (_costs.isEmpty)
-            Text(AppLocalizations.of(context)!.emptyCosts, style: TextStyle(fontSize: 12, color: Colors.grey.shade500))
+            Text('Henüz maliyet kaydı yok.', style: TextStyle(fontSize: 12, color: Colors.grey.shade500))
           else ...[
             ..._costs.map((c) => Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4),
                   child: Row(
                     children: [
-                      Expanded(child: Text(_costCategoryLabels(context)[c['category']] ?? c['category'], style: const TextStyle(fontSize: 12.5))),
+                      Expanded(child: Text(_categoryLabels[c['category']] ?? c['category'], style: const TextStyle(fontSize: 12.5))),
                       Text('${c['amount']} ₺', style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.brand)),
                     ],
                   ),
@@ -1043,7 +1028,7 @@ class _CostSectionState extends State<_CostSection> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(AppLocalizations.of(context)!.total, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13)),
+                const Text('Toplam', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13)),
                 Text('${total.toStringAsFixed(2)} ₺', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: AppColors.navy)),
               ],
             ),
@@ -1066,6 +1051,15 @@ class _CostEntrySheetState extends State<_CostEntrySheet> {
   final _amountController = TextEditingController();
   final _descriptionController = TextEditingController();
 
+  static const _categories = {
+    'ENGINEER_TIME': 'Mühendis Çalışma Süresi',
+    'SITE_VISIT': 'Saha Ziyareti',
+    'TRAVEL': 'Yol',
+    'ACCOMMODATION': 'Konaklama',
+    'SPARE_PART': 'Yedek Parça',
+    'LABOR': 'İşçilik',
+  };
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -1074,23 +1068,23 @@ class _CostEntrySheetState extends State<_CostEntrySheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(AppLocalizations.of(context)!.addCostItem, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+          const Text('Maliyet Kalemi Ekle', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
           const SizedBox(height: 16),
           DropdownButtonFormField<String>(
             value: _category,
             isExpanded: true,
-            decoration: InputDecoration(labelText: AppLocalizations.of(context)!.categoryField),
-            items: _costCategoryLabels(context).entries.map((e) => DropdownMenuItem(value: e.key, child: Text(e.value))).toList(),
+            decoration: const InputDecoration(labelText: 'Kategori'),
+            items: _categories.entries.map((e) => DropdownMenuItem(value: e.key, child: Text(e.value))).toList(),
             onChanged: (v) => setState(() => _category = v ?? _category),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _amountController,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            decoration: InputDecoration(labelText: AppLocalizations.of(context)!.amountTl),
+            decoration: const InputDecoration(labelText: 'Tutar (₺)'),
           ),
           const SizedBox(height: 12),
-          TextField(controller: _descriptionController, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.descriptionOptional)),
+          TextField(controller: _descriptionController, decoration: const InputDecoration(labelText: 'Açıklama (opsiyonel)')),
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
@@ -1102,7 +1096,7 @@ class _CostEntrySheetState extends State<_CostEntrySheet> {
                 'description': _descriptionController.text.trim(),
               });
             },
-            child: Text(AppLocalizations.of(context)!.add),
+            child: const Text('Ekle'),
           ),
         ],
       ),
@@ -1148,25 +1142,25 @@ class _KnowledgeBaseSectionState extends State<_KnowledgeBaseSection> {
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-        boxShadow: AppShadows.subtle,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 2))],
       ),
       child: Row(
         children: [
           Container(
             width: 40,
             height: 40,
-            decoration: BoxDecoration(color: AppColors.navy.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(AppRadius.sm)),
+            decoration: BoxDecoration(color: AppColors.navy.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(12)),
             child: const Icon(Icons.psychology_outlined, color: AppColors.navy, size: 19),
           ),
-          SizedBox(width: AppSpacing.sm),
+          const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(AppLocalizations.of(context)!.addToKnowledgeMemory, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: AppColors.navy)),
-                SizedBox(height: 2),
-                Text(AppLocalizations.of(context)!.saveCaseKnowledgeHint, style: TextStyle(fontSize: 11.5, color: Colors.grey.shade500)),
+                const Text('Bilgi Hafızasına Ekle', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: AppColors.navy)),
+                const SizedBox(height: 2),
+                Text('Bu vakadan öğrendiklerinizi kaydedin, AI gelecekte kullansın.', style: TextStyle(fontSize: 11.5, color: Colors.grey.shade500)),
               ],
             ),
           ),
@@ -1175,8 +1169,8 @@ class _KnowledgeBaseSectionState extends State<_KnowledgeBaseSection> {
               : TextButton(
                   onPressed: _submitting ? null : _openForm,
                   child: _submitting
-                      ? SizedBox(height: 16, width: 16, child: CircularProgressIndicator(strokeWidth: 2))
-                      : Text(AppLocalizations.of(context)!.add),
+                      ? const SizedBox(height: 16, width: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                      : const Text('Ekle'),
                 ),
         ],
       ),
@@ -1212,20 +1206,20 @@ class _KnowledgeEntrySheetState extends State<_KnowledgeEntrySheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(AppLocalizations.of(context)!.saveFieldExperience, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+          const Text('Saha Tecrübesi Kaydet', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
           const SizedBox(height: 6),
           Text(
             '${widget.ticket['productName'] ?? ''} ${widget.ticket['productModel'] ?? ''}',
             style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
           ),
           const SizedBox(height: 16),
-          TextField(controller: _problemController, minLines: 2, maxLines: 4, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.problemField)),
+          TextField(controller: _problemController, minLines: 2, maxLines: 4, decoration: const InputDecoration(labelText: 'Problem')),
           const SizedBox(height: 12),
-          TextField(controller: _solutionController, minLines: 2, maxLines: 4, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.solutionField)),
+          TextField(controller: _solutionController, minLines: 2, maxLines: 4, decoration: const InputDecoration(labelText: 'Çözüm')),
           const SizedBox(height: 12),
-          TextField(controller: _errorCodeController, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.errorCodeOptional)),
+          TextField(controller: _errorCodeController, decoration: const InputDecoration(labelText: 'Hata Kodu (opsiyonel)')),
           const SizedBox(height: 12),
-          TextField(controller: _partUsedController, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.partUsedOptional)),
+          TextField(controller: _partUsedController, decoration: const InputDecoration(labelText: 'Kullanılan Parça (opsiyonel)')),
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
@@ -1239,7 +1233,7 @@ class _KnowledgeEntrySheetState extends State<_KnowledgeEntrySheet> {
                 'partUsed': _partUsedController.text.trim(),
               });
             },
-            child: Text(AppLocalizations.of(context)!.save),
+            child: const Text('Kaydet'),
           ),
         ],
       ),

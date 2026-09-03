@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import '../../l10n/app_localizations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dio/dio.dart';
 import 'package:pdf/pdf.dart';
@@ -10,6 +9,7 @@ import '../../core/api/api_client.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_components.dart';
 import '../../core/widgets/design_system.dart';
+import '../../core/widgets/app_info_card.dart';
 import '../../core/pdf/document_pdf_exporter.dart';
 import '../../core/widgets/province_district_picker.dart';
 import '../../core/data/turkey_locations.dart';
@@ -58,7 +58,7 @@ class _QuotesScreenState extends State<QuotesScreen> {
       if (url == null) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context)!.noPriceListPdfYet)),
+            const SnackBar(content: Text('Henüz bir fiyat listesi PDF\'i yüklenmedi.')),
           );
         }
         return;
@@ -69,7 +69,7 @@ class _QuotesScreenState extends State<QuotesScreen> {
       await DocumentPdfExporter.view(File(path));
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.priceListOpenFailed)));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Fiyat listesi açılamadı.')));
       }
     }
   }
@@ -78,11 +78,11 @@ class _QuotesScreenState extends State<QuotesScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: Text(AppLocalizations.of(context)!.deleteQuote),
+        title: const Text('Teklifi Sil'),
         content: Text('"${quote['title']}" silinecek. Emin misiniz?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(AppLocalizations.of(context)!.cancel)),
-          TextButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(AppLocalizations.of(context)!.delete, style: TextStyle(color: AppColors.navy))),
+          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Vazgeç')),
+          TextButton(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('Sil', style: TextStyle(color: AppColors.navy))),
         ],
       ),
     );
@@ -101,7 +101,7 @@ class _QuotesScreenState extends State<QuotesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      floatingActionButton: StandardFab(label: AppLocalizations.of(context)!.screenNewQuote, onPressed: () => _openBuilder()),
+      floatingActionButton: StandardFab(label: 'Yeni Teklif', onPressed: () => _openBuilder()),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: SafeArea(
         child: Column(
@@ -153,10 +153,10 @@ class _QuotesScreenState extends State<QuotesScreen> {
                               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
                               child: StandardCard(
                                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
-                                child: AppEmptyState(
+                                child: const AppEmptyState(
                                   icon: Icons.request_quote_outlined,
-                                  title: AppLocalizations.of(context)!.emptyQuotes,
-                                  description: AppLocalizations.of(context)!.quotesEmptyHint,
+                                  title: 'Henüz bir teklifiniz yok',
+                                  description: 'Sağ alttaki butondan müşteriniz için yangın sistemi teklifi oluşturabilirsiniz.',
                                 ),
                               ),
                             ),
@@ -172,60 +172,58 @@ class _QuotesScreenState extends State<QuotesScreen> {
                           itemBuilder: (context, index) {
                       final q = _quotes[index];
                       final items = (q['items'] as List?) ?? [];
-                      return StandardCard(
-                        padding: const EdgeInsets.all(AppSpacing.sm),
+                      return AppInfoCard(
                         onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => _QuoteDetailScreen(quote: q))),
-                        child: Row(
+                        head: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Container(
                               width: 44,
                               height: 44,
                               decoration: BoxDecoration(
                                 gradient: const LinearGradient(colors: [AppColors.navy, AppColors.navyLight]),
-                                borderRadius: BorderRadius.circular(AppRadius.sm),
+                                borderRadius: BorderRadius.circular(14),
                               ),
                               child: const Icon(Icons.request_quote_outlined, color: Colors.white, size: 20),
                             ),
                             const SizedBox(width: AppSpacing.sm),
                             Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(q['title'] ?? '', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14.5, color: AppColors.navy)),
-                                  const SizedBox(height: 4),
-                                  CardFooterMeta(
-                                    icon: Icons.person_outline,
-                                    label: '${q['customerName'] ?? 'Müşteri belirtilmedi'} · ${items.length} kalem · ${_formatDate(q['createdAt'])}',
-                                  ),
+                              child: AppInfoCardHead(
+                                title: q['title'] ?? '',
+                                meta: [
+                                  q['customerName'] ?? 'Müşteri belirtilmedi',
+                                  '${items.length} kalem',
+                                  _formatDate(q['createdAt']),
                                 ],
-                              ),
-                            ),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Text('${(q['totalAmount'] as num).toStringAsFixed(0)} €', style: const TextStyle(fontWeight: FontWeight.w800, color: AppColors.brand, fontSize: 14)),
-                                const SizedBox(height: 2),
-                                Row(
+                                badge: Column(
                                   mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
-                                    IconButton(
-                                      icon: const Icon(Icons.edit_outlined, size: 18, color: Colors.grey),
-                                      onPressed: () => _openBuilder(existingQuote: q),
-                                      padding: EdgeInsets.zero,
-                                      constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-                                      tooltip: 'Düzenle',
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(Icons.delete_outline, size: 18, color: Colors.grey),
-                                      onPressed: () => _delete(q),
-                                      padding: EdgeInsets.zero,
-                                      constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-                                      tooltip: 'Sil',
+                                    Text('${(q['totalAmount'] as num).toStringAsFixed(0)} €',
+                                        style: const TextStyle(fontWeight: FontWeight.w800, color: AppColors.brand, fontSize: 14)),
+                                    const SizedBox(height: 2),
+                                    Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        IconButton(
+                                          icon: const Icon(Icons.edit_outlined, size: 18, color: Colors.grey),
+                                          onPressed: () => _openBuilder(existingQuote: q),
+                                          padding: EdgeInsets.zero,
+                                          constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+                                          tooltip: 'Düzenle',
+                                        ),
+                                        IconButton(
+                                          icon: const Icon(Icons.delete_outline, size: 18, color: Colors.grey),
+                                          onPressed: () => _delete(q),
+                                          padding: EdgeInsets.zero,
+                                          constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+                                          tooltip: 'Sil',
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
-                              ],
+                              ),
                             ),
                           ],
                         ),
@@ -271,15 +269,7 @@ class _QuoteBuilderScreen extends StatefulWidget {
 
 class _QuoteBuilderScreenState extends State<_QuoteBuilderScreen> {
   final Dio _dio = ApiClient().dio;
-  // Kullanıcı isteği: "teklif başlığı içindeki yazı silinebilir olmalı,
-  // üzerine tıklayıp bir şey yazdığımda silinmeli" — önceden yeni teklif
-  // açılırken "Yangın Sistemi Teklifi" GERÇEK bir metin olarak alana
-  // yerleşiyordu (ipucu değil), kullanıcı önce elle silmek zorunda
-  // kalıyordu. Artık yeni teklifte alan BOŞ başlıyor, varsayılan başlık
-  // sadece soluk bir İPUCU (hint) olarak görünüyor — yazmaya başlayınca
-  // otomatik kayboluyor. Var olan bir teklifi düzenlerken gerçek başlık
-  // yine olduğu gibi gösteriliyor.
-  late final _titleController = TextEditingController(text: widget.existingQuote?['title'] ?? '');
+  late final _titleController = TextEditingController(text: widget.existingQuote?['title'] ?? 'Yangın Sistemi Teklifi');
   late final _customerNameController = TextEditingController(text: widget.existingQuote?['customerName'] ?? '');
   late final _customerPhoneController = TextEditingController(text: widget.existingQuote?['customerPhone'] ?? '');
   String? _district;
@@ -361,13 +351,13 @@ class _QuoteBuilderScreenState extends State<_QuoteBuilderScreen> {
 
   Future<void> _submit() async {
     if (_cart.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.pleaseSelectAtLeastOneItem)));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Lütfen en az bir kalem seçin.')));
       return;
     }
     setState(() => _submitting = true);
     try {
       final payload = {
-        'title': _titleController.text.trim().isEmpty ? 'Yangın Sistemi Teklifi' : _titleController.text.trim(),
+        'title': _titleController.text.trim(),
         'customerName': _customerNameController.text.trim(),
         'customerPhone': _customerPhoneController.text.trim(),
         'province': _province,
@@ -422,7 +412,7 @@ class _QuoteBuilderScreenState extends State<_QuoteBuilderScreen> {
     }
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppPageHeader(title: _isEditing ? AppLocalizations.of(context)!.screenEditQuote : AppLocalizations.of(context)!.screenNewQuote),
+      appBar: AppPageHeader(title: _isEditing ? 'Teklifi Düzenle' : 'Yeni Teklif'),
       // ÖNEMLİ DÜZELTME: "Toplam kısmı sayfanın altında kalıyor,
       // görünmüyor" — Android tarafında SafeArea hiç yoktu (sadece iOS
       // tarafında vardı), edge-to-edge modu açıkken içerik sistem
@@ -444,26 +434,26 @@ class _QuoteBuilderScreenState extends State<_QuoteBuilderScreen> {
                         padding: const EdgeInsets.all(AppSpacing.sm),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(AppRadius.lg),
-                          boxShadow: AppShadows.subtle,
+                          borderRadius: BorderRadius.circular(18),
+                          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 3))],
                         ),
                         child: Column(
                           children: [
                             TextField(
                               controller: _titleController,
                               style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: AppColors.navy),
-                              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.quoteTitle, hintText: 'Yangın Sistemi Teklifi', border: InputBorder.none, isDense: true),
+                              decoration: const InputDecoration(labelText: 'Teklif Başlığı', border: InputBorder.none, isDense: true),
                             ),
                             const Divider(height: 16),
                             TextField(
                               controller: _customerNameController,
-                              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.customerName, border: InputBorder.none, isDense: true),
+                              decoration: const InputDecoration(labelText: 'Müşteri Adı', border: InputBorder.none, isDense: true),
                             ),
                             const SizedBox(height: 8),
                             TextField(
                               controller: _customerPhoneController,
                               keyboardType: TextInputType.phone,
-                              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.customerPhoneOptional, border: InputBorder.none, isDense: true),
+                              decoration: const InputDecoration(labelText: 'Müşteri Telefonu (opsiyonel)', border: InputBorder.none, isDense: true),
                             ),
                             const Divider(height: 16),
                             ProvinceDistrictPicker(
@@ -475,24 +465,24 @@ class _QuoteBuilderScreenState extends State<_QuoteBuilderScreen> {
                           ],
                         ),
                       ),
-                      SizedBox(height: AppSpacing.md),
+                      const SizedBox(height: AppSpacing.md),
                       if (_catalog.isEmpty)
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 40),
-                          child: Text(AppLocalizations.of(context)!.noPriceListYet, style: TextStyle(color: Colors.grey.shade500), textAlign: TextAlign.center),
+                          child: Text('Admin panelden henüz fiyat listesi tanımlanmadı.', style: TextStyle(color: Colors.grey.shade500), textAlign: TextAlign.center),
                         )
                       else ...[
                         Container(
                           decoration: BoxDecoration(
                             color: Colors.white,
-                            borderRadius: BorderRadius.circular(AppRadius.sm),
-                            boxShadow: AppShadows.subtle,
+                            borderRadius: BorderRadius.circular(14),
+                            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 8, offset: const Offset(0, 2))],
                           ),
                           child: TextField(
                             controller: _searchController,
                             onChanged: (_) => setState(() {}),
                             decoration: InputDecoration(
-                              hintText: AppLocalizations.of(context)!.searchProductHint,
+                              hintText: 'Ürün adı, kodu veya marka ile ara...',
                               prefixIcon: const Icon(Icons.search, size: 20),
                               suffixIcon: _searchController.text.isNotEmpty
                                   ? IconButton(
@@ -525,14 +515,14 @@ class _QuoteBuilderScreenState extends State<_QuoteBuilderScreen> {
                                     margin: const EdgeInsets.only(bottom: 8),
                                     decoration: BoxDecoration(
                                       color: Colors.white,
-                                      borderRadius: BorderRadius.circular(AppRadius.md),
+                                      borderRadius: BorderRadius.circular(16),
                                       border: selected ? Border.all(color: AppColors.brand.withValues(alpha: 0.4), width: 1.5) : null,
-                                      boxShadow: AppShadows.subtle,
+                                      boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 8, offset: const Offset(0, 2))],
                                     ),
                                     child: Material(
                                       color: Colors.transparent,
                                       child: InkWell(
-                                        borderRadius: BorderRadius.circular(AppRadius.md),
+                                        borderRadius: BorderRadius.circular(16),
                                         onTap: () => _toggleItem(item),
                                         child: Padding(
                                           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 10),
@@ -621,7 +611,7 @@ class _QuoteBuilderScreenState extends State<_QuoteBuilderScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(AppLocalizations.of(context)!.total, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+                          const Text('Toplam', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
                           Text('${_total.toStringAsFixed(2)} €', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 20, color: AppColors.brand)),
                         ],
                       ),
@@ -690,10 +680,10 @@ class _QuoteDetailScreenState extends State<_QuoteDetailScreen> {
                       pw.TableRow(
                         decoration: const pw.BoxDecoration(color: PdfColors.grey100),
                         children: [
-                          pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text(AppLocalizations.of(context)!.material, style: pw.TextStyle(fontWeight: pw.FontWeight.bold))),
-                          pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text(AppLocalizations.of(context)!.quantity, style: pw.TextStyle(fontWeight: pw.FontWeight.bold))),
-                          pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text(AppLocalizations.of(context)!.unitPrice, style: pw.TextStyle(fontWeight: pw.FontWeight.bold))),
-                          pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text(AppLocalizations.of(context)!.amount, style: pw.TextStyle(fontWeight: pw.FontWeight.bold))),
+                          pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text('Malzeme', style: pw.TextStyle(fontWeight: pw.FontWeight.bold))),
+                          pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text('Miktar', style: pw.TextStyle(fontWeight: pw.FontWeight.bold))),
+                          pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text('Birim Fiyat', style: pw.TextStyle(fontWeight: pw.FontWeight.bold))),
+                          pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text('Tutar', style: pw.TextStyle(fontWeight: pw.FontWeight.bold))),
                         ],
                       ),
                       ...items.map((item) => pw.TableRow(
@@ -747,7 +737,7 @@ class _QuoteDetailScreenState extends State<_QuoteDetailScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
       appBar: AppPageHeader(
-        title: AppLocalizations.of(context)!.screenQuoteDetail,
+        title: 'Teklif Detayı',
         actions: [
           if (_exporting)
             const Padding(padding: EdgeInsets.all(16), child: SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2)))
@@ -758,8 +748,8 @@ class _QuoteDetailScreenState extends State<_QuoteDetailScreen> {
                 if (v == 'share') _exportPdf(andShare: true);
               },
               itemBuilder: (context) => [
-                PopupMenuItem(value: 'view', child: Text(AppLocalizations.of(context)!.viewPdf)),
-                PopupMenuItem(value: 'share', child: Text(AppLocalizations.of(context)!.sharePdf)),
+                const PopupMenuItem(value: 'view', child: Text('PDF Görüntüle')),
+                const PopupMenuItem(value: 'share', child: Text('PDF Paylaş')),
               ],
               icon: const Icon(Icons.picture_as_pdf_outlined),
             ),
@@ -770,14 +760,14 @@ class _QuoteDetailScreenState extends State<_QuoteDetailScreen> {
         children: [
           Container(
             padding: const EdgeInsets.all(AppSpacing.md),
-            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(AppRadius.lg), boxShadow: AppShadows.subtle),
+            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18), boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 2))]),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(q['title'] ?? '', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: AppColors.navy)),
                 if ((q['customerName'] ?? '').toString().isNotEmpty) ...[
-                  SizedBox(height: 4),
-                  Text(AppLocalizations.of(context)!.customerLabel(q['customerName']), style: TextStyle(fontSize: 12.5, color: Colors.grey.shade600)),
+                  const SizedBox(height: 4),
+                  Text('Müşteri: ${q['customerName']}', style: TextStyle(fontSize: 12.5, color: Colors.grey.shade600)),
                 ],
                 const Divider(height: 20),
                 ...items.map((item) => Padding(
@@ -793,7 +783,7 @@ class _QuoteDetailScreenState extends State<_QuoteDetailScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(AppLocalizations.of(context)!.grandTotal, style: TextStyle(fontWeight: FontWeight.w800)),
+                    const Text('Genel Toplam', style: TextStyle(fontWeight: FontWeight.w800)),
                     Text('${(q['totalAmount'] as num).toStringAsFixed(2)} €', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: AppColors.brand)),
                   ],
                 ),
