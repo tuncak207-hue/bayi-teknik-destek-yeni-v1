@@ -156,7 +156,7 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
                     TextField(
                       controller: _phoneController,
                       keyboardType: TextInputType.phone,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: AppLocalizations.of(context)!.phoneNumberField,
                         hintText: '+905551234567',
                         prefixIcon: Icon(Icons.phone_outlined),

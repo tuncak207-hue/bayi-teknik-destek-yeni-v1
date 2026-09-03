@@ -156,8 +156,8 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
                   ),
                   _buildConversationPreview(),
                 ] else
-                  const Padding(
-                    padding: EdgeInsets.only(top: 40),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 40),
                     child: AppEmptyState(
                       icon: Icons.smart_toy_outlined,
                       title: AppLocalizations.of(context)!.emptyQuestions,
