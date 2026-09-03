@@ -266,43 +266,45 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.all(AppSpacing.md),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
-            _GreetingHeader(user: CurrentUser()),
-            const SizedBox(height: AppSpacing.sm),
             const HomeSlideshow(),
             const SizedBox(height: AppSpacing.sm),
             InkWell(
               onTap: () => context.push('/ai-quick'),
-              borderRadius: BorderRadius.circular(AppRadius.lg),
+              borderRadius: BorderRadius.circular(AppRadius.xl),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 13),
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: 16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(AppRadius.lg),
-                  border: Border.all(color: AppColors.outlineStrong),
-                  boxShadow: AppShadows.subtle,
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(AppRadius.xl),
+                  boxShadow: [
+                    BoxShadow(color: AppColors.primary.withValues(alpha: 0.20), blurRadius: 16, offset: const Offset(0, 6)),
+                  ],
                 ),
                 child: Row(
                   children: [
                     Container(
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(color: AppColors.primarySoft, borderRadius: BorderRadius.circular(AppRadius.sm)),
-                      child: const Icon(Icons.auto_awesome, color: AppColors.primary, size: 19),
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.18), borderRadius: BorderRadius.circular(AppRadius.sm)),
+                      child: const Icon(Icons.auto_awesome, color: Colors.white, size: 24),
                     ),
-                    const SizedBox(width: AppSpacing.sm),
+                    const SizedBox(width: AppSpacing.sm + 2),
                     Expanded(
-                      child: Text(
-                        l10n.aiAssistantSubtitle,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l10n.aiAssistantTitle,
+                            style: TextStyle(fontSize: 19, fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: -0.25),
+                          ),
+                          SizedBox(height: 3),
+                          Text(
+                            l10n.aiAssistantSubtitle,
+                            style: TextStyle(fontSize: 13, color: Colors.white70, fontWeight: FontWeight.w500, height: 1.2),
+                          ),
+                        ],
                       ),
                     ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
-                      decoration: BoxDecoration(color: AppColors.primarySoft, borderRadius: BorderRadius.circular(AppRadius.sm)),
-                      child: const Text('AI', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AppColors.primary)),
-                    ),
+                    Icon(Icons.arrow_forward_ios, size: 14, color: Colors.white.withValues(alpha: 0.85)),
                   ],
                 ),
               ),
@@ -317,23 +319,48 @@ class _HomeScreenState extends State<HomeScreen> {
                         onRetry: _loadStats,
                       )
                     : const AppLoadingState(lines: 1))
-                : _HomeStatusStrip(
-                    questions: '${_stats!['questionsThisMonth'] ?? 0}',
-                    favorites: '${_stats!['favoritesCount'] ?? 0}',
-                    tickets: '${_stats!['supportTicketsCount'] ?? 0}',
-                    onQuestionsTap: () async {
-                      await _markStatSeen('questionsThisMonth');
-                      if (mounted) context.push('/ai-quick');
-                    },
-                    onFavoritesTap: () async {
-                      await _markStatSeen('favoritesCount');
-                      await context.push('/favorites');
-                      _loadStats();
-                    },
-                    onTicketsTap: () async {
-                      await _markStatSeen('supportTicketsCount');
-                      if (mounted) context.push('/support-tickets');
-                    },
+                : Row(
+                    children: [
+                      Expanded(
+                        child: _StatCard(
+                          icon: Icons.smart_toy_outlined,
+                          value: '${_stats!['questionsThisMonth'] ?? 0}',
+                          label: l10n.statAiQuestions,
+                          showBadge: _hasNewBadge['questionsThisMonth'] == true,
+                          onTap: () async {
+                            await _markStatSeen('questionsThisMonth');
+                            if (mounted) context.push('/ai-quick');
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.sm),
+                      Expanded(
+                        child: _StatCard(
+                          icon: Icons.bookmark_border,
+                          value: '${_stats!['favoritesCount'] ?? 0}',
+                          label: l10n.statFavorites,
+                          showBadge: _hasNewBadge['favoritesCount'] == true,
+                          onTap: () async {
+                            await _markStatSeen('favoritesCount');
+                            await context.push('/favorites');
+                            _loadStats();
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.sm),
+                      Expanded(
+                        child: _StatCard(
+                          icon: Icons.support_agent_outlined,
+                          value: '${_stats!['supportTicketsCount'] ?? 0}',
+                          label: l10n.statSupportTickets,
+                          showBadge: _hasNewBadge['supportTicketsCount'] == true,
+                          onTap: () async {
+                            await _markStatSeen('supportTicketsCount');
+                            if (mounted) context.push('/support-tickets');
+                          },
+                        ),
+                      ),
+                    ],
                   ),
             const SizedBox(height: 4),
             Row(
@@ -454,110 +481,6 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       ),
-    );
-  }
-}
-
-class _HomeStatusStrip extends StatelessWidget {
-  final String questions;
-  final String favorites;
-  final String tickets;
-  final VoidCallback onQuestionsTap;
-  final VoidCallback onFavoritesTap;
-  final VoidCallback onTicketsTap;
-
-  const _HomeStatusStrip({
-    required this.questions,
-    required this.favorites,
-    required this.tickets,
-    required this.onQuestionsTap,
-    required this.onFavoritesTap,
-    required this.onTicketsTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 16),
-      decoration: BoxDecoration(
-        color: AppColors.navy,
-        borderRadius: BorderRadius.circular(AppRadius.xl),
-      ),
-      child: Row(
-        children: [
-          Expanded(child: _StatusMetric(value: questions, label: l10n.statAiQuestions, onTap: onQuestionsTap)),
-          _statusDivider(),
-          Expanded(child: _StatusMetric(value: favorites, label: l10n.statFavorites, onTap: onFavoritesTap)),
-          _statusDivider(),
-          Expanded(child: _StatusMetric(value: tickets, label: l10n.statSupportTickets, onTap: onTicketsTap)),
-        ],
-      ),
-    );
-  }
-
-  Widget _statusDivider() => Container(width: 1, height: 34, color: Colors.white.withValues(alpha: 0.22));
-}
-
-class _StatusMetric extends StatelessWidget {
-  final String value;
-  final String label;
-  final VoidCallback onTap;
-
-  const _StatusMetric({required this.value, required this.label, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(AppRadius.md),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4),
-        child: Column(
-          children: [
-            Text(value, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: -0.4)),
-            const SizedBox(height: 3),
-            Text(label, textAlign: TextAlign.center, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w600, color: Colors.white70)),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _GreetingHeader extends StatelessWidget {
-  final CurrentUser user;
-
-  const _GreetingHeader({required this.user});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final name = user.firstName?.trim();
-    final displayName = name == null || name.isEmpty ? 'ENTPA' : name;
-    final hour = DateTime.now().hour;
-    final greeting = hour < 12 ? 'Günaydın' : (hour < 18 ? 'İyi günler' : 'İyi akşamlar');
-
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(greeting, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: AppColors.textMuted)),
-              const SizedBox(height: 2),
-              Text(displayName, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: AppColors.navy, letterSpacing: -0.7)),
-            ],
-          ),
-        ),
-        if (user.role != null)
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
-            decoration: BoxDecoration(color: AppColors.primarySoft, borderRadius: BorderRadius.circular(AppRadius.xl)),
-            child: Text(user.role!, style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700, color: AppColors.primary)),
-          ),
-      ],
     );
   }
 }
