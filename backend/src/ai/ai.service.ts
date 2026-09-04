@@ -279,47 +279,29 @@ export class AiService {
    * ANLAMSAL olarak seçtiriyoruz — tıpkı bir insanın "XNO kameralar"
    * sorusunun Hanwha'yla ilgili olduğunu bilmesi gibi.
    */
+  /**
+   * Kullanıcı isteği: "böyle olmaması lazım, ben sana xno model kameralar
+   * hangileri desem sen bana hepsini yazar mısın" — İLK yaklaşım (AI'ye
+   * "hangi markayla ilgili" diye sormak) BAŞARISIZ oldu çünkü kullanılan
+   * modelin GENEL bilgisinde "XNO, Hanwha'nın bir kamera serisidir"
+   * bilgisi YOKTU. Bunun yerine DAHA SAĞLAM bir yöntem: sorunun
+   * DOĞRUDAN, zaten taranıp veritabanına işlenmiş İÇERİKLE (RAG/pgvector
+   * semantik arama) ne kadar örtüştüğüne bakılıyor. Eğer "XNO" kelimesi
+   * taranan sayfalarda GERÇEKTEN geçiyorsa, semantik arama bunu bulur —
+   * AI'nin dış dünya bilgisine hiç ihtiyaç kalmaz, sadece KENDİ
+   * veritabanımızdaki gerçek veriye bakılır.
+   */
   private async inferBrandModelFromQuestion(question: string): Promise<{ brand?: string; model?: string } | null> {
-    const products = await this.prisma.document.findMany({
-      select: { brand: true, model: true },
-      distinct: ['brand', 'model'],
-    });
-    this.logger.log(`[Marka Çıkarımı] Veritabanında ${products.length} kayıt bulundu.`);
-    if (products.length === 0) return null;
-
-    const brandList: string[] = Array.from(new Set(products.map((p) => p.brand))).filter((b): b is string => Boolean(b));
-    this.logger.log(`[Marka Çıkarımı] Benzersiz markalar: [${brandList.join(', ')}]`);
-    if (brandList.length === 0) return null;
-
-    try {
-      const result = await this.provider.complete(
-        [
-          {
-            role: 'system',
-            content: `Sen bir ürün-marka eşleştirme asistanısın. Sana kayıtlı marka isimlerinin bir listesi ve
-bir kullanıcı sorusu verilecek. Soru, bu markalardan HANGİSİYLE İLGİLİYSE (ürün serisi, model
-öneki, marka adının kendisi vb. üzerinden anlamsal olarak) o markanın adını AYNEN listedeki
-gibi yaz. SADECE marka adını yaz, başka HİÇBİR şey ekleme. Hiçbiriyle ilgili değilse SADECE
-"YOK" yaz.`,
-          },
-          {
-            role: 'user',
-            content: `Kayıtlı markalar: ${brandList.join(', ')}\n\nSoru: ${question}`,
-          },
-        ],
-        { maxTokens: 200, temperature: 0.1 },
-      );
-      this.logger.log(`[Marka Çıkarımı] Ham AI yanıtı (JSON): ${JSON.stringify(result)}`);
-      const answer = result.text.trim();
-      this.logger.log(`[Marka Çıkarımı] AI'nin cevabı: "${answer}"`);
-      const matchedBrand = brandList.find((b) => b!.toLowerCase() === answer.toLowerCase());
-      this.logger.log(`[Marka Çıkarımı] Eşleşen marka: ${matchedBrand ?? 'YOK'}`);
-      if (!matchedBrand) return null;
-      return { brand: matchedBrand };
-    } catch (err) {
-      this.logger.warn(`Marka çıkarımı için AI çağrısı başarısız: ${err}`);
-      return null;
-    }
+    const results = await this.ragSearch.search(question, { limit: 3 });
+    this.logger.log(
+      `[Marka Çıkarımı] RAG ön-arama sonucu: ${results.map((r) => `${r.brand}/${r.model} (benzerlik: ${r.similarity.toFixed(2)})`).join(', ') || 'sonuç yok'}`,
+    );
+    const best = results[0];
+    // Benzerlik çok düşükse (alakasız bir eşleşme olma ihtimali yüksekse)
+    // hiçbir markayı zorla eşleştirmiyoruz — canlı arama atlanır, mevcut
+    // doküman tabanlı akış (RAG) zaten devam edecek.
+    if (!best || best.similarity < 0.3) return null;
+    return { brand: best.brand, model: best.model };
   }
 
   private async liveSearchRelevantUrl(brand?: string, model?: string): Promise<string | null> {
