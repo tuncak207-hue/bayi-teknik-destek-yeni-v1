@@ -15,7 +15,7 @@ type UploadItem = {
 
 export default function DocumentsPage() {
   const { data: documents, error, isLoading, mutate } = useSWR('/documents', fetcher);
-  const [form, setForm] = useState({ brand: '', model: '', version: '' });
+  const [form, setForm] = useState({ brand: '', model: '', version: '', isDatasheet: false });
   const [items, setItems] = useState<UploadItem[]>([]);
   const [uploading, setUploading] = useState(false);
   const [reprocessing, setReprocessing] = useState(false);
@@ -69,6 +69,7 @@ export default function DocumentsPage() {
         data.append('brand', form.brand);
         data.append('model', form.model);
         data.append('version', form.version);
+        data.append('isDatasheet', String(form.isDatasheet));
         data.append('title', titleFromFileName(items[i].file.name));
         data.append('file', items[i].file);
         // ÖNEMLİ: Content-Type başlığını burada ELLE ayarlamıyoruz.
@@ -141,6 +142,19 @@ export default function DocumentsPage() {
           <Input label="Model" value={form.model} onChange={(v) => setForm({ ...form, model: v })} placeholder="MA8000" />
           <Input label="Versiyon" value={form.version} onChange={(v) => setForm({ ...form, version: v })} placeholder="V3" />
         </div>
+
+        {/* Kullanıcı isteği (Manus önerisi): "Datasheet-First RAG" — resmi
+            datasheet olarak işaretlenen dokümanlar, AI cevap üretirken
+            öncelikli olarak aranır. */}
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={form.isDatasheet}
+            onChange={(e) => setForm({ ...form, isDatasheet: e.target.checked })}
+            className="w-4 h-4"
+          />
+          <span className="text-sm text-gray-700">Bu resmi bir datasheet / teknik döküman (AI cevap üretirken öncelikli kullanılır)</span>
+        </label>
 
         <div>
           <label className="block text-sm text-gray-600 mb-1">
@@ -361,7 +375,7 @@ function StatusBadge({ status }: { status: string }) {
  * bu içeriğe de bakması sağlanıyor.
  */
 function UrlLinkForm({ onAdded }: { onAdded: () => void }) {
-  const [form, setForm] = useState({ url: '', brand: '', model: '', title: '', version: 'V1' });
+  const [form, setForm] = useState({ url: '', brand: '', model: '', title: '', version: 'V1', isDatasheet: false });
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
@@ -372,7 +386,7 @@ function UrlLinkForm({ onAdded }: { onAdded: () => void }) {
     try {
       await api.post('/documents/from-url', form);
       setMessage({ type: 'success', text: 'Link eklendi, içerik işleniyor — birkaç dakika içinde bilgi bankasında hazır olacak.' });
-      setForm({ url: '', brand: '', model: '', title: '', version: 'V1' });
+      setForm({ url: '', brand: '', model: '', title: '', version: 'V1', isDatasheet: false });
       onAdded();
     } catch (err: any) {
       setMessage({ type: 'error', text: err.response?.data?.message || 'Link eklenemedi.' });
@@ -397,6 +411,15 @@ function UrlLinkForm({ onAdded }: { onAdded: () => void }) {
         <Input label="Versiyon" value={form.version} onChange={(v) => setForm({ ...form, version: v })} placeholder="V1" />
       </div>
       <Input label="Başlık" value={form.title} onChange={(v) => setForm({ ...form, title: v })} placeholder="Ürün Sayfası — MA8000" />
+      <label className="flex items-center gap-2 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={form.isDatasheet}
+          onChange={(e) => setForm({ ...form, isDatasheet: e.target.checked })}
+          className="w-4 h-4"
+        />
+        <span className="text-sm text-gray-700">Bu resmi bir datasheet / teknik döküman (AI cevap üretirken öncelikli kullanılır)</span>
+      </label>
       {message && (
         <p className={`text-xs ${message.type === 'success' ? 'text-green-700' : 'text-red-600'}`}>{message.text}</p>
       )}

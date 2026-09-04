@@ -56,6 +56,11 @@ kendi bilgini kullanma — SADECE şu cevabı ver:
 "Yüklenmiş teknik dokümanlarda bu bilgi doğrulanamadı. İlgili ürün/model bilgisini
 paylaşırsanız daha doğru bir arama yapabilirim."
 
+BAĞLAM'daki bir doküman parçası "[RESMİ DATASHEET]" etiketiyle işaretlenmişse, bu
+üreticinin RESMİ, EN GÜNCEL ve EN GÜVENİLİR kaynağıdır. Cevabını ÖNCELİKLE bu
+etiketli parçalara dayandır. Eğer datasheet verisi ile etiketsiz (genel eğitim
+dokümanı vb.) bir kaynak ÇELİŞİRSE, DATASHEET olanı esas al.
+
 Bu kural TÜM konular için geçerli, sadece şu kritik konularla sınırlı değil (ama özellikle
 bunlarda kesinlikle dikkatli ol): ${CRITICAL_TOPICS_HINT.join(', ')}.
 
@@ -299,8 +304,10 @@ export class AiService {
     const best = results[0];
     // Benzerlik çok düşükse (alakasız bir eşleşme olma ihtimali yüksekse)
     // hiçbir markayı zorla eşleştirmiyoruz — canlı arama atlanır, mevcut
-    // doküman tabanlı akış (RAG) zaten devam edecek.
-    if (!best || best.similarity < 0.3) return null;
+    // doküman tabanlı akış (RAG) zaten devam edecek. Kullanıcı isteği:
+    // "böyle olmaması lazım" sonrası yaşanan yanlış eşleşme (Honeywell,
+    // %43) nedeniyle eşik yükseltildi.
+    if (!best || best.similarity < 0.55) return null;
     return { brand: best.brand, model: best.model };
   }
 
@@ -358,7 +365,7 @@ export class AiService {
         : chunks
             .map(
               (c, i) =>
-                `[${i + 1}] Marka: ${c.brand} | Model: ${c.model} | Doküman: ${c.documentTitle} (v${c.version}) | Sayfa: ${c.page}\n${c.content}`,
+                `[${i + 1}]${c.isDatasheet ? ' [RESMİ DATASHEET]' : ''} Marka: ${c.brand} | Model: ${c.model} | Doküman: ${c.documentTitle} (v${c.version}) | Sayfa: ${c.page}\n${c.content}`,
             )
             .join('\n\n---\n\n');
 

@@ -183,6 +183,12 @@ model Document {
   fileUrl     String
   fileType    String
   errorMessage String?
+  // Kullanıcı isteği (Manus önerisi, mevcut şemaya uyarlanmış hali):
+  // "Datasheet-First RAG" — resmi datasheet/teknik döküman olarak
+  // işaretlenen kaynaklar, AI cevap üretirken ÖNCELİKLİ olarak aranır.
+  // İşaretlenmemiş (genel eğitim dokümanı vb.) kaynaklar, datasheet'te
+  // yeterli bilgi bulunamazsa yedek (fallback) olarak kullanılır.
+  isDatasheet Boolean        @default(false)
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
 

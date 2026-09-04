@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { PrismaService } from '../common/prisma/prisma.service';
 import { StorageService } from '../common/storage/storage.service';
 import { RagIngestionService } from '../rag/rag-ingestion.service';
+import { SiteCrawlerService } from '../rag/site-crawler.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { TechnicalMemoryService } from '../ai/technical-memory.service';
 import { UploadDocumentDto } from './dto/upload-document.dto';
@@ -14,6 +15,7 @@ export class DocumentsService {
     private prisma: PrismaService,
     private storage: StorageService,
     private ragIngestion: RagIngestionService,
+    private siteCrawler: SiteCrawlerService,
     private notifications: NotificationsService,
     private technicalMemory: TechnicalMemoryService,
   ) {}
@@ -35,12 +37,13 @@ export class DocumentsService {
           fileType: file.mimetype,
           fileUrl: fileKey,
           status: 'PROCESSING',
+          isDatasheet: dto.isDatasheet === 'true',
         },
       });
     } else {
       await this.prisma.document.update({
         where: { id: document.id },
-        data: { status: 'PROCESSING' },
+        data: { status: 'PROCESSING', ...(dto.isDatasheet !== undefined ? { isDatasheet: dto.isDatasheet === 'true' } : {}) },
       });
     }
 
@@ -103,16 +106,14 @@ export class DocumentsService {
    * dokümanlarla birlikte arayıp referans alabiliyor — cevap üretme
    * kodunda HİÇBİR değişiklik gerekmiyor.
    */
-  async uploadFromUrl(dto: { url: string; brand: string; model: string; title: string; version: string }) {
-    let html: string;
+  async uploadFromUrl(dto: { url: string; brand: string; model: string; title: string; version: string; isDatasheet?: boolean }) {
+    // Bağlantının geçerli bir URL olup olmadığını en baştan kontrol et —
+    // arka planda tarama başlamadan önce anlaşılır bir hata dönmek için.
     try {
-      const res = await fetch(dto.url, { signal: AbortSignal.timeout(20_000) });
-      if (!res.ok) throw new Error(`Sayfa alınamadı (HTTP ${res.status})`);
-      html = await res.text();
-    } catch (err: any) {
-      throw new Error(`URL indirilemedi: ${err.message}`);
+      new URL(dto.url);
+    } catch {
+      throw new Error('Geçersiz URL.');
     }
-    const buffer = Buffer.from(html, 'utf-8');
 
     const document = await this.prisma.document.create({
       data: {
@@ -120,11 +121,9 @@ export class DocumentsService {
         model: dto.model,
         title: dto.title,
         fileType: 'text/html',
-        // Dosyalarda R2 depolama anahtarı tutulur, burada ise DOĞRUDAN
-        // kaynak URL — 'http' ile başlaması, bunun bir web linki
-        // olduğunu (indirilmiş bir dosya değil) ayırt etmeye yarıyor.
         fileUrl: dto.url,
         status: 'PROCESSING',
+        isDatasheet: dto.isDatasheet === true,
       },
     });
 
@@ -137,11 +136,21 @@ export class DocumentsService {
       },
     });
 
-    this.ragIngestion
-      .processDocumentVersion(version.id, buffer, 'text/html')
-      .then(async (pageCount) => {
+    // Kullanıcı isteği: "sadece ana sayfaya girip bakmamalı, tıpkı senin
+    // yaptığın gibi sayfanın her menüsüne bakmalı" — tek sayfa yerine
+    // SiteCrawlerService ile aynı site içindeki bağlantılı sayfalar da
+    // (menüler dahil) taranıyor. Ağır ve uzun sürebilecek bir işlem
+    // olduğu için arka planda (fire-and-forget) çalışıyor.
+    this.siteCrawler
+      .crawl(dto.url)
+      .then(async (pages) => {
+        if (pages.length === 0) {
+          throw new Error('Siteden hiçbir sayfa okunamadı.');
+        }
+        const pageCount = await this.ragIngestion.processCrawledPages(version.id, pages);
         await this.prisma.documentVersion.update({ where: { id: version.id }, data: { pageCount } });
         await this.prisma.document.update({ where: { id: document.id }, data: { status: 'READY' } });
+        this.logger.log(`URL taraması tamamlandı: ${dto.url} — ${pages.length} sayfa işlendi.`);
       })
       .catch(async (err) => {
         this.logger.error(`URL işleme hatası: ${err.message}`, err.stack);

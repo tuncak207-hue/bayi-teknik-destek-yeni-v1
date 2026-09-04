@@ -16,4 +16,11 @@ export class UploadDocumentDto {
   @IsOptional()
   @IsString()
   documentId?: string; // Aynı doküman için yeni versiyon yüklenirken doldurulur
+
+  // Kullanıcı isteği (Manus önerisi): "Datasheet-First RAG" — form-data
+  // ile string olarak gelir ("true"/"false"), servis katmanında boolean'a
+  // çevrilir.
+  @IsOptional()
+  @IsString()
+  isDatasheet?: string;
 }

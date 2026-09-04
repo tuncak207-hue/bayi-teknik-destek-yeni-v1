@@ -54,7 +54,7 @@ export class DocumentsController {
   @Roles('ADMIN')
   @Throttle({ default: { limit: 10, ttl: 60_000 } })
   @Post('from-url')
-  uploadFromUrl(@Body() dto: { url: string; brand: string; model: string; title: string; version: string }) {
+  uploadFromUrl(@Body() dto: { url: string; brand: string; model: string; title: string; version: string; isDatasheet?: boolean }) {
     return this.documentsService.uploadFromUrl(dto);
   }
 
