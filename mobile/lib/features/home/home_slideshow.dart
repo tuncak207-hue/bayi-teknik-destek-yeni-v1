@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:video_player/video_player.dart';
 import '../../core/api/api_client.dart';
@@ -121,20 +122,23 @@ class _HomeSlideshowState extends State<HomeSlideshow> {
                         // otomatik oynayan, döngülü) video gösteriliyor.
                         (slide['mediaType'] == 'VIDEO')
                             ? _SlideVideo(url: slide['imageUrl'] ?? '')
-                            : Image.network(
-                          slide['imageUrl'] ?? '',
+                            // Kullanıcı isteği: "internet olmadığında da
+                            // görseller dönmeye devam etsin" — CachedNetworkImage
+                            // görseli ilk yüklendiğinde diske kaydediyor; internet
+                            // kesilse bile aynı görsel diskten gösterilmeye devam
+                            // ediyor, sadece hiç yüklenmemiş bir görsel için
+                            // hata simgesi çıkıyor.
+                            : CachedNetworkImage(
+                          imageUrl: slide['imageUrl'] ?? '',
                           fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) => Container(
+                          errorWidget: (context, url, error) => Container(
                             color: AppColors.surfaceVariant,
                             child: const Icon(Icons.image_not_supported_outlined, color: AppColors.textMuted),
                           ),
-                          loadingBuilder: (context, child, progress) {
-                            if (progress == null) return child;
-                            return Container(
-                              color: AppColors.surfaceVariant,
-                              child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
-                            );
-                          },
+                          placeholder: (context, url) => Container(
+                            color: AppColors.surfaceVariant,
+                            child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                          ),
                         ),
                         if ((slide['title'] as String?)?.isNotEmpty == true)
                           Positioned(
