@@ -15,7 +15,8 @@
     "prisma:studio": "prisma studio",
     "test": "jest",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "lint": "eslint \"src/**/*.ts\" --fix"
+    "lint": "eslint \"src/**/*.ts\" --fix",
+    "postinstall": "npx puppeteer browsers install chrome"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.637.0",
