@@ -269,21 +269,50 @@ export class AiService {
    * limitler kullanılıyor (daha az sayfa, daha kısa zaman aşımı).
    */
   /** Soru metninde kayıtlı ürün modellerinden biri geçiyor mu diye bakar (en uzun/spesifik eşleşme önceliklidir). */
+  /**
+   * Kullanıcı isteği: "ben sana xno model kameralar hangileri desem sen
+   * bana hepsini yazar mısın" — katı metin eşleştirme (soru içinde TAM
+   * OLARAK model adı geçiyor mu) yetersiz kaldı. Bunun yerine AI'nin
+   * KENDİSİNE, kayıtlı markalar arasından soruyla İLGİLİ olanı
+   * ANLAMSAL olarak seçtiriyoruz — tıpkı bir insanın "XNO kameralar"
+   * sorusunun Hanwha'yla ilgili olduğunu bilmesi gibi.
+   */
   private async inferBrandModelFromQuestion(question: string): Promise<{ brand?: string; model?: string } | null> {
     const products = await this.prisma.document.findMany({
       select: { brand: true, model: true },
       distinct: ['brand', 'model'],
     });
-    const lowerQuestion = question.toLowerCase();
-    const candidates = products
-      .filter((p) => p.model && p.model.trim().length >= 3)
-      .sort((a, b) => b.model!.length - a.model!.length);
-    for (const p of candidates) {
-      if (lowerQuestion.includes(p.model!.toLowerCase())) {
-        return { brand: p.brand, model: p.model! };
-      }
+    if (products.length === 0) return null;
+
+    const brandList: string[] = Array.from(new Set(products.map((p) => p.brand))).filter((b): b is string => Boolean(b));
+    if (brandList.length === 0) return null;
+
+    try {
+      const result = await this.provider.complete(
+        [
+          {
+            role: 'system',
+            content: `Sen bir ürün-marka eşleştirme asistanısın. Sana kayıtlı marka isimlerinin bir listesi ve
+bir kullanıcı sorusu verilecek. Soru, bu markalardan HANGİSİYLE İLGİLİYSE (ürün serisi, model
+öneki, marka adının kendisi vb. üzerinden anlamsal olarak) o markanın adını AYNEN listedeki
+gibi yaz. SADECE marka adını yaz, başka HİÇBİR şey ekleme. Hiçbiriyle ilgili değilse SADECE
+"YOK" yaz.`,
+          },
+          {
+            role: 'user',
+            content: `Kayıtlı markalar: ${brandList.join(', ')}\n\nSoru: ${question}`,
+          },
+        ],
+        { maxTokens: 30, temperature: 0 },
+      );
+      const answer = result.text.trim();
+      const matchedBrand = brandList.find((b) => b!.toLowerCase() === answer.toLowerCase());
+      if (!matchedBrand) return null;
+      return { brand: matchedBrand };
+    } catch (err) {
+      this.logger.warn(`Marka çıkarımı için AI çağrısı başarısız: ${err}`);
+      return null;
     }
-    return null;
   }
 
   private async liveSearchRelevantUrl(brand?: string, model?: string): Promise<string | null> {
