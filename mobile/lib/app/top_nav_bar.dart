@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../core/theme/app_theme.dart';
+import '../core/auth/current_user.dart';
 
 /// Kullanıcı isteği: "üst menü barı ana menüden bağımsız olmamalı, ana
 /// menünün bir parçası gibi hareket etmeli." Önceki yaklaşım (kaydırma
@@ -53,6 +54,72 @@ class TopNavSliverAppBar extends StatelessWidget {
     );
   }
 
+  String _timeGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour >= 5 && hour < 12) return 'Günaydın';
+    if (hour >= 12 && hour < 18) return 'İyi günler';
+    return 'İyi akşamlar';
+  }
+
+  String _todayInTurkish() {
+    const weekdays = <String>[
+      'Pazartesi',
+      'Salı',
+      'Çarşamba',
+      'Perşembe',
+      'Cuma',
+      'Cumartesi',
+      'Pazar',
+    ];
+    const months = <String>[
+      'Ocak',
+      'Şubat',
+      'Mart',
+      'Nisan',
+      'Mayıs',
+      'Haziran',
+      'Temmuz',
+      'Ağustos',
+      'Eylül',
+      'Ekim',
+      'Kasım',
+      'Aralık',
+    ];
+    final now = DateTime.now();
+    return '${now.day} ${months[now.month - 1]} ${now.year} ${weekdays[now.weekday - 1]}';
+  }
+
+  Widget _buildGreeting(BuildContext context) {
+    final user = CurrentUser();
+    final name = [user.firstName, user.lastName]
+        .whereType<String>()
+        .map((value) => value.trim())
+        .where((value) => value.isNotEmpty)
+        .join(' ');
+    final greeting = name.isEmpty ? _timeGreeting() : '${_timeGreeting()}, $name';
+    final scheme = Theme.of(context).colorScheme;
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          greeting,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: AppText.screenTitle.copyWith(fontSize: 16.5, fontWeight: FontWeight.w800, letterSpacing: -0.2),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          _todayInTurkish(),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600, color: scheme.onSurfaceVariant),
+        ),
+      ],
+    );
+  }
+
   /// Ortak ikon satırı — hem kaydırılabilir (SliverAppBar) hem sabit
   /// (StaticTopNavBar) versiyon TARAFINDAN paylaşılıyor, ikisi de aynı
   /// görünüme sahip olsun diye.
@@ -67,10 +134,7 @@ class TopNavSliverAppBar extends StatelessWidget {
           // ENTPA Teknik Mühendislik Platformu yazısı olmalı." — ayrıca
           // "İngilizce dil desteği ekle".
           Expanded(
-            child: Text(
-              l10n.entpaSubtitle,
-              style: AppText.screenTitle.copyWith(fontSize: 16.5, fontWeight: FontWeight.w800, letterSpacing: -0.3, overflow: TextOverflow.ellipsis),
-            ),
+            child: _buildGreeting(context),
           ),
           IconButton(
             tooltip: l10n.notifications,
