@@ -158,7 +158,40 @@ export class SiteCrawlerService {
           await page.setUserAgent(
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
           );
-          await page.goto(url, { waitUntil: 'networkidle2', timeout: pageTimeoutMs });
+          await page.setViewport({ width: 1366, height: 900 });
+          // Kullanıcı isteği: "javascript olabilir mi" — gelişmiş siteler
+          // headless (görünmez) tarayıcıları "navigator.webdriver" izinden
+          // tespit edip farklı/eksik içerik gösterebiliyor. Bu izi maskeliyoruz.
+          // @ts-ignore
+          await page.evaluateOnNewDocument(() => {
+            // @ts-ignore
+            Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+          });
+          await page.goto(url, { waitUntil: 'networkidle0', timeout: pageTimeoutMs });
+
+          // Kullanıcı isteği: "AI ın doğru çalıştır" — bazı siteler çerez
+          // onay ekranı ARKASINDA gerçek içeriği/linkleri gizler. Yaygın
+          // "Kabul Et" butonlarını otomatik tıklamayı dener (bulamazsa
+          // sessizce devam eder), ardından JS'in tam oturması için kısa
+          // bir bekleme ekler.
+          try {
+            // @ts-ignore
+            await page.evaluate(() => {
+              const texts = ['kabul', 'accept', 'agree', 'anla', 'ok', 'tamam', 'onayla'];
+              // @ts-ignore
+              const buttons = Array.from(document.querySelectorAll('button, a'));
+              for (const btn of buttons as any[]) {
+                const t = (btn.innerText || '').trim().toLowerCase();
+                if (texts.some((needle) => t.includes(needle)) && t.length < 30) {
+                  btn.click();
+                  break;
+                }
+              }
+            });
+          } catch {
+            // çerez butonu bulunamadı/tıklanamadı — sorun değil, devam et
+          }
+          await new Promise((resolve) => setTimeout(resolve, 3000));
 
           // NOT: Bu callback GERÇEKTE tarayıcı (Chromium) içinde çalışır,
           // backend'in Node.js ortamında değil — bu yüzden 'document' gibi
@@ -172,6 +205,14 @@ export class SiteCrawlerService {
               // @ts-ignore
               return Array.from(document.querySelectorAll('a[href]')).map((a: any) => a.href);
             });
+            // Kullanıcı isteği: "AI ın doğru çalıştır" — Chrome artık
+            // çalışıyor ama hâlâ sadece 1 sayfa bulunuyor. Sorunu kesin
+            // teşhis etmek için ham link sayısını ve örnek adresleri
+            // logluyoruz (çerez ekranı, farklı domain vb. ihtimalleri
+            // ayırt etmek için).
+            this.logger.log(
+              `[Puppeteer] ${url} sayfasında ${hrefs.length} ham link bulundu. Örnekler: ${hrefs.slice(0, 5).join(' | ') || '(hiç yok)'}`,
+            );
             for (const href of hrefs) {
               try {
                 const resolved = new URL(href);
