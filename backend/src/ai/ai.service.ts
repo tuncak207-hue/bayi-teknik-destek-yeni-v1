@@ -307,8 +307,9 @@ gibi yaz. SADECE marka adını yaz, başka HİÇBİR şey ekleme. Hiçbiriyle il
             content: `Kayıtlı markalar: ${brandList.join(', ')}\n\nSoru: ${question}`,
           },
         ],
-        { maxTokens: 30, temperature: 0 },
+        { maxTokens: 200, temperature: 0.1 },
       );
+      this.logger.log(`[Marka Çıkarımı] Ham AI yanıtı (JSON): ${JSON.stringify(result)}`);
       const answer = result.text.trim();
       this.logger.log(`[Marka Çıkarımı] AI'nin cevabı: "${answer}"`);
       const matchedBrand = brandList.find((b) => b!.toLowerCase() === answer.toLowerCase());
