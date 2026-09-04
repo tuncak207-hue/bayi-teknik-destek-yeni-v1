@@ -115,6 +115,21 @@ export class AiService {
       previousAnswer?: string;
     } = {},
   ): Promise<TechnicalAnswer> {
+    // Kullanıcı isteği: "model girdim, ayrıca marka girmem gerekmiyor,
+    // model girsem yeterli olmalı" — mobil sohbet ekranında ayrı bir
+    // marka/model seçme alanı yok, kullanıcı bu bilgiyi doğrudan SORU
+    // METNİNİN içine yazıyor. Marka/model açıkça verilmemişse, soru
+    // metninden OTOMATİK çıkarım yapılıyor — kayıtlı tüm ürünlerin
+    // marka/model isimleri taranıp, sorunun içinde geçen (en spesifik/
+    // en uzun) biri varsa kullanılıyor.
+    if (!opts.brand && !opts.model) {
+      const inferred = await this.inferBrandModelFromQuestion(question);
+      if (inferred) {
+        this.logger.log(`[Otomatik Çıkarım] Soru metninden tespit edildi: brand="${inferred.brand}" model="${inferred.model}"`);
+        opts = { ...opts, ...inferred };
+      }
+    }
+
     // ============================================================
     // TEKNİK HAFIZA KONTROL KATMANI — mevcut RAG akışının önüne
     // eklendi. Fotoğraflı sorularda hafıza atlanır (görsel içerik her
@@ -253,6 +268,24 @@ export class AiService {
    * toplu ekleme sırasında kullanılan gevşek limitlerden DAHA SIKI
    * limitler kullanılıyor (daha az sayfa, daha kısa zaman aşımı).
    */
+  /** Soru metninde kayıtlı ürün modellerinden biri geçiyor mu diye bakar (en uzun/spesifik eşleşme önceliklidir). */
+  private async inferBrandModelFromQuestion(question: string): Promise<{ brand?: string; model?: string } | null> {
+    const products = await this.prisma.document.findMany({
+      select: { brand: true, model: true },
+      distinct: ['brand', 'model'],
+    });
+    const lowerQuestion = question.toLowerCase();
+    const candidates = products
+      .filter((p) => p.model && p.model.trim().length >= 3)
+      .sort((a, b) => b.model!.length - a.model!.length);
+    for (const p of candidates) {
+      if (lowerQuestion.includes(p.model!.toLowerCase())) {
+        return { brand: p.brand, model: p.model! };
+      }
+    }
+    return null;
+  }
+
   private async liveSearchRelevantUrl(brand?: string, model?: string): Promise<string | null> {
     this.logger.log(`[Canlı Arama] Başladı — brand="${brand}" model="${model}"`);
     if (!brand && !model) {
