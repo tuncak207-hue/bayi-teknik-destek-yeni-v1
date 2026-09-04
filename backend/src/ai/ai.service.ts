@@ -115,6 +115,8 @@ export class AiService {
       previousAnswer?: string;
     } = {},
   ): Promise<TechnicalAnswer> {
+    this.logger.log(`[Soru Geldi] question="${question}" opts.brand="${opts.brand}" opts.model="${opts.model}"`);
+
     // Kullanıcı isteği: "model girdim, ayrıca marka girmem gerekmiyor,
     // model girsem yeterli olmalı" — mobil sohbet ekranında ayrı bir
     // marka/model seçme alanı yok, kullanıcı bu bilgiyi doğrudan SORU
@@ -282,9 +284,11 @@ export class AiService {
       select: { brand: true, model: true },
       distinct: ['brand', 'model'],
     });
+    this.logger.log(`[Marka Çıkarımı] Veritabanında ${products.length} kayıt bulundu.`);
     if (products.length === 0) return null;
 
     const brandList: string[] = Array.from(new Set(products.map((p) => p.brand))).filter((b): b is string => Boolean(b));
+    this.logger.log(`[Marka Çıkarımı] Benzersiz markalar: [${brandList.join(', ')}]`);
     if (brandList.length === 0) return null;
 
     try {
@@ -306,7 +310,9 @@ gibi yaz. SADECE marka adını yaz, başka HİÇBİR şey ekleme. Hiçbiriyle il
         { maxTokens: 30, temperature: 0 },
       );
       const answer = result.text.trim();
+      this.logger.log(`[Marka Çıkarımı] AI'nin cevabı: "${answer}"`);
       const matchedBrand = brandList.find((b) => b!.toLowerCase() === answer.toLowerCase());
+      this.logger.log(`[Marka Çıkarımı] Eşleşen marka: ${matchedBrand ?? 'YOK'}`);
       if (!matchedBrand) return null;
       return { brand: matchedBrand };
     } catch (err) {
