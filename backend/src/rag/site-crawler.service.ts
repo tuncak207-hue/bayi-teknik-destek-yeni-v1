@@ -45,6 +45,19 @@ export class SiteCrawlerService {
     const pages: CrawledPage[] = [];
     const deadline = Date.now() + budgetMs;
 
+    // Kullanıcı isteği: "sadece 1 sayfa taradı" — bazı siteler (özellikle
+    // modern React/Vue tabanlı siteler) linkleri JavaScript ile SONRADAN
+    // oluşturur, ham HTML'de <a href> hiç bulunmaz. Bu durumda sitemap.xml
+    // dosyası (varsa) çok daha güvenilir bir kaynak — JavaScript
+    // gerektirmeden TÜM sayfa adreslerini düz metin olarak listeler.
+    const sitemapUrls = await this.trySitemap(start, maxPages);
+    if (sitemapUrls.length > 0) {
+      this.logger.log(`[Sitemap] ${sitemapUrls.length} URL bulundu, öncelikli olarak kuyruğa ekleniyor.`);
+      for (const u of sitemapUrls) {
+        if (!queue.some((q) => q.url === u)) queue.push({ url: u, depth: 1 });
+      }
+    }
+
     while (queue.length > 0 && pages.length < maxPages && Date.now() < deadline) {
       const { url, depth } = queue.shift()!;
       if (visited.has(url)) continue;
@@ -126,6 +139,61 @@ export class SiteCrawlerService {
       }
     }
     return Array.from(links);
+  }
+
+  /**
+   * Kullanıcı isteği: "sadece 1 sayfa taradı" — JavaScript ile linkleri
+   * oluşturan sitelerde ham HTML üzerinden link bulmak işe yaramıyor.
+   * sitemap.xml (varsa) JavaScript gerektirmeden tüm sayfa adreslerini
+   * verir. Basit bir "sitemap index" (alt sitemap'lere işaret eden)
+   * durumunu da bir seviye takip eder.
+   */
+  private async trySitemap(base: URL, maxUrls: number, depth = 0): Promise<string[]> {
+    if (depth > 1) return []; // sonsuz döngüyü önlemek için sitemap index'i en fazla 1 seviye takip et
+    const sitemapUrl = `${base.origin}/sitemap.xml`;
+    try {
+      const res = await fetch(sitemapUrl, {
+        signal: AbortSignal.timeout(8_000),
+        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; TeknikDestekBot/1.0)' },
+      });
+      if (!res.ok) return [];
+      const xml = await res.text();
+      const locRegex = /<loc>([^<]+)<\/loc>/gi;
+      const found: string[] = [];
+      let match: RegExpExecArray | null;
+      while ((match = locRegex.exec(xml)) !== null) {
+        found.push(match[1].trim());
+      }
+
+      // Sitemap index ise (alt sitemap'lere işaret ediyorsa), ilk birkaç
+      // alt sitemap'i bir seviye takip et.
+      const subSitemaps = found.filter((u) => u.endsWith('.xml')).slice(0, 3);
+      const directUrls = found.filter((u) => !u.endsWith('.xml'));
+
+      let all = directUrls;
+      for (const sub of subSitemaps) {
+        try {
+          const subUrl = new URL(sub);
+          if (!this.isSameRootDomain(subUrl.hostname, base.hostname)) continue;
+          const subUrls = await this.trySitemap(subUrl, maxUrls, depth + 1);
+          all = all.concat(subUrls);
+        } catch {
+          // geçersiz alt sitemap adresi — atla
+        }
+      }
+
+      return all
+        .filter((u) => {
+          try {
+            return this.isSameRootDomain(new URL(u).hostname, base.hostname);
+          } catch {
+            return false;
+          }
+        })
+        .slice(0, maxUrls);
+    } catch {
+      return []; // sitemap yok/erişilemedi — sorun değil, normal link takibiyle devam edilir
+    }
   }
 
   /** "www.site.com" ve "shop.site.com" gibi aynı kök domaindeki alt alan adlarını eşleştirir. */
