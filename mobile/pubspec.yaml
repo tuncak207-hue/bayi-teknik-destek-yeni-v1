@@ -1,14 +1,14 @@
 name: bayi_teknik_destek
 description: Yangın Alarm & Kamera Bayi Teknik Destek Uygulaması
 publish_to: "none"
-version: 0.1.0+58
+version: 0.1.0+59
 
 environment:
   sdk: ">=3.3.0 <4.0.0"
 
 dependencies:
   flutter:
-    sdk: flutter
+    sdk: flutterfv
   flutter_localizations:
     sdk: flutter
   url_launcher: ^6.3.1
