@@ -8,7 +8,7 @@ export interface CrawledPage {
 
 const MAX_PAGES = 60;
 const MAX_DEPTH = 8;
-const PAGE_TIMEOUT_MS = 15_000;
+const PAGE_TIMEOUT_MS = 30_000;
 const CRAWL_BUDGET_MS = 3 * 60_000; // toplam tarama için üst sınır
 
 export interface CrawlLimits {
@@ -167,7 +167,12 @@ export class SiteCrawlerService {
             // @ts-ignore
             Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
           });
-          await page.goto(url, { waitUntil: 'networkidle0', timeout: pageTimeoutMs });
+          // Kullanıcı isteği: "yada javascript olabilir mi" — 'networkidle0'
+          // bazı sitelerde (sürekli arka plan isteği olan) HİÇ TETİKLENMEDİ,
+          // zaman aşımına uğradı. 'domcontentloaded' network aktivitesinden
+          // bağımsız, hızlı ve güvenilir tetiklenir — JS'in çalışması için
+          // aşağıdaki SABİT bekleme süresine güveniyoruz.
+          await page.goto(url, { waitUntil: 'domcontentloaded', timeout: pageTimeoutMs });
 
           // Kullanıcı isteği: "AI ın doğru çalıştır" — bazı siteler çerez
           // onay ekranı ARKASINDA gerçek içeriği/linkleri gizler. Yaygın
@@ -191,7 +196,7 @@ export class SiteCrawlerService {
           } catch {
             // çerez butonu bulunamadı/tıklanamadı — sorun değil, devam et
           }
-          await new Promise((resolve) => setTimeout(resolve, 3000));
+          await new Promise((resolve) => setTimeout(resolve, 5000));
 
           // NOT: Bu callback GERÇEKTE tarayıcı (Chromium) içinde çalışır,
           // backend'in Node.js ortamında değil — bu yüzden 'document' gibi
