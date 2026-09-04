@@ -239,71 +239,6 @@ class _HomeScreenState extends State<HomeScreen> {
     if (mounted) setState(() => _hasNewBadge[key] = false);
   }
 
-  String _timeGreeting() {
-    final hour = DateTime.now().hour;
-    if (hour >= 5 && hour < 12) return 'Günaydın';
-    if (hour >= 12 && hour < 18) return 'İyi günler';
-    return 'İyi akşamlar';
-  }
-
-  String _todayInTurkish() {
-    const weekdays = <String>[
-      'Pazartesi',
-      'Salı',
-      'Çarşamba',
-      'Perşembe',
-      'Cuma',
-      'Cumartesi',
-      'Pazar',
-    ];
-    const months = <String>[
-      'Ocak',
-      'Şubat',
-      'Mart',
-      'Nisan',
-      'Mayıs',
-      'Haziran',
-      'Temmuz',
-      'Ağustos',
-      'Eylül',
-      'Ekim',
-      'Kasım',
-      'Aralık',
-    ];
-    final now = DateTime.now();
-    return '${now.day} ${months[now.month - 1]} ${now.year} ${weekdays[now.weekday - 1]}';
-  }
-
-  Widget _buildGreeting() {
-    final user = CurrentUser();
-    final name = [user.firstName, user.lastName]
-        .whereType<String>()
-        .map((value) => value.trim())
-        .where((value) => value.isNotEmpty)
-        .join(' ');
-    final greeting = name.isEmpty ? _timeGreeting() : '${_timeGreeting()}, $name';
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            greeting,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.navy),
-          ),
-          const SizedBox(height: 3),
-          Text(
-            _todayInTurkish(),
-            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.grey.shade600),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final navData = RootNavData.current!;
@@ -328,10 +263,9 @@ class _HomeScreenState extends State<HomeScreen> {
           SliverSafeArea(
             top: false,
             sliver: SliverPadding(
-              padding: const EdgeInsets.all(AppSpacing.md),
+              padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.xs, AppSpacing.md, AppSpacing.md),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
-            _buildGreeting(),
             const HomeSlideshow(),
             const SizedBox(height: AppSpacing.sm),
             InkWell(
