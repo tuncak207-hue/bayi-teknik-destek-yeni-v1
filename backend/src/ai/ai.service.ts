@@ -1,7 +1,9 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { RagSearchService, RetrievedChunk } from '../rag/rag-search.service';
 import { KnowledgeBaseService } from '../knowledge-base/knowledge-base.service';
 import { TechnicalMemoryService } from './technical-memory.service';
+import { SiteCrawlerService } from '../rag/site-crawler.service';
+import { PrismaService } from '../common/prisma/prisma.service';
 import { AIProvider, AIMessage, AI_PROVIDER } from './providers/ai-provider.interface';
 
 export interface TechnicalAnswer {
@@ -86,10 +88,14 @@ Kaynakça ayrıca sistem tarafından otomatik ekleneceği için sen "Kaynak:" b�
 
 @Injectable()
 export class AiService {
+  private readonly logger = new Logger(AiService.name);
+
   constructor(
     private ragSearch: RagSearchService,
     private knowledgeBase: KnowledgeBaseService,
     private technicalMemory: TechnicalMemoryService,
+    private siteCrawler: SiteCrawlerService,
+    private prisma: PrismaService,
     @Inject(AI_PROVIDER) private provider: AIProvider,
   ) {}
 
@@ -135,7 +141,7 @@ export class AiService {
       // doküman taraması atlanır.
     }
 
-    const [retrieved, knowledgeMatches] = await Promise.all([
+    const [retrieved, knowledgeMatches, liveWebContent] = await Promise.all([
       this.ragSearch.search(question, {
         brand: opts.brand,
         model: opts.model,
@@ -146,9 +152,19 @@ export class AiService {
       // Bulunamazsa (hiç kayıt yoksa) sessizce boş döner, mevcut akış
       // etkilenmez.
       this.knowledgeBase.searchRelevant(question, 3).catch(() => []),
+      // Kullanıcı isteği: "bir soru sorduğumda ilgili web sitesini
+      // derinlemesine taramak gibi" — admin panelden eklenmiş, marka/
+      // modelle eşleşen bir web linki varsa, önceden hazırlanmış statik
+      // bir özet yerine SİTEYE O AN CANLI GİRİP arıyor (tıpkı bir web
+      // araması yapar gibi). Zaman aşımı/hata olursa sessizce atlanır —
+      // mevcut doküman tabanlı akış bundan ETKİLENMEZ.
+      this.liveSearchRelevantUrl(opts.brand, opts.model).catch((err) => {
+        this.logger.warn(`Canlı site taraması atlandı: ${err.message}`);
+        return null;
+      }),
     ]);
 
-    const context = this.buildContextBlock(retrieved, knowledgeMatches);
+    const context = this.buildContextBlock(retrieved, knowledgeMatches) + (liveWebContent ? `\n\n--- CANLI WEB SİTESİ TARAMASI ---\n${liveWebContent}` : '');
 
     // Önceki soru-cevap varsa, AI'a "bu soru öncekiyle ilgili mi?" kararını
     // vermesi için ekliyoruz.
@@ -226,6 +242,51 @@ export class AiService {
     }
 
     return { answerMarkdown: text, confidence: finalConfidence, citations: usedCitations, fromMemory: false, memoryId: newMemoryId };
+  }
+
+  /**
+   * Kullanıcı isteği: "bir soru sorduğumda ilgili web sitesini
+   * derinlemesine taramak gibi" — marka/modelle eşleşen, admin panelden
+   * eklenmiş bir web linki varsa, o siteye O AN girip (SiteCrawlerService
+   * ile) menü/alt sayfaları da tarar, güncel içeriği döner. İnteraktif
+   * bir sohbet akışında olduğu için (kullanıcı bekliyor), admin panelden
+   * toplu ekleme sırasında kullanılan gevşek limitlerden DAHA SIKI
+   * limitler kullanılıyor (daha az sayfa, daha kısa zaman aşımı).
+   */
+  private async liveSearchRelevantUrl(brand?: string, model?: string): Promise<string | null> {
+    if (!brand && !model) return null;
+
+    const matchingDoc = await this.prisma.document.findFirst({
+      where: {
+        fileType: 'text/html',
+        status: 'READY',
+        ...(brand ? { brand: { contains: brand, mode: 'insensitive' } } : {}),
+        ...(model ? { model: { contains: model, mode: 'insensitive' } } : {}),
+      },
+      orderBy: { updatedAt: 'desc' },
+    });
+    if (!matchingDoc) return null;
+
+    // Kullanıcı isteği: "7-8 tık uzakta olan sayfalar da olabilir" +
+    // "bunu 8 sayfa ile kısıtlamamalısın" — AMA sohbet anlık (kullanıcı
+    // bekliyor) çalıştığı için sunucu zaman aşımı riskiyle çelişiyordu.
+    // Çözüm: DERİN tarama (8 seviyeye kadar) admin panelden link
+    // eklerken ARKA PLANDA yapılıyor (zaman sınırı yok) — sohbet
+    // sırasında ise o ÖNCEDEN HAZIRLANMIŞ kapsamlı içeriğe hızla
+    // erişmek için burada daha SIĞ, HIZLI bir canlı tarama kullanılıyor.
+    const pages = await this.siteCrawler.crawl(matchingDoc.fileUrl, {
+      maxPages: 12,
+      maxDepth: 3,
+      pageTimeoutMs: 8_000,
+      budgetMs: 45_000,
+    });
+    if (pages.length === 0) return null;
+
+    // AI'nin bağlam penceresini şişirmemek için toplam metni makul bir
+    // uzunlukla sınırla (sayfa başına kabaca eşit pay ayırarak).
+    const MAX_TOTAL_CHARS = 20_000;
+    const perPageBudget = Math.floor(MAX_TOTAL_CHARS / pages.length);
+    return pages.map((p) => `[${p.url}]\n${p.text.slice(0, perPageBudget)}`).join('\n\n');
   }
 
   private buildContextBlock(chunks: RetrievedChunk[], knowledgeMatches: { problem: string; solution: string; productName: string | null }[] = []): string {
