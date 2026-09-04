@@ -254,7 +254,11 @@ export class AiService {
    * limitler kullanılıyor (daha az sayfa, daha kısa zaman aşımı).
    */
   private async liveSearchRelevantUrl(brand?: string, model?: string): Promise<string | null> {
-    if (!brand && !model) return null;
+    this.logger.log(`[Canlı Arama] Başladı — brand="${brand}" model="${model}"`);
+    if (!brand && !model) {
+      this.logger.log('[Canlı Arama] Marka/model verilmedi, atlanıyor.');
+      return null;
+    }
 
     const matchingDoc = await this.prisma.document.findFirst({
       where: {
@@ -265,7 +269,11 @@ export class AiService {
       },
       orderBy: { updatedAt: 'desc' },
     });
-    if (!matchingDoc) return null;
+    if (!matchingDoc) {
+      this.logger.log(`[Canlı Arama] Eşleşen web linki bulunamadı (brand="${brand}", model="${model}").`);
+      return null;
+    }
+    this.logger.log(`[Canlı Arama] Eşleşen kayıt bulundu: "${matchingDoc.title}" — ${matchingDoc.fileUrl}`);
 
     // Kullanıcı isteği: "7-8 tık uzakta olan sayfalar da olabilir" +
     // "bunu 8 sayfa ile kısıtlamamalısın" — AMA sohbet anlık (kullanıcı
@@ -280,13 +288,16 @@ export class AiService {
       pageTimeoutMs: 8_000,
       budgetMs: 45_000,
     });
+    this.logger.log(`[Canlı Arama] Tarama tamamlandı — ${pages.length} sayfa alındı.`);
     if (pages.length === 0) return null;
 
     // AI'nin bağlam penceresini şişirmemek için toplam metni makul bir
     // uzunlukla sınırla (sayfa başına kabaca eşit pay ayırarak).
     const MAX_TOTAL_CHARS = 20_000;
     const perPageBudget = Math.floor(MAX_TOTAL_CHARS / pages.length);
-    return pages.map((p) => `[${p.url}]\n${p.text.slice(0, perPageBudget)}`).join('\n\n');
+    const result = pages.map((p) => `[${p.url}]\n${p.text.slice(0, perPageBudget)}`).join('\n\n');
+    this.logger.log(`[Canlı Arama] Toplam ${result.length} karakter bağlama eklendi.`);
+    return result;
   }
 
   private buildContextBlock(chunks: RetrievedChunk[], knowledgeMatches: { problem: string; solution: string; productName: string | null }[] = []): string {
