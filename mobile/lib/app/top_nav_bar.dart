@@ -127,7 +127,7 @@ class TopNavSliverAppBar extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 4, 12, 4),
+      padding: const EdgeInsets.fromLTRB(20, 10, 12, 4),
       child: Row(
         children: [
           // Kullanıcı isteği: "en solda, bildirim ikonunun yanında

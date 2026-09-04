@@ -232,7 +232,17 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         child: ListView(
                           children: [
                             const SizedBox(height: 60),
-                            AppEmptyState(icon: Icons.notifications_none, title: AppLocalizations.of(context)!.notificationsEmptyHint),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                              child: StandardCard(
+                                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
+                                child: AppEmptyState(
+                                  icon: Icons.notifications_none,
+                                  title: AppLocalizations.of(context)!.notificationsEmptyHint,
+                                  description: 'Yeni bir bildirim geldiğinde burada görünecek.',
+                                ),
+                              ),
+                            ),
                     ],
                   ),
                 )
