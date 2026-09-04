@@ -68,9 +68,43 @@ export class RagIngestionService {
       });
     }
 
+    await this.embedAndStoreChunks(versionId, pendingChunks);
+    return pages.length;
+  }
+
+  /**
+   * Kullanıcı isteği: "sadece ana sayfaya bakmamalı, sitenin her
+   * menüsüne bakmalı" — SiteCrawlerService'in taradığı BİRDEN FAZLA
+   * sayfayı, extract adımını atlayarak DOĞRUDAN chunk+embed sürecine
+   * sokar. Her sayfanın hangi URL'den geldiği, chunk içeriğinin başına
+   * eklenir — AI cevap verirken kaynağı da görebilsin diye.
+   */
+  async processCrawledPages(versionId: string, crawledPages: Array<{ url: string; text: string }>): Promise<number> {
+    type PendingChunk = { page: number; chunkIndex: number; content: string };
+    const pendingChunks: PendingChunk[] = [];
+
+    crawledPages.forEach((cp, pageIndex) => {
+      const withSource = `[Kaynak: ${cp.url}]\n${cp.text}`;
+      const chunks = this.splitIntoChunks(withSource);
+      chunks.forEach((content, idx) => {
+        if (content.trim().length > 0) {
+          pendingChunks.push({ page: pageIndex + 1, chunkIndex: idx, content });
+        }
+      });
+    });
+
+    await this.embedAndStoreChunks(versionId, pendingChunks);
+    return crawledPages.length;
+  }
+
+  /** chunk listesini embed edip pgvector'e yazan ortak adım (dosya ve site taraması ikisi de kullanır). */
+  private async embedAndStoreChunks(
+    versionId: string,
+    pendingChunks: Array<{ page: number; chunkIndex: number; content: string }>,
+  ) {
     if (pendingChunks.length === 0) {
       this.logger.warn(`Versiyon ${versionId} için çıkarılabilir metin bulunamadı.`);
-      return pages.length;
+      return;
     }
 
     // Voyage tek istekte çok sayıda metni embed edebilir. Daha büyük batch,
@@ -104,7 +138,6 @@ export class RagIngestionService {
     }
 
     this.logger.log(`Versiyon ${versionId}: ${pendingChunks.length} chunk işlendi.`);
-    return pages.length;
   }
 
   /**
