@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import puppeteer, { Browser } from 'puppeteer';
 
 export interface CrawledPage {
   url: string;
@@ -96,6 +97,101 @@ export class SiteCrawlerService {
     }
 
     this.logger.log(`Tarama tamamlandı: ${start.hostname} — ${pages.length} sayfa`);
+
+    // Kullanıcı isteği: "headless browser eklemeyi dene" — standart
+    // yöntem (ham HTML + sitemap) çok az sayfa bulduysa (muhtemelen site
+    // JavaScript ile içerik/link oluşturuyor), gerçek bir tarayıcı motoru
+    // (Puppeteer) ile YENİDEN denenir. Daha ağır olduğu için sadece
+    // GEREKTİĞİNDE (fallback olarak) kullanılıyor.
+    if (pages.length <= 1) {
+      this.logger.log('[Puppeteer] Standart tarama yetersiz kaldı, tarayıcı motoruyla deneniyor...');
+      try {
+        const browserPages = await this.crawlWithBrowser(start, { maxPages, maxDepth, pageTimeoutMs, budgetMs });
+        if (browserPages.length > pages.length) return browserPages;
+      } catch (err) {
+        this.logger.warn(`[Puppeteer] Tarayıcı motoruyla tarama başarısız: ${err}`);
+      }
+    }
+
+    return pages;
+  }
+
+  /**
+   * Kullanıcı isteği: "headless browser eklemeyi dene" — JavaScript ile
+   * içerik/link üreten modern sitelerde, ham HTML okumak yetersiz
+   * kalıyor. Bu metod GERÇEK bir Chromium tarayıcısı açıp sayfayı
+   * render eder, JS çalıştıktan SONRAKİ DOM'dan metin ve linkleri okur.
+   * Daha yavaş ve kaynak-yoğun olduğu için sadece standart yöntem
+   * yetersiz kaldığında (fallback) çağrılır.
+   */
+  private async crawlWithBrowser(start: URL, limits: Required<CrawlLimits>): Promise<CrawledPage[]> {
+    const { maxPages, maxDepth, pageTimeoutMs, budgetMs } = limits;
+    const visited = new Set<string>();
+    const queue: Array<{ url: string; depth: number }> = [{ url: this.normalize(start), depth: 0 }];
+    const pages: CrawledPage[] = [];
+    const deadline = Date.now() + budgetMs;
+
+    let browser: Browser | null = null;
+    try {
+      browser = await puppeteer.launch({
+        headless: true,
+        // Render gibi kısıtlı/konteyner ortamlarda Chromium'un başarıyla
+        // başlaması için gereken bayraklar — sandbox ve paylaşımlı bellek
+        // (/dev/shm) genelde bu tür ortamlarda kısıtlı/kapalıdır.
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-gpu',
+          '--single-process',
+          '--no-zygote',
+        ],
+      });
+
+      while (queue.length > 0 && pages.length < maxPages && Date.now() < deadline) {
+        const { url, depth } = queue.shift()!;
+        if (visited.has(url)) continue;
+        visited.add(url);
+
+        const page = await browser.newPage();
+        try {
+          await page.setUserAgent(
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          );
+          await page.goto(url, { waitUntil: 'networkidle2', timeout: pageTimeoutMs });
+
+          const text = await page.evaluate(() => document.body?.innerText ?? '');
+          pages.push({ url, text: text.replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim() });
+
+          if (depth < maxDepth) {
+            const hrefs: string[] = await page.evaluate(() =>
+              Array.from(document.querySelectorAll('a[href]')).map((a) => (a as HTMLAnchorElement).href),
+            );
+            for (const href of hrefs) {
+              try {
+                const resolved = new URL(href);
+                if (!this.isSameRootDomain(resolved.hostname, start.hostname)) continue;
+                if (/\.(pdf|jpg|jpeg|png|gif|svg|zip|docx?|xlsx?|mp4|mp3|css|js)$/i.test(resolved.pathname)) continue;
+                const normalized = this.normalize(resolved);
+                if (!visited.has(normalized) && queue.length + pages.length < maxPages * 2) {
+                  queue.push({ url: normalized, depth: depth + 1 });
+                }
+              } catch {
+                // geçersiz href — atla
+              }
+            }
+          }
+        } catch (err) {
+          this.logger.warn(`[Puppeteer] Sayfa render edilemedi, atlanıyor: ${url} — ${err}`);
+        } finally {
+          await page.close();
+        }
+      }
+    } finally {
+      if (browser) await browser.close();
+    }
+
+    this.logger.log(`[Puppeteer] Tarama tamamlandı: ${start.hostname} — ${pages.length} sayfa`);
     return pages;
   }
 
