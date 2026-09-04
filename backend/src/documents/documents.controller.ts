@@ -11,6 +11,7 @@ import {
   UploadedFile,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Throttle } from '@nestjs/throttler';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard, Roles } from '../auth/guards/jwt-auth.guard';
 import { DocumentsService } from './documents.service';
@@ -46,6 +47,15 @@ export class DocumentsController {
   @UseInterceptors(FileInterceptor('file', { limits: { fileSize: 50 * 1024 * 1024 } })) // 50 MB sınırı
   upload(@Body() dto: UploadDocumentDto, @UploadedFile() file: Express.Multer.File) {
     return this.documentsService.upload(dto, file);
+  }
+
+  // Kullanıcı isteği: "AI teknik asistan sadece dokümana değil, bu URL
+  // linkine de baksın" — admin panelden web linki ekleme.
+  @Roles('ADMIN')
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
+  @Post('from-url')
+  uploadFromUrl(@Body() dto: { url: string; brand: string; model: string; title: string; version: string }) {
+    return this.documentsService.uploadFromUrl(dto);
   }
 
   @Roles('ADMIN')

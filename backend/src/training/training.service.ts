@@ -69,7 +69,7 @@ export class TrainingService {
       select: { id: true, firstName: true, lastName: true, company: true },
     });
     const completions = await this.prisma.trainingCompletion.findMany({ where: { trainingId } });
-    const completionByUser = new Map(completions.map((c) => [c.userId, c.completedAt]));
+    const completionByUser = new Map<string, Date>(completions.map((c) => [c.userId, c.completedAt]));
     const rows = dealers.map((d) => {
       const completedAt = completionByUser.get(d.id) ?? null;
       return { ...d, ...this.computeStatus(training, completedAt) };

@@ -95,6 +95,65 @@ export class DocumentsService {
     return { documentId: document.id, versionId: version.id, status: 'PROCESSING' };
   }
 
+  /**
+   * Kullanıcı isteği: "AI teknik asistan sadece dokümana değil, bu URL
+   * linkine de baksın" — admin panelden eklenen bir web sayfasını
+   * indirir, DOSYA YÜKLEMEYLE AYNI RAG işleme hattından (extract ->
+   * chunk -> embed) geçirir. Böylece AI cevap üretirken bu içeriği de
+   * dokümanlarla birlikte arayıp referans alabiliyor — cevap üretme
+   * kodunda HİÇBİR değişiklik gerekmiyor.
+   */
+  async uploadFromUrl(dto: { url: string; brand: string; model: string; title: string; version: string }) {
+    let html: string;
+    try {
+      const res = await fetch(dto.url, { signal: AbortSignal.timeout(20_000) });
+      if (!res.ok) throw new Error(`Sayfa alınamadı (HTTP ${res.status})`);
+      html = await res.text();
+    } catch (err: any) {
+      throw new Error(`URL indirilemedi: ${err.message}`);
+    }
+    const buffer = Buffer.from(html, 'utf-8');
+
+    const document = await this.prisma.document.create({
+      data: {
+        brand: dto.brand,
+        model: dto.model,
+        title: dto.title,
+        fileType: 'text/html',
+        // Dosyalarda R2 depolama anahtarı tutulur, burada ise DOĞRUDAN
+        // kaynak URL — 'http' ile başlaması, bunun bir web linki
+        // olduğunu (indirilmiş bir dosya değil) ayırt etmeye yarıyor.
+        fileUrl: dto.url,
+        status: 'PROCESSING',
+      },
+    });
+
+    const version = await this.prisma.documentVersion.create({
+      data: {
+        documentId: document.id,
+        version: dto.version,
+        isCurrent: true,
+        fileUrl: dto.url,
+      },
+    });
+
+    this.ragIngestion
+      .processDocumentVersion(version.id, buffer, 'text/html')
+      .then(async (pageCount) => {
+        await this.prisma.documentVersion.update({ where: { id: version.id }, data: { pageCount } });
+        await this.prisma.document.update({ where: { id: document.id }, data: { status: 'READY' } });
+      })
+      .catch(async (err) => {
+        this.logger.error(`URL işleme hatası: ${err.message}`, err.stack);
+        await this.prisma.document.update({
+          where: { id: document.id },
+          data: { status: 'ERROR', errorMessage: err.message },
+        });
+      });
+
+    return { documentId: document.id, versionId: version.id, status: 'PROCESSING' };
+  }
+
   private async notifyFavoritedBy(documentId: string, title: string) {
     const favorites = await this.prisma.favorite.findMany({
       where: { documentId },

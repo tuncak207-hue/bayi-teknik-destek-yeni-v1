@@ -28,10 +28,40 @@ export class TextExtractionService {
     if (mimeType === 'text/plain') {
       return [{ page: 1, text: buffer.toString('utf-8') }];
     }
+    // Kullanıcı isteği: "AI sadece dokümana değil, bu URL linkine de
+    // baksın" — admin panelden eklenen web sayfaları da AYNI RAG
+    // işleme hattından (chunk+embed) geçebilsin diye HTML desteği.
+    if (mimeType === 'text/html') {
+      return this.extractHtml(buffer);
+    }
     if (mimeType.startsWith('image/')) {
       return this.extractImageOcr(buffer);
     }
     throw new Error(`Desteklenmeyen dosya tipi: ${mimeType}`);
+  }
+
+  /**
+   * HTML'den okunabilir düz metni çıkarır — harici bir kütüphaneye
+   * (cheerio vb.) ihtiyaç duymadan: script/style/nav/footer gibi
+   * içerik taşımayan etiketleri temizler, kalan etiketleri kaldırır,
+   * HTML karakter kodlarını (&amp; vb.) çözer.
+   */
+  private extractHtml(buffer: Buffer): ExtractedPage[] {
+    let html = buffer.toString('utf-8');
+    html = html.replace(/<(script|style|nav|footer|noscript)[^>]*>[\s\S]*?<\/\1>/gi, ' ');
+    html = html.replace(/<!--[\s\S]*?-->/g, ' ');
+    html = html.replace(/<br\s*\/?>/gi, '\n');
+    html = html.replace(/<\/(p|div|li|h[1-6]|tr)>/gi, '\n');
+    html = html.replace(/<[^>]+>/g, ' ');
+    html = html
+      .replace(/&nbsp;/gi, ' ')
+      .replace(/&amp;/gi, '&')
+      .replace(/&lt;/gi, '<')
+      .replace(/&gt;/gi, '>')
+      .replace(/&quot;/gi, '"')
+      .replace(/&#39;/gi, "'");
+    html = html.replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
+    return [{ page: 1, text: html }];
   }
 
   private async extractPdf(buffer: Buffer): Promise<ExtractedPage[]> {

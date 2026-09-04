@@ -191,6 +191,12 @@ export default function DocumentsPage() {
         </div>
       </form>
 
+      {/* Kullanıcı isteği: "AI teknik asistan sadece dokümana değil, bu
+          URL linkine de baksın" — web sayfaları da dokümanlarla AYNI
+          bilgi bankasına (RAG) eklenir, AI cevap verirken otomatik olarak
+          ikisine de bakar. */}
+      <UrlLinkForm onAdded={() => mutate()} />
+
       <p className="text-[13px] text-gray-400 mb-3">Bir doküman kartına tıklayarak detaylarını görüntüleyip düzenleyebilir veya silebilirsiniz.</p>
       {isLoading && <LoadingState />}
       {error && <ErrorState onRetry={() => mutate()} />}
@@ -345,4 +351,62 @@ function StatusBadge({ status }: { status: string }) {
   const tone: Record<string, 'pending' | 'success' | 'danger'> = { PROCESSING: 'pending', READY: 'success', ERROR: 'danger' };
   const label: Record<string, string> = { PROCESSING: 'İşleniyor', READY: 'Hazır', ERROR: 'Hata' };
   return <Badge label={label[status] || status} tone={tone[status] || 'neutral' as any} />;
+}
+
+/**
+ * Kullanıcı isteği: "admin paneline url adresleri ekleyip AI teknik
+ * asistan sadece dokümana değil, bu URL linkine de baksın" — bir web
+ * sayfası eklenince backend onu indirip AYNI bilgi bankasına (chunk +
+ * embed) katıyor, AI'nin dokümanlara baktığı yerde otomatik olarak
+ * bu içeriğe de bakması sağlanıyor.
+ */
+function UrlLinkForm({ onAdded }: { onAdded: () => void }) {
+  const [form, setForm] = useState({ url: '', brand: '', model: '', title: '', version: 'V1' });
+  const [submitting, setSubmitting] = useState(false);
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setSubmitting(true);
+    setMessage(null);
+    try {
+      await api.post('/documents/from-url', form);
+      setMessage({ type: 'success', text: 'Link eklendi, içerik işleniyor — birkaç dakika içinde bilgi bankasında hazır olacak.' });
+      setForm({ url: '', brand: '', model: '', title: '', version: 'V1' });
+      onAdded();
+    } catch (err: any) {
+      setMessage({ type: 'error', text: err.response?.data?.message || 'Link eklenemedi.' });
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="admin-surface p-6 mb-8 space-y-4">
+      <div>
+        <p className="text-[13.5px] font-semibold text-slate-800">Web Linki Ekle</p>
+        <p className="text-xs text-gray-400 mt-0.5">
+          Bir ürün sayfası, teknik döküman linki ya da destek makalesi ekleyin — AI, dokümanlarla birlikte bu sayfanın
+          içeriğine de bakarak cevap verecek.
+        </p>
+      </div>
+      <Input label="URL" value={form.url} onChange={(v) => setForm({ ...form, url: v })} placeholder="https://ornek.com/urun-sayfasi" />
+      <div className="grid grid-cols-3 gap-4">
+        <Input label="Marka" value={form.brand} onChange={(v) => setForm({ ...form, brand: v })} placeholder="Honeywell" />
+        <Input label="Model" value={form.model} onChange={(v) => setForm({ ...form, model: v })} placeholder="MA8000" />
+        <Input label="Versiyon" value={form.version} onChange={(v) => setForm({ ...form, version: v })} placeholder="V1" />
+      </div>
+      <Input label="Başlık" value={form.title} onChange={(v) => setForm({ ...form, title: v })} placeholder="Ürün Sayfası — MA8000" />
+      {message && (
+        <p className={`text-xs ${message.type === 'success' ? 'text-green-700' : 'text-red-600'}`}>{message.text}</p>
+      )}
+      <button
+        type="submit"
+        disabled={submitting || !form.url || !form.brand || !form.model || !form.title}
+        className="bg-[var(--admin-navy)] text-white rounded-xl px-4 h-10 font-semibold hover:bg-slate-800 transition disabled:opacity-60 text-sm"
+      >
+        {submitting ? 'Ekleniyor...' : 'Linki Ekle'}
+      </button>
+    </form>
+  );
 }
