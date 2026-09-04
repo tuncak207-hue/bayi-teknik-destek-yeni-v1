@@ -194,38 +194,35 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppPageHeader(title: AppLocalizations.of(context)!.notifications),
+      appBar: AppPageHeader(
+        title: AppLocalizations.of(context)!.notifications,
+        actions: [
+          if (_notifications.any((n) => n['readAt'] == null))
+            TextButton(
+              onPressed: _markAllRead,
+              child: Text(
+                AppLocalizations.of(context)!.markAllAsRead,
+                style: TextStyle(color: AppColors.brand, fontSize: 12.5),
+              ),
+            ),
+          if (_notifications.isNotEmpty)
+            PopupMenuButton<String>(
+              onSelected: (v) {
+                if (v == 'clear-all') _clearAll();
+              },
+              itemBuilder: (context) => [
+                PopupMenuItem(
+                  value: 'clear-all',
+                  child: Text(AppLocalizations.of(context)!.deleteAll),
+                ),
+              ],
+            ),
+        ],
+      ),
       backgroundColor: const Color(0xFFFFFFFF),
       body: SafeArea(
         child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, 0),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // Kullanıcı isteği: "bildirim ikonuna tıklandığında iki
-                // tane bildirimler yazısı çıkıyor" — bu, AppBar'daki
-                // başlıkla ÇAKIŞAN, fazladan bir başlıktı. Kaldırıldı;
-                // "tümünü okundu yap" ve menü butonu artık sağa yaslı.
-                const Spacer(),
-                if (_notifications.any((n) => n['readAt'] == null))
-                  TextButton(
-                    onPressed: _markAllRead,
-                    child: Text(AppLocalizations.of(context)!.markAllAsRead, style: TextStyle(color: AppColors.brand, fontSize: 12.5)),
-                  ),
-                if (_notifications.isNotEmpty)
-                  PopupMenuButton<String>(
-                    onSelected: (v) {
-                      if (v == 'clear-all') _clearAll();
-                    },
-                    itemBuilder: (context) => [
-                      PopupMenuItem(value: 'clear-all', child: Text(AppLocalizations.of(context)!.deleteAll)),
-                    ],
-                  ),
-              ],
-            ),
-          ),
+          children: [
           Expanded(
             child: _loading
                 ? const Center(child: CircularProgressIndicator())
