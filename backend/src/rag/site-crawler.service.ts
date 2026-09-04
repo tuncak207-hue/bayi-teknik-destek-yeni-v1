@@ -160,13 +160,18 @@ export class SiteCrawlerService {
           );
           await page.goto(url, { waitUntil: 'networkidle2', timeout: pageTimeoutMs });
 
+          // NOT: Bu callback GERÇEKTE tarayıcı (Chromium) içinde çalışır,
+          // backend'in Node.js ortamında değil — bu yüzden 'document' gibi
+          // DOM API'leri backend'in TypeScript ayarlarında tanımlı değil.
+          // @ts-ignore
           const text = await page.evaluate(() => document.body?.innerText ?? '');
           pages.push({ url, text: text.replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim() });
 
           if (depth < maxDepth) {
-            const hrefs: string[] = await page.evaluate(() =>
-              Array.from(document.querySelectorAll('a[href]')).map((a) => (a as HTMLAnchorElement).href),
-            );
+            const hrefs: string[] = await page.evaluate(() => {
+              // @ts-ignore
+              return Array.from(document.querySelectorAll('a[href]')).map((a: any) => a.href);
+            });
             for (const href of hrefs) {
               try {
                 const resolved = new URL(href);
