@@ -52,7 +52,18 @@ export class SiteCrawlerService {
 
       let html: string;
       try {
-        const res = await fetch(url, { signal: AbortSignal.timeout(pageTimeoutMs) });
+        // Kullanıcı isteği: "sadece 1 sayfa taradı" — bazı siteler,
+        // tarayıcı gibi görünmeyen (User-Agent'sız) isteklere farklı/eksik
+        // içerik dönüyor ya da tamamen engelliyor. Gerçekçi bir tarayıcı
+        // kimliği ekleyerek bu sorunu azaltıyoruz.
+        const res = await fetch(url, {
+          signal: AbortSignal.timeout(pageTimeoutMs),
+          headers: {
+            'User-Agent':
+              'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          },
+        });
         if (!res.ok || !res.headers.get('content-type')?.includes('text/html')) continue;
         html = await res.text();
       } catch (err) {
@@ -103,7 +114,11 @@ export class SiteCrawlerService {
     while ((match = hrefRegex.exec(html)) !== null) {
       try {
         const resolved = new URL(match[1], base);
-        if (resolved.hostname !== base.hostname) continue; // sadece aynı site
+        // Kullanıcı isteği: "sadece 1 sayfa taradı" — TAM hostname
+        // eşleşmesi (www.site.com !== shop.site.com) çok sıkıydı, aynı
+        // KÖK domaindeki alt alan adlarını da (www, shop, support vb.)
+        // kabul edecek şekilde gevşetildi.
+        if (!this.isSameRootDomain(resolved.hostname, base.hostname)) continue;
         if (/\.(pdf|jpg|jpeg|png|gif|svg|zip|docx?|xlsx?|mp4|mp3|css|js)$/i.test(resolved.pathname)) continue;
         links.add(this.normalize(resolved));
       } catch {
@@ -111,6 +126,12 @@ export class SiteCrawlerService {
       }
     }
     return Array.from(links);
+  }
+
+  /** "www.site.com" ve "shop.site.com" gibi aynı kök domaindeki alt alan adlarını eşleştirir. */
+  private isSameRootDomain(a: string, b: string): boolean {
+    const rootOf = (host: string) => host.split('.').slice(-2).join('.');
+    return rootOf(a) === rootOf(b);
   }
 
   private stripHtml(html: string): string {
