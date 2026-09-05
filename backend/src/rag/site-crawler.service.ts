@@ -112,8 +112,8 @@ export class SiteCrawlerService {
         // sunucuyu ÇÖKERTEBİLİR (bellek yetersizliği). Puppeteer
         // fallback'inde daha GÜVENLİ, düşük bir limit kullanıyoruz.
         const browserPages = await this.crawlWithBrowser(start, {
-          maxPages: Math.min(maxPages, 15),
-          maxDepth: Math.min(maxDepth, 3),
+          maxPages: Math.min(maxPages, 5),
+          maxDepth: Math.min(maxDepth, 2),
           pageTimeoutMs,
           budgetMs,
         });
