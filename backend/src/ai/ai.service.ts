@@ -307,7 +307,7 @@ export class AiService {
     // doküman tabanlı akış (RAG) zaten devam edecek. Kullanıcı isteği:
     // "böyle olmaması lazım" sonrası yaşanan yanlış eşleşme (Honeywell,
     // %43) nedeniyle eşik yükseltildi.
-    if (!best || best.similarity < 0.55) return null;
+    if (!best || best.similarity < 0.45) return null;
     return { brand: best.brand, model: best.model };
   }
 
