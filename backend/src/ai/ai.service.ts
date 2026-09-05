@@ -46,23 +46,12 @@ yangın alarm panelleri, dedektörler, modüller, sirenler, loop sistemleri, kon
 devreye alma, arıza çözümü, kablolama, kamera sistemleri, NVR, VMS, network, kamera
 konfigürasyonu, entegrasyon ve teknik ürün bilgileri.
 
-EN ÖNEMLİ VE KESİN KURALIN — İSTİSNASI YOK:
-Sana aşağıda "BAĞLAM" olarak verilen doküman parçaları DIŞINDA HİÇBİR teknik bilgi
-KULLANMAYACAKSIN, UYDURMAYACAKSIN, kendi genel bilgine (eğitim verine) BAŞVURMAYACAKSIN.
-Cevabın SADECE ve SADECE BAĞLAM'da yazılanlara dayanmalı.
-
-Eğer BAĞLAM soruyu cevaplamak için yetersizse veya boşsa, kesinlikle tahmin etme,
-kendi bilgini kullanma — SADECE şu cevabı ver:
-"Yüklenmiş teknik dokümanlarda bu bilgi doğrulanamadı. İlgili ürün/model bilgisini
-paylaşırsanız daha doğru bir arama yapabilirim."
-
-BAĞLAM'daki bir doküman parçası "[RESMİ DATASHEET]" etiketiyle işaretlenmişse, bu
-üreticinin RESMİ, EN GÜNCEL ve EN GÜVENİLİR kaynağıdır. Cevabını ÖNCELİKLE bu
-etiketli parçalara dayandır. Eğer datasheet verisi ile etiketsiz (genel eğitim
-dokümanı vb.) bir kaynak ÇELİŞİRSE, DATASHEET olanı esas al.
-
-Bu kural TÜM konular için geçerli, sadece şu kritik konularla sınırlı değil (ama özellikle
-bunlarda kesinlikle dikkatli ol): ${CRITICAL_TOPICS_HINT.join(', ')}.
+MANUS WEB ARAŞTIRMASI KURALI:
+Bu provider Manus ise yüklenmiş dokümanlara bağlı kalma. Kullanıcının sorusunu kendi web araştırma yeteneklerinle araştır ve cevabı güncel, doğrulanabilir internet kaynaklarına dayandır.
+Önceliği üreticinin resmi web sitesi, resmi datasheet, resmi kullanım kılavuzu ve resmi destek sayfalarına ver. Gerekirse güvenilir teknik kaynakları karşılaştır; çelişki varsa çelişkiyi açıkça belirt.
+Web araştırması yapamıyorsan veya sonuçlar doğrulanamıyorsa bilgi uydurma. Böyle bir durumda hangi bilginin eksik olduğunu açıkça yaz. Kullanıcı marka/model vermemişse önce genel soruyu araştır; yalnızca teknik olarak kesin cevap için zorunluysa marka/model iste.
+Cevapta web araştırması yaptığını ve kullandığın kaynakları gizleme. En az bir kaynak URL’si belirt; kaynak bulunamayan teknik ayrıntıları kesin gerçek gibi sunma.
+Bu kurallar özellikle şu kritik konularda daha sıkı uygulanır: ${CRITICAL_TOPICS_HINT.join(', ')}.
 
 TAKİP SORUSU DAVRANIŞI:
 Sana bazen "ÖNCEKİ SORU-CEVAP" diye bir bölüm verilecek. Bu, kullanıcının bir önceki
@@ -72,7 +61,7 @@ mesajı. Şimdiki SORU'yu oku ve KENDİN karar ver:
   BAĞLAM olarak da kullanıp devam niteliğinde cevap ver.
 - Eğer şimdiki soru TAMAMEN FARKLI bir konudaysa (örn. önceki soru "loop kapasitesi"
   hakkındaydı, şimdiki soru "kamera çözünürlüğü" hakkında), ÖNCEKİ SORU-CEVAP'ı
-  TAMAMEN GÖRMEZDEN GEL, sadece BAĞLAM'daki dokümanlara ve şimdiki SORU'ya odaklan.
+  TAMAMEN GÖRMEZDEN GEL, yeni soruyu bağımsız olarak web’de araştır.
 
 CEVAP FORMATI (markdown, Türkçe, teknik terimleri gerekirse parantez içi İngilizce ile göster,
 örn: "Topraklama hatası (Earth Fault)"):
@@ -86,8 +75,8 @@ CEVAP FORMATI (markdown, Türkçe, teknik terimleri gerekirse parantez içi İng
 
 Cevabının SONUNA, hangi güven seviyesinde olduğunu şu satırla belirt (tam olarak bu formatta,
 başka bir yerde tekrar etme):
-CONFIDENCE: HIGH  (BAĞLAM'daki dokümanlarla doğrudan doğrulanabiliyorsa)
-CONFIDENCE: LOW   (BAĞLAM yetersizse, cevap veremiyorsan)
+CONFIDENCE: HIGH  (güvenilir web kaynaklarıyla doğrudan doğrulanabiliyorsa)
+CONFIDENCE: LOW   (web araştırması yetersizse veya cevap doğrulanamıyorsa)
 
 Kaynakça ayrıca sistem tarafından otomatik ekleneceği için sen "Kaynak:" bölümü YAZMA.`;
 
@@ -129,7 +118,7 @@ export class AiService {
     // metninden OTOMATİK çıkarım yapılıyor — kayıtlı tüm ürünlerin
     // marka/model isimleri taranıp, sorunun içinde geçen (en spesifik/
     // en uzun) biri varsa kullanılıyor.
-    if (!opts.brand && !opts.model) {
+    if (!opts.brand && !opts.model && process.env.AI_PROVIDER !== 'manus') {
       const inferred = await this.inferBrandModelFromQuestion(question);
       if (inferred) {
         this.logger.log(`[Otomatik Çıkarım] Soru metninden tespit edildi: brand="${inferred.brand}" model="${inferred.model}"`);
@@ -137,12 +126,14 @@ export class AiService {
       }
     }
 
+    const researchOnly = process.env.AI_PROVIDER === 'manus';
+
     // ============================================================
     // TEKNİK HAFIZA KONTROL KATMANI — mevcut RAG akışının önüne
     // eklendi. Fotoğraflı sorularda hafıza atlanır (görsel içerik her
     // seferinde farklı olabilir, güvenilir eşleşme garantisi yok).
     // ============================================================
-    if (!opts.imageBase64) {
+    if (!opts.imageBase64 && !researchOnly) {
       const memoryMatch = await this.technicalMemory.findMatch(question, {
         productName: opts.brand,
         productModel: opts.model,
@@ -163,7 +154,11 @@ export class AiService {
       // doküman taraması atlanır.
     }
 
-    const [retrieved, knowledgeMatches, liveWebContent] = await Promise.all([
+    // Manus seçildiğinde kullanıcı isteği gereği yerel RAG/doküman taraması yapılmaz;
+    // Manus soruyu kendi web araştırmasıyla cevaplar. Diğer provider'lar mevcut RAG akışını korur.
+    const [retrieved, knowledgeMatches, liveWebContent] = researchOnly
+      ? ([[], [], null] as [RetrievedChunk[], any[], string | null])
+      : await Promise.all([
       this.ragSearch.search(question, {
         brand: opts.brand,
         model: opts.model,
@@ -184,9 +179,11 @@ export class AiService {
         this.logger.warn(`Canlı site taraması atlandı: ${err.message}`);
         return null;
       }),
-    ]);
+      ]);
 
-    const context = this.buildContextBlock(retrieved, knowledgeMatches) + (liveWebContent ? `\n\n--- CANLI WEB SİTESİ TARAMASI ---\n${liveWebContent}` : '');
+    const context = researchOnly
+      ? 'DOKÜMAN BAĞLAMI KULLANILMAYACAK. MANUS WEB ARAŞTIRMASI YAPARAK GÜNCEL VE DOĞRULANABİLİR KAYNAKLARA DAYALI CEVAP ÜRETMELİDİR.'
+      : this.buildContextBlock(retrieved, knowledgeMatches) + (liveWebContent ? `\n\n--- CANLI WEB SİTESİ TARAMASI ---\n${liveWebContent}` : '');
 
     // Önceki soru-cevap varsa, AI'a "bu soru öncekiyle ilgili mi?" kararını
     // vermesi için ekliyoruz.
