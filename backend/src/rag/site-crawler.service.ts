@@ -106,7 +106,17 @@ export class SiteCrawlerService {
     if (pages.length <= 1) {
       this.logger.log('[Puppeteer] Standart tarama yetersiz kaldı, tarayıcı motoruyla deneniyor...');
       try {
-        const browserPages = await this.crawlWithBrowser(start, { maxPages, maxDepth, pageTimeoutMs, budgetMs });
+        // Kullanıcı isteği: "şu an taramıyor olabilir mi" — Chromium'un
+        // bellek yükü nedeniyle, admin ekleme için kullanılan geniş
+        // limitler (60 sayfa, 8 seviye) Render'ın ücretsiz planında
+        // sunucuyu ÇÖKERTEBİLİR (bellek yetersizliği). Puppeteer
+        // fallback'inde daha GÜVENLİ, düşük bir limit kullanıyoruz.
+        const browserPages = await this.crawlWithBrowser(start, {
+          maxPages: Math.min(maxPages, 15),
+          maxDepth: Math.min(maxDepth, 3),
+          pageTimeoutMs,
+          budgetMs,
+        });
         if (browserPages.length > pages.length) return browserPages;
       } catch (err) {
         this.logger.warn(`[Puppeteer] Tarayıcı motoruyla tarama başarısız: ${err}`);
@@ -159,6 +169,23 @@ export class SiteCrawlerService {
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
           );
           await page.setViewport({ width: 1366, height: 900 });
+
+          // Kullanıcı isteği: "şu an taramıyor olabilir mi" — Render'ın
+          // ücretsiz planı sınırlı bellekle çalışıyor (~512MB). Görsel,
+          // font, video gibi AĞIR kaynakları hiç indirmeden engelleyerek
+          // bellek/bant genişliği kullanımını ÖNEMLİ ÖLÇÜDE azaltıyoruz —
+          // bize sadece METİN ve LİNKLER lazım, görsellerin hiçbir değeri
+          // yok bu iş için.
+          await page.setRequestInterception(true);
+          page.on('request', (req) => {
+            const type = req.resourceType();
+            if (['image', 'font', 'media', 'stylesheet'].includes(type)) {
+              req.abort();
+            } else {
+              req.continue();
+            }
+          });
+
           // Kullanıcı isteği: "javascript olabilir mi" — gelişmiş siteler
           // headless (görünmez) tarayıcıları "navigator.webdriver" izinden
           // tespit edip farklı/eksik içerik gösterebiliyor. Bu izi maskeliyoruz.
