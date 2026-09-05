@@ -41,6 +41,10 @@ export class ManusProvider implements AIProvider {
   private readonly agentProfile = process.env.MANUS_AGENT_PROFILE || 'standard';
   private readonly timeoutMs = Number(process.env.MANUS_TIMEOUT_MS || 120_000);
   private readonly pollIntervalMs = Number(process.env.MANUS_POLL_INTERVAL_MS || 2_000);
+  // Manus v2 message.content yaklaşık 5.000 token ile sınırlıdır. Sistem
+  // promptu + RAG + canlı web bağlamı birlikte bu sınırı aşabileceğinden,
+  // güvenli bir karakter bütçesiyle promptu kısaltıyoruz.
+  private readonly maxInputChars = Number(process.env.MANUS_MAX_INPUT_CHARS || 16_000);
 
   async complete(
     messages: AIMessage[],
@@ -123,7 +127,7 @@ export class ManusProvider implements AIProvider {
       throw new Error('ManusProvider şu anda görsel içerikli AI mesajlarını desteklemiyor.');
     }
 
-    return messages
+    const prompt = messages
       .map((message) => {
         const content = Array.isArray(message.content)
           ? message.content.filter((part) => part.type === 'text').map((part) => part.text).join('\n')
@@ -131,6 +135,12 @@ export class ManusProvider implements AIProvider {
         return `[${message.role.toUpperCase()}]\n${content}`;
       })
       .join('\n\n');
+
+    if (prompt.length <= this.maxInputChars) return prompt;
+
+    const tailChars = Math.min(4_000, Math.floor(this.maxInputChars / 4));
+    const headChars = this.maxInputChars - tailChars;
+    return `${prompt.slice(0, headChars)}\n\n[BAĞLAM MANUS GİRİŞ SINIRI NEDENİYLE KISALTILDI]\n\n${prompt.slice(-tailChars)}`;
   }
 
   private extractAssistantText(messages: ManusMessage[]): string {
