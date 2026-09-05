@@ -117,10 +117,10 @@ export class ManusProvider implements AIProvider {
           { method: 'GET' },
         );
         const waitingText = this.extractAssistantText(waitingResult.messages || []);
-        if (waitingText) {
-          return { text: waitingText, raw: { taskId: created.task_id, detail, messages: waitingResult } };
-        }
         const waitingEventType = this.extractWaitingEventType(waitingResult.messages || []);
+        // Manus messageAskUser/needConnectMyBrowser durumunda önce event’i
+        // sürdür; aksi halde ilk assistant soru metni erken döner ve araştırma
+        // hiç başlamadan Android’e fallback gönderilir.
         if (waitingEventType === 'needConnectMyBrowser' && !autoContinuedAfterAsk) {
           const waitingEventId = this.extractWaitingEventId(waitingResult.messages || []);
           if (waitingEventId) {
@@ -154,6 +154,10 @@ export class ManusProvider implements AIProvider {
           });
           await this.sleep(this.pollIntervalMs);
           continue;
+        }
+
+        if (waitingText) {
+          return { text: waitingText, raw: { taskId: created.task_id, detail, messages: waitingResult } };
         }
 
         const waitingDescription = this.extractWaitingDescription(waitingResult.messages || []);
