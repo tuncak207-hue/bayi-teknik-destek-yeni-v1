@@ -2,10 +2,11 @@ import { Module } from '@nestjs/common';
 import { AnthropicProvider } from './providers/anthropic.provider';
 import { OllamaProvider } from './providers/ollama.provider';
 import { GroqProvider } from './providers/groq.provider';
+import { ManusProvider } from './providers/manus.provider';
 import { AI_PROVIDER } from './providers/ai-provider.interface';
 
 /**
- * AI sağlayıcılarını (Anthropic/Ollama/Groq) hem AiModule hem RagModule
+ * AI sağlayıcılarını (Anthropic/Ollama/Groq/Manus) hem AiModule hem RagModule
  * kullanabilsin diye ayrı, paylaşılan bir modülde topluyoruz — bu, iki
  * modülün birbirini import etmesiyle oluşacak döngüsel bağımlılığı
  * (RagModule şema açıklaması için AI sağlayıcısına ihtiyaç duyuyor,
@@ -16,17 +17,24 @@ import { AI_PROVIDER } from './providers/ai-provider.interface';
     AnthropicProvider,
     OllamaProvider,
     GroqProvider,
+    ManusProvider,
     {
       provide: AI_PROVIDER,
-      useFactory: (anthropic: AnthropicProvider, ollama: OllamaProvider, groq: GroqProvider) => {
+      useFactory: (
+        anthropic: AnthropicProvider,
+        ollama: OllamaProvider,
+        groq: GroqProvider,
+        manus: ManusProvider,
+      ) => {
         // Kullanıcı isteği: "geçici olarak Groq kullanalım" — AI_PROVIDER
         // ortam değişkeni "groq" olarak ayarlanınca (Anthropic'te kredi
         // tükendiğinde geçici bir çözüm olarak) Groq'a geçilebiliyor.
         if (process.env.AI_PROVIDER === 'ollama') return ollama;
         if (process.env.AI_PROVIDER === 'groq') return groq;
+        if (process.env.AI_PROVIDER === 'manus') return manus;
         return anthropic;
       },
-      inject: [AnthropicProvider, OllamaProvider, GroqProvider],
+      inject: [AnthropicProvider, OllamaProvider, GroqProvider, ManusProvider],
     },
   ],
   exports: [AI_PROVIDER],

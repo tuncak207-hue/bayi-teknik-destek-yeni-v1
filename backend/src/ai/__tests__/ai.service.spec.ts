@@ -3,6 +3,8 @@ import { AiService } from '../ai.service';
 import { RagSearchService } from '../../rag/rag-search.service';
 import { KnowledgeBaseService } from '../../knowledge-base/knowledge-base.service';
 import { TechnicalMemoryService } from '../technical-memory.service';
+import { SiteCrawlerService } from '../../rag/site-crawler.service';
+import { PrismaService } from '../../common/prisma/prisma.service';
 import { AI_PROVIDER } from '../providers/ai-provider.interface';
 
 describe('AiService — uydurmama ve kaynak gösterme kuralları', () => {
@@ -23,6 +25,8 @@ describe('AiService — uydurmama ve kaynak gösterme kuralları', () => {
           findMatch: jest.fn().mockResolvedValue({ tier: 'NEW' }),
           incrementUsage: jest.fn(),
         } },
+        { provide: SiteCrawlerService, useValue: {} },
+        { provide: PrismaService, useValue: {} },
         { provide: AI_PROVIDER, useValue: provider },
       ],
     }).compile();
