@@ -21,6 +21,12 @@ interface ManusSendMessageResponse {
   error?: { code?: string; message?: string };
 }
 
+interface ManusConfirmActionResponse {
+  ok?: boolean;
+  task_id?: string;
+  error?: { code?: string; message?: string };
+}
+
 interface ManusMessage {
   type?: string;
   assistant_message?: { content?: string };
@@ -29,6 +35,7 @@ interface ManusMessage {
     agent_status?: string;
     status_detail?: {
       waiting_description?: string;
+      waiting_for_event_id?: string;
       waiting_for_event_type?: string;
     };
   };
@@ -114,6 +121,23 @@ export class ManusProvider implements AIProvider {
           return { text: waitingText, raw: { taskId: created.task_id, detail, messages: waitingResult } };
         }
         const waitingEventType = this.extractWaitingEventType(waitingResult.messages || []);
+        if (waitingEventType === 'needConnectMyBrowser' && !autoContinuedAfterAsk) {
+          const waitingEventId = this.extractWaitingEventId(waitingResult.messages || []);
+          if (waitingEventId) {
+            autoContinuedAfterAsk = true;
+            await this.request<ManusConfirmActionResponse>('/v2/task.confirmAction', {
+              method: 'POST',
+              body: JSON.stringify({
+                task_id: created.task_id,
+                event_id: waitingEventId,
+                input: { action: 'skip' },
+              }),
+            });
+            await this.sleep(this.pollIntervalMs);
+            continue;
+          }
+        }
+
         if (waitingEventType === 'messageAskUser' && !autoContinuedAfterAsk) {
           autoContinuedAfterAsk = true;
           await this.request<ManusSendMessageResponse>('/v2/task.sendMessage', {
@@ -185,6 +209,11 @@ export class ManusProvider implements AIProvider {
   private extractWaitingEventType(messages: ManusMessage[]): string {
     const waitingMessage = [...messages].reverse().find((message) => message.status_update?.agent_status === 'waiting');
     return waitingMessage?.status_update?.status_detail?.waiting_for_event_type || '';
+  }
+
+  private extractWaitingEventId(messages: ManusMessage[]): string {
+    const waitingMessage = [...messages].reverse().find((message) => message.status_update?.agent_status === 'waiting');
+    return waitingMessage?.status_update?.status_detail?.waiting_for_event_id || '';
   }
 
   private async request<T>(path: string, init: RequestInit): Promise<T> {
