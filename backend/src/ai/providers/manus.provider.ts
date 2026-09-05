@@ -15,6 +15,12 @@ interface ManusTaskDetailResponse {
   error?: { code?: string; message?: string };
 }
 
+interface ManusSendMessageResponse {
+  ok?: boolean;
+  task_id?: string;
+  error?: { code?: string; message?: string };
+}
+
 interface ManusMessage {
   type?: string;
   assistant_message?: { content?: string };
@@ -76,6 +82,7 @@ export class ManusProvider implements AIProvider {
     }
 
     const startedAt = Date.now();
+    let autoContinuedAfterAsk = false;
     while (Date.now() - startedAt < this.timeoutMs) {
       const detail = await this.request<ManusTaskDetailResponse>(
         `/v2/task.detail?task_id=${encodeURIComponent(created.task_id)}`,
@@ -106,9 +113,28 @@ export class ManusProvider implements AIProvider {
         if (waitingText) {
           return { text: waitingText, raw: { taskId: created.task_id, detail, messages: waitingResult } };
         }
+        const waitingEventType = this.extractWaitingEventType(waitingResult.messages || []);
+        if (waitingEventType === 'messageAskUser' && !autoContinuedAfterAsk) {
+          autoContinuedAfterAsk = true;
+          await this.request<ManusSendMessageResponse>('/v2/task.sendMessage', {
+            method: 'POST',
+            body: JSON.stringify({
+              task_id: created.task_id,
+              message: {
+                content: [{
+                  type: 'text',
+                  text: 'Kullanıcı ek soru beklemiyor. Lütfen ek bilgi istemeden devam et; soruyu web üzerinde araştır, öncelikle resmi üretici ve güvenilir teknik kaynakları kullan, doğrulanabilir kaynak URL’lerini ekleyerek doğrudan Türkçe cevap ver.',
+                }],
+              },
+            }),
+          });
+          await this.sleep(this.pollIntervalMs);
+          continue;
+        }
+
         const waitingDescription = this.extractWaitingDescription(waitingResult.messages || []);
         return {
-          text: `${waitingDescription || 'Manus ek bilgi bekliyor.'}\n\nLütfen ürünün marka ve modelini, ayrıca sorunun teknik ayrıntısını paylaşın.\n\nCONFIDENCE: LOW`,
+          text: `${waitingDescription || 'Manus ek bilgi bekliyor.'}\n\nManus web araştırması bu görevde başlatılamadı.\n\nCONFIDENCE: LOW`,
           raw: { taskId: created.task_id, detail, messages: waitingResult },
         };
       }
@@ -154,6 +180,11 @@ export class ManusProvider implements AIProvider {
   private extractWaitingDescription(messages: ManusMessage[]): string {
     const waitingMessage = [...messages].reverse().find((message) => message.status_update?.agent_status === 'waiting');
     return waitingMessage?.status_update?.status_detail?.waiting_description || '';
+  }
+
+  private extractWaitingEventType(messages: ManusMessage[]): string {
+    const waitingMessage = [...messages].reverse().find((message) => message.status_update?.agent_status === 'waiting');
+    return waitingMessage?.status_update?.status_detail?.waiting_for_event_type || '';
   }
 
   private async request<T>(path: string, init: RequestInit): Promise<T> {
