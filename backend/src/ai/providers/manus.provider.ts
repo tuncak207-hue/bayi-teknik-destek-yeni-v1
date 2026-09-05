@@ -19,6 +19,13 @@ interface ManusMessage {
   type?: string;
   assistant_message?: { content?: string };
   error_message?: { content?: string };
+  status_update?: {
+    agent_status?: string;
+    status_detail?: {
+      waiting_description?: string;
+      waiting_for_event_type?: string;
+    };
+  };
 }
 
 interface ManusMessagesResponse {
@@ -52,6 +59,7 @@ export class ManusProvider implements AIProvider {
           content: [{ type: 'text', text: prompt }],
         },
         locale: process.env.MANUS_LOCALE || 'tr',
+        interactive_mode: false,
         agent_profile: this.agentProfile,
         hide_in_task_list: true,
         share_visibility: 'private',
@@ -86,7 +94,19 @@ export class ManusProvider implements AIProvider {
       }
 
       if (status === 'waiting') {
-        throw new Error('Manus görevi kullanıcı onayı veya ek girdi bekliyor; teknik destek akışında bu durum desteklenmiyor.');
+        const waitingResult = await this.request<ManusMessagesResponse>(
+          `/v2/task.listMessages?task_id=${encodeURIComponent(created.task_id)}&order=desc&limit=50`,
+          { method: 'GET' },
+        );
+        const waitingText = this.extractAssistantText(waitingResult.messages || []);
+        if (waitingText) {
+          return { text: waitingText, raw: { taskId: created.task_id, detail, messages: waitingResult } };
+        }
+        const waitingDescription = this.extractWaitingDescription(waitingResult.messages || []);
+        return {
+          text: `${waitingDescription || 'Manus ek bilgi bekliyor.'}\n\nLütfen ürünün marka ve modelini, ayrıca sorunun teknik ayrıntısını paylaşın.\n\nCONFIDENCE: LOW`,
+          raw: { taskId: created.task_id, detail, messages: waitingResult },
+        };
       }
 
       await this.sleep(this.pollIntervalMs);
@@ -119,6 +139,11 @@ export class ManusProvider implements AIProvider {
       .map((message) => message.assistant_message?.content)
       .filter((content): content is string => Boolean(content?.trim()));
     return assistantMessages.join('\n\n').trim();
+  }
+
+  private extractWaitingDescription(messages: ManusMessage[]): string {
+    const waitingMessage = [...messages].reverse().find((message) => message.status_update?.agent_status === 'waiting');
+    return waitingMessage?.status_update?.status_detail?.waiting_description || '';
   }
 
   private async request<T>(path: string, init: RequestInit): Promise<T> {
